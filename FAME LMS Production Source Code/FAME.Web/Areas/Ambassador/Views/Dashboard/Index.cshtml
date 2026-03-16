@@ -1,0 +1,375 @@
+@model First_Aid_Made_Easy.Models.AmbassadorDashboardVM
+@{
+    ViewBag.Title = "Ambassador Dashboard";
+    Layout = "~/Views/Shared/_LayoutAmbassador.cshtml";
+}
+
+<div class="container-fluid py-4">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h4 class="mb-1">Welcome back, @Model.Ambassador.FullName!</h4>
+                    <p class="text-muted mb-0">
+                        <span class="badge badge-@(Model.Ambassador.Tier.ToLower() == "gold" ? "warning" : Model.Ambassador.Tier.ToLower() == "silver" ? "secondary" : "bronze")">
+                            @Model.Ambassador.Tier Tier
+                        </span>
+                        <span class="ml-2">Ambassador since @Model.Ambassador.CreatedAt.ToString("MMM yyyy")</span>
+                    </p>
+                </div>
+                <div>
+                    <button class="btn btn-primary" onclick="copyReferralLink()">
+                        <i class="material-icons align-middle mr-1">link</i>
+                        Copy Referral Link
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Referral Link Card -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-primary">
+                <div class="card-body py-3">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <label class="text-muted small mb-1">Your Referral Link</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control bg-light" id="referralLink" 
+                                       value="@Model.Ambassador.FullReferralUrl" readonly>
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-primary" type="button" onclick="copyReferralLink()">
+                                        <i class="material-icons align-middle">content_copy</i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-md-right mt-3 mt-md-0">
+                            <span class="text-muted small">Referral Code:</span>
+                            <h5 class="mb-0 font-weight-bold text-primary">@Model.Ambassador.ReferralCode</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary h-100">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Referrals</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.Stats.TotalReferrals</div>
+                            <small class="text-muted">@Model.Stats.ReferralsThisMonth this month</small>
+                        </div>
+                        <div class="col-auto">
+                            <i class="material-icons text-gray-300" style="font-size: 2.5rem;">people</i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success h-100">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Conversions</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.Stats.ConvertedReferrals</div>
+                            <small class="text-muted">@Model.Stats.ConversionRate% conversion rate</small>
+                        </div>
+                        <div class="col-auto">
+                            <i class="material-icons text-gray-300" style="font-size: 2.5rem;">check_circle</i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info h-100">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Available Balance</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.Stats.Currency @Model.Stats.AvailableBalance.ToString("N0")</div>
+                            <small class="text-muted">@Model.Stats.Currency @Model.Stats.PendingEarnings.ToString("N0") pending</small>
+                        </div>
+                        <div class="col-auto">
+                            <i class="material-icons text-gray-300" style="font-size: 2.5rem;">account_balance_wallet</i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning h-100">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Total Earnings</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.Stats.Currency @Model.Stats.TotalEarnings.ToString("N0")</div>
+                            <small class="text-muted">@Model.Stats.Currency @Model.Stats.PaidOutTotal.ToString("N0") paid out</small>
+                        </div>
+                        <div class="col-auto">
+                            <i class="material-icons text-gray-300" style="font-size: 2.5rem;">monetization_on</i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="row mb-4">
+        <div class="col-xl-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">Link Clicks (Last 30 Days)</h6>
+                    <span class="badge badge-primary">@Model.Stats.TotalClicks total</span>
+                </div>
+                <div class="card-body">
+                    <canvas id="clicksChart" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-success">Conversions (Last 30 Days)</h6>
+                    <span class="badge badge-success">@Model.Stats.ConversionsThisMonth this month</span>
+                </div>
+                <div class="card-body">
+                    <canvas id="conversionsChart" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity Row -->
+    <div class="row">
+        <!-- Recent Referrals -->
+        <div class="col-xl-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">Recent Referrals</h6>
+                    <a href="@Url.Action("Index", "Referrals")" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+                <div class="card-body p-0">
+                    @if (Model.RecentReferrals != null && Model.RecentReferrals.Count > 0)
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="bg-light">
+                                    <tr>
+                                        <th>User</th>
+                                        <th>Date</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var referral in Model.RecentReferrals)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <span class="font-weight-medium">@(referral.ReferredUserName ?? referral.ReferredUserEmail)</span>
+                                            </td>
+                                            <td>@referral.RegisteredAt.ToString("MMM dd, yyyy")</td>
+                                            <td>
+                                                <span class="badge @referral.StatusBadgeClass">@referral.Status</span>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5">
+                            <i class="material-icons text-muted" style="font-size: 3rem;">people_outline</i>
+                            <p class="text-muted mt-2">No referrals yet. Share your link to get started!</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Earnings -->
+        <div class="col-xl-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-success">Recent Earnings</h6>
+                    <a href="@Url.Action("Index", "Earnings")" class="btn btn-sm btn-outline-success">View All</a>
+                </div>
+                <div class="card-body p-0">
+                    @if (Model.RecentEarnings != null && Model.RecentEarnings.Count > 0)
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="bg-light">
+                                    <tr>
+                                        <th>Type</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var earning in Model.RecentEarnings)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <i class="material-icons align-middle mr-1 text-muted">@earning.TypeIcon</i>
+                                                @earning.Type
+                                            </td>
+                                            <td class="@earning.AmountClass font-weight-bold">@earning.AmountDisplay</td>
+                                            <td>
+                                                <span class="badge @earning.StatusBadgeClass">@earning.Status</span>
+                                            </td>
+                                            <td>@earning.CreatedAt.ToString("MMM dd")</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5">
+                            <i class="material-icons text-muted" style="font-size: 3rem;">account_balance_wallet</i>
+                            <p class="text-muted mt-2">No earnings yet. Conversions will appear here.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Quick Actions</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-3 mb-md-0">
+                            <a href="@Url.Action("Index", "Referrals")" class="btn btn-outline-primary btn-block py-3">
+                                <i class="material-icons d-block mb-1" style="font-size: 1.5rem;">people</i>
+                                View Referrals
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3 mb-md-0">
+                            <a href="@Url.Action("Index", "Earnings")" class="btn btn-outline-success btn-block py-3">
+                                <i class="material-icons d-block mb-1" style="font-size: 1.5rem;">trending_up</i>
+                                View Earnings
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3 mb-md-0">
+                            <a href="@Url.Action("Request", "Payouts")" class="btn btn-outline-info btn-block py-3">
+                                <i class="material-icons d-block mb-1" style="font-size: 1.5rem;">payments</i>
+                                Request Payout
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="@Url.Action("Index", "Profile")" class="btn btn-outline-secondary btn-block py-3">
+                                <i class="material-icons d-block mb-1" style="font-size: 1.5rem;">settings</i>
+                                My Profile
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <script>
+        // Copy referral link function
+        function copyReferralLink() {
+            var linkInput = document.getElementById('referralLink');
+            linkInput.select();
+            linkInput.setSelectionRange(0, 99999);
+            document.execCommand('copy');
+            toastr.success('Referral link copied to clipboard!');
+        }
+
+        // Initialize charts
+        document.addEventListener('DOMContentLoaded', function() {
+            // Clicks Chart
+            var clicksCtx = document.getElementById('clicksChart').getContext('2d');
+            var clicksChart = new Chart(clicksCtx, {
+                type: 'line',
+                data: {
+                    labels: @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.ClicksChartData.Labels)),
+                    datasets: [{
+                        label: 'Clicks',
+                        data: @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.ClicksChartData.Values)),
+                        borderColor: '#4e73df',
+                        backgroundColor: 'rgba(78, 115, 223, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+
+            // Conversions Chart
+            var conversionsCtx = document.getElementById('conversionsChart').getContext('2d');
+            var conversionsChart = new Chart(conversionsCtx, {
+                type: 'bar',
+                data: {
+                    labels: @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.ConversionsChartData.Labels)),
+                    datasets: [{
+                        label: 'Conversions',
+                        data: @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.ConversionsChartData.Values)),
+                        backgroundColor: '#1cc88a',
+                        borderColor: '#1cc88a',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+        });
+    </script>
+}
+
+<style>
+    .border-left-primary { border-left: 4px solid #4e73df !important; }
+    .border-left-success { border-left: 4px solid #1cc88a !important; }
+    .border-left-info { border-left: 4px solid #36b9cc !important; }
+    .border-left-warning { border-left: 4px solid #f6c23e !important; }
+    .badge-bronze { background-color: #cd7f32; color: white; }
+    .text-xs { font-size: 0.7rem; }
+</style>

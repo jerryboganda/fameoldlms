@@ -1,0 +1,679 @@
+@using First_Aid_Made_Easy.BLL
+@using First_Aid_Made_Easy.Models
+
+        <!-- drawer -->
+        <div class="mdk-drawer js-mdk-drawer" id="default-drawer">
+            <div class="mdk-drawer__content">
+                <div class="sidebar sidebar-light sidebar-light-dodger-blue sidebar-left" data-perfect-scrollbar>
+
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <a href="/Admin/Index" class="sidebar-brand sidebar-brand-dark bg-primary-pickled-bluewood">
+                            <!-- <img class="sidebar-brand-icon" src="~/Content/assets/images/illustration/teacher/128/white.svg" alt="First Aid Made Easy"> -->
+                            <span class="avatar avatar-xl sidebar-brand-icon h-auto">
+                                <span class="avatar-title rounded bg-primary"><img src="~/Content/assets/images/illustration/teacher/128/white.svg" class="img-fluid" alt="logo" /></span>
+                            </span>
+                            <span>Admin</span>
+                        </a>
+                        <div class="sidebar-heading">Welcome !</div>
+                        <ul class="sidebar-menu">
+                            <li class="sidebar-menu-item active">
+                                <a class="sidebar-menu-button" href="/Admin/Index">
+                                    <span class="material-icons sidebar-menu-icon sidebar-menu-icon--left">school</span>
+                                    <span class="sidebar-menu-text">Admin Dashboard</span>
+                                </a>
+                            </li>
+
+                            <li class="sidebar-menu-item">
+                                <a class="sidebar-menu-button js-sidebar-collapse" data-toggle="collapse" href="#setting_menu">
+                                    <span class="material-icons sidebar-menu-icon sidebar-menu-icon--left">settings</span>
+                                    Settings
+                                    <span class="ml-auto sidebar-menu-toggle-icon"></span>
+                                </a>
+                                <ul class="sidebar-submenu collapse sm-indent" id="setting_menu">
+                                    <li class="sidebar-menu-item">
+                                        <a class="sidebar-menu-button" href="/Settings/Settings"> <span class="sidebar-menu-text">System Settings</span> </a>
+                                    </li>
+                                    <li class="sidebar-menu-item">
+                                        <a class="sidebar-menu-button" href="/Settings/SMTPSettings"> <span class="sidebar-menu-text">SMTP Settings</span> </a>
+                                    </li>
+                                    <li class="sidebar-menu-item">
+                                        <a class="sidebar-menu-button" href="/Settings/EmailSettings"> <span class="sidebar-menu-text">Email Report Settings</span> </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    }
+                    else if (User.IsInRole("Teacher"))
+                    {
+                        <a href="/Admin/Index" class="sidebar-brand sidebar-brand-dark bg-primary-pickled-bluewood">
+                            <!-- <img class="sidebar-brand-icon" src="~/Content/assets/images/illustration/teacher/128/white.svg" alt="First Aid Made Easy"> -->
+                            <span class="avatar avatar-xl sidebar-brand-icon h-auto">
+                                <span class="avatar-title rounded bg-primary"><img src="~/Content/assets/images/illustration/teacher/128/white.svg" class="img-fluid" alt="logo" /></span>
+                            </span>
+                            <span>Instructor</span>
+                        </a>
+                    }
+                    else if (User.IsInRole("Assistant"))
+                    {
+
+                        <a href="/Teacher/AssistantIndex" class="sidebar-brand sidebar-brand-dark bg-primary-pickled-bluewood">
+                            <!-- <img class="sidebar-brand-icon" src="~/Content/assets/images/illustration/teacher/128/white.svg" alt="First Aid Made Easy"> -->
+                            <span class="avatar avatar-xl sidebar-brand-icon h-auto">
+                                <span class="avatar-title rounded bg-primary"><img src="~/Content/assets/images/illustration/teacher/128/white.svg" class="img-fluid" alt="logo" /></span>
+                            </span>
+                            <span>Assistant</span>
+                        </a>
+                    }
+                    else if (User.IsInRole("UniTeacher"))
+                    {
+
+                        <a href="/Teacher/AssistantIndex" class="sidebar-brand sidebar-brand-dark bg-primary-pickled-bluewood">
+                            <!-- <img class="sidebar-brand-icon" src="~/Content/assets/images/illustration/teacher/128/white.svg" alt="First Aid Made Easy"> -->
+                            <span class="avatar avatar-xl sidebar-brand-icon h-auto">
+                                <span class="avatar-title rounded bg-primary"><img src="~/Content/assets/images/illustration/teacher/128/white.svg" class="img-fluid" alt="logo" /></span>
+                            </span>
+                            <span>Assistant</span>
+                        </a>
+                    }
+
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <div class="sidebar-heading">Courses</div>
+                        <ul class="sidebar-menu">
+                            <li class="sidebar-menu-item">
+                                <a class="sidebar-menu-button" href="/Course/Courses">
+                                    <span class="material-icons sidebar-menu-icon sidebar-menu-icon--left">import_contacts</span>
+                                    <span class="sidebar-menu-text">Manage Courses</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-menu-item">
+                                <a class="sidebar-menu-button" href="/Package/List">
+                                    <span class="material-icons sidebar-menu-icon sidebar-menu-icon--left">import_contacts</span>
+                                    <span class="sidebar-menu-text">Add Packages</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-menu-item">
+                                <a class="sidebar-menu-button" href="/WebsitePackages/List">
+                                    <span class="material-icons sidebar-menu-icon sidebar-menu-icon--left">local_offer</span>
+                                    <span class="sidebar-menu-text">Website Packages</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-menu-item">
+                                <a class="sidebar-menu-button" href="/GuidelineVideo/Index">
+                                    <span class="material-icons sidebar-menu-icon sidebar-menu-icon--left">video_library</span>
+                                    <span class="sidebar-menu-text">Guideline Videos</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-menu-item">
+                                <a class="sidebar-menu-button" href="/FileManager/Main">
+                                    <span class="material-icons sidebar-menu-icon sidebar-menu-icon--left">import_contacts</span>
+                                    <span class="sidebar-menu-text">File Manager</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-menu-item">
+                                <a class="sidebar-menu-button" href="/Enrollment/CopySection">
+                                    <span class="material-icons sidebar-menu-icon sidebar-menu-icon--left">content_copy</span>
+                                    <span class="sidebar-menu-text">Copy Sections</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-menu-item">
+                                <a class="sidebar-menu-button" href="/General/BookCode">
+                                    <span class="material-icons sidebar-menu-icon sidebar-menu-icon--left">book</span>
+                                    <span class="sidebar-menu-text">Book Code</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-menu-item">
+                                <a class="sidebar-menu-button" href="/BookMistakes/List">
+                                    <span class="material-icons sidebar-menu-icon sidebar-menu-icon--left">book</span>
+                                    <span class="sidebar-menu-text">Book Mistakes</span>
+                                </a>
+                            </li>
+                            @*<li class="sidebar-menu-item">
+                                    <a class="sidebar-menu-button" href="/Coupon/List">
+                                        <span class="material-icons sidebar-menu-icon sidebar-menu-icon--left">receipt</span>
+                                        <span class="sidebar-menu-text">Manage Coupons</span>
+                                    </a>
+                                </li>*@
+                        </ul>
+                    }
+
+                    @if (User.IsInRole("Admin") || User.IsInRole("Teacher"))
+                    {
+                        <div class="sidebar-heading">Certificates</div>
+                        <ul class="sidebar-menu">
+                            <li class="sidebar-menu-item">
+                                <a class="sidebar-menu-button" href="@Url.Action("Index", "Admin", new { area = "Certificate" })">
+                                    <span class="material-icons sidebar-menu-icon sidebar-menu-icon--left">workspace_premium</span>
+                                    <span class="sidebar-menu-text">Certificate Manager</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-menu-item">
+                                <a class="sidebar-menu-button" href="@Url.Action("Templates", "Admin", new { area = "Certificate" })">
+                                    <span class="material-icons sidebar-menu-icon sidebar-menu-icon--left">design_services</span>
+                                    <span class="sidebar-menu-text">Templates</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-menu-item">
+                                <a class="sidebar-menu-button" href="@Url.Action("Rules", "Admin", new { area = "Certificate" })">
+                                    <span class="material-icons sidebar-menu-icon sidebar-menu-icon--left">tune</span>
+                                    <span class="sidebar-menu-text">Issuance Rules</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-menu-item">
+                                <a class="sidebar-menu-button" href="@Url.Action("Issues", "Admin", new { area = "Certificate" })">
+                                    <span class="material-icons sidebar-menu-icon sidebar-menu-icon--left">verified</span>
+                                    <span class="sidebar-menu-text">Issued Certificates</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-menu-item">
+                                <a class="sidebar-menu-button" href="@Url.Action("UserList", "Admin", new { area = "Certificate" })">
+                                    <span class="material-icons sidebar-menu-icon sidebar-menu-icon--left">upload_file</span>
+                                    <span class="sidebar-menu-text">Upload Certificates</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-menu-item">
+                                <a class="sidebar-menu-button" href="@Url.Action("GoogleSheets", "Admin", new { area = "Certificate" })">
+                                    <span class="material-icons sidebar-menu-icon sidebar-menu-icon--left">table_chart</span>
+                                    <span class="sidebar-menu-text">Google Sheets</span>
+                                </a>
+                            </li>
+                        </ul>
+                    }
+
+                    @if (User.IsInRole("Admin") || User.IsInRole("Teacher"))
+                    {
+                        <div class="sidebar-heading">Enrollments</div>
+                        <ul class="sidebar-menu">
+                            <li class="sidebar-menu-item">
+                                <a class="sidebar-menu-button js-sidebar-collapse" data-toggle="collapse" href="#req_menu">
+                                    <span class="material-icons sidebar-menu-icon sidebar-menu-icon--left">school</span>
+                                    Student Requests
+                                    <span class="ml-auto sidebar-menu-toggle-icon"></span>
+                                </a>
+                                <ul class="sidebar-submenu collapse sm-indent" id="req_menu">
+                                    <li class="sidebar-menu-item">
+                                        <a class="sidebar-menu-button" href="/Request/List"> <span class="sidebar-menu-text">Register Requests</span> </a>
+                                    </li>
+                                    <li class="sidebar-menu-item">
+                                        <a class="sidebar-menu-button" href="/Request/ExtList"> <span class="sidebar-menu-text">Extension Requests</span> </a>
+                                    </li>
+                                    <li class="sidebar-menu-item">
+                                        <a class="sidebar-menu-button" href="/Device/DeviceDeleteReqList"> <span class="sidebar-menu-text">Device Delete Requests</span> </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="sidebar-menu-item">
+                                <a class="sidebar-menu-button" href="/Enrollment/Index">
+                                    <span class="material-icons sidebar-menu-icon sidebar-menu-icon--left">subscriptions</span>
+                                    <span class="sidebar-menu-text">Add Subscriptions</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-menu-item">
+                                <a class="sidebar-menu-button" href="/Request/InstallmentList">
+                                    <span class="material-icons sidebar-menu-icon sidebar-menu-icon--left">payment</span>
+                                    <span class="sidebar-menu-text">Installments</span>
+                                </a>
+                            </li>
+                        </ul>
+                        <div class="sidebar-heading">Students</div>
+                        <ul class="sidebar-menu">
+
+                            <li class="sidebar-menu-item">
+                                <a class="sidebar-menu-button" href="/Admin/StudentList">
+                                    <span class="material-icons sidebar-menu-icon sidebar-menu-icon--left">person</span>
+                                    <span class="sidebar-menu-text">Students</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-menu-item">
+                                <a class="sidebar-menu-button" href="/Admin/AllStudentList">
+                                    <span class="material-icons sidebar-menu-icon sidebar-menu-icon--left">person</span>
+                                    <span class="sidebar-menu-text">Search Students</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-menu-item">
+                                <a class="sidebar-menu-button js-sidebar-collapse" data-toggle="collapse" href="#agent_menu">
+                                    <span class="material-icons sidebar-menu-icon sidebar-menu-icon--left">school</span>
+                                    Reports
+                                    <span class="ml-auto sidebar-menu-toggle-icon"></span>
+                                </a>
+                                <ul class="sidebar-submenu collapse sm-indent" id="agent_menu">
+                                    <li class="sidebar-menu-item">
+                                        <a class="sidebar-menu-button" href="/Report/Progress"> <span class="sidebar-menu-text">Progress Report</span> </a>
+                                    </li>
+                                    <li class="sidebar-menu-item">
+                                        <a class="sidebar-menu-button" href="/Report/QuestionStats"> <span class="sidebar-menu-text">Question Report</span> </a>
+                                    </li>
+                                    <li class="sidebar-menu-item">
+                                        <a class="sidebar-menu-button" href="/Report/TrialStudents"> <span class="sidebar-menu-text">Trial Students Report</span> </a>
+                                    </li>
+                                    <li class="sidebar-menu-item">
+                                        <a class="sidebar-menu-button" href="/Admin/EnrollmentList"> <span class="sidebar-menu-text">Subscription Report</span> </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="sidebar-menu-item">
+                                <a class="sidebar-menu-button" href="/Enrollment/Blocking?Action=Reset">
+                                    <span class="material-icons sidebar-menu-icon sidebar-menu-icon--left">block</span>
+                                    <span class="sidebar-menu-text">Reset Password</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-menu-item">
+                                <a class="sidebar-menu-button" href="/Enrollment/Blocking?Action=verify">
+                                    <span class="material-icons sidebar-menu-icon sidebar-menu-icon--left">block</span>
+                                    <span class="sidebar-menu-text">Verify Email</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-menu-item">
+                                <a class="sidebar-menu-button" href="/Enrollment/Blocking?Action=ResetDev">
+                                    <span class="material-icons sidebar-menu-icon sidebar-menu-icon--left">block</span>
+                                    <span class="sidebar-menu-text">Reset Devices</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-menu-item">
+                                <a class="sidebar-menu-button" href="/Enrollment/Expiring">
+                                    <span class="material-icons sidebar-menu-icon sidebar-menu-icon--left">block</span>
+                                    <span class="sidebar-menu-text">Login Expire</span>
+                                </a>
+                            </li>
+
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <li class="sidebar-menu-item">
+                                    <a class="sidebar-menu-button" href="/Admin/InstructorsList">
+                                        <span class="material-icons sidebar-menu-icon sidebar-menu-icon--left">contacts</span>
+                                        <span class="sidebar-menu-text">Instructors List</span>
+                                    </a>
+                                </li>
+
+                                <li class="sidebar-menu-item">
+                                    <a class="sidebar-menu-button" href="/Admin/PartiallyRegistered">
+                                        <span class="material-icons sidebar-menu-icon sidebar-menu-icon--left">contacts</span>
+                                        <span class="sidebar-menu-text">Partially Registered</span>
+                                    </a>
+                                </li>
+
+                            }
+                        </ul>
+                    }
+
+                    @if (User.IsInRole("Admin") || User.IsInRole("Teacher") || User.IsInRole("Assistant"))
+                    {
+                        <div class="sidebar-heading">Question Bank</div>
+                        <ul class="sidebar-menu">
+
+                            <li class="sidebar-menu-item">
+                                <a class="sidebar-menu-button js-sidebar-collapse" data-toggle="collapse" href="#mcq_menu">
+                                    <span class="material-icons sidebar-menu-icon sidebar-menu-icon--left">school</span>
+                                    MCQs
+                                    <span class="ml-auto sidebar-menu-toggle-icon"></span>
+                                </a>
+                                <ul class="sidebar-submenu collapse sm-indent" id="mcq_menu">
+                                    <li class="sidebar-menu-item">
+                                        <a class="sidebar-menu-button" href="/Questions/Index?Type=@((int)QuestionType.Mcq)"> <span class="sidebar-menu-text">Add New MCQ</span> </a>
+                                    </li>
+                                    <li class="sidebar-menu-item">
+                                        <a class="sidebar-menu-button" href="/Questions/List?Type=@((int)QuestionType.Mcq)"> <span class="sidebar-menu-text">MCQs List</span> </a>
+                                    </li>
+
+                                    <li class="sidebar-menu-item">
+                                        <a class="sidebar-menu-button" href="/Questions/Import"> <span class="sidebar-menu-text">Import</span> </a>
+                                    </li>
+                                    <li class="sidebar-menu-item">
+                                        <a class="sidebar-menu-button" href="/Questions/ImportPdf" style="color: #2dce89; font-weight: bold;">
+                                            <span class="material-icons" style="font-size: 14px; margin-right: 5px;">auto_awesome</span>
+                                            <span class="sidebar-menu-text">New Upload System 2026</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+
+
+                            <li class="sidebar-menu-item">
+                                <a class="sidebar-menu-button js-sidebar-collapse" data-toggle="collapse" href="#paper_menu">
+                                    <span class="material-icons sidebar-menu-icon sidebar-menu-icon--left">school</span>
+                                    Question Paper
+                                    <span class="ml-auto sidebar-menu-toggle-icon"></span>
+                                </a>
+                                <ul class="sidebar-submenu collapse sm-indent" id="paper_menu">
+                                    <li class="sidebar-menu-item">
+                                        <a class="sidebar-menu-button" href="/QuestionPaper/Index"> <span class="sidebar-menu-text">Add New Q-Paper</span> </a>
+                                    </li>
+                                    <li class="sidebar-menu-item">
+                                        <a class="sidebar-menu-button" href="/QuestionPaper/List"> <span class="sidebar-menu-text">Q-Paper List</span> </a>
+                                    </li>
+                                    @*<li class="sidebar-menu-item">
+                                            <a class="sidebar-menu-button" href="/QuestionPaper/AllowReopen"> <span class="sidebar-menu-text">Allow Reopen Paper</span> </a>
+                                        </li>*@
+                                </ul>
+                            </li>
+
+
+
+                            <li class="sidebar-menu-item">
+                                <a class="sidebar-menu-button js-sidebar-collapse" data-toggle="collapse" href="#exam_menu">
+                                    <span class="material-icons sidebar-menu-icon sidebar-menu-icon--left">school</span>
+                                    Question Systems
+                                    <span class="ml-auto sidebar-menu-toggle-icon"></span>
+                                </a>
+                                <ul class="sidebar-submenu collapse sm-indent" id="exam_menu">
+                                    <li class="sidebar-menu-item">
+                                        <a class="sidebar-menu-button" href="/QuestionSystems/Index"> <span class="sidebar-menu-text">Add New</span> </a>
+                                    </li>
+                                    <li class="sidebar-menu-item">
+                                        <a class="sidebar-menu-button" href="/QuestionSystems/List"> <span class="sidebar-menu-text">System List</span> </a>
+                                    </li>
+                                    <li class="sidebar-menu-item">
+                                        <a class="sidebar-menu-button" href="/QuestionSystems/Settings"> <span class="sidebar-menu-text">Settings</span> </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="sidebar-menu-item">
+                                <a class="sidebar-menu-button js-sidebar-collapse" data-toggle="collapse" href="#partition_menu">
+                                    <span class="material-icons sidebar-menu-icon sidebar-menu-icon--left">school</span>
+                                    Question Partition
+                                    <span class="ml-auto sidebar-menu-toggle-icon"></span>
+                                </a>
+                                <ul class="sidebar-submenu collapse sm-indent" id="partition_menu">
+                                    <li class="sidebar-menu-item">
+                                        <a class="sidebar-menu-button" href="/QuestionPartition/Index"> <span class="sidebar-menu-text">Add New</span> </a>
+                                    </li>
+                                    <li class="sidebar-menu-item">
+                                        <a class="sidebar-menu-button" href="/QuestionPartition/List"> <span class="sidebar-menu-text">Partition List</span> </a>
+                                    </li>
+                                </ul>
+                            </li>
+
+                            @if (User.IsInRole("Admin") || User.IsInRole("Teacher"))
+                            {
+                                @*<li class="sidebar-menu-item">
+                                        <a class="sidebar-menu-button js-sidebar-collapse" data-toggle="collapse" href="#short_menu">
+                                            <span class="material-icons sidebar-menu-icon sidebar-menu-icon--left">school</span>
+                                            Short Question
+                                            <span class="ml-auto sidebar-menu-toggle-icon"></span>
+                                        </a>
+                                        <ul class="sidebar-submenu collapse sm-indent" id="short_menu">
+                                            <li class="sidebar-menu-item">
+                                                <a class="sidebar-menu-button" href="/Questions/Index?Type=@((int)QuestionType.Short)"> <span class="sidebar-menu-text">Add New short-Q</span> </a>
+                                            </li>
+                                            <li class="sidebar-menu-item">
+                                                <a class="sidebar-menu-button" href="/Questions/List?Type=@((int)QuestionType.Short)"> <span class="sidebar-menu-text">Short-Q List</span> </a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    <li class="sidebar-menu-item">
+                                        <a class="sidebar-menu-button js-sidebar-collapse" data-toggle="collapse" href="#long_menu">
+                                            <span class="material-icons sidebar-menu-icon sidebar-menu-icon--left">school</span>
+                                            Long Question
+                                            <span class="ml-auto sidebar-menu-toggle-icon"></span>
+                                        </a>
+                                        <ul class="sidebar-submenu collapse sm-indent" id="long_menu">
+                                            <li class="sidebar-menu-item">
+                                                <a class="sidebar-menu-button" href="/Questions/Index?Type=@((int)QuestionType.Long)"> <span class="sidebar-menu-text">Add New Long-Q</span> </a>
+                                            </li>
+                                            <li class="sidebar-menu-item">
+                                                <a class="sidebar-menu-button" href="/Questions/List?Type=@((int)QuestionType.Long)"> <span class="sidebar-menu-text">Long-Q List</span> </a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    <li class="sidebar-menu-item">
+                                        <a class="sidebar-menu-button js-sidebar-collapse" data-toggle="collapse" href="#exam_menu">
+                                            <span class="material-icons sidebar-menu-icon sidebar-menu-icon--left">school</span>
+                                            Exam
+                                            <span class="ml-auto sidebar-menu-toggle-icon"></span>
+                                        </a>
+                                        <ul class="sidebar-submenu collapse sm-indent" id="exam_menu">
+                                            <li class="sidebar-menu-item">
+                                                <a class="sidebar-menu-button" href="/Exam/Index"> <span class="sidebar-menu-text">Add New Exam</span> </a>
+                                            </li>
+                                            <li class="sidebar-menu-item">
+                                                <a class="sidebar-menu-button" href="/Exam/List"> <span class="sidebar-menu-text">Exam List</span> </a>
+                                            </li>
+                                        </ul>
+                                    </li>*@
+                            }
+                        </ul>
+                    }
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <div class="sidebar-heading">Manage</div>
+                        <ul class="sidebar-menu">
+
+
+                            <li class="sidebar-menu-item">
+                                <a class="sidebar-menu-button js-sidebar-collapse" data-toggle="collapse" href="#agent_menu">
+                                    <span class="material-icons sidebar-menu-icon sidebar-menu-icon--left">school</span>
+                                    Support Agent
+                                    <span class="ml-auto sidebar-menu-toggle-icon"></span>
+                                </a>
+                                <ul class="sidebar-submenu collapse sm-indent" id="agent_menu">
+                                    <li class="sidebar-menu-item">
+                                        <a class="sidebar-menu-button" href="/Account/RegisterSuppAgent"> <span class="sidebar-menu-text">Add New Supp. Agent</span> </a>
+                                    </li>
+                                    <li class="sidebar-menu-item">
+                                        <a class="sidebar-menu-button" href="/Admin/SuppAgentList"> <span class="sidebar-menu-text">Supp. Agent List</span> </a>
+                                    </li>
+                                    <li class="sidebar-menu-item">
+                                        <a class="sidebar-menu-button" href="/General/AgentCategory"> <span class="sidebar-menu-text">Supp. Agent Categories</span> </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="sidebar-menu-item">
+                                <a class="sidebar-menu-button js-sidebar-collapse" data-toggle="collapse" href="#faq_menu">
+                                    <span class="material-icons sidebar-menu-icon sidebar-menu-icon--left">school</span>
+                                    FAQs
+                                    <span class="ml-auto sidebar-menu-toggle-icon"></span>
+                                </a>
+                                <ul class="sidebar-submenu collapse sm-indent" id="faq_menu">
+                                    <li class="sidebar-menu-item">
+                                        <a class="sidebar-menu-button" href="/Questions/FaqIndex"> <span class="sidebar-menu-text">Add New FAQ</span> </a>
+                                    </li>
+                                    <li class="sidebar-menu-item">
+                                        <a class="sidebar-menu-button" href="/Questions/FaqList"> <span class="sidebar-menu-text">FAQs List</span> </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="sidebar-menu-item">
+                                <a class="sidebar-menu-button js-sidebar-collapse" data-toggle="collapse" href="#tut_menu">
+                                    <span class="material-icons sidebar-menu-icon sidebar-menu-icon--left">school</span>
+                                    Tutorials
+                                    <span class="ml-auto sidebar-menu-toggle-icon"></span>
+                                </a>
+                                <ul class="sidebar-submenu collapse sm-indent" id="tut_menu">
+                                    <li class="sidebar-menu-item">
+                                        <a class="sidebar-menu-button" href="/Tutorials/Index"> <span class="sidebar-menu-text">Add New Tutorial</span> </a>
+                                    </li>
+                                    <li class="sidebar-menu-item">
+                                        <a class="sidebar-menu-button" href="/Tutorials/List"> <span class="sidebar-menu-text">Tutorials List</span> </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="sidebar-menu-item">
+                                <a class="sidebar-menu-button js-sidebar-collapse" data-toggle="collapse" href="#tra_menu">
+                                    <span class="material-icons sidebar-menu-icon sidebar-menu-icon--left">school</span>
+                                    Trial Videos
+                                    <span class="ml-auto sidebar-menu-toggle-icon"></span>
+                                </a>
+                                <ul class="sidebar-submenu collapse sm-indent" id="tra_menu">
+                                    <li class="sidebar-menu-item">
+                                        <a class="sidebar-menu-button" href="@Url.Action("VideoIndex","Course",new {id=0,SectionFid = 0,ContentType=4 })"> <span class="sidebar-menu-text">Add Trial Video</span> </a>
+                                    </li>
+                                    <li class="sidebar-menu-item">
+                                        <a class="sidebar-menu-button" href="/Tutorials/TrialList"> <span class="sidebar-menu-text">Trial Video List</span> </a>
+                                    </li>
+                                </ul>
+                            </li>
+
+                            <li class="sidebar-menu-item">
+                                <a class="sidebar-menu-button" href="/Notification/MessageIndex">
+                                    <span class="material-icons sidebar-menu-icon sidebar-menu-icon--left">photo_library</span>
+                                    <span class="sidebar-menu-text">Popup Slides</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-menu-item">
+                                <a class="sidebar-menu-button" href="/Reminder/Index">
+                                    <span class="material-icons sidebar-menu-icon sidebar-menu-icon--left">school</span>
+                                    <span class="sidebar-menu-text">Task Reminder</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-menu-item">
+                                <a class="sidebar-menu-button" href="/QuestionPaper/CommentList">
+                                    <span class="material-icons sidebar-menu-icon sidebar-menu-icon--left">school</span>
+                                    <span class="sidebar-menu-text">Approve Comments</span>
+                                </a>
+                            </li>
+                        </ul>
+                    }
+
+                    @if (User.IsInRole("Admin") || User.IsInRole("Teacher"))
+                    {
+                        <div class="sidebar-heading">Communication</div>
+                        <ul class="sidebar-menu">
+
+                            <li class="sidebar-menu-item">
+                                <a class="sidebar-menu-button" href="/Notification/List">
+                                    <span class="material-icons sidebar-menu-icon sidebar-menu-icon--left">notifications_none</span>
+                                    <span class="sidebar-menu-text">Notification</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-menu-item">
+                                <a class="sidebar-menu-button js-sidebar-collapse" data-toggle="collapse" href="#email_marketing_menu">
+                                    <span class="material-icons sidebar-menu-icon sidebar-menu-icon--left">email</span>
+                                    Email Marketing
+                                    <span class="ml-auto sidebar-menu-toggle-icon"></span>
+                                </a>
+                                <ul class="sidebar-submenu collapse sm-indent" id="email_marketing_menu">
+                                    <li class="sidebar-menu-item">
+                                        <a class="sidebar-menu-button" href="/Communication/Index"> <span class="sidebar-menu-text">Campaigns</span> </a>
+                                    </li>
+                                    <li class="sidebar-menu-item">
+                                        <a class="sidebar-menu-button" href="/Communication/Create"> <span class="sidebar-menu-text">New Campaign</span> </a>
+                                    </li>
+                                    <li class="sidebar-menu-item">
+                                        <a class="sidebar-menu-button" href="/Communication/Templates"> <span class="sidebar-menu-text">Templates</span> </a>
+                                    </li>
+                                    <li class="sidebar-menu-item">
+                                        <a class="sidebar-menu-button" href="/Communication/Audiences"> <span class="sidebar-menu-text">Audiences</span> </a>
+                                    </li>
+                                    @if (User.IsInRole("Admin"))
+                                    {
+                                        <li class="sidebar-menu-item">
+                                            <a class="sidebar-menu-button" href="/Communication/Senders"> <span class="sidebar-menu-text">Sender Accounts</span> </a>
+                                        </li>
+                                    }
+                                    <li class="sidebar-menu-item">
+                                        <a class="sidebar-menu-button" href="/Communication/Drips"> <span class="sidebar-menu-text">Automations</span> </a>
+                                    </li>
+                                    <li class="sidebar-menu-item">
+                                        <a class="sidebar-menu-button" href="/Communication/Unsubscribes"> <span class="sidebar-menu-text">Unsubscribes</span> </a>
+                                    </li>
+                                </ul>
+                            </li>
+
+                            <li class="sidebar-menu-item">
+                                <a class="sidebar-menu-button js-sidebar-collapse" data-toggle="collapse" href="#meet_menu">
+                                    <span class="material-icons sidebar-menu-icon sidebar-menu-icon--left">school</span>
+                                    Live Classes
+                                    <span class="ml-auto sidebar-menu-toggle-icon"></span>
+                                </a>
+                                <ul class="sidebar-submenu collapse sm-indent" id="meet_menu">
+                                    <li class="sidebar-menu-item">
+                                        <a class="sidebar-menu-button" href="/Zoom/CreateMeeting"> <span class="sidebar-menu-text">Add New Live Class</span> </a>
+                                    </li>
+                                    <li class="sidebar-menu-item">
+                                        <a class="sidebar-menu-button" href="/Zoom/ListMeeting"> <span class="sidebar-menu-text">Live Class List</span> </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="sidebar-menu-item">
+                                <a class="sidebar-menu-button js-sidebar-collapse" data-toggle="collapse" href="#chat_menu">
+                                    <span class="material-icons sidebar-menu-icon sidebar-menu-icon--left">school</span>
+                                    Chat
+                                    <span class="ml-auto sidebar-menu-toggle-icon"></span>
+                                </a>
+                                <ul class="sidebar-submenu collapse sm-indent" id="chat_menu">
+                                    <li class="sidebar-menu-item">
+                                        <a class="sidebar-menu-button" href="/Chat/GroupList"> <span class="sidebar-menu-text">Group List</span> </a>
+                                    </li>
+                                    <li class="sidebar-menu-item">
+                                        <a class="sidebar-menu-button" href="/Chat/GroupIndex"> <span class="sidebar-menu-text">Add New Group</span> </a>
+                                    </li>
+                                    <li class="sidebar-menu-item">
+                                        <a class="sidebar-menu-button" href="/Chat/FriendList"> <span class="sidebar-menu-text">Friends List</span> </a>
+                                    </li>
+                                    <li class="sidebar-menu-item">
+                                        <a class="sidebar-menu-button" href="/Chat/Index"> <span class="sidebar-menu-text">Conversations</span> </a>
+                                    </li>
+                                </ul>
+                            </li>
+
+                        </ul>
+                    }
+
+                    @if (User.IsInRole("Admin") || User.IsInRole("Teacher"))
+                    {
+                        <div class="sidebar-heading">Extras</div>
+
+                        <ul class="sidebar-menu">
+                            <li class="sidebar-menu-item">
+                                <a class="sidebar-menu-button" href="/StudentGroup/List">
+                                    <span class="sidebar-menu-icon sidebar-menu-icon--left"><i class="fa fa-users"></i></span>
+                                    <span class="sidebar-menu-text">Students Groups</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-menu-item">
+                                <a class="sidebar-menu-button" href="/Blogs/BlogPost/List">
+                                    <span class="material-icons sidebar-menu-icon sidebar-menu-icon--left">school</span>
+                                    <span class="sidebar-menu-text">Blogs</span>
+                                </a>
+                            </li>
+                        </ul>
+                    }
+
+                    @* Ambassador Program Section *@
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <div class="sidebar-heading">Ambassador Program</div>
+                        <ul class="sidebar-menu">
+                            <li class="sidebar-menu-item">
+                                <a class="sidebar-menu-button" href="@Url.Action("Index", "Admin", new { area = "Ambassador" })">
+                                    <span class="material-icons sidebar-menu-icon sidebar-menu-icon--left">dashboard</span>
+                                    <span class="sidebar-menu-text">Ambassador Dashboard</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-menu-item">
+                                <a class="sidebar-menu-button js-sidebar-collapse" data-toggle="collapse" href="#ambassador_menu">
+                                    <span class="material-icons sidebar-menu-icon sidebar-menu-icon--left">people</span>
+                                    Ambassadors
+                                    <span class="ml-auto sidebar-menu-toggle-icon"></span>
+                                </a>
+                                <ul class="sidebar-submenu collapse sm-indent" id="ambassador_menu">
+                                    <li class="sidebar-menu-item">
+                                        <a class="sidebar-menu-button" href="@Url.Action("Ambassadors", "Admin", new { area = "Ambassador" })">
+                                            <span class="sidebar-menu-text">All Ambassadors</span>
+                                        </a>
+                                    </li>
+                                    <li class="sidebar-menu-item">
+                                        <a class="sidebar-menu-button" href="@Url.Action("Applications", "Admin", new { area = "Ambassador" })">
+                                            <span class="sidebar-menu-text">Pending Applications</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="sidebar-menu-item">
+                                <a class="sidebar-menu-button" href="@Url.Action("Payouts", "Admin", new { area = "Ambassador" })">
+                                    <span class="material-icons sidebar-menu-icon sidebar-menu-icon--left">payments</span>
+                                    <span class="sidebar-menu-text">Payout Requests</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-menu-item">
+                                <a class="sidebar-menu-button" href="@Url.Action("Rules", "Admin", new { area = "Ambassador" })">
+                                    <span class="material-icons sidebar-menu-icon sidebar-menu-icon--left">rule</span>
+                                    <span class="sidebar-menu-text">Commission Rules</span>
+                                </a>
+                            </li>
+                        </ul>
+                    }
+                </div>
+            </div>
+        </div>

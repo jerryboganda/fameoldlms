@@ -1,0 +1,401 @@
+@model First_Aid_Made_Easy.Models.Certificate.GoogleSheetDataVM
+@{
+    ViewBag.Title = "Google Sheet Data";
+    Layout = "~/Views/Shared/_LayoutTeacher.cshtml";
+}
+
+@section styles {
+<style>
+    .gs-page { max-width: 100%; margin: 0; padding: 20px 16px; }
+
+    .gs-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 16px;
+    }
+    .gs-header h4 { margin: 0; font-weight: 700; color: #1E293B; font-size: 18px; }
+    .gs-header p { margin: 2px 0 0; color: #94A3B8; font-size: 12px; }
+
+    .gs-stats {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 16px;
+    }
+    .gs-stat-card {
+        background: #fff;
+        border: 1px solid #E2E8F0;
+        border-radius: 8px;
+        padding: 12px 20px;
+        text-align: center;
+    }
+    .gs-stat-card .stat-num { font-size: 24px; font-weight: 800; color: #0F766E; }
+    .gs-stat-card .stat-label { font-size: 10px; font-weight: 600; color: #94A3B8; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    .gs-table-wrap {
+        background: #fff;
+        border: 1px solid #E2E8F0;
+        border-radius: 10px;
+        padding: 12px;
+    }
+
+    /* DataTable styles */
+    #gsTable { width: 100% !important; }
+    #gsTable thead th {
+        background: #F8FAFC;
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #64748B;
+        padding: 8px 8px;
+        border-bottom: 2px solid #E2E8F0;
+        white-space: nowrap;
+    }
+    #gsTable tbody td {
+        padding: 6px 8px;
+        font-size: 12px;
+        color: #334155;
+        border-bottom: 1px solid #F1F5F9;
+        vertical-align: middle;
+        max-width: 180px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    #gsTable tbody tr:hover { background: #F0FDFA; }
+
+    /* Name & email stacked cell */
+    .cell-name { font-weight: 600; color: #1E293B; font-size: 12px; }
+    .cell-email { font-size: 11px; color: #64748B; }
+    .cell-phone { font-size: 11px; color: #64748B; }
+    .cell-uni { font-size: 11px; color: #475569; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    /* Status badges */
+    .st-badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 700; }
+    .st-nofile { background: #FEF2F2; color: #DC2626; }
+    .st-sent { background: #DCFCE7; color: #16A34A; }
+    .st-empty { background: #F1F5F9; color: #94A3B8; }
+
+    /* Action button */
+    .btn-up {
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
+        background: #0F766E;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        padding: 4px 10px;
+        font-size: 11px;
+        font-weight: 600;
+        cursor: pointer;
+        white-space: nowrap;
+    }
+    .btn-up:hover { background: #0D6E67; }
+    .btn-up .material-icons { font-size: 14px; }
+
+    .btn-refresh {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        background: #0F766E;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        padding: 6px 14px;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+    }
+    .btn-refresh:hover { background: #0D6E67; color: #fff; text-decoration: none; }
+
+    .gs-error {
+        background: #FEF2F2;
+        border: 1px solid #FECACA;
+        border-radius: 10px;
+        padding: 20px;
+        color: #DC2626;
+        text-align: center;
+    }
+
+    /* DataTable controls */
+    .dataTables_wrapper .dataTables_filter input {
+        border: 1px solid #E2E8F0;
+        border-radius: 6px;
+        padding: 4px 10px;
+        font-size: 12px;
+    }
+    .dataTables_wrapper .dataTables_length select {
+        border: 1px solid #E2E8F0;
+        border-radius: 4px;
+        padding: 2px 6px;
+        font-size: 12px;
+    }
+</style>
+}
+
+<div class="gs-page">
+    <div class="gs-header">
+        <div>
+            <h4>
+                <span class="material-icons" style="font-size:22px; vertical-align:middle; color:#0F766E; margin-right:4px;">table_chart</span>
+                @(string.IsNullOrEmpty(Model.SheetName) ? "Google Sheet Data" : Model.SheetName)
+            </h4>
+            <p>
+                @if (Model.FetchedAt.HasValue) { <span>Fetched: @Model.FetchedAt.Value.ToString("MMM dd, yyyy h:mm tt")</span> }
+            </p>
+        </div>
+        <div style="display:flex; gap:8px;">
+            <a href="@Url.Action("GoogleSheetData", "Admin", new { area = "Certificate", id = Model.SheetDbId })" class="btn-refresh">
+                <span class="material-icons" style="font-size:14px;">refresh</span> Refresh
+            </a>
+            <a href="@Url.Action("GoogleSheets", "Admin", new { area = "Certificate" })" class="btn btn-outline-secondary btn-sm" style="font-size:11px;">
+                <span class="material-icons" style="font-size:14px; vertical-align:middle;">arrow_back</span> All Sheets
+            </a>
+        </div>
+    </div>
+
+    @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+    {
+        <div class="gs-error">
+            <span class="material-icons" style="font-size:32px;">error_outline</span>
+            <h5>@Model.ErrorMessage</h5>
+        </div>
+    }
+    else if (Model.Rows.Any())
+    {
+        @* Find column indexes by header name *@
+        var hdr = Model.Headers.Select((h, i) => new { h = h.Trim(), i }).ToList();
+        var iSr = hdr.FirstOrDefault(x => x.h.StartsWith("Sr"))?.i ?? -1;
+        var iName = hdr.FirstOrDefault(x => x.h == "Name")?.i ?? -1;
+        var iPhone = hdr.FirstOrDefault(x => x.h == "Phone")?.i ?? -1;
+        var iEmail = hdr.FirstOrDefault(x => x.h == "Email")?.i ?? -1;
+        var iUni = hdr.FirstOrDefault(x => x.h.Contains("College") || x.h.Contains("University"))?.i ?? -1;
+        var iStudyYr = hdr.FirstOrDefault(x => x.h.Contains("Study year"))?.i ?? -1;
+        var iGradYr = hdr.FirstOrDefault(x => x.h.Contains("Graduation"))?.i ?? -1;
+        var iHospital = hdr.FirstOrDefault(x => x.h == "Hospital")?.i ?? -1;
+        var iResearch = hdr.FirstOrDefault(x => x.h.Contains("Research"))?.i ?? -1;
+        var iPub = hdr.FirstOrDefault(x => x.h.Contains("Publication"))?.i ?? -1;
+        var iStatus = hdr.FirstOrDefault(x => x.h.Contains("Email Status"))?.i ?? -1;
+        var iTimestamp = hdr.FirstOrDefault(x => x.h == "Timestamp")?.i ?? -1;
+
+        Func<List<string>, int, string> cell = (row, idx) => idx >= 0 && idx < row.Count ? row[idx] : "";
+
+        <div class="gs-stats">
+            <div class="gs-stat-card">
+                <div class="stat-num">@Model.TotalRecords</div>
+                <div class="stat-label">Total Records</div>
+            </div>
+        </div>
+
+        <div class="gs-table-wrap">
+            <table id="gsTable" class="display" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Phone</th>
+                        <th>Email</th>
+                        <th>University / Hospital</th>
+                        <th>Year</th>
+                        <th>Research</th>
+                        <th>Status</th>
+                        <th style="text-align:center;">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var row in Model.Rows)
+                    {
+                        var sr = cell(row, iSr);
+                        var name = cell(row, iName);
+                        var phone = cell(row, iPhone);
+                        var email = cell(row, iEmail);
+                        var uni = cell(row, iUni);
+                        var hospital = cell(row, iHospital);
+                        var studyYr = cell(row, iStudyYr);
+                        var gradYr = cell(row, iGradYr);
+                        var research = cell(row, iResearch);
+                        var pub = cell(row, iPub);
+                        var status = cell(row, iStatus).Trim();
+
+                        <tr>
+                            <td style="color:#94A3B8; font-size:11px; width:35px;">@sr</td>
+                            <td>
+                                <div class="cell-name" title="@name">@name</div>
+                            </td>
+                            <td><span class="cell-phone">@phone</span></td>
+                            <td><span class="cell-email" title="@email">@email</span></td>
+                            <td>
+                                <div class="cell-uni" title="@uni / @hospital">
+                                    @if (!string.IsNullOrEmpty(uni)) { @uni }
+                                    @if (!string.IsNullOrEmpty(uni) && !string.IsNullOrEmpty(hospital)) { <br /> }
+                                    @if (!string.IsNullOrEmpty(hospital)) { <small style="color:#94A3B8;">@hospital</small> }
+                                </div>
+                            </td>
+                            <td style="font-size:11px;">
+                                @if (!string.IsNullOrEmpty(studyYr)) { <span>@studyYr</span> }
+                                @if (!string.IsNullOrEmpty(gradYr)) { <span style="color:#94A3B8;"> / @gradYr</span> }
+                            </td>
+                            <td style="font-size:11px; max-width:100px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="@research @pub">
+                                @if (!string.IsNullOrEmpty(research)) { @research }
+                                @if (!string.IsNullOrEmpty(pub) && pub.ToLower() != "no") { <br /><small>Pub: @pub</small> }
+                            </td>
+                            <td>
+                                @if (status.Equals("NoFile", StringComparison.OrdinalIgnoreCase))
+                                {
+                                    <span class="st-badge st-nofile">NoFile</span>
+                                }
+                                else if (!string.IsNullOrEmpty(status))
+                                {
+                                    <span class="st-badge st-sent">@status</span>
+                                }
+                                else
+                                {
+                                    <span class="st-badge st-empty">--</span>
+                                }
+                            </td>
+                            <td style="text-align:center; width:80px;">
+                                <button type="button" class="btn-up btn-gs-upload"
+                                        data-name="@name"
+                                        data-email="@email"
+                                        data-phone="@phone"
+                                        data-uni="@uni">
+                                    <span class="material-icons">upload_file</span> Upload
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div style="text-align:center; padding:60px 20px;">
+            <span class="material-icons" style="font-size:56px; color:#CBD5E1;">cloud_off</span>
+            <h5 style="color:#64748B; margin-top:12px;">No data available</h5>
+        </div>
+    }
+</div>
+
+@section modals {
+<!-- Upload Certificate Modal (outside drawer layout) -->
+<div class="modal fade" id="gsUploadModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content" style="border:none; box-shadow:0 10px 40px rgba(0,0,0,0.2); border-radius:10px;">
+            <div class="modal-header" style="background:#0F766E; color:#fff; border-radius:10px 10px 0 0;">
+                <h5 class="modal-title" style="font-weight:700; font-size:16px;">
+                    <span class="material-icons" style="font-size:20px; vertical-align:middle; margin-right:6px;">upload_file</span>
+                    Upload Certificate
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" style="color:#fff; opacity:0.8; text-shadow:none;">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <form id="gsUploadForm" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+                <div class="modal-body" style="padding:24px;">
+                    <div class="form-group">
+                        <label style="font-size:11px; font-weight:700; color:#64748B; text-transform:uppercase;">Student Name</label>
+                        <input type="text" id="gsModalName" class="form-control form-control-sm" readonly style="background:#F8FAFC;" />
+                    </div>
+                    <div class="form-group">
+                        <label style="font-size:11px; font-weight:700; color:#64748B; text-transform:uppercase;">Student Email</label>
+                        <input type="text" id="gsModalEmail" class="form-control form-control-sm" readonly style="background:#F8FAFC;" />
+                    </div>
+                    <div class="form-group">
+                        <label style="font-size:11px; font-weight:700; color:#64748B; text-transform:uppercase;">Certificate Title <small style="text-transform:none; color:#94A3B8;">(optional)</small></label>
+                        <input type="text" name="title" id="gsModalTitle" class="form-control form-control-sm" placeholder="e.g. Research Training Certificate" />
+                    </div>
+                    <div class="form-group">
+                        <label style="font-size:11px; font-weight:700; color:#64748B; text-transform:uppercase;">Certificate PDF <span style="color:#DC2626;">*</span></label>
+                        <input type="file" name="certificateFile" id="gsModalFile" class="form-control-file" accept=".pdf" required />
+                        <small style="font-size:11px; color:#94A3B8;">Only PDF files up to 10 MB</small>
+                    </div>
+                    <input type="hidden" name="email" id="gsModalEmailHidden" />
+                    <input type="hidden" name="learnerName" id="gsModalNameHidden" />
+                </div>
+                <div class="modal-footer" style="border-top:none; padding-top:0;">
+                    <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-sm" id="gsUploadBtn" style="background:#0F766E; color:#fff; font-weight:600;">
+                        <span class="material-icons" style="font-size:16px; vertical-align:middle;">cloud_upload</span> Upload
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+}
+
+@section scripts {
+<script>
+    $(function () {
+        // Initialize DataTable
+        if ($('#gsTable').length && $.fn.DataTable) {
+            $('#gsTable').DataTable({
+                pageLength: 50,
+                order: [[0, 'asc']],
+                scrollX: false,
+                autoWidth: false,
+                columnDefs: [
+                    { width: '35px', targets: 0 },
+                    { width: '80px', targets: 8, orderable: false, searchable: false }
+                ],
+                dom: '<"row"<"col-sm-6"l><"col-sm-6"f>>rtip',
+                language: {
+                    searchPlaceholder: 'Search...',
+                    lengthMenu: 'Show _MENU_'
+                }
+            });
+        }
+
+        // Open Upload modal
+        $(document).on('click', '.btn-gs-upload', function () {
+            var btn = $(this);
+            var name = btn.data('name');
+            var email = btn.data('email');
+            $('#gsModalName').val(name);
+            $('#gsModalEmail').val(email);
+            $('#gsModalNameHidden').val(name);
+            $('#gsModalEmailHidden').val(email);
+            $('#gsModalTitle').val('');
+            $('#gsModalFile').val('');
+            $('#gsUploadModal').modal('show');
+        });
+
+        // Submit upload
+        $('#gsUploadForm').on('submit', function (e) {
+            e.preventDefault();
+            var fd = new FormData(this);
+            var btn = $('#gsUploadBtn');
+            btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span> Uploading...');
+
+            $.ajax({
+                url: '@Url.Action("UploadCertificateByEmail", "Admin", new { area = "Certificate" })',
+                type: 'POST',
+                data: fd,
+                processData: false,
+                contentType: false,
+                success: function (res) {
+                    btn.prop('disabled', false).html('<span class="material-icons" style="font-size:16px;vertical-align:middle;">cloud_upload</span> Upload');
+                    if (res.success) {
+                        $('#gsUploadModal').modal('hide');
+                        toastr.success(res.message || 'Certificate uploaded!', 'Success');
+                    } else {
+                        toastr.error(res.message || 'Upload failed.', 'Error');
+                    }
+                },
+                error: function () {
+                    btn.prop('disabled', false).html('<span class="material-icons" style="font-size:16px;vertical-align:middle;">cloud_upload</span> Upload');
+                    toastr.error('An error occurred. Please try again.', 'Error');
+                }
+            });
+        });
+    });
+</script>
+}

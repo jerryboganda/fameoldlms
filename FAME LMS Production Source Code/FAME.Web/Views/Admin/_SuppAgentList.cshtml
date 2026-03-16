@@ -1,0 +1,34 @@
+﻿@model IEnumerable<First_Aid_Made_Easy.DAL.sp_GetUsersListByRole_Result>
+@{
+    int Sr = 0;
+}
+
+<table style="width:100% !important" id="DTable" class="table table-bordered">
+    <thead>
+        <tr style="background-color: #364e9c">
+            <th>Sr.</th>
+            <th>Name</th>
+            <th>Email </th>
+            <th>Category</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var i in Model)
+        {
+            Sr++;
+            <tr>
+                <td>@Sr</td>
+                <td>@(i.Name)</td>
+                <td>@i.Email </td>
+                <td>@i.Category</td>
+                <td>@(i.IsActive ? "Active" : "InActive")</td>
+                <td>
+                    <a href="javascript:;" id="btnStatus" data-newstatus="@(i.IsActive ? "false" : "true")" data-id="@i.ID" class="text-info">@(i.IsActive ? "InActive" : "Active")</a>
+                    <a href="javascript:;" id="btnRowDelete" data-url="/Enrollment/DeleteRequest/@i.ID" data-name="Agent" class="text-danger"><i class="fa fa-trash Font20"></i></a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

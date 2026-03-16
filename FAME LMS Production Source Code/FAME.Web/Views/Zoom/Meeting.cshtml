@@ -1,0 +1,25 @@
+﻿
+@{
+    ViewBag.Title = "Zoom WebSDK";
+    Layout = "~/Views/Shared/_LayoutNew.cshtml";
+    string version = "2.5.0";
+}
+
+
+
+@section scripts {
+
+    <!-- For Component and Client View -->
+    <script src="https://source.zoom.us/@(version)/lib/vendor/react.min.js"></script>
+    <script src="https://source.zoom.us/@(version)/lib/vendor/react-dom.min.js"></script>
+    <script src="https://source.zoom.us/@(version)/lib/vendor/redux.min.js"></script>
+    <script src="https://source.zoom.us/@(version)/lib/vendor/redux-thunk.min.js"></script>
+    <script src="https://source.zoom.us/@(version)/lib/vendor/lodash.min.js"></script>
+
+    <!-- For Client View -->
+    <script src="https://source.zoom.us/zoom-meeting-@(version).min.js"></script>
+    <script src="~/Scripts/js/tool.js"></script>
+    <script src="~/Scripts/js/vconsole.min.js"></script>
+    <script src="~/Scripts/js/meeting.js?v=1"></script>
+
+}

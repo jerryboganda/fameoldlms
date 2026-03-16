@@ -1,0 +1,554 @@
+@model First_Aid_Made_Easy.Models.AmbassadorRegistrationVM
+@{
+
+    ViewBag.Title = "Ambassador Application | FAME Elite";
+    Layout = "";
+    
+    // Elite Academic Palette
+    var colorNavy = "#1E293B";
+    var colorTeal = "#0F766E";
+    var colorTealLight = "#F0FDFA";
+    var colorSlate = "#64748B";
+    var colorBorder = "#E2E8F0";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@ViewBag.Title</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+<style>
+    /* -----------------------------------------------------------------
+       PHASE 2.1: HIGH DENSITY CONSOLE THEME (ROBUST)
+       Fixes: Global CSS bleed (bullets, grid collapse, flex failures)
+    ----------------------------------------------------------------- */
+
+    :root {
+        --elite-navy: @colorNavy;
+        --elite-teal: @colorTeal;
+        --elite-teal-hover: #0d625c;
+        --elite-teal-light: @colorTealLight;
+        --elite-slate: @colorSlate;
+        --elite-border: @colorBorder;
+        --elite-white: #FFFFFF;
+        --elite-bg: #F8FAFC;
+        --elite-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    /* Standalone Page */
+
+    body {
+        background-color: var(--elite-bg);
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        color: var(--elite-navy);
+    }
+
+    /* Page Wrapper */
+    .elite-console-wrapper {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 20px;
+    }
+
+    /* THE CONSOLE CARD */
+    .elite-console {
+        display: grid;
+        grid-template-columns: 1.4fr 1fr; /* 60/40 Split */
+        background: var(--elite-white);
+        border-radius: 16px;
+        box-shadow: var(--elite-shadow-lg);
+        max-width: 1100px;
+        width: 100%;
+        overflow: hidden;
+        border: 1px solid var(--elite-border);
+    }
+
+    /* LEFT ZONE: APPLICATION FORM */
+    .console-form-zone {
+        padding: 48px;
+    }
+
+    .console-header {
+        margin-bottom: 32px;
+        border-bottom: 2px solid var(--elite-bg);
+        padding-bottom: 24px;
+    }
+
+    .console-header h1 {
+        font-size: 1.75rem;
+        font-weight: 800;
+        color: var(--elite-navy);
+        margin-bottom: 8px;
+        letter-spacing: -0.02em;
+    }
+
+    .console-header p {
+        color: var(--elite-slate);
+        font-size: 0.95rem;
+        margin: 0;
+    }
+
+    /* High Density Form Grid */
+    .density-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+    .col-span-2 { grid-column: span 2; }
+
+    .input-group-elite {
+        position: relative;
+    }
+
+    .input-group-elite label {
+        display: block;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        font-weight: 700;
+        color: var(--elite-slate);
+        margin-bottom: 6px;
+    }
+
+    /* Icon Integration */
+    .input-icon-wrapper {
+        position: relative;
+    }
+
+    .input-icon {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--elite-slate);
+        font-size: 18px;
+        pointer-events: none;
+        transition: color 0.2s;
+    }
+
+    .elite-input {
+        width: 100%;
+        padding: 10px 12px 10px 40px; /* Space for icon */
+        border: 1px solid var(--elite-border);
+        border-radius: 8px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: var(--elite-navy);
+        transition: all 0.2s;
+        background: #F8FAFC;
+    }
+
+    .elite-input:focus {
+        outline: none;
+        background: #fff;
+        border-color: var(--elite-teal);
+        box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.1);
+    }
+
+    .elite-input:focus + .input-icon {
+        color: var(--elite-teal);
+    }
+
+    .elite-textarea {
+        min-height: 80px;
+        resize: vertical;
+        padding-left: 12px;
+    }
+
+    /* Section dividers */
+    .form-divider {
+        grid-column: span 2;
+        display: flex;
+        align-items: center;
+        margin: 24px 0 16px;
+        color: var(--elite-navy);
+        font-weight: 700;
+        font-size: 0.85rem;
+    }
+
+    .divider-line {
+        flex: 1;
+        height: 1px;
+        background: var(--elite-border);
+        margin-left: 12px;
+    }
+
+    /* Actions */
+    .elite-btn-submit {
+        grid-column: span 2;
+        background: var(--elite-navy);
+        color: white;
+        border: none;
+        padding: 14px;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 1rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: all 0.2s;
+        margin-top: 20px;
+    }
+
+    .elite-btn-submit:hover {
+        background: #0f172a;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(30, 41, 59, 0.25);
+    }
+
+    /* ---- Validation Error Styles ---- */
+    .text-danger, .field-validation-error {
+        color: #DC2626 !important;
+        font-size: 0.8rem !important;
+        font-weight: 600 !important;
+        display: block !important;
+        margin-top: 4px !important;
+    }
+    .validation-summary-errors {
+        background: #FEF2F2 !important;
+        border: 1px solid #FECACA !important;
+        border-radius: 8px !important;
+        padding: 14px 18px !important;
+        margin-bottom: 20px !important;
+        color: #DC2626 !important;
+        font-size: 0.85rem !important;
+    }
+    .validation-summary-errors ul {
+        margin: 8px 0 0 !important;
+        padding-left: 18px !important;
+        list-style: disc !important;
+    }
+    .validation-summary-errors ul li {
+        margin-bottom: 4px !important;
+        list-style: disc !important;
+    }
+    .validation-summary-valid { display: none !important; }
+    .input-validation-error {
+        border-color: #DC2626 !important;
+        box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1) !important;
+    }
+
+    /* RIGHT ZONE: VALUE RAIL (ROBUST) */
+    .console-value-rail {
+        background: var(--elite-navy);
+        color: white;
+        padding: 48px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        background-image: linear-gradient(135deg, #1E293B 0%, #0F172A 100%);
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Stats Grid - Reinforced */
+    .live-stats {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 16px !important;
+        margin-bottom: 40px;
+    }
+
+    .stat-box {
+        background: rgba(255, 255, 255, 0.05) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        border-radius: 12px;
+        padding: 16px;
+        display: block !important;
+    }
+
+    .stat-val {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: var(--elite-teal);
+        display: block;
+    }
+    .stat-label {
+        font-size: 0.75rem;
+        opacity: 0.7;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: rgba(255, 255, 255, 0.8);
+    }
+
+    /* Benefits List - Reinforced */
+    .perk-list {
+        list-style: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    
+    .perk-list li {
+        list-style-type: none !important;
+        padding-left: 0 !important;
+    }
+
+    .perk-item {
+        display: flex !important;
+        align-items: flex-start !important;
+        margin-bottom: 24px;
+        background: none !important;
+    }
+
+    .perk-icon {
+        background: rgba(15, 118, 110, 0.2) !important;
+        color: #2DD4BF !important;
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 16px;
+        flex-shrink: 0;
+    }
+    
+    .perk-content {
+        flex: 1;
+    }
+
+    .perk-content h4 {
+        font-size: 0.95rem;
+        font-weight: 700;
+        margin: 0 0 4px;
+        color: white !important;
+    }
+
+    .perk-content p {
+        font-size: 0.85rem;
+        opacity: 0.7;
+        line-height: 1.4;
+        margin: 0;
+        color: rgba(255, 255, 255, 0.7);
+    }
+
+    .rail-header h3 {
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin-bottom: 24px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: white !important;
+    }
+
+    .rail-decoration {
+        position: absolute;
+        top: -100px;
+        right: -100px;
+        width: 300px;
+        height: 300px;
+        background: radial-gradient(circle, rgba(15, 118, 110, 0.15) 0%, rgba(255,255,255,0) 70%);
+        border-radius: 50%;
+    }
+    
+    .rail-footer {
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        padding-top: 24px;
+        font-size: 0.8rem;
+        opacity: 0.6;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    @@media (max-width: 900px) {
+        .elite-console { grid-template-columns: 1fr; }
+        .console-value-rail { order: -1; padding: 30px; }
+        .elite-console-wrapper { padding: 20px 10px; align-items: flex-start;}
+    }
+</style>
+
+<div class="elite-console-wrapper">
+    <div class="elite-console">
+        <!-- LEFT: FORM CONSOLE -->
+        <div class="console-form-zone">
+            <header class="console-header">
+                <h1>Ambassador Application</h1>
+                <p>Complete your profile to join the FAME Elite Network.</p>
+            </header>
+
+            @using (Html.BeginForm("Apply", "Profile", FormMethod.Post, new { id = "elite-console-form" }))
+            {
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary(true, "", new { @class = "alert alert-danger mb-4" })
+
+                <div class="density-grid">
+                    
+                    @if (!User.Identity.IsAuthenticated)
+                    {
+                        <div class="form-divider">
+                            <span class="material-icons" style="font-size:18px; margin-right:8px; color:var(--elite-teal);">account_circle</span>
+                            TYPE 1: ACCOUNT CREDENTIALS
+                            <div class="divider-line"></div>
+                        </div>
+
+                        <div class="input-group-elite col-span-2">
+                            <label>Full Legal Name</label>
+                            <div class="input-icon-wrapper">
+                                @Html.TextBoxFor(m => m.FullName, new { @class = "elite-input", placeholder = "Dr. Sarah Johnson" })
+                                <i class="material-icons input-icon">badge</i>
+                            </div>
+                            @Html.ValidationMessageFor(m => m.FullName, "", new { @class = "text-danger small" })
+                        </div>
+
+                        <div class="input-group-elite col-span-2">
+                            <label>Email Address</label>
+                            <div class="input-icon-wrapper">
+                                @Html.TextBoxFor(m => m.Email, new { @class = "elite-input", type="email", placeholder = "name@institution.edu" })
+                                <i class="material-icons input-icon">alternate_email</i>
+                            </div>
+                            @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger small" })
+                        </div>
+
+                        <div class="input-group-elite">
+                            <label>Password</label>
+                            <div class="input-icon-wrapper">
+                                @Html.PasswordFor(m => m.Password, new { @class = "elite-input", placeholder = "******" })
+                                <i class="material-icons input-icon">lock</i>
+                            </div>
+                            @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger small" })
+                        </div>
+
+                        <div class="input-group-elite">
+                            <label>Confirm</label>
+                            <div class="input-icon-wrapper">
+                                @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "elite-input", placeholder = "******" })
+                                <i class="material-icons input-icon">lock_open</i>
+                            </div>
+                            @Html.ValidationMessageFor(m => m.ConfirmPassword, "", new { @class = "text-danger small" })
+                        </div>
+                    }
+
+                    <div class="form-divider">
+                        <span class="material-icons" style="font-size:18px; margin-right:8px; color:var(--elite-teal);">work</span>
+                        @(User.Identity.IsAuthenticated ? "TYPE 1: PROFESSIONAL PROFILE" : "TYPE 2: PROFESSIONAL PROFILE")
+                        <div class="divider-line"></div>
+                    </div>
+
+                    <div class="input-group-elite">
+                        <label>Organization / Hospital</label>
+                        <div class="input-icon-wrapper">
+                            @Html.TextBoxFor(m => m.University, new { @class = "elite-input", placeholder = "St. Mary's Hospital" })
+                            <i class="material-icons input-icon">business</i>
+                        </div>
+                        @Html.ValidationMessageFor(m => m.University, "", new { @class = "text-danger small" })
+                    </div>
+
+                    <div class="input-group-elite">
+                        <label>Direct Phone</label>
+                        <div class="input-icon-wrapper">
+                            @Html.TextBoxFor(m => m.PhoneNumber, new { @class = "elite-input", placeholder = "+92 300 ..." })
+                            <i class="material-icons input-icon">phone</i>
+                        </div>
+                        @Html.ValidationMessageFor(m => m.PhoneNumber, "", new { @class = "text-danger small" })
+                    </div>
+
+                    <div class="input-group-elite col-span-2">
+                        <label>Country</label>
+                        <div class="input-icon-wrapper">
+                            @Html.TextBoxFor(m => m.Country, new { @class = "elite-input", placeholder = "Pakistan" })
+                            <i class="material-icons input-icon">public</i>
+                        </div>
+                        @Html.ValidationMessageFor(m => m.Country, "", new { @class = "text-danger small" })
+                    </div>
+
+                    <div class="input-group-elite col-span-2">
+                        <label>Application Statement</label>
+                        @Html.TextAreaFor(m => m.ApplicationNotes, new { @class = "elite-input elite-textarea", placeholder = "Briefly describe your sphere of influence and clinical network..." })
+                        @Html.ValidationMessageFor(m => m.ApplicationNotes, "", new { @class = "text-danger small" })
+                    </div>
+
+                    <div class="col-span-2 mt-2">
+                        <div class="custom-control custom-checkbox">
+                            @Html.CheckBoxFor(m => m.AcceptTerms, new { @class = "custom-control-input", id = "eliteTerms" })
+                            <label class="custom-control-label" for="eliteTerms">I confirm I have authority to represent FAME standards.</label>
+                        </div>
+                        @Html.ValidationMessageFor(m => m.AcceptTerms, "", new { @class = "text-danger small" })
+                    </div>
+
+                    <button type="submit" class="elite-btn-submit">
+	                        @(User.Identity.IsAuthenticated ? "SUBMIT APPLICATION" : "COMPLETE REGISTRATION") <i class="material-icons">arrow_forward</i>
+                    </button>
+                    
+                </div>
+            }
+        </div>
+
+        <!-- RIGHT: VALUE RAIL -->
+        <aside class="console-value-rail">
+            <div class="rail-deputy p-relative">
+                <div class="rail-decoration"></div>
+                <div class="rail-header">
+                    <h3><i class="material-icons">verified</i> Elite Privileges</h3>
+                </div>
+
+                <div class="live-stats">
+                    <div class="stat-box">
+                        <div class="stat-val">Live</div>
+                        <div class="stat-label">Tracking</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-val">Multi</div>
+                        <div class="stat-label">Tier Growth</div>
+                    </div>
+                </div>
+
+                <ul class="perk-list">
+                    <li class="perk-item">
+                        <div class="perk-icon"><i class="material-icons" style="font-size:18px">payments</i></div>
+                        <div class="perk-content">
+                            <h4>Managed Payouts</h4>
+	                            <p>Track your available balance and request withdrawals from the dashboard.</p>
+                        </div>
+                    </li>
+                    <li class="perk-item">
+                        <div class="perk-icon"><i class="material-icons" style="font-size:18px">show_chart</i></div>
+                        <div class="perk-content">
+                            <h4>Real-Time Dashboard</h4>
+                            <p>Monitor every click, signup, and conversion as it happens.</p>
+                        </div>
+                    </li>
+                     <li class="perk-item">
+                        <div class="perk-icon"><i class="material-icons" style="font-size:18px">school</i></div>
+                        <div class="perk-content">
+                            <h4>Clinical Resources</h4>
+                            <p>Access premium teaching materials to support your network.</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="rail-footer">
+                <i class="material-icons" style="font-size:14px">lock</i>
+                <span>256-bit SSL Encrypted Connection</span>
+            </div>
+        </aside>
+    </div>
+</div>
+
+<script src="~/Content/assets/vendor/jquery.min.js"></script>
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var c = document.querySelector('.elite-console');
+        c.style.opacity = '0';
+        c.style.transform = 'translateY(10px) scale(0.98)';
+        c.style.transition = 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)';
+        setTimeout(function() {
+            c.style.opacity = '1';
+            c.style.transform = 'translateY(0) scale(1)';
+        }, 50);
+    });
+</script>
+</body>
+</html>

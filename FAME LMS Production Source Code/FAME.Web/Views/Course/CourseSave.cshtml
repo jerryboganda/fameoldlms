@@ -1,0 +1,280 @@
+﻿@model First_Aid_Made_Easy.Models.CourseVM
+@using System.Web.Configuration;
+
+@{
+    ViewBag.Title = "Course Save";
+    Layout = "~/Views/Shared/_LayoutTeacher.cshtml";
+}
+
+
+<div class="pt-32pt">
+    <div class="container-fluid page__container d-flex flex-column flex-md-row align-items-center text-center text-sm-left">
+        <div class="flex d-flex flex-column flex-sm-row align-items-center">
+
+            <div class="mb-24pt mb-sm-0 mr-sm-24pt">
+                <h2 class="mb-0">Define Course</h2>
+
+                <ol class="breadcrumb p-0 m-0">
+                    <li class="breadcrumb-item"><a href="/Teacher/Index">Home</a></li>
+
+                    <li class="breadcrumb-item active">
+
+                        Define Course
+
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="page-section border-bottom-2">
+    <div class="container-fluid page__container">
+
+        <div class="row">
+            <div class="col-md-12">
+
+                <div class="page-separator">
+                    <div class="page-separator__text">Basic information</div>
+                </div>
+                @Html.HiddenFor(item => item.Course_Id)
+                @Html.HiddenFor(item => item.Course_Pic)
+                <div class="form-group mb-24pt">
+                    <label class="form-label">Course title</label>
+                    <input type="text" name="Course_Name" id="Course_Name" class="form-control form-control-lg" placeholder="Course title" value="@Model.Course_Name">
+                    <div class="text-accent-red" id="Course_Nameval"></div>
+                    <small class="form-text text-muted">Please see our <a href="">course title guideline</a></small>
+                </div>
+                <div class="form-group mb-32pt">
+                    <label class="form-label">Description</label>
+                    <textarea name="Course_Description" id="Course_Description" class="form-control" rows="3" placeholder="Course description">@Model.Course_Description</textarea>
+                    <div class="text-accent-red" id="Course_Descriptionval"></div>
+                    <small class="form-text text-muted">Shortly describe this course.</small>
+                </div>
+                <div class="form-group mb-24pt">
+                    <label class="form-label">Price</label>
+                    <input type="text" name="Course_Price" id="Course_Price" class="form-control form-control-lg" placeholder="Course title" value="@Model.Course_Price">
+                    <div class="text-accent-red" id="Course_Priceval"></div>
+                    <small class="form-text text-muted">Please see our <a href="">course title guideline</a></small>
+                </div>
+                <div class="form-group mb-24pt">
+                    <label class="form-label">Teacher</label>
+                    @Html.DropDownListFor(item => item.Teacher_Fid, new SelectList(ViewBag.Teachers, "ID", "Name"), "Select Category", new { @class = "form-control  select2", @data_toggle = "select" })
+                    <div class="text-accent-red" id="Teacher_Fidval"></div>
+                </div>
+                <div class="form-group mb-32pt">
+                    <label class="form-label">Picture</label>
+                    <input name="Course_Pic" id="Course_PicFile" class="form-control" type="file" accept="image/png, image/gif, image/jpeg">
+                    <small class="form-text text-muted">(Size of image should be 500 x 275))</small>
+                </div>
+                @if (Model.Course_Pic != null && Model.Course_Pic != "")
+                {
+                    <img src="@Url.Content("~/Images/"+Model.Course_Pic)" style="width: 275px; height: 275px" />
+                }
+                <div class="page-separator">
+                    <div class="page-separator__text">Course Outcomes</div>
+                </div>
+                <div id="DetailDiv">
+                    @if (Model.Details != null)
+                    {
+                        foreach (var d in Model.Details)
+                        {
+                            <div class="Detail form-group mb-32pt">
+                                <input name="detail" id="detail" type="text" class="detail form-control form-control-lg" value="@d.CourseDetail_Body" placeholder="Course Detail">
+                            </div>
+                        }
+                    }
+                    <div class="Detail form-group mb-32pt">
+                        <input name="detail" id="detail" type="text" class="detail form-control form-control-lg" placeholder="Course Detail">
+                    </div>
+                </div>
+                <div class="text-sm-center form-group mb-32pt">
+                    <small class="form-text text-muted"><a id="btn-AddDetail" class="btn btn-success">Add More Detail</a></small>
+                </div>
+                <div class="card">
+                    <div class="card-header text-center">
+                        @if (Model.Course_Id > 0)
+                        {
+                            <a href="#" id="btnSave" class="btn btn-outline-success">&nbsp; Update</a>
+                        }
+                        else
+                        {
+                            <a href="#" id="btnSave" class="btn btn-outline-success">&nbsp; Save</a>
+                        }
+                        <a href="/Course/Courses" class="btn btn-outline-accent-dodger-blue"><i class="fa fa-backward"></i> &nbsp; Back To Courses</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script>
+
+        $(document).on("click", "#btn-AddDetail", function () {
+            debugger;
+            $("#DetailDiv").append
+                (`
+                            <div class="Detail form-group mb-32pt">
+                                <input name="detail" id="detail" type="text" class="detail form-control form-control-lg" placeholder="Course Detail">
+                            </div>
+                        `);
+        })
+
+        $(document).on("click", "#btnSave", function () {
+
+            var result = ValidateForm();
+            DetailList = [];
+            if (result) {
+                $(".detail").each(function () {
+                    if ($(this).val() != "") {
+                        DetailList.push({
+                            CourseDetail_Body: $(this).val()
+                        })
+                    }
+                })
+
+                var data = {
+                    Course_Id: $("#Course_Id").val(),
+                    Course_Name: $("#Course_Name").val(),
+                    Teacher_Fid: $("#Teacher_Fid option:selected").val(),
+                    Course_Description: $("#Course_Description").val(),
+                    Course_Pic: $("#Course_Pic").val(),
+                    Course_Price: $("#Course_Price").val(),
+                    Details: DetailList
+                }
+
+                Save(data);
+            }
+
+        })
+        function Save(data) {
+            $("#btnSave").hide();
+            $.ajax({
+                url: '/Course/SaveCourse',
+                method: 'POST',
+                data: JSON.stringify(data),
+                dataType: 'Json',
+                contentType: 'application/json',
+                success: function (response) {
+                    if (response == true) {
+                        window.location.href = "/Course/Courses";
+                    }
+
+                },
+                error: function (err) {
+
+                }
+
+            });
+        }
+
+        function ValidateForm() {
+
+            var Course_Name = $("#Course_Name").val();
+            var Course_Description = $("#Course_Description").val();
+            var Course_Price = $("#Course_Price").val();
+
+            if (Course_Name == "" || Course_Description == "" || Course_Price == "") {
+
+                if (Course_Name == "") {
+                    $("#Course_Nameval").html("Course Name Is Required");
+                }
+
+                if (Course_Description == "") {
+                    $("#Course_Descriptionval").html("Course Description Is Required");
+                }
+
+                if (Course_Price == "") {
+                    $("#Course_Priceval").html("Course Price Is Required");
+                }
+
+                return false;
+            }
+            return true;
+        }
+
+        function UploadFiles() {
+        $(".divLoader").show();
+        $.ajax({
+            url: '/Course/UploadImage',
+            type: "POST",
+            contentType: false, // Not to set any content header
+            processData: false, // Not to process data
+            data: formdata,
+            // async: false,
+            success: function (result) {
+                $(".divLoader").hide();
+                //PrintSlip();
+                if (result != "") {
+                    $("#Course_Pic").val(result);
+                } else {
+                    Swal.fire(
+                        'Something Went Wrong',
+                        'Document Is not Uploaded .Please Try Again!',
+                        'error'
+                    );
+                    return null;
+                }
+            },
+            error: function (err) {
+                $(".divLoader").hide();
+                alert(err.statusText);
+            }
+        });
+        }
+
+        function readIMG(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    $('#picture-sample').addClass('hidden')
+                    $('#preview').removeClass('hidden')
+                    $('#preview').attr('src', e.target.result);
+                }
+            }
+            reader.readAsDataURL(input.files[0]);
+            $('#preview').css('display', 'block');
+        }
+
+        var UploadedFileName = "";
+        var formdata = new FormData();
+        $("#Course_PicFile").on("change", function (e) {
+
+            var Course_PicFile = document.getElementById('Course_PicFile');
+            var file = $('#Course_PicFile')[0].files[0];
+            var sizeVal = '@System.Configuration.ConfigurationManager.AppSettings["InputFileSize"]';
+            sizeVal = sizeVal * 1000;
+
+
+            if (file.size < sizeVal) {
+                if(UploadedFileName != "")
+                {
+                    formdata.delete(UploadedFileName);
+                }
+                readIMG(this);
+                var sfilename = Course_PicFile.files[0].name;
+                formdata.append(sfilename, Course_PicFile.files[0]);
+                UploadFiles();
+            } else {
+                Swal.fire({
+                    icon: 'Warning',
+                    title: 'Oops...',
+                    text: 'Could not upload more than @System.Configuration.ConfigurationManager.AppSettings["InputFileSize"]KB',
+                })
+                $('#Course_PicFile').val('');
+                $('#preview').hide();
+                return;
+            }
+        });
+
+
+
+    </script>
+}
+

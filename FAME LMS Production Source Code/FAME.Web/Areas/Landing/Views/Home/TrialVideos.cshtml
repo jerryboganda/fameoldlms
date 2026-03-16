@@ -1,0 +1,119 @@
+﻿@model List<First_Aid_Made_Easy.Models.VideoVM>
+@{
+	ViewBag.Title = "Trial Videos";
+}
+<style>
+	.btnPlay {
+		cursor: pointer;
+	}
+
+	.video-container {
+		position: relative;
+		width: 100%;
+		overflow: hidden;
+		/*padding-top: 56.25%;*/ /* 16:9 Aspect Ratio */
+	}
+
+	.responsive-iframe {
+		position: absolute;
+		top: 0;
+		left: 0;
+		bottom: 0;
+		right: 0;
+		width: 100%;
+		height: 100%;
+		border: none;
+	}
+
+	.video {
+		width: 100%;
+		height: 100%;
+	}
+
+	#vid-cont {
+		display: flex;
+		align-items: center
+	}
+</style>
+
+<div class="edu-breadcrumb-area">
+	<div class="container">
+		<div class="breadcrumb-inner">
+			<div class="page-title">
+				<h1 class="title">Free Trial Videos</h1>
+			</div>
+			<ul class="edu-breadcrumb">
+			</ul>
+		</div>
+	</div>
+	<ul class="shape-group">
+		<li class="shape-1">
+			<span></span>
+		</li>
+		<li class="shape-2 scene"><img data-depth="2" src="~/Areas/Landing/assets/images/about/shape-13.png" alt="shape"></li>
+		<li class="shape-3 scene"><img data-depth="-2" src="~/Areas/Landing/assets/images/about/shape-15.png" alt="shape"></li>
+		<li class="shape-4">
+			<span></span>
+		</li>
+		<li class="shape-5 scene"><img data-depth="2" src="~/Areas/Landing/assets/images/about/shape-07.png" alt="shape"></li>
+	</ul>
+</div>
+<section class="edu-section-gap course-details-area">
+	<div class="container">
+		<div class="row row--30">
+			<div class="col-lg-8">
+				<div class="course-details-content course-details-3">
+					<div class="entry-content">
+						<!--begin::Header-->
+						<div id="vid-cont" class="video-container" style="min-height:1000px;height:auto">
+							<iframe src="@(Model.FirstOrDefault()?.Video_Path.Replace("show_text=false","show_text=true"))"
+									id="MyIframe"
+									class="responsive-iframe"
+									loading="lazy"
+									style="border: none;"
+									allowfullscreen="true"
+									allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"></iframe>
+
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-lg-4">
+				<div class="course-sidebar-3">
+					<div class="edu-course-widget widget-course-summery">
+						<div class="inner">
+							<div class="course-tab-content">
+								<div class="course-curriculam">
+									<div class="heading-title">
+										<h3 class="title">Free Trial Videos</h3>
+									</div>
+									<div class="course-lesson" style="padding:5px">
+										<ul>
+											@foreach (var i in Model)
+											{
+												<li class="btnPlay" data-path="@( i.Video_Path.Replace("show_text=false","show_text=true") )"> <div class="text"><i class="icon-65"></i> @i.Video_Name</div> </li>
+											}
+										</ul>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+@section scripts{
+
+	<script>
+		$(".btnPlay").click(function () {
+			const parentNode = document.querySelector('#vid-cont');
+			const oldIframe = document.querySelector('#MyIframe');
+			const newIframe = oldIframe.cloneNode();
+			newIframe.src = $(this).data("path");
+			parentNode.replaceChild(newIframe, oldIframe);
+			window.scrollTo({ top: 0, behavior: 'smooth' });
+		})
+	</script>
+}

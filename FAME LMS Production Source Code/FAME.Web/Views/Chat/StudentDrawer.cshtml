@@ -1,0 +1,410 @@
+﻿@model First_Aid_Made_Easy.Models.Friend
+@using First_Aid_Made_Easy.BLL
+@using First_Aid_Made_Easy.DAL
+@{
+    ViewBag.Title = "Messaging";
+    ViewBag.BreadCrumb = new String[] { "Messaging", "Contacts" };
+    Layout = "~/Views/Shared/_LayoutNew.cshtml";
+    var grps = (List<sp_GetConversations_Result>)ViewBag.Groups;
+}
+
+
+
+<div class="container-xxl" id="kt_content_container">
+    <!--begin::Heading-->
+    @if (grps != null && grps.Count() > 0)
+    {
+        <div class="d-flex flex-wrap flex-stack mb-6">
+            <!--begin::Title-->
+            <h3 class="fw-bold my-2">
+                Group Discussion List
+                <span class="fs-6 fw-semibold ms-1">(@grps.Count())</span>
+            </h3>
+        </div>
+        <!--end::Heading-->
+        <!--begin::Contacts-->
+        <div class="row g-6 g-xl-9">
+            @foreach (var f in grps)
+            {
+                <div class="col-md-6 col-xxl-4">
+                    <div class="card">
+                        <!--begin::Card body-->
+                        <div class="card-body d-flex flex-center flex-column p-9">
+                            <!--begin::Wrapper-->
+                            <div class="mb-5">
+                                <!--begin::Avatar-->
+                                <div class="symbol symbol-75px symbol-circle">
+                                    <img alt="Pic" src="@Url.Content("~/Images/"+f.FriendPic)" />
+                                </div>
+                                <!--end::Avatar-->
+                            </div>
+                            <a href="javascript:;" id="dspConvName" data-bs-toggle="modal" data-bs-target="#kt_modal_group_info" data-convid="@f.ConvID" class="fs-4 text-gray-800 text-hover-primary fw-bold mb-0">@f.FriendName</a>
+                            <div class="row">
+                                <div class="col-sm-12 text-center td">
+                                    <a class="btn btn-sm btn-primary fw-bold mx-3" data-convid="@f.ConvID" id="kt_drawer_chat_toggle" href="javascript:;">Send Message</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    <!--begin::Heading-->
+    <div class="d-flex flex-wrap flex-stack mb-6">
+        <!--begin::Title-->
+        <h3 class="fw-bold my-2">
+            Student List
+            <span class="fs-6 fw-semibold ms-1">(@Model.AllUser.Count())</span>
+        </h3>
+    </div>
+    <!--end::Heading-->
+    <!--begin::Contacts-->
+    <div class="row g-6 g-xl-9">
+        @if (Model?.AllUser != null && Model.AllUser.Count() > 0)
+        {
+            foreach (var f in Model.AllUser)
+            {
+                <div data-friendid="@f.User_AspUser" class="col-md-6 col-xxl-4 friendDiv">
+                    <div class="card">
+                        <!--begin::Card body-->
+                        <div class="card-body d-flex flex-center flex-column p-9">
+                            <!--begin::Wrapper-->
+                            <div class="mb-5">
+                                <!--begin::Avatar-->
+                                <div class="symbol symbol-75px symbol-circle">
+                                    <img alt="Pic" src="@Url.Content("~/Images/" + f.User_Pic)" />
+                                </div>
+                                <!--end::Avatar-->
+                            </div>
+                            <!--end::Wrapper-->
+                            <!--begin::Name-->
+                            <a href="#" class="fs-4 text-gray-800 text-hover-primary fw-bold mb-0">
+                                @f.User_Name
+                                <span style="display:none" class="badge badge-success badge-circle w-10px userOnline h-10px me-1"></span>
+                            </a>
+                            <!--end::Name-->
+                            <!--begin::Position-->
+                            <div class="fw-semibold text-gray-400 mb-6">@f.Occupation</div>
+                            <!--end::Position-->
+                            <!--begin::Info-->
+                            <div class="d-flex flex-center flex-wrap mb-5">
+                                <!--begin::Stats-->
+                                <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 mx-3 mb-3">
+                                    <div class="fs-6 fw-bold text-gray-700">@f.User_Id</div>
+                                    <div class="fw-semibold text-gray-400">Profile Id</div>
+                                </div>
+                                <!--end::Stats-->
+                                <!--begin::Stats-->
+                                <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 mx-3 px-4 mb-3">
+                                    <div class="fs-6 fw-semibold text-gray-700">Subscription <br> @Common.FL(f.Package, 15)</div>
+                                </div>
+                                <!--end::Stats-->
+                            </div>
+                            <!--end::Info-->
+                            <!--begin::Info-->
+                            <div class="d-flex flex-center flex-wrap mb-5">
+                                <!--begin::Stats-->
+                                <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 mx-3 mb-3">
+                                    <div class="fs-6 fw-bold text-gray-700">@string.Format("{0:dd/MM/yyyy}", f.CreateDT)</div>
+                                    <div class="fw-semibold text-gray-400">Member since</div>
+                                </div>
+                                <!--end::Stats-->
+                                <!--begin::Stats-->
+                                <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 mx-3 px-4 mb-3">
+                                    <div class="fs-6 fw-bold text-gray-700">@Common.FL(f.City, 15)</div>
+                                    <div class="fw-semibold text-gray-400">City</div>
+                                </div>
+                                <!--end::Stats-->
+                            </div>
+                            <!--end::Info-->
+                            <div class="row">
+                                <div class="col-sm-12 text-center td acceptDiv">
+                                    @if (f.IsFriend == true)
+                                    {
+                                        <a class="btn btn-sm btn-primary fw-bold mx-3" data-id="@f.User_AspUser" id="kt_drawer_chat_toggle" href="javascript:;">Send Message</a>
+                                    }
+                                    else if (f.RequestSent == true)
+                                    {
+                                        <button data-id="@f.User_AspUser" id="btnUndoRequest" class="btn fw-bold mx-3 btn-sm btn-light-primary">Undo Request</button>
+                                        <button style="display:none" data-id="@f.User_AspUser" id="btnSendRequest" class="btn btn-sm btn-primary">+ Add Friends</button>
+                                    }
+                                    else if (f.RequestReceived == true)
+                                    {
+                                        var r = Model.RequestList.FirstOrDefault(x => x.UserID == f.User_AspUser);
+                                        if (r != null)
+                                        {
+                                            <button data-accept="true" data-id="@r.ReqID" class="btn fw-bold mx-3 btnAcceptRequest btn-sm btn-primary">Accept</button>
+                                            <button data-accept="false" data-id="@r.ReqID" class="btn fw-bold mx-3 btnAcceptRequest btn-sm btn-light-primary">Reject</button>
+                                        }
+                                    }
+                                    else if (f.RequestRejected == true)
+                                    {
+                                        <button class="btn m-1 btn-sm btn-outline-danger">Rejected</button>
+                                    }
+                                    else
+                                    {
+                                        <button style="display:none" data-id="@f.User_AspUser" id="btnUndoRequest" class="btn fw-bold mx-3 btn-sm btn-light-primary">Undo Request</button>
+                                        <button class="btn btn-sm btn-light-primary fw-bold mx-3" data-id="@f.User_AspUser" id="btnSendRequest">+ Add Friends</button>
+                                    }
+                                    @*<a class="btn btn-sm btn btn-primary fw-bold mx-3" data-kt-drawer-show="true" data-kt-drawer-target="#kt_drawer_chat">Send Message</a>*@
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+
+    <!--begin::Pagination-->
+    @*<div class="d-flex flex-stack flex-wrap pt-10">
+            <div class="fs-6 fw-semibold text-gray-700">Showing 1 to 10 of @Model.AllUser.Count entries</div>
+            <ul class="pagination">
+                <li class="page-item previous">
+                    <a href="#" class="page-link">
+                        <i class="previous"></i>
+                    </a>
+                </li>
+                @for (int i = 1; i <= Model.AllUser.Count / 10; i++)
+                {
+                    <li class="page-item">
+                        <a href="#" class="page-link">@i</a>
+                    </li>
+                }
+                <li class="page-item next">
+                    <a href="#" class="page-link">
+                        <i class="next"></i>
+                    </a>
+                </li>
+            </ul>
+        </div>*@
+    <!--end::Pagination-->
+</div>
+
+<div class="modal fade" id="kt_modal_group_info" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog mw-650px">
+        <div class="modal-content">
+            <div class="modal-header pb-0 border-0 justify-content-end">
+                <div class="btn btn-sm btn-icon btn-active-color-primary" data-bs-dismiss="modal">
+                    <span class="svg-icon svg-icon-1">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect opacity="0.5" x="6" y="17.3137" width="16" height="2" rx="1" transform="rotate(-45 6 17.3137)" fill="currentColor" />
+                            <rect x="7.41422" y="6" width="16" height="2" rx="1" transform="rotate(45 7.41422 6)" fill="currentColor" />
+                        </svg>
+                    </span>
+                </div>
+            </div>
+            <div class="modal-body scroll-y mx-5 mx-xl-18 pt-0 pb-15">
+                <div class="text-center mb-13">
+                    <h1 class="mb-3">Group Info</h1>
+                </div>
+                <div class="mb-10">
+                    <div class="fs-6 fw-semibold mb-2">Members</div>
+                    <div class="mh-300px scroll-y me-n7 pe-7" id="divmembers">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+
+        $(document).ready(function () {
+            $("#DTable").DataTable({ "lengthMenu": [[5, 10, 50, 100], [5, 10, 50, 100]] });
+            $("#DTable2").DataTable({ "lengthMenu": [[5, 10, 50, 100], [5, 10, 50, 100]] });
+            $(".DTHead").hide();
+        })
+    </script>
+
+    <script>
+        $(document).on("click", "#btnFind", function () {
+            var id = $("#FindID").val();
+            if (id > 0) {
+                $.ajax({
+                    url: "/Chat/FindUser/" + id,
+                    success: function (data) {
+                        if (data != null) AppendUser(data);
+                        else AppendNotFound();
+                    },
+                    error: function () {
+                        AppendNotFound();
+                    }
+                })
+            }
+        })
+        function AppendUser(data) {
+            var html = ` <a href="#" class="avatar avatar-4by3 overlay overlay--primary mr-12pt">
+                                                <img src="~/Images/${data.User_Pic}" alt="Pic" class="avatar-img rounded">
+                                                <span class="overlay__content"></span>
+                                            </a>
+                                            <div class="d-flex">
+                                                <div class="card-title mb-4pt">${data.User_Name}</div>
+                                            <div class="ml-4 align-items-center">
+                                        `;
+            if (!data.DisableRequest)
+                html += `<button data-id="${data.User_AspUser}" id="btnSendRequest"  class="btn btn-sm btn-primary">Send Request</button>`
+            html += `</div> </div>`;
+            $("#searchedDiv").html(html);
+        }
+        function AppendNotFound() {
+            var html = ` <div class="justify-content-center text-center ">
+                                                <div class="card card--transparent mb-0">
+                                                    <div class="card-body px-24pt py-16pt">
+                                                        <div class="card-title mb-4pt">Oops! User Not Found ...</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        `;
+            $("#searchedDiv").html(html);
+        }
+    </script>
+
+    <script>
+
+        $(document).on("click", "#btnSendRequest", function () {
+            var id = $(this).data("id");
+            var td = $(this).closest(".td");
+            if (id != "") {
+                $.ajax({
+                    url: "/Chat/SendRequest/" + id,
+                    success: function (data) {
+                        if (data) {
+                            td.find("#btnSendRequest").hide();
+                            td.find("#btnUndoRequest").show();
+                            Swal.fire({
+                                position: 'top-end',
+                                icon: 'success',
+                                title: 'Request Sent successfully',
+                                showConfirmButton: false,
+                                timer: 1500
+                            })
+                        }
+                        else btn.text("Send Again");
+                    },
+                    error: function () {
+                        btn.text("Send Again");
+                    }
+                })
+            }
+        })
+
+        $(document).on("click", "#btnUndoRequest", function () {
+            var id = $(this).data("id");
+            var td = $(this).closest(".td");
+            if (id != "") {
+                $.ajax({
+                    url: "/Chat/UndoRequest/" + id,
+                    success: function (data) {
+                        if (data) {
+                            td.find("#btnSendRequest").show();
+                            td.find("#btnUndoRequest").hide();
+                            Swal.fire({
+                                position: 'top-end',
+                                icon: 'success',
+                                title: 'Request undone successfully',
+                                showConfirmButton: false,
+                                timer: 1500
+                            })
+                        }
+                        else td.find("#btnSendRequest").text("Send Again");
+                    },
+                    error: function () {
+                        td.find("#btnSendRequest").text("Send Again");
+                    }
+                })
+            }
+        })
+    </script>
+
+    <script>
+
+        $(document).on("click", ".btnAcceptRequest", function () {
+            var id = $(this).data("id");
+            var IsAccepted = $(this).data("accept");
+            var div = $(this).closest(".acceptDiv");
+            if (id != "") {
+                $.ajax({
+                    url: "/Chat/AcceptRequest/" + id + "?IsAccepted=" + IsAccepted,
+                    success: function (data) {
+                        if (IsAccepted) {
+                            Swal.fire({
+                                position: 'top-end',
+                                icon: 'success',
+                                title: 'Request Accepted successfully',
+                                showConfirmButton: false,
+                                timer: 1500
+                            })
+                        } else {
+                            Swal.fire({
+                                position: 'top-end',
+                                icon: 'success',
+                                title: 'Request Rejected successfully',
+                                showConfirmButton: false,
+                                timer: 1500
+                            })
+                        }
+                    },
+                    error: function () {
+                        btn.text("Send Again");
+                    }
+                })
+            }
+        })
+    </script>
+
+    <script>
+        $(document).on("click", "#kt_drawer_chat_toggle", function (e) {
+            var msgCont = $("#msgcontainer");
+            var id = $(this).data("convid");
+            var btn = $(this);
+            var Action = "LoadDrawer";
+            btn.attr("disabled", true);
+            if (id > 0)
+                var Action = "LoadDrawerGroup";
+            else
+                id = $(this).data("id");
+            $.ajax({
+                url: "/Chat/" + Action + "/" + id,
+                success: function (data) {
+                    msgCont.html(data.Html);
+                    document.querySelector('[data-kt-element="messages"]').animate({ scrollTop: 999999 }, 0);
+                    $("#ConversationName").text(data.ConvName);
+                    $("#ConversationID").attr("data-convid", data.ConvID);
+                    btn.attr("disabled", false);
+                }
+            })
+        })
+    </script>
+    <script>
+        $(document).on("click", "#dspConvName", function (e) {
+            var id = $(this).data("convid");
+            $.ajax({
+                url: "/Chat/GetGroupInfo/" + id,
+                success: function (data) {
+                    var html = '';
+                    $.each(data, function (i, v) {
+                        
+                        var Button = `<div class="d-flex align-items-center"> <button class="btn btn-sm btn-light-primary fw-bold mx-3" data-id="${v.Id}" id="btnSendRequest">+ Add Friends</button> </div>`;
+                        if (v.IsFriend) Button = `<div class="d-flex align-items-center"> <a class="btn btn-sm btn-primary fw-bold mx-3" data-id="${v.Id}" id="kt_drawer_chat_toggle" href="javascript:;">Send Message</a> </div>`;
+                        html += `
+                        <div class="d-flex flex-stack py-4 border-bottom border-gray-300 border-bottom-dashed">
+                            <div class="d-flex align-items-center">
+                                <div class="symbol symbol-35px symbol-circle">
+                                    <img alt="Pic" src="/Images/${v.User_Pic}" />
+                                </div>
+                                <div class="ms-5">
+                                    <a href="#" class="fs-5 fw-bold text-gray-900 text-hover-primary mb-2">${v.User_Name}</a>
+                                    <div class="fw-semibold text-muted">${v.Email}</div>
+                                </div> 
+                            </div>${Button}
+                        </div>`;
+                    })
+                    $("#divmembers").html(html);
+                }
+            })
+        })
+    </script>
+}

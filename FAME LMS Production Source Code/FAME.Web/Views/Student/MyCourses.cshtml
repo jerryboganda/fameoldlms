@@ -1,0 +1,189 @@
+@model First_Aid_Made_Easy.Models.MyCoursesVM
+@{
+    ViewBag.Title = "My Courses";
+    Layout = "~/Views/Shared/_LayoutStudent2026.cshtml";
+}
+
+<!-- Page Header -->
+<div class="fame-discovery-header anim-enter">
+    <div>
+        <h1 class="text-dark fw-bolder mb-1">My Courses</h1>
+        <p class="text-muted fw-bold fs-7">Access your medical prep materials and continue your learning journey.</p>
+    </div>
+
+    <div class="fame-search-wrapper">
+        <i class="bi bi-search"></i>
+        <input type="text" id="courseSearch" class="fame-search-input" placeholder="Search by course name or instructor..." />
+    </div>
+
+    @if (Model.PackageList != null && Model.PackageList.Any())
+    {
+        <div class="fame-filter-bar">
+            <div class="fame-filter-pill active" data-package="all">All Packages</div>
+            @foreach (var pkg in Model.PackageList)
+            {
+                <div class="fame-filter-pill" data-package="@pkg.PackageID">@pkg.PackageName</div>
+            }
+        </div>
+    }
+</div>
+
+@if (Model.CorList != null && Model.CorList.Any())
+{
+    <div class="fame-course-grid anim-enter delay-100">
+        @foreach (var course in Model.CorList)
+        {
+            // Find all package IDs this course belongs to
+            var coursePackageIds = string.Join(",", Model.PackageList
+                .Where(p => p.Detail != null && p.Detail.Any(d => d.CourseID == course.Course_Id))
+                .Select(p => p.PackageID));
+
+            <a href="@Url.Action("TakeCourse", "Student", new { id = course.Course_Id })" 
+               class="fame-course-card fame-grid-item" 
+               data-course-name="@course.Course_Name.ToLower()" 
+               data-packages="@coursePackageIds">
+                <!-- Course Thumbnail -->
+                <div class="fame-course-thumb-wrapper">
+                    @if (!string.IsNullOrEmpty(course.Course_Pic))
+                    {
+                        <img src="@Url.Content("~/Images/" + course.Course_Pic)" 
+                             alt="@course.Course_Name" 
+                             class="fame-course-thumb" />
+                    }
+                    else
+                    {
+                        <div class="w-100 h-100 bg-grad-teal d-flex align-items-center justify-content-center">
+                            <span class="text-white fw-bolder fs-5">FAME</span>
+                        </div>
+                    }
+                    
+                    <span class="fame-course-badge">Active</span>
+                </div>
+
+                <div class="fame-course-body">
+                    <h3 class="fame-course-title">
+                        @course.Course_Name
+                    </h3>
+
+                    <div class="fame-course-stats">
+                        <div class="stat-item">
+                            <i class="bi bi-play-circle"></i>
+                            <span>@(course.Lessons) Videos</span>
+                        </div>
+                        <div class="stat-item">
+                            <i class="bi bi-clock"></i>
+                            @{
+                                var totalMin = course.DurationInMin;
+                                var hours = Math.Floor((double)totalMin / 60);
+                                var mins = Math.Round((double)totalMin % 60);
+                            }
+                            <span>@(hours > 0 ? hours + "h " : "")@(mins)m</span>
+                        </div>
+                    </div>
+
+                    <div class="fame-course-progress-container">
+                        <div class="fame-course-progress-info">
+                            <span class="fame-course-progress-label">Progress</span>
+                            <span class="fame-course-progress-percentage">@(course.Progress)%</span>
+                        </div>
+                        <div class="fame-course-progress">
+                            <div class="fame-course-progress-bar" style="width: @(course.Progress)%;"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="fame-btn-compact mt-auto">
+                        Resume Learning
+                    </div>
+                </div>
+            </a>
+        }
+    </div>
+
+    <div id="noResults" class="text-center py-20 d-none anim-enter">
+        <div class="mb-5">
+            <i class="bi bi-search text-gray-300" style="font-size: 4rem;"></i>
+        </div>
+        <h3 class="fw-bolder text-dark mb-2">No matching courses found</h3>
+        <p class="text-gray-400 fs-6 fw-bold">Try adjusting your search or switching packages.</p>
+        <button class="btn btn-sm btn-light-primary mt-4 px-6 rounded-pill" onclick="resetFilters()">Clear All Filters</button>
+    </div>
+}
+else
+{
+    <!-- Empty State -->
+    <div class="card shadow-sm border-0 anim-enter delay-200">
+        <div class="card-body text-center py-20">
+            <div class="mb-7">
+                <img src="/Content/assetsn/media/illustrations/sigma-1/17.png" class="h-150px" alt="" />
+            </div>
+            <h3 class="fw-bolder text-dark mb-3">No active courses found</h3>
+            <p class="text-gray-400 fs-6 fw-bold mb-7">It looks like you haven't enrolled in any courses yet.<br/>Start your preparation today!</p>
+            <a href="@Url.Action("OurPackages", "Home", new { area = "Landing" })" class="btn btn-teal fw-bolder px-8 py-4">
+                Browse Course Library
+            </a>
+        </div>
+    </div>
+}
+
+@section scripts {
+<script>
+    $(document).ready(function() {
+        const $searchInput = $('#courseSearch');
+        const $pills = $('.fame-filter-pill');
+        const $cards = $('.fame-course-card');
+        const $noResults = $('#noResults');
+        const $grid = $('.fame-course-grid');
+
+        let currentSearch = '';
+        let currentPackage = 'all';
+
+        function filter() {
+            let visibleCount = 0;
+            
+            $cards.each(function() {
+                const $card = $(this);
+                const name = $card.data('course-name') || '';
+                const packages = ($card.data('packages') || '').toString().split(',');
+
+                const matchesSearch = name.includes(currentSearch);
+                const matchesPackage = currentPackage === 'all' || packages.includes(currentPackage);
+
+                if (matchesSearch && matchesPackage) {
+                    $card.removeClass('d-none').addClass('filtering-in');
+                    visibleCount++;
+                } else {
+                    $card.addClass('d-none').removeClass('filtering-in');
+                }
+            });
+
+            if (visibleCount === 0) {
+                $grid.addClass('d-none');
+                $noResults.removeClass('d-none');
+            } else {
+                $grid.removeClass('d-none');
+                $noResults.addClass('d-none');
+            }
+        }
+
+        $searchInput.on('input', function() {
+            currentSearch = $(this).val().toLowerCase();
+            filter();
+        });
+
+        $pills.on('click', function() {
+            $pills.removeClass('active');
+            $(this).addClass('active');
+            currentPackage = $(this).data('package').toString();
+            filter();
+        });
+
+        window.resetFilters = function() {
+            $searchInput.val('');
+            currentSearch = '';
+            $pills.removeClass('active').first().addClass('active');
+            currentPackage = 'all';
+            filter();
+        };
+    });
+</script>
+}

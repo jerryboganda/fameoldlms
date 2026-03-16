@@ -1,0 +1,79 @@
+@model IEnumerable<First_Aid_Made_Easy.DAL.sp_GetMeetingsForStudent_Result>
+@{
+    ViewBag.Title = "Live Classes";
+    Layout = "~/Views/Shared/_LayoutStudent2026.cshtml";
+}
+
+<div class="anim-enter delay-100">
+    <!-- Header -->
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div>
+            <p class="text-muted">Join interactive sessions with top instructors</p>
+        </div>
+        <div class="badge bg-danger bg-opacity-10 text-danger px-3 py-2 rounded-pill">
+            <i data-feather="radio" style="width: 14px; margin-right: 6px;"></i> Live Updates
+        </div>
+    </div>
+
+    <!-- Active/Upcoming Meetings -->
+    <div class="fame-card mb-4">
+        <div class="d-flex align-items-center gap-2 mb-4 border-bottom pb-3">
+             <i data-feather="video" class="text-primary"></i>
+             <h4 class="mb-0">Class Schedule</h4>
+        </div>
+
+        @if (Model != null && Model.Any())
+        {
+            <div class="fame-course-grid">
+                @foreach (var meet in Model.OrderByDescending(x => x.StartTime))
+                {
+                    var isLive = meet.Status == "Active"; 
+                    var meetingDate = meet.StartTime ?? DateTime.Now;
+                    <a href="@meet.JoinUrl" target="_blank" class="fame-course-card">
+                        <div class="fame-course-thumb-wrapper">
+                            <div class="fame-meeting-placeholder">
+                                <i class="bi @(isLive ? "bi-broadcast text-danger" : "bi-camera-video")"></i>
+                                <div class="fame-meeting-date">
+                                    <span class="day">@meetingDate.Day</span>
+                                    <span class="month">@meetingDate.ToString("MMM")</span>
+                                </div>
+                            </div>
+                            <span class="fame-course-badge @(isLive ? "badge-success" : "badge-primary")">
+                                @(isLive ? "LIVE NOW" : "UPCOMING")
+                            </span>
+                        </div>
+                        <div class="fame-course-body">
+                            <h3 class="fame-course-title">@meet.Topic</h3>
+                            <div class="fame-exam-info">
+                                <div class="stat-item"><i class="bi bi-person me-1"></i>@(meet.TeacherName ?? "Faculty")</div>
+                                <div class="separator"></div>
+                                <div class="stat-item"><i class="bi bi-clock me-1"></i>@(meet.StartTime?.ToString("hh:mm tt") ?? "")</div>
+                            </div>
+                            <div class="fame-btn-compact mt-auto @(isLive ? "bg-danger text-white border-0" : "")">
+                                @(isLive ? "Join Now" : "Waiting for Link")
+                            </div>
+                        </div>
+                    </a>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <div class="mb-3">
+                    <i data-feather="calendar" class="text-muted" style="width: 48px; height: 48px;"></i>
+                </div>
+                <h5>No Active Classes</h5>
+                <p class="text-muted">There are no live sessions scheduled at the moment.</p>
+            </div>
+        }
+    </div>
+    
+    <div class="alert alert-soft-primary border-0 d-flex align-items-center gap-3">
+         <i data-feather="info" class="text-primary"></i>
+         <div>
+             <strong>Note:</strong> Classes usually start 10 minutes before the scheduled time. 
+             If you face issues connecting, check your internet or <a href="@Url.Action("TicketList", "Student")">Contact Support</a>.
+         </div>
+    </div>
+</div>

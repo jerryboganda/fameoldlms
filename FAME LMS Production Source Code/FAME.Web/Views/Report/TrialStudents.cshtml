@@ -1,0 +1,68 @@
+﻿@model List<First_Aid_Made_Easy.Models.TrialStudentsVM>
+@{
+    ViewBag.Title = "Trial Students";
+    Layout = "~/Views/Shared/_LayoutTeacher.cshtml";
+	int Sr=0;
+}
+<div class="pt-32pt">
+    <div class="page__container d-flex flex-column flex-md-row align-items-center text-center text-sm-left">
+        <div class="flex d-flex flex-column flex-sm-row align-items-center">
+            <div class="mb-24pt mb-sm-0 mr-sm-24pt">
+				<h2 class="mb-0">Trial Students </h2>
+            </div>
+        </div>
+    </div>
+    <div class="page-section border-bottom-2">
+        <div style="margin: 0; max-width: 100%" class="container-fluid page__container">
+            <div class="row">
+                <div class="col-md-12 mb-10" style="margin-bottom:20px">
+                    <div class="text-muted">Students list who attempted Qbank test from free trial. </div>
+                </div>
+                <div class="col-md-12 card" style="min-height: 400px; padding: 30px;" id="divReport">
+
+                    <table id="DTable" style="width:100% !important" class="table  table-bordered">
+                        <thead>
+                            <tr style="background-color: #364e9c">
+                                <th>Date</th>
+                                <th>Name</th>
+                                <th>Ph. No.</th>
+                                <th>College</th>
+                                <th>Month</th>
+                                <th>Tests</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var i in Model)
+                            {
+                                Sr++;
+
+                                var d = Json.Decode(i.Student);
+
+                                <tr>
+                                    <td>@string.Format("{0:dd/MM/yyyy hh:mm tt}", i.LastTest)</td>
+                                    <td>@(d.Name)</td>
+                                    <td>@d.Number</td>
+                                    <td>@d.College</td>
+                                    <td>@d.FCPSAttempt</td>
+                                    <td>@i.Count</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+			$("#DTable").DataTable();
+        })
+    </script>
+
+}
+

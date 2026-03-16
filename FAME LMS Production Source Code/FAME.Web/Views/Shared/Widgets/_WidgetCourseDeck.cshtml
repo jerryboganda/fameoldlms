@@ -1,0 +1,55 @@
+@using First_Aid_Made_Easy.Models
+@using First_Aid_Made_Easy.BLL
+@{
+    var courses = ViewBag.Courses as List<CourseVM>;
+    Func<decimal?, string> HrsMins = Common.HrsMins;
+}
+
+<div class="fame-course-deck">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="card-title fw-bold m-0"><i class="fa fa-layer-group me-2 text-accent"></i> My Learning Deck</h3>
+        <a href="/Student/MyCourses" class="btn btn-sm btn-light btn-active-light-primary">View All</a>
+    </div>
+
+    @if (courses != null && courses.Count > 0)
+    {
+        <div class="row g-4">
+            @foreach (var course in courses.Take(4))
+            {
+                <div class="col-md-6">
+                    <div class="fame-course-item d-flex flex-column align-items-stretch" style="background: rgba(255,255,255,0.03); border: 1px solid var(--fame-glass-border); border-radius: 12px; padding: 1.25rem;">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <span class="badge badge-light-primary fw-bold fs-8">Course</span>
+                            <span class="text-white-50 fs-8"><i class="fa fa-clock me-1"></i> @HrsMins(course.DurationInMin)</span>
+                        </div>
+                        
+                        <h4 class="fw-bold text-white mb-2 limit-text w-100" title="@course.Course_Name">@course.Course_Name</h4>
+                        
+                        <div class="d-flex align-items-center mb-3">
+                             <div class="progress h-6px w-100 bg-light-primary rounded" style="background: rgba(255,255,255,0.1);">
+                                <div class="progress-bar bg-primary rounded" role="progressbar" style="width: @course.Progress%" aria-valuenow="@course.Progress" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                            <span class="ms-2 fs-7 fw-bold text-white-50">@course.Progress%</span>
+                        </div>
+
+                        <div class="mt-auto">
+                            <a href="/Student/TakeCourse/@course.Course_Id" class="btn btn-sm btn-primary w-100">
+                                <i class="fa fa-play fs-7 me-1"></i> Continue
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="text-center py-5">
+            <div class="symbol symbol-60px symbol-circle bg-light-info mb-3">
+                <i class="fa fa-book-reader fs-1 text-info"></i>
+            </div>
+            <h4 class="text-white-50">No active courses.</h4>
+            <a href="/Package" class="btn btn-sm btn-primary mt-3">Browse Catalog</a>
+        </div>
+    }
+</div>

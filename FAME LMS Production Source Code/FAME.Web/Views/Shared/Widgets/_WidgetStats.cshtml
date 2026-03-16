@@ -1,0 +1,78 @@
+@using First_Aid_Made_Easy.BLL
+@using Microsoft.AspNet.Identity
+@using System.Linq
+@{
+    var courses = ViewBag.Courses as IEnumerable<dynamic>;
+    var enrolls = ViewBag.Enrolls as IEnumerable<dynamic>;
+    var liveClasses = ViewBag.LiveClasses as IEnumerable<dynamic>;
+    var taskList = ViewBag.TaskList as IEnumerable<dynamic>;
+    
+    var courseCount = courses?.Count() ?? 0;
+    var liveCount = liveClasses?.Count() ?? 0;
+    var taskCount = taskList?.Count() ?? 0;
+    
+    // Calculate overall progress (if available)
+    int overallProgress = 0;
+    if (courses != null && courses.Any())
+    {
+        try
+        {
+            var progressValues = courses.Where(c => c.Progress != null).Select(c => (int)c.Progress);
+            if (progressValues.Any())
+            {
+                overallProgress = (int)progressValues.Average();
+            }
+        }
+        catch { }
+    }
+    
+    // Calculate days remaining (if enrollment info available)
+    var enrollment = ViewBag.Enrollment as dynamic;
+    int daysRemaining = 0;
+    if (enrollment?.Enrollment_EndDate != null)
+    {
+        try
+        {
+            daysRemaining = Math.Max(0, ((DateTime)enrollment.Enrollment_EndDate - DateTime.Now).Days);
+        }
+        catch { }
+    }
+}
+
+<div class="fame-stats-grid fame-animate-slide-up fame-stagger">
+    <!-- Enrolled Courses -->
+    <div class="fame-stat-card">
+        <div class="fame-stat-icon primary">
+            <i data-feather="book-open" style="width: 24px; height: 24px;"></i>
+        </div>
+        <div class="fame-stat-value">@courseCount</div>
+        <div class="fame-stat-label">Enrolled Courses</div>
+    </div>
+    
+    <!-- Overall Progress -->
+    <div class="fame-stat-card">
+        <div class="fame-stat-icon success">
+            <i data-feather="trending-up" style="width: 24px; height: 24px;"></i>
+        </div>
+        <div class="fame-stat-value">@overallProgress%</div>
+        <div class="fame-stat-label">Overall Progress</div>
+    </div>
+    
+    <!-- Upcoming Live Classes -->
+    <div class="fame-stat-card">
+        <div class="fame-stat-icon warning">
+            <i data-feather="video" style="width: 24px; height: 24px;"></i>
+        </div>
+        <div class="fame-stat-value">@liveCount</div>
+        <div class="fame-stat-label">Live Classes</div>
+    </div>
+    
+    <!-- Subscription Days -->
+    <div class="fame-stat-card">
+        <div class="fame-stat-icon info">
+            <i data-feather="calendar" style="width: 24px; height: 24px;"></i>
+        </div>
+        <div class="fame-stat-value">@daysRemaining</div>
+        <div class="fame-stat-label">Days Remaining</div>
+    </div>
+</div>

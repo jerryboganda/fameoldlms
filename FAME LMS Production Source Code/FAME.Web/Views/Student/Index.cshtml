@@ -1,0 +1,217 @@
+@model First_Aid_Made_Easy.Models.StudentDashboardVM
+@{
+    ViewBag.Title = "Dashboard";
+    Layout = "~/Views/Shared/_LayoutStudent2026.cshtml";
+}
+
+<!-- Welcome Section -->
+<div class="fame-welcome-card mb-3">
+    <div class="fame-welcome-content">
+        <h1>Welcome back, @(Model.User?.User_Name?.Split(' ')[0] ?? "Dr")!</h1>
+        <p>
+            @if (Model.HasActiveSubscription)
+            {
+                <span>You have <strong>@Model.DaysRemaining days</strong> remaining. Let's continue your preparation.</span>
+            }
+            else
+            {
+                <span>Your subscription has expired. Renew to continue learning.</span>
+            }
+        </p>
+    </div>
+    @if (Model.HasActiveSubscription)
+    {
+        <div class="fame-welcome-badge">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+            @Model.DaysRemaining days left
+        </div>
+    }
+    else
+    {
+        <a href="@Url.Action("OurPackages", "Home", new { area = "Landing" })" class="fame-btn" style="background: #fff; color: var(--fame-primary); font-weight: 700; margin-top: 12px;">
+            Renew Subscription
+        </a>
+    }
+</div>
+
+<!-- Stats Cards Row -->
+<div class="fame-stats-grid mb-3" style="grid-template-columns: repeat(3, 1fr);">
+    <!-- Active Courses -->
+    <div class="fame-stat-card">
+        <div class="fame-stat-icon primary">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+            </svg>
+        </div>
+        <div class="fame-stat-content">
+            <div class="fame-stat-label">Active Courses</div>
+            <div class="fame-stat-value">@(Model.RecentCourses?.Count ?? 0)</div>
+        </div>
+    </div>
+    <!-- Live Classes -->
+    <div class="fame-stat-card">
+        <div class="fame-stat-icon warning">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="23 7 16 12 23 17 23 7"></polygon>
+                <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+            </svg>
+        </div>
+        <div class="fame-stat-content">
+            <div class="fame-stat-label">Live Classes</div>
+            <div class="fame-stat-value">@(Model.UpcomingClasses?.Count ?? 0)</div>
+        </div>
+    </div>
+    <!-- Days Remaining -->
+    <div class="fame-stat-card">
+        <div class="fame-stat-icon @(Model.DaysRemaining < 10 ? "danger" : "info")">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+        </div>
+        <div class="fame-stat-content">
+            <div class="fame-stat-label">Days Left</div>
+            <div class="fame-stat-value" style="@(Model.DaysRemaining < 10 ? "color: var(--fame-danger);" : "")">@Model.DaysRemaining</div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="fame-card mb-3">
+    <h6 class="mb-3 fw-bold" style="font-size: 1rem; color: var(--fame-text-main);">Quick Actions</h6>
+    <div class="fame-quick-actions">
+        <a href="@Url.Action("MyCourses", "Student")" class="fame-quick-action-btn">
+            <div class="fame-qa-icon" style="background: var(--fame-primary-light); color: var(--fame-primary);">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>
+            </div>
+            <span>My Courses</span>
+        </a>
+        <a href="@Url.Action("MockTests", "Student")" class="fame-quick-action-btn fame-qa-primary">
+            <div class="fame-qa-icon" style="background: rgba(255,255,255,0.2); color: #fff;">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+            </div>
+            <span>Mock Tests</span>
+        </a>
+        <a href="@Url.Action("MyMeetings", "Student")" class="fame-quick-action-btn">
+            <div class="fame-qa-icon" style="background: var(--fame-warning-bg); color: var(--fame-warning);">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
+            </div>
+            <span>Live Classes</span>
+        </a>
+        <a href="@Url.Action("SupportOverView", "Home")" class="fame-quick-action-btn">
+            <div class="fame-qa-icon" style="background: var(--fame-info-bg); color: var(--fame-info);">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+            </div>
+            <span>Support</span>
+        </a>
+    </div>
+</div>
+
+<!-- Content Row -->
+<div class="row g-3">
+    <!-- Recent Courses -->
+    <div class="col-lg-8">
+        <div class="fame-card h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="mb-0" style="font-size: 1rem; font-weight: 700;">Recent Courses</h6>
+                <a href="@Url.Action("MyCourses", "Student")" class="fame-btn fame-btn-ghost fame-btn-sm">View All</a>
+            </div>
+            @if (Model.RecentCourses != null && Model.RecentCourses.Any())
+            {
+                <div class="fame-course-grid">
+                    @foreach (var course in Model.RecentCourses.Take(4))
+                    {
+                        <a href="@Url.Action("TakeCourse", "Student", new { id = course.Course_Id })" class="fame-course-card">
+                            <div class="fame-course-thumb-wrapper">
+                                @{ var thumbnail = string.IsNullOrEmpty(course.Course_Pic) ? "default-course.jpg" : course.Course_Pic; }
+                                <img src="@Url.Content("~/Images/" + thumbnail)" alt="@course.Course_Name" class="fame-course-thumb" />
+                            </div>
+                            <div class="fame-course-body">
+                                <h3 class="fame-course-title">@course.Course_Name</h3>
+                                <div class="fame-course-stats">
+                                    <div class="stat-item">
+                                        <i class="bi bi-play-circle"></i>
+                                        <span>@(course.Lessons) Videos</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <i class="bi bi-clock"></i>
+                                        @{
+                                            var totalMin = course.DurationInMin;
+                                            var hours = Math.Floor((double)totalMin / 60);
+                                            var mins = Math.Round((double)totalMin % 60);
+                                        }
+                                        <span>@(hours > 0 ? hours + "h " : "")@(mins)m</span>
+                                    </div>
+                                </div>
+                                <div class="fame-course-progress-container">
+                                    <div class="fame-course-progress-info">
+                                        <span class="fame-course-progress-label">Progress</span>
+                                        <span class="fame-course-progress-percentage">@(course.Progress)%</span>
+                                    </div>
+                                    <div class="fame-course-progress">
+                                        <div class="fame-course-progress-bar" style="width: @(course.Progress)%;"></div>
+                                    </div>
+                                </div>
+                                <div class="fame-btn-compact mt-auto">Continue</div>
+                            </div>
+                        </a>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="text-muted mb-3" style="display: block; margin: 0 auto 12px;">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                    </svg>
+                    <p class="text-muted mb-3">No courses started yet</p>
+                    <a href="@Url.Action("MyCourses", "Student")" class="fame-btn fame-btn-primary fame-btn-sm">Browse Courses</a>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Upcoming Classes -->
+    <div class="col-lg-4">
+        <div class="fame-card h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="mb-0" style="font-size: 1rem; font-weight: 700;">Upcoming Classes</h6>
+                <a href="@Url.Action("MyMeetings", "Student")" class="fame-btn fame-btn-ghost fame-btn-sm">All Classes</a>
+            </div>
+            @if (Model.UpcomingClasses != null && Model.UpcomingClasses.Any())
+            {
+                foreach(var meeting in Model.UpcomingClasses.Take(3))
+                {
+                    var meetingDate = meeting.StartTime ?? DateTime.Now;
+                    <div class="fame-event-card" style="padding: 12px;">
+                        <div class="fame-event-date">
+                            <div class="day">@meetingDate.Day</div>
+                            <div class="month">@meetingDate.ToString("MMM")</div>
+                        </div>
+                        <div class="fame-event-content">
+                            <div class="fame-event-title" style="font-size: 0.875rem;">@meeting.Topic</div>
+                            <div class="fame-event-time">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                @meetingDate.ToString("hh:mm tt")
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="text-center py-4">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color: var(--fame-text-muted); display: block; margin: 0 auto 8px;">
+                        <polygon points="23 7 16 12 23 17 23 7"></polygon>
+                        <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+                    </svg>
+                    <p style="color: var(--fame-text-muted); font-size: 0.875rem; margin: 0;">No classes scheduled</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>

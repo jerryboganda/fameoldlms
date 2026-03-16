@@ -1,0 +1,218 @@
+@model First_Aid_Made_Easy.Models.PayoutsPageVM
+@{
+    ViewBag.Title = "My Payouts";
+    Layout = "~/Views/Shared/_LayoutAmbassador.cshtml";
+}
+
+<div class="container-fluid py-4">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h4 class="mb-1">My Payouts</h4>
+            <p class="text-muted mb-0">View payout history and request withdrawals</p>
+        </div>
+        <div>
+            <a href="@Url.Action("Methods")" class="btn btn-outline-primary mr-2">
+                <i class="material-icons align-middle mr-1">account_balance</i>
+                Payout Methods
+            </a>
+            @if (Model.Balance.CanRequestPayout)
+            {
+                <a href="@Url.Action("Request")" class="btn btn-success">
+                    <i class="material-icons align-middle mr-1">payments</i>
+                    Request Payout
+                </a>
+            }
+        </div>
+    </div>
+
+    <!-- Balance Summary -->
+    <div class="card bg-gradient-primary text-white mb-4">
+        <div class="card-body">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h5 class="text-white-50 mb-1">Available Balance</h5>
+                    <h2 class="mb-0 font-weight-bold">@Model.Balance.Currency @Model.Balance.AvailableBalance.ToString("N0")</h2>
+                    @if (!Model.Balance.CanRequestPayout)
+                    {
+                        <small class="text-white-50">
+                            Min. payout: @Model.Balance.Currency @Model.Balance.MinPayoutAmount.ToString("N0")
+                        </small>
+                    }
+                </div>
+                <div class="col-md-6 text-md-right mt-3 mt-md-0">
+                    <div class="d-inline-block text-left mr-4">
+                        <small class="text-white-50 d-block">Pending</small>
+                        <span class="font-weight-bold">@Model.Balance.Currency @Model.Balance.PendingBalance.ToString("N0")</span>
+                    </div>
+                    <div class="d-inline-block text-left">
+                        <small class="text-white-50 d-block">Total Paid</small>
+                        <span class="font-weight-bold">@Model.Balance.Currency @Model.Balance.TotalPaidOut.ToString("N0")</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payout Requests -->
+    <div class="card">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">
+                <i class="material-icons align-middle mr-1">history</i>
+                Payout History
+            </h6>
+        </div>
+        <div class="card-body p-0">
+            @if (Model.Requests != null && Model.Requests.Count > 0)
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th>Request ID</th>
+                                <th>Date</th>
+                                <th>Method</th>
+                                <th class="text-right">Amount</th>
+                                <th>Status</th>
+                                <th class="text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var request in Model.Requests)
+                            {
+                                <tr>
+                                    <td>
+                                        <span class="font-weight-medium">#@request.Id</span>
+                                    </td>
+                                    <td>
+                                        @request.RequestedAt.ToString("MMM dd, yyyy")
+                                        <br>
+                                        <small class="text-muted">@request.RequestedAt.ToString("hh:mm tt")</small>
+                                    </td>
+                                    <td>
+                                        @if (request.PayoutMethod != null)
+                                        {
+                                            <i class="material-icons align-middle mr-1 text-muted" style="font-size: 1rem;">@request.PayoutMethod.MethodIcon</i>
+                                            @request.PayoutMethod.MethodTypeDisplay
+                                            <br>
+                                            <small class="text-muted">@request.PayoutMethod.MaskedAccountNumber</small>
+                                        }
+                                    </td>
+                                    <td class="text-right">
+                                        <span class="font-weight-bold">@request.Currency @request.Amount.ToString("N0")</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge @request.StatusBadgeClass">@request.Status</span>
+                                        @if (request.Status == "Paid" && !string.IsNullOrEmpty(request.TransactionRef))
+                                        {
+                                            <br>
+                                            <small class="text-muted">Ref: @request.TransactionRef</small>
+                                        }
+                                        @if (request.Status == "Rejected" && !string.IsNullOrEmpty(request.RejectionReason))
+                                        {
+                                            <br>
+                                            <small class="text-danger">@request.RejectionReason</small>
+                                        }
+                                    </td>
+                                    <td class="text-right">
+                                        @if (request.Status == "Requested")
+                                        {
+                                            <button class="btn btn-sm btn-outline-danger" onclick="cancelRequest(@request.Id)">
+                                                <i class="material-icons align-middle" style="font-size: 1rem;">close</i>
+                                                Cancel
+                                            </button>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                if (Model.TotalPages > 1)
+                {
+                    <div class="card-footer">
+                        <nav>
+                            <ul class="pagination justify-content-center mb-0">
+                                @if (Model.Page > 1)
+                                {
+                                    <li class="page-item">
+                                        <a class="page-link" href="@Url.Action("Index", new { page = Model.Page - 1 })">
+                                            <i class="material-icons align-middle">chevron_left</i>
+                                        </a>
+                                    </li>
+                                }
+                                @for (int i = Math.Max(1, Model.Page - 2); i <= Math.Min(Model.TotalPages, Model.Page + 2); i++)
+                                {
+                                    <li class="page-item @(i == Model.Page ? "active" : "")">
+                                        <a class="page-link" href="@Url.Action("Index", new { page = i })">@i</a>
+                                    </li>
+                                }
+                                @if (Model.Page < Model.TotalPages)
+                                {
+                                    <li class="page-item">
+                                        <a class="page-link" href="@Url.Action("Index", new { page = Model.Page + 1 })">
+                                            <i class="material-icons align-middle">chevron_right</i>
+                                        </a>
+                                    </li>
+                                }
+                            </ul>
+                        </nav>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <i class="material-icons text-muted" style="font-size: 4rem;">payments</i>
+                    <h5 class="mt-3">No payout requests yet</h5>
+                    <p class="text-muted">Your payout history will appear here once you make your first withdrawal request.</p>
+                    @if (Model.Balance.CanRequestPayout)
+                    {
+                        <a href="@Url.Action("Request")" class="btn btn-success">
+                            <i class="material-icons align-middle mr-1">payments</i>
+                            Request Payout
+                        </a>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function cancelRequest(requestId) {
+            if (!confirm('Are you sure you want to cancel this payout request?')) {
+                return;
+            }
+
+            $.ajax({
+                url: '@Url.Action("Cancel")',
+                type: 'POST',
+                data: {
+                    requestId: requestId,
+                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                },
+                success: function (response) {
+                    if (response.success) {
+                        toastr.success(response.message || 'Payout request cancelled.');
+                        location.reload();
+                    } else {
+                        toastr.error(response.message || 'Failed to cancel request.');
+                    }
+                },
+                error: function () {
+                    toastr.error('An error occurred.');
+                }
+            });
+        }
+    </script>
+}
+
+<style>
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+    }
+</style>

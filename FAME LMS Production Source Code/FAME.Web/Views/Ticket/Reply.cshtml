@@ -1,0 +1,165 @@
+﻿@model First_Aid_Made_Easy.Models.TicketVM
+@{
+    ViewBag.Title = "Ticket Index";
+    ViewBag.Ticket = "Yes";
+    Layout = "~/Views/Shared/_LayoutAgent.cshtml";
+}
+
+<style>
+    .mine_aside {
+        order: 1;
+        margin-right: 0;
+        margin-left: 1rem;
+    }
+
+    .mine {
+        margin-left: auto;
+    }
+</style>
+
+<div data-push data-responsive-width="768px" data-has-scrollable-region data-fullbleed class="mdk-drawer-layout js-mdk-drawer-layout">
+    <div class="mdk-drawer-layout__content" data-perfect-scrollbar>
+
+
+        <div class="app-messages__container d-flex flex-column h-100 pb-4">
+            <div class="navbar navbar-light bg-white navbar-expand-sm navbar-shadow z-1" id="messages-navbar">
+                <div class="container-fluid flex-wrap px-sm-0">
+                    <div class="nav py-2">
+                        <div class="nav-item d-flex align-items-center mr-3">
+                            <div class="mr-3">
+                                <div class="avatar avatar-online avatar-sm">
+                                    <img src="~/Content/assets/images/people/110/woman-5.jpg" alt="people" class="avatar-img rounded-circle">
+                                </div>
+                            </div>
+                            <div class="d-flex flex-column" style="max-width: 200px; font-size: 15px">
+                                <strong class="text-body">@Model.StudentName</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="flex pt-4" style="position: relative;" data-perfect-scrollbar>
+                <div class="page__container page__container">
+                    <div class="card">
+                        <div class="card-body d-flex align-items-center">
+                            <div class="flex">
+                                <h4 class="mb-0">@Model.Subject</h4>
+                                <p class="text-50 mb-0">@Model.Body</p>
+                            </div>
+                        </div>
+                    </div>
+                    <ul class="d-flex flex-column list-unstyled" id="messages">
+
+
+                        @*<li class="message d-inline-flex">
+                                <div class="message__aside">
+                                    <a href="boxed-profile.html" class="avatar avatar-sm">
+                                        <img src="~/Content/assets/images/people/110/guy-6.jpg" alt="people" class="avatar-img rounded-circle">
+                                    </a>
+                                </div>
+                                <div class="message__body card">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center">
+                                            <div class="flex mr-3">
+                                                <a href="boxed-profile.html" class="text-body"><strong>Laza Bogdan</strong></a>
+                                            </div>
+                                            <div>
+                                                <small class="text-50">1 hour ago</small>
+                                            </div>
+                                        </div>
+                                        <span class="text-70">Coming along nicely, we&#39;ve got a draft for the client design completed, take a look! 🤓</span>
+
+                                        <a href="#" class="media align-items-center mt-2 text-decoration-0 px-3">
+                                            <span class="avatar mr-12pt">
+                                                <span class="avatar-title rounded-circle">
+                                                    <i class="material-icons font-size-24pt">attach_file</i>
+                                                </span>
+                                            </span>
+                                            <span class="media-body" style="line-height: 1.5">
+                                                <span class="text-primary">draft.sketch</span><br>
+                                                <span class="text-50">5 MB</span>
+                                            </span>
+                                        </a>
+
+                                    </div>
+                                </div>
+                            </li>*@
+                        @foreach (var m in Model.Reply)
+                        {
+                            <li class="d-inline-flex @(m.IsMine? "mine" : "")">
+                                <div class="message__aside @(m.IsMine? "mine_aside" : "") ">
+                                    <a href="#" class="avatar avatar-sm">
+                                        <span class="avatar-title rounded-circle">@(m.IsMine? "ME" : "ST")</span>
+                                    </a>
+                                </div>
+                                <div class="message__body card">
+                                    <div class="card-body">
+                                        <span class="text-70">@m.ReplyBody</span>
+
+                                        @if (m.FilePath.Length > 10)
+                                        {
+                                            <div class="d-flex align-items-center">
+                                                <img class="" style="width:200px!important;height:auto" src="@Url.Content(m.FilePath)" />
+                                            </div>
+                                        }
+                                        <div class="d-flex align-items-center">
+                                            <div> <small class="text-50">@string.Format("{0:dd/MM/yyyy hh:mm tt}", m.SendDT)</small> </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        }
+
+                    </ul>
+                </div>
+            </div>
+            @if (Model.Status == First_Aid_Made_Easy.BLL.Status.Open.ToString())
+            {
+                <div class="container-fluid page__container page__container">
+                    <form action="/Ticket/SaveReply" enctype="multipart/form-data" method="post">
+                        <div class="input-group input-group-merge">
+                            <input type="hidden" name="Ticket_ID" value="@Model.Ticket_ID" />
+                            <input type="hidden" name="SentTo" value="@Model.CreatedBy" />
+                            <input type="text" name="ReplyBody" class="form-control form-control-appended" autofocus="" required="" placeholder="Type message">
+                            <div class="input-group-append">
+                                <div class="input-group-text pr-2">
+                                    <button class="btn btn-flush" type="button"><i class="material-icons">tag_faces</i></button>
+                                </div>
+                                <div class="input-group-text pl-0">
+                                    <div class="custom-file custom-file-naked d-flex" style="width: 24px; overflow: hidden;">
+                                        <input type="file" name="File" accept="image/*" class="custom-file-input" id="customFile">
+                                        <label class="custom-file-label" style="color: inherit;" for="customFile">
+                                            <i class="material-icons">attach_file</i>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            }
+        </div>
+    </div>
+
+
+
+
+
+</div>
+
+@section scripts {
+
+    <script>
+        $(document).ready(function () {
+        })
+
+
+        $(document).on("change", "#Status", function () {
+            FilterList("Status")
+        })
+
+    </script>
+
+}
+
+

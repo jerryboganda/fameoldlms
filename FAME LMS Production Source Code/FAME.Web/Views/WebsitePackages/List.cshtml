@@ -1,0 +1,179 @@
+@model First_Aid_Made_Easy.Models.WebsitePackageVM
+@{
+    ViewBag.Title = "Website Packages";
+    Layout = "~/Views/Shared/_LayoutTeacher.cshtml";
+}
+
+<div class="pt-32pt">
+    <div class="container-fluid page__container d-flex flex-column flex-md-row align-items-center text-center text-sm-left">
+        <div class="flex d-flex flex-column flex-sm-row align-items-center">
+            <div class="mb-24pt mb-sm-0 mr-sm-24pt">
+                <h2 class="mb-0">Website Pricing Packages</h2>
+                <ol class="breadcrumb p-0 m-0">
+                    <li class="breadcrumb-item"><a href="/Admin/Index">Home</a></li>
+                    <li class="breadcrumb-item active">Website Packages</li>
+                </ol>
+                <small class="text-muted">Manage the pricing packages displayed on the public website. Changes appear instantly on the live site.</small>
+            </div>
+        </div>
+        <div class="ml-lg-16pt">
+            <a href="/WebsitePackages/Edit" class="btn btn-success"><i class="fa fa-plus Font20"></i> Add New Package</a>
+            <a href="@Url.Content("~/Landing/Home/OurPackages")" target="_blank" class="btn btn-info ml-2"><i class="fa fa-external-link Font20"></i> View Live Page</a>
+        </div>
+    </div>
+
+    <div class="page-section border-bottom-2">
+        <div style="margin: 0; max-width: 100%" class="container-fluid page__container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="page-separator">
+                        <div class="page-separator__text">All Packages (Drag to reorder)</div>
+                    </div>
+
+                    @if (Model.List == null || Model.List.Count == 0)
+                    {
+                        <div class="alert alert-info">
+                            <i class="fa fa-info-circle"></i> No packages found. <a href="/WebsitePackages/Edit">Create your first package</a>.
+                        </div>
+                    }
+                    else
+                    {
+                        <table id="PackageTable" class="table table-bordered table-hover">
+                            <thead>
+                                <tr style="background-color: #364e9c; color: white;">
+                                    <th style="width:60px">Order</th>
+                                    <th>Plan Name</th>
+                                    <th>Subtitle</th>
+                                    <th style="width:80px">Features</th>
+                                    <th style="width:80px">Prices</th>
+                                    <th style="width:80px">Status</th>
+                                    <th style="min-width:150px">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var pkg in Model.List)
+                                {
+                                    <tr data-id="@pkg.ID" class="@(pkg.IsActive ? "" : "table-secondary")">
+                                        <td class="text-center font-weight-bold">@pkg.SortOrder</td>
+                                        <td>
+                                            <strong>@pkg.PlanName</strong>
+                                        </td>
+                                        <td><small class="text-muted">@pkg.Subtitle</small></td>
+                                        <td class="text-center">
+                                            <span class="badge badge-primary">@(pkg.Features != null ? pkg.Features.Count : 0)</span>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge badge-info">@(pkg.Pricing != null ? pkg.Pricing.Count : 0)</span>
+                                        </td>
+                                        <td class="text-center">
+                                            @if (pkg.IsActive)
+                                            {
+                                                <span class="badge badge-success">Active</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge badge-danger">Inactive</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <a href="/WebsitePackages/Edit/@pkg.ID" class="btn btn-sm btn-warning" title="Edit">
+                                                <i class="fa fa-edit"></i> Edit
+                                            </a>
+                                            <button class="btn btn-sm @(pkg.IsActive ? "btn-secondary" : "btn-success") btnToggle" data-id="@pkg.ID" title="@(pkg.IsActive ? "Deactivate" : "Activate")">
+                                                <i class="fa @(pkg.IsActive ? "fa-eye-slash" : "fa-eye")"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-danger btnDelete" data-id="@pkg.ID" data-name="@pkg.PlanName" title="Delete">
+                                                <i class="fa fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        // Toggle Active/Inactive
+        $(document).on("click", ".btnToggle", function () {
+            var btn = $(this);
+            var id = btn.data('id');
+            $.ajax({
+                url: "/WebsitePackages/ToggleActive",
+                method: "POST",
+                data: { id: id },
+                success: function (result) {
+                    if (result.success) {
+                        Swal.fire({
+                            position: 'top-end',
+                            icon: 'success',
+                            title: 'Status updated! Changes are live.',
+                            showConfirmButton: false,
+                            timer: 1500
+                        }).then(function () {
+                            window.location.reload();
+                        });
+                    } else {
+                        Swal.fire('Error', result.message || 'Could not update status', 'error');
+                    }
+                },
+                error: function () {
+                    Swal.fire('Error', 'Something went wrong', 'error');
+                }
+            });
+        });
+
+        // Delete Package
+        $(document).on("click", ".btnDelete", function () {
+            var btn = $(this);
+            var id = btn.data('id');
+            var name = btn.data('name');
+
+            Swal.fire({
+                title: 'Delete Package?',
+                html: 'Are you sure you want to permanently delete <strong>' + name + '</strong>?<br><small class="text-danger">This will remove it from the live website immediately.</small>',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, Delete It!'
+            }).then(function (result) {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: "/WebsitePackages/Delete",
+                        method: "POST",
+                        data: { id: id },
+                        beforeSend: function () {
+                            Swal.fire({
+                                html: '<h5>Deleting...</h5>',
+                                showConfirmButton: false,
+                                allowOutsideClick: false
+                            });
+                        },
+                        success: function (result) {
+                            if (result.success) {
+                                Swal.fire(
+                                    'Deleted!',
+                                    'The package has been removed from the website.',
+                                    'success'
+                                ).then(function () {
+                                    window.location.reload();
+                                });
+                            } else {
+                                Swal.fire('Error', result.message || 'Could not delete package', 'error');
+                            }
+                        },
+                        error: function () {
+                            Swal.fire('Error', 'Something went wrong', 'error');
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+}

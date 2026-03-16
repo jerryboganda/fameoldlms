@@ -1,0 +1,132 @@
+﻿@model First_Aid_Made_Easy.Models.TutorialVM
+@using First_Aid_Made_Easy.BLL
+@{
+    Layout = "~/Views/Shared/_LayoutTeacher.cshtml";
+    ViewBag.Title = " Describe Tutorial";
+}
+
+<div class="pt-32pt">
+    <div class="container-fluid page__container d-flex flex-column flex-md-row align-items-center text-center text-sm-left">
+        <div class="flex d-flex flex-column flex-sm-row align-items-center">
+            <div class="mb-24pt mb-sm-0 mr-sm-24pt">
+                <h2 class="mb-0">Describe Tutorial</h2>
+                <ol class="breadcrumb p-0 m-0">
+                    <li class="breadcrumb-item"><a href="/Admin/Index">Home</a></li>
+                    <li class="breadcrumb-item active">
+                        Describe Tutorial
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="page-section border-bottom-2">
+        <div class="container-fluid page__container">
+
+            <div class="row">
+                <div class="col-md-12">
+
+                    <div class="page-separator">
+                        <div class="page-separator__text">Basic information</div>
+                    </div>
+                    @Html.ValidationSummary("", new { @class = "text-danger" })
+                    @Html.HiddenFor(model => model.TutorialID)
+
+                    <div id="divTitle">
+                        <label class="form-label">Title</label>
+                        <div class="form-group mb-24pt">
+                            @Html.TextBoxFor(model => model.Title, new { @class = "form-control form-control-lg", @placeholder = "Title" })
+                            @Html.ValidationMessageFor(model => model.Title, "", new { @class = "text-accent-red" })
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col-12 col-md-12 mb-3">
+                            <label class="form-label">Body</label>
+                            @Html.TextAreaFor(model => model.Body, new { @class = "form-control form-control-lg", @placeholder = "Explain Your Tutorial", @required = "required" })
+                            @Html.ValidationMessageFor(model => model.Body, "", new { @class = "text-accent-red" })
+                        </div>
+                        <div class="col-12 col-md-8 mb-3">
+                            <label class="form-label">VideoLink</label>
+                            @Html.TextBoxFor(model => model.VideoLink, new { @class = "form-control form-control-lg", @placeholder = "Youtube Video Link", @required = "required" })
+                            @Html.ValidationMessageFor(model => model.VideoLink, "", new { @class = "text-accent-red" })
+                        </div>
+                        <div class="col-12 col-md-4 mb-3">
+                            <label class="form-label">Category</label>
+                            @Html.DropDownListFor(x => x.CategoryID, new SelectList(ViewBag.Categories, "Master_ID", "Master_Value"), "Select Category", new { @class = "form-control  select2", @required = true })
+                            @Html.ValidationMessageFor(model => model.CategoryID, "", new { @class = "text-accent-red" })
+                        </div>
+                        <div class="col-12 col-md-4 mb-3">
+                            <label class="form-label">Show In Popular</label>
+                            @Html.CheckBoxFor(x => x.IsPopular, new { @class = "form-control ", @required = true })
+                            @Html.ValidationMessageFor(model => model.IsPopular, "", new { @class = "text-accent-red" })
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header text-center">
+                            <a href="@Url.Action("Index","Tutorials")" class="btn btn-outline-accent-electric-violet"><i class="fa fa-recycle"></i>&nbsp; New</a>
+                            @if (Model.TutorialID > 0)
+                            {
+                                <button onclick="Save()" id="btnSave" class="btn btn-outline-accent-red">Update</button>
+                            }
+                            else
+                            {
+                                <button onclick="Save()" id="btnSave" class="btn btn-outline-success">Save</button>
+                            }
+                            <a href="@Url.Action("List","Tutorials")" class="btn btn-outline-accent-dodger-blue"><i class="fa fa-backward"></i>&nbsp;  Back To List</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+
+    <script>
+        $(document).ready(function () {
+        })
+
+        function Save() {
+
+            var data = {
+                TutorialID: $("#TutorialID").val(),
+                Tutorial: $("#Tutorial").val(),
+                IsPopular: $("#IsPopular").is(":checked"),
+                Title: $("#Title").val(),
+                VideoLink: $("#VideoLink").val(),
+                CategoryID: $("#CategoryID").val(),
+                Body: $("#Body").val(),
+            }
+
+            $("#btnSave").hide();
+            $.ajax({
+                url: '/Tutorials/Index',
+                method: 'POST',
+                data: JSON.stringify(data),
+                dataType: 'Json',
+                contentType: 'application/json',
+                success: function (response) {
+                    if (response.TutorialID > 0) {
+                        DataSaved();
+                        $("#btnSave").attr("disabled", true);
+                    }
+                },
+                error: function (err) {
+
+                }
+
+            });
+        }
+
+        function Preview() {
+            if ($("#TutorialID").val() > 0)
+                window.location.href = "/Tutorials/Preview/" + $("#TutorialID").val() ;
+        }
+
+    </script>
+
+}
+

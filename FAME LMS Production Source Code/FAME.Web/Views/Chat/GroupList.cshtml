@@ -1,0 +1,64 @@
+﻿@model First_Aid_Made_Easy.Models.ChatVM
+@{
+    Layout = "~/Views/Shared/_LayoutTeacher.cshtml";
+
+    ViewBag.Title ="Group List";
+}
+
+<div class="pt-32pt">
+    <div class="container-fluid page__container d-flex flex-column flex-md-row align-items-center text-center text-sm-left">
+        <div class="flex d-flex flex-column flex-sm-row align-items-center">
+            <div class="mb-24pt mb-sm-0 mr-sm-24pt">
+                <h2 class="mb-0">Group List</h2>
+                <ol class="breadcrumb p-0 m-0">
+                    <li class="breadcrumb-item"><a href="/Teacher/Index">Home</a></li>
+                    <li class="breadcrumb-item active">
+                        Group List
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="page-section border-bottom-2">
+        <div style="margin: 0; max-width: 100%" class="container-fluid page__container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="page-separator">
+                        <div class="page-separator__text">Basic Information</div>
+                    </div>
+                    <div class="table-responsive" style="margin-top:20px" id="divPartial">
+                        @Html.Partial("_GroupList")
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section scripts {
+    <!-- DateRangePicker -->
+    <script src="~/Content/assets/vendor/moment.min.js"></script>
+    <script src="~/Content/assets/vendor/daterangepicker.js"></script>
+    <script src="~/Content/assets/js/daterangepicker.js"></script>
+    @Scripts.Render("~/Scripts/List")
+
+    @if (TempData["Success"] != null)
+    {
+        <script>
+            toastr.success("Data Saved Successfully");
+        </script>
+    }
+
+    <script>
+        $(document).ready(function () {
+            $("#DTable").DataTable({ "lengthMenu": [[-1, 25, 50, 100], ["All", 25, 50, 100]] });
+            //$(document).find("#DTable_wrapper").css("display", "");
+        })
+    </script>
+
+}
+

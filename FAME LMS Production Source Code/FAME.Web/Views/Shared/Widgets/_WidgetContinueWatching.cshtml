@@ -1,0 +1,233 @@
+@using First_Aid_Made_Easy.BLL
+@using Microsoft.AspNet.Identity
+@{
+    // Continue watching data would typically come from video watch history
+    // This widget loads data via AJAX from an endpoint
+    var userId = User.Identity.GetUserId();
+}
+
+<div class="fame-widget-card">
+    <div class="fame-widget-header">
+        <div class="fame-widget-title">
+            <i data-feather="play-circle" class="fame-widget-icon"></i>
+            <span>Continue Watching</span>
+        </div>
+        <a href="@Url.Action("MyCourses", "Student")" class="fame-widget-link">
+            See All
+            <i data-feather="arrow-right" style="width: 16px; height: 16px;"></i>
+        </a>
+    </div>
+    
+    <div class="fame-widget-body" style="padding: 0;">
+        <div class="fame-continue-carousel" id="continueWatchingList">
+            <!-- Loading skeleton -->
+            <div class="fame-continue-loading">
+                <div class="fame-continue-skeleton">
+                    <div class="fame-skeleton" style="width: 120px; height: 70px; border-radius: 8px;"></div>
+                    <div style="flex: 1;">
+                        <div class="fame-skeleton" style="width: 80%; height: 16px; margin-bottom: 8px;"></div>
+                        <div class="fame-skeleton" style="width: 60%; height: 12px;"></div>
+                    </div>
+                </div>
+                <div class="fame-continue-skeleton">
+                    <div class="fame-skeleton" style="width: 120px; height: 70px; border-radius: 8px;"></div>
+                    <div style="flex: 1;">
+                        <div class="fame-skeleton" style="width: 80%; height: 16px; margin-bottom: 8px;"></div>
+                        <div class="fame-skeleton" style="width: 60%; height: 12px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    loadContinueWatching();
+});
+
+function loadContinueWatching() {
+    var $container = $('#continueWatchingList');
+    
+    $.get('/StudentData/GetRecentVideos?count=5', function(data) {
+        if (data && data.length > 0) {
+            var html = '<div class="fame-continue-items">';
+            
+            data.forEach(function(video) {
+                var progress = video.Progress || 0;
+                var thumbnail = video.Thumbnail || '/Areas/Landing/assets/images/logo/fame-logo.png';
+                var duration = formatDuration(video.Duration || 0);
+                var watched = formatDuration(video.WatchedDuration || 0);
+                
+                html += `
+                    <a href="/Student/WatchVideo/${video.VideoId}?resume=true" class="fame-continue-item">
+                        <div class="fame-continue-thumb">
+                            <img src="${thumbnail}" alt="${video.Title}" onerror="this.src='/Areas/Landing/assets/images/logo/fame-logo.png'">
+                            <div class="fame-continue-play">
+                                <i data-feather="play" style="width: 16px; height: 16px;"></i>
+                            </div>
+                            <div class="fame-continue-progress" style="width: ${progress}%;"></div>
+                        </div>
+                        <div class="fame-continue-info">
+                            <div class="fame-continue-title">${video.Title}</div>
+                            <div class="fame-continue-meta">${video.CourseName}</div>
+                            <div class="fame-continue-time">${watched} / ${duration}</div>
+                        </div>
+                    </a>
+                `;
+            });
+            
+            html += '</div>';
+            $container.html(html);
+            feather.replace();
+        } else {
+            $container.html(`
+                <div class="fame-widget-empty" style="padding: 32px;">
+                    <i data-feather="film" style="width: 40px; height: 40px; margin-bottom: 12px; opacity: 0.5;"></i>
+                    <p style="margin: 0; color: var(--fame-text-tertiary);">No videos in progress</p>
+                </div>
+            `);
+            feather.replace();
+        }
+    }).fail(function() {
+        // Show placeholder content
+        $container.html(`
+            <div class="fame-continue-items">
+                <div class="fame-continue-item" style="cursor: default; opacity: 0.7;">
+                    <div class="fame-continue-thumb" style="background: var(--fame-bg-tertiary);">
+                        <div class="fame-continue-play">
+                            <i data-feather="play" style="width: 16px; height: 16px;"></i>
+                        </div>
+                    </div>
+                    <div class="fame-continue-info">
+                        <div class="fame-continue-title">Start watching videos</div>
+                        <div class="fame-continue-meta">Your recently watched videos will appear here</div>
+                    </div>
+                </div>
+            </div>
+        `);
+        feather.replace();
+    });
+}
+
+function formatDuration(seconds) {
+    var mins = Math.floor(seconds / 60);
+    var secs = Math.floor(seconds % 60);
+    return mins + ':' + (secs < 10 ? '0' : '') + secs;
+}
+</script>
+
+<style>
+.fame-continue-carousel {
+    overflow-x: auto;
+}
+
+.fame-continue-loading {
+    padding: 20px;
+}
+
+.fame-continue-skeleton {
+    display: flex;
+    gap: 16px;
+    padding: 12px 0;
+}
+
+.fame-continue-items {
+    display: flex;
+    flex-direction: column;
+}
+
+.fame-continue-item {
+    display: flex;
+    gap: 16px;
+    padding: 16px 20px;
+    text-decoration: none;
+    transition: background 200ms;
+    border-bottom: 1px solid var(--fame-border);
+}
+
+.fame-continue-item:last-child {
+    border-bottom: none;
+}
+
+.fame-continue-item:hover {
+    background: var(--fame-bg-tertiary);
+}
+
+.fame-continue-thumb {
+    position: relative;
+    width: 120px;
+    height: 70px;
+    border-radius: var(--fame-radius-md);
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.fame-continue-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.fame-continue-play {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 32px;
+    height: 32px;
+    background: rgba(0,0,0,0.6);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    opacity: 0;
+    transition: opacity 200ms;
+}
+
+.fame-continue-item:hover .fame-continue-play {
+    opacity: 1;
+}
+
+.fame-continue-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--fame-primary), var(--fame-secondary));
+}
+
+.fame-continue-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.fame-continue-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--fame-text-primary);
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.fame-continue-meta {
+    font-size: 12px;
+    color: var(--fame-text-tertiary);
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.fame-continue-time {
+    font-size: 11px;
+    color: var(--fame-text-tertiary);
+    font-weight: 500;
+}
+</style>

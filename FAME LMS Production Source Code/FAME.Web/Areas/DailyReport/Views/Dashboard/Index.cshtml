@@ -1,0 +1,152 @@
+@model First_Aid_Made_Easy.Areas.DailyReport.Controllers.DashboardVM
+@{
+    ViewBag.Title = "Dashboard";
+    Layout = "~/Areas/DailyReport/Views/Shared/_Layout.cshtml";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-tachometer-alt me-2"></i>Dashboard</h2>
+    <div>
+        @Html.ActionLink("Create New Report", "Index", "DailyReport", new { area = "DailyReport" }, new { @class = "btn btn-primary" })
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="card-title">@(Model.IsAdmin ? "Total Reports" : "My Reports")</h4>
+                        <h2>@Model.TotalReports</h2>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-file-alt fa-3x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    @if (Model.IsAdmin)
+    {
+        <div class="col-md-6">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="card-title">Total Users</h4>
+                            <h2>@Model.TotalUsers</h2>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-users fa-3x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- Recent Reports -->
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0"><i class="fas fa-clock me-2"></i>Recent Reports</h5>
+        @if (Model.IsAdmin)
+        {
+            @Html.ActionLink("View All Reports", "AllReports", "Dashboard", new { area = "DailyReport" }, new { @class = "btn btn-sm btn-outline-primary" })
+        }
+        else
+        {
+            @Html.ActionLink("View My Reports", "List", "DailyReport", new { area = "DailyReport" }, new { @class = "btn btn-sm btn-outline-primary" })
+        }
+    </div>
+    <div class="card-body">
+        @if (Model.RecentReports.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Report Content</th>
+                            @if (Model.IsAdmin)
+                            {
+                                <th>User</th>
+                            }
+                            <th>Created</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var report in Model.RecentReports)
+                        {
+                            <tr>
+                                <td>@report.Date</td>
+                                <td>
+                                    @if (report.Body.Length > 100)
+                                    {
+                                        @(report.Body.Substring(0, 100) + "...")
+                                    }
+                                    else
+                                    {
+                                        @report.Body
+                                    }
+                                </td>
+                                @if (Model.IsAdmin)
+                                {
+                                    <td>
+                                        <span class="badge bg-secondary">User #@report.UserFid</span>
+                                    </td>
+                                }
+                            <td>@(string.Format("{0:yyyy-MM-dd hh:mm tt}",report.CreatedDT))</td>
+                                <td>
+                                    @Html.ActionLink("View", "Index", "DailyReport", new { area = "DailyReport", id = report.ID }, new { @class = "btn btn-sm btn-outline-primary" })
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-4">
+                <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                <p class="text-muted">No reports found.</p>
+                @Html.ActionLink("Create your first report", "Index", "DailyReport", new { area = "DailyReport" }, new { @class = "btn btn-primary" })
+            </div>
+        }
+    </div>
+</div>
+
+@if (Model.IsAdmin)
+{
+    <!-- Quick Actions for Admin -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-tools me-2"></i>Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            @Html.ActionLink("Manage Users", "Users", "Dashboard", new { area = "DailyReport" }, new { @class = "btn btn-outline-secondary w-100" })
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            @Html.ActionLink("Create User", "CreateUser", "Dashboard", new { area = "DailyReport" }, new { @class = "btn btn-outline-success w-100" })
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            @Html.ActionLink("All Reports", "AllReports", "Dashboard", new { area = "DailyReport" }, new { @class = "btn btn-outline-info w-100" })
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            @Html.ActionLink("Create Report", "Index", "DailyReport", new { area = "DailyReport" }, new { @class = "btn btn-outline-primary w-100" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}

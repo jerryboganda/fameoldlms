@@ -1,0 +1,364 @@
+﻿@model First_Aid_Made_Easy.Models.Friend
+@{
+    ViewBag.Title = "Friend List";
+    if (User.IsInRole("Student"))
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
+    else if (User.IsInRole("SuppAgent"))
+    {
+        Layout = "~/Views/Shared/_LayoutAgent.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_LayoutTeacher.cshtml";
+    }
+}
+
+
+<div class="page-section bg-alt border-bottom-2">
+    <div class="container page__container">
+
+        <div class="d-flex flex-column flex-lg-row align-items-center">
+            <div class="flex d-flex flex-column align-items-center align-items-lg-start mb-16pt mb-lg-0 text-center text-lg-left">
+                <h1 class="h2 mb-8pt">Friends List</h1>
+            </div>
+            @if (User.IsInRole("Student"))
+            {
+                <div class="ml-lg-16pt">
+                    <a href="/Student/Index" class="btn btn-light">Back</a>
+                </div>
+            }
+        </div>
+
+    </div>
+</div>
+
+
+<div class="page-section">
+    <div class="@(User.IsInRole("Student")? "container page__container" : "page__container")">
+
+        <div class="row">
+
+            <div class="col-lg-7">
+
+
+                <div class="page-separator">
+                    <div class="page-separator__text">Friends List</div>
+                </div>
+
+                <div class="row card-group-row mb-8pt">
+
+
+                    @if (Model?.FriendList != null && Model.FriendList.Count() > 0)
+                    {
+                        foreach (var f in Model.FriendList)
+                        {
+                            <div class="col-sm-6 card-group-row__col">
+                                <div class="card card-sm card-group-row__card">
+                                    <div class="card-body d-flex align-items-center">
+                                        <a href="/Chat/Index/@f.FriendID" class="avatar avatar-4by3 overlay overlay--primary mr-12pt">
+                                            <img src="@Url.Content("~/Images/"+f.FriendPic)" alt="@f.FriendName" class="avatar-img rounded">
+                                            <span class="overlay__content"></span>
+                                        </a>
+                                        <div class="flex">
+                                            <a class="card-title mb-4pt" href="/Chat/Index/@f.FriendID">@f.FriendName</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+
+                        <div style="padding-top:3rem !important " class="mdk-box__content d-flex align-items-center justify-content-center container page__container text-center py-112pt">
+                            <div class="card card--transparent mb-0">
+                                <div class="card-body px-32pt py-24pt">
+                                    <h1>Oops! No Friends Yet</h1>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="col-lg-5">
+
+                <div class="page-separator">
+                    <div class="page-separator__text">Pending Requests</div>
+                </div>
+
+                @if (Model?.RequestList != null && Model.RequestList.Count() > 0)
+                {
+                    <div class="list-group-item">
+                        @foreach (var r in Model.RequestList)
+                        {
+                            <div data-id="@r.ReqID" class="mb-8pt d-flex align-items-center">
+                                <a href="learnly-student-course.html" class="avatar avatar-4by3 overlay overlay--primary mr-12pt">
+                                    <img src="@Url.Content("~/Images/"+r.FriendPic)" alt="Pic" class="avatar-img rounded">
+                                    <span class="overlay__content"></span>
+                                </a>
+                                <div class="d-flex">
+                                    <div class="card-title mb-4pt">@r.FriendName</div>
+                                    <div style="width: 137px !important;" class="ml-4 acceptDiv align-items-center">
+                                        <button data-accept="true" data-id="@r.ReqID" class="btn m-1 btnAcceptRequest btn-sm btn-outline-success">Accept</button>
+                                        <button data-accept="false" data-id="@r.ReqID" class="btn m-1 btnAcceptRequest btn-sm btn-outline-danger">Reject</button>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+
+                    <div class="justify-content-center text-center ">
+                        <div class="card card--transparent mb-0">
+                            <div class="card-body px-24pt py-16pt">
+                                <div class="card-title mb-4pt">No Request Found ...</div>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+
+                <div class="page-separator"> <div class="page-separator__text"></div> </div>
+                <div class="page-separator">
+                    <div class="page-separator__text">Students List</div>
+                </div>
+
+                <div class="list-group-item">
+                    <div style="display:none" class="form-group m-0" role="group" aria-labelledby="label-title">
+                        <div class="form-row align-items-center">
+                            <div class="col-md-9">
+                                @Html.TextBox("FindID", "", new { @class = "form-control", @placeholder = "Enter ID to Search", @required = "required" })
+                            </div>
+                            <div class="col-md-3"><button id="btnFind" class="btn btn-primary">Find</button> </div>
+                        </div>
+                    </div>
+                    <table id="DTable">
+                        <thead class="DTHead">
+                            <tr>
+                                <td>ID</td>
+                                <td>Name</td>
+                                <td style="min-width:140px !important">Action</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var f in Model.AllUser)
+                            {
+                                <tr>
+                                    <td>@f.User_Id</td>
+                                    <td>@f.User_Name</td>
+                                    <td class="text-right">
+                                        @if (f.IsFriend == true)
+                                        {
+                                            <button class="btn m-1 btn-sm btn-outline-success">Friends</button>
+                                        }
+                                        else if (f.RequestSent == true)
+                                        {
+
+                                            <button id="btnSent" class="btn m-1 btn-sm btn-outline-warning">Sent</button>
+                                            <button data-id="@f.User_AspUser" id="btnUndoRequest" class="btn m-1 btn-sm btn-outline-danger">Undo</button>
+                                            <button style="display:none" data-id="@f.User_AspUser" id="btnSendRequest" class="btn btn-sm btn-primary">Send Request</button>
+                                        }
+                                        else if (f.RequestReceived == true)
+                                        {
+                                            <button class="btn m-1 btn-sm btn-outline-warning">Pending</button>
+                                        }
+                                        else if (f.RequestRejected == true)
+                                        {
+                                            <button class="btn m-1 btn-sm btn-outline-danger">Rejected</button>
+                                        }
+                                        else
+                                        {
+                                            <button style="display:none" id="btnSent" class="btn m-1 btn-sm btn-outline-warning">Sent</button>
+                                            <button style="display:none" data-id="@f.User_AspUser" id="btnUndoRequest" class="btn m-1 btn-sm btn-outline-danger">Undo</button>
+                                            <button data-id="@f.User_AspUser" id="btnSendRequest" class="btn btn-sm btn-primary">Send Request</button>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="page-separator"> <div class="page-separator__text"></div> </div>
+                <div id="searchedDiv" class="mb-8pt d-flex align-items-center"> </div>
+
+
+                <div class="page-separator">
+                    <div class="page-separator__text">Instructors List</div>
+                </div>
+
+                <div class="list-group-item">
+                    <table id="DTable2">
+                        <thead class="DTHead">
+                            <tr>
+                                <td>ID</td>
+                                <td>Name</td>
+                                <td>Action</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var f in Model.Instructors)
+                            {
+                                <tr>
+                                    <td>@f.User_Id</td>
+                                    <td>@f.User_Name</td>
+                                    <td class="text-right">
+                                        @if (f.IsFriend == true)
+                                        {
+                                            <button class="btn m-1 btn-sm btn-outline-success">Friends</button>
+                                        }
+                                        else if (f.RequestSent == true)
+                                        {
+                                            <button id="btnSent"  class="btn m-1 btn-sm btn-outline-warning">Sent</button>
+                                            <button data-id="@f.User_AspUser" id="btnUndoRequest" class="btn m-1 btn-sm btn-outline-danger">Undo</button>
+                                            <button style="display:none" data-id="@f.User_AspUser" id="btnSendRequest" class="btn btn-sm btn-primary">Send Request</button>
+                                        }
+                                        else if (f.RequestReceived == true)
+                                        {
+                                            <button class="btn m-1 btn-sm btn-outline-warning">Pending</button>
+                                        }
+                                        else if (f.RequestRejected == true)
+                                        {
+                                            <button class="btn m-1 btn-sm btn-outline-danger">Rejected</button>
+                                        }
+                                        else
+                                        {
+                                            <button style="display:none" id="btnSent" class="btn m-1 btn-sm btn-outline-warning">Sent</button>
+                                            <button style="display:none" data-id="@f.User_AspUser" id="btnUndoRequest" class="btn m-1 btn-sm btn-outline-danger">Undo</button>
+                                            <button data-id="@f.User_AspUser" id="btnSendRequest" class="btn btn-sm btn-primary">Send Request</button>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@section scripts {
+    <script>
+
+        $(document).ready(function () {
+            $("#DTable").DataTable({ "lengthMenu": [[5, 10, 50, 100], [5, 10, 50, 100]] });
+            $("#DTable2").DataTable({ "lengthMenu": [[5, 10, 50, 100], [5, 10, 50, 100]] });
+            $(".DTHead").hide();
+        })
+    </script>
+
+    <script>
+        $(document).on("click", "#btnFind", function () {
+            var id = $("#FindID").val();
+            if (id > 0) {
+                $.ajax({
+                    url: "/Chat/FindUser/" + id,
+                    success: function (data) {
+                        if (data != null) AppendUser(data);
+                        else AppendNotFound();
+                    },
+                    error: function () {
+                        AppendNotFound();
+                    }
+                })
+            }
+        })
+        function AppendUser(data) {
+            var html = `
+                                                                                        <a href="#" class="avatar avatar-4by3 overlay overlay--primary mr-12pt">
+                                                                                            <img src="~/Images/${data.User_Pic}" alt="Pic" class="avatar-img rounded">
+                                                                                            <span class="overlay__content"></span>
+                                                                                        </a>
+                                                                                        <div class="d-flex">
+                                                                                            <div class="card-title mb-4pt">${data.User_Name}</div>
+                                                                                            <div class="ml-4 align-items-center">`;
+            if (!data.DisableRequest)
+                html += `<button data-id="${data.User_AspUser}" id="btnSendRequest"  class="btn btn-sm btn-primary">Send Request</button>`
+            html += `</div> </div>`;
+            $("#searchedDiv").html(html);
+        }
+        function AppendNotFound() {
+            var html = `
+                                                                                                    <div class="justify-content-center text-center ">
+                                                                                                        <div class="card card--transparent mb-0">
+                                                                                                            <div class="card-body px-24pt py-16pt">
+                                                                                                                <div class="card-title mb-4pt">Oops! User Not Found ...</div>
+                                                                                                            </div>
+                                                                                                        </div>
+                                                                                                    </div>`;
+            $("#searchedDiv").html(html);
+        }
+    </script>
+
+    <script>
+
+        $(document).on("click", "#btnSendRequest", function () {
+            var id = $(this).data("id");
+            var td = $(this).closest("td");
+            if (id != "") {
+                $.ajax({
+                    url: "/Chat/SendRequest/" + id,
+                    success: function (data) {
+                        if (data) {
+                            td.find("#btnSendRequest").hide();
+                            td.find("#btnUndoRequest").show();
+                            td.find("#btnSent").show();
+                        }
+                        else btn.text("Send Again");
+                    },
+                    error: function () {
+                        btn.text("Send Again");
+                    }
+                })
+            }
+        })
+
+        $(document).on("click", "#btnUndoRequest", function () {
+            var id = $(this).data("id");
+            var td = $(this).closest("td");
+            if (id != "") {
+                $.ajax({
+                    url: "/Chat/UndoRequest/" + id,
+                    success: function (data) {
+                        if (data) {
+                            td.find("#btnSendRequest").show();
+                            td.find("#btnUndoRequest").hide();
+                            td.find("#btnSent").hide();
+                        }
+                        else td.find("#btnSendRequest").text("Send Again");
+                    },
+                    error: function () {
+                        td.find("#btnSendRequest").text("Send Again");
+                    }
+                })
+            }
+        })
+    </script>
+
+    <script>
+
+        $(document).on("click", ".btnAcceptRequest", function () {
+            var id = $(this).data("id");
+            var IsAccepted = $(this).data("accept");
+            var div = $(this).closest(".acceptDiv");
+            if (id != "") {
+                $.ajax({
+                    url: "/Chat/AcceptRequest/" + id + "?IsAccepted=" + IsAccepted,
+                    success: function (data) {
+                        if (IsAccepted) div.html(`<button data-accept="true" class="btn m-1 btn-sm btn-outline-success">Accepted</button>`)
+                        else div.html(`<button data-accept="true" class="btn m-1 btn-sm btn-outline-danger">Rejected</button>`)
+                    },
+                    error: function () {
+                        btn.text("Send Again");
+                    }
+                })
+            }
+        })
+    </script>
+}

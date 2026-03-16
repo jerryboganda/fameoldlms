@@ -1,0 +1,129 @@
+﻿@model List<First_Aid_Made_Easy.DAL.sp_lstDeleteDeviceReq_Result>
+@{
+    ViewBag.Title = "Delete Device Request List";
+    Layout = "~/Views/Shared/_LayoutTeacher.cshtml";
+
+    <!-- DateRangePicker -->
+    <link type="text/css" href="~/Content/assets/vendor/daterangepicker.css" rel="stylesheet">
+}
+
+<div class="pt-32pt">
+    <div class="container-fluid page__container d-flex flex-column flex-md-row align-items-center text-center text-sm-left">
+        <div class="flex d-flex flex-column flex-sm-row align-items-center">
+            <div class="mb-24pt mb-sm-0 mr-sm-24pt">
+                <h2 class="mb-0">Delete Device Request List</h2>
+                <ol class="breadcrumb p-0 m-0">
+                    <li class="breadcrumb-item"><a href="/Teacher/Index">Home</a></li>
+                    <li class="breadcrumb-item active">
+                        Delete Device  Request List
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="page-section border-bottom-2">
+        <div style="margin: 0; max-width: 100%" class="container-fluid page__container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="page-separator">
+                        <div class="page-separator__text">Basic information</div>
+                    </div>
+                    <div class="table-responsive" style="margin-top:20px" id="divPartial">
+                        <table id="DTable" class="table table-bordered">
+                            <thead>
+                                <tr style="background-color: #364e9c">
+                                    <th>Student</th>
+                                    <th>Device</th>
+                                    <th>Notes</th>
+                                    <th>Req. Time</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var a in Model)
+                                {
+
+                                    var Device = a.UserAgent;
+                                    var s = a.UserAgent?.IndexOf("(") ?? -1;
+                                    var e = a.UserAgent?.IndexOf(")") ?? -1;
+                                    if (s != -1)
+                                    {
+                                        Device = a.UserAgent.Substring(s, e - s + 1);
+                                    }
+                                    <tr>
+                                        <td>@(a.User_Name) <br /> @a.Email <br />@a.Student_Mobile</td>
+
+                                        <td>
+                                            @Device <br />
+                                            @(a.IsMobile == true ? "Mobile Device ( iOS or Android )" : "Laptop / Desktop PC" ) <br />
+                                            Reg. Date : @string.Format("{0:dd/MM/yyyy}", a.DevCreatedDT)
+                                        </td>
+                                        <td>@a.Notes</td>
+                                        <td>@string.Format("{0:dd/MM/yyyy hh:mm tt}", a.DateTime)</td>
+                                        <td>
+                                            <a href="#" data-url="/Device/RemoveDevice/@a.DeviceID?UserID=@a.UserID&ReqID=@a.ID" id="btnRowDelete" data-name=" Device " vlaue="" class="btn btn-sm btn-success">Accept</a> <br />
+                                            <a href="#" data-url="/Device/RemoveDevice/@a.DeviceID?UserID=@a.UserID&ReqID=@a.ID&IsAccepted=false" id="btnRowDelete" data-name=" Request " class="btn btn-sm btn-danger">Reject</a> <br />
+                                            <a href="#" data-url="/Device/PrevHistory/@a.UserID" id="btnPrevHistory" class="btn btn-sm btn-warning">Prev History</a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="w3-container">
+        <div id="videoModal" class="w3-modal">
+            <div class="w3-modal-content w3-card-4 w3-animate-zoom" style="max-width:800px">
+                <div class="w3-center">
+                    <span onclick="document.getElementById('videoModal').style.display='none'" class="w3-button w3-xlarge w3-hover-red w3-display-topright" title="Close Modal">&times;</span>
+                    <h2>Previous Request History</h2>
+                </div>
+
+                <div id="videoForm" class="w3-container">
+                    <div class="w3-section" id="ReqHistory"> </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section scripts {
+    <!-- DateRangePicker -->
+    <script src="~/Content/assets/vendor/moment.min.js"></script>
+    <script src="~/Content/assets/vendor/daterangepicker.js"></script>
+    <script src="~/Content/assets/js/daterangepicker.js"></script>
+    @Scripts.Render("~/Scripts/List")
+
+    @if (TempData["Success"] != null)
+    {
+        <script>
+            toastr.success("Data Saved Successfully");
+        </script>
+    }
+
+    <script>
+        $(document).ready(function () {
+            $("#DTable").DataTable();
+        })
+
+        $(document).on("click", "#btnPrevHistory", function () {
+            $.ajax({
+                url: $(this).data('url'),
+                success: function (data) {
+                    $("#ReqHistory").html(data);
+                    $("#videoModal").show();
+                }
+            })
+        })
+    </script>
+
+}
+

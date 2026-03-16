@@ -1,0 +1,119 @@
+﻿@model  First_Aid_Made_Easy.Models.PackageVM
+@{
+    ViewBag.Title = "Packages";
+}
+<div class="page-section bg-alt border-bottom-2">
+    <div class="container page__container">
+
+        <div class="d-flex flex-column flex-lg-row align-items-center">
+            <div class="d-flex flex-column align-items-center align-items-lg-start flex mb-16pt mb-lg-0 text-center text-lg-left">
+                <h1 class="h2 mb-4pt">Packages</h1>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="page-section border-bottom-2">
+    <div class="container page__container">
+
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="page-separator">
+                    <div class="page-separator__text">Our Packages</div>
+                </div>
+
+                <div class="row">
+
+                    @foreach (var c in Model.List)
+                    {
+                        <div class="col-md-4 col-sm-6 card-group-row__col">
+                            <div class="card js-overlay card-sm overlay--primary-dodger-blue stack stack--1 card-group-row__card">
+                                @*<div class="card js-overlay card-sm overlay--primary-dodger-blue stack stack--1 card-group-row__card" data-toggle="popover" data-trigger="click">*@
+                                <div class="card-body d-flex flex-column">
+                                    <div class="d-flex align-items-center">
+                                        <div class="flex">
+                                            <div class="d-flex align-items-center">
+                                                <div class="flex">
+                                                    <div class="card-title">@c.PackageName</div>
+                                                    @if (c.PackagePrice > 0)
+                                                    {
+                                                        <p class="flex text-black-50 lh-1 mb-0"><small>@c.PackagePrice / Month</small></p>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <a href="/Home/Package_Preview/@c.PackageID" class="ml-4pt btn btn-sm btn-link text-secondary border-1 border-secondary">Detail</a>
+                                        @*<a href="undefinedstudent-path.html" class="ml-4pt btn btn-sm btn-link text-secondary border-1 border-secondary">Detail</a>*@
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="popoverContainer d-none">
+                                @*<div class="media">
+                                        <div class="media-body">
+                                            <div class="card-title">@c.PackageName</div>
+
+                                            @if (c.PackagePrice > 0)
+                                            {
+                                                <p class="text-black-50 d-flex lh-1 mb-0 small">@c.PackagePrice / Month</p>
+                                            }
+                                        </div>
+                                    </div>
+                                    @foreach (var d in c.Detail)
+                                    {
+                                        <p class="mt-16pt text-black-70">@d.CourseName</p>
+                                    }
+                                    <div class="my-32pt">
+                                        <div class="d-flex align-items-center mb-8pt justify-content-center">
+                                            <a href="/Home/Package_Preview/@c.PackageID" class="btn btn-primary mr-8pt">Details</a>
+                                        </div>
+                                    </div>*@
+                            </div>
+                        </div>
+                    }
+                </div>
+                <div class="mb-32pt">
+
+                    <ul class="pagination justify-content-start pagination-xsm m-0">
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" aria-label="Previous">
+                                <span aria-hidden="true" class="material-icons">chevron_left</span>
+                                <span>Prev</span>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="#" aria-label="Page 1">
+                                <span>1</span>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="#" aria-label="Page 2">
+                                <span>2</span>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="#" aria-label="Next">
+                                <span>Next</span>
+                                <span aria-hidden="true" class="material-icons">chevron_right</span>
+                            </a>
+                        </li>
+                    </ul>
+
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+@section scripts {
+
+    @*@Scripts.Render("~/Scripts/List")*@
+    <script>
+        $(document).ready(function () {
+            $(".card").removeClass("overlay--show");
+        })
+    </script>
+}

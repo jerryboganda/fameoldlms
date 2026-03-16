@@ -1,0 +1,302 @@
+@using First_Aid_Made_Easy.Models.Certificate
+@using First_Aid_Made_Easy.BLL.Interfaces
+@model List<CertificateRuleSetVM>
+@{
+    ViewBag.Title = "Issuance Rules";
+    Layout = "~/Views/Shared/_LayoutTeacher.cshtml";
+    var rules = Model ?? new List<CertificateRuleSetVM>();
+    var courses = ViewBag.Courses as List<CourseSelectItem> ?? new List<CourseSelectItem>();
+    var templates = ViewBag.Templates as List<CertificateTemplateListVM> ?? new List<CertificateTemplateListVM>();
+}
+
+<div class="container-fluid px-4 py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-bold mb-1"><i class="bi bi-sliders me-2"></i>Issuance Rules</h3>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0 small">
+                    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Admin", new { area = "Certificate" })">Certificate Manager</a></li>
+                    <li class="breadcrumb-item active">Rules</li>
+                </ol>
+            </nav>
+        </div>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ruleModal" onclick="resetForm()">
+            <i class="bi bi-plus-lg me-1"></i> New Rule
+        </button>
+    </div>
+
+    <!-- Info Banner -->
+    <div class="alert alert-info d-flex align-items-start mb-4">
+        <i class="bi bi-info-circle-fill me-2 mt-1"></i>
+        <div>
+            <strong>How rules work:</strong> Each rule defines when a certificate should be issued for a specific course.
+            You can set conditions like minimum video completion, minimum exam score, and completion status.
+            Rules can trigger automatic issuance or require manual approval.
+        </div>
+    </div>
+
+    <!-- Existing Rules -->
+    <div class="row g-3">
+        @foreach (var r in rules)
+        {
+            var ruleJson = r.Rules != null ? Newtonsoft.Json.JsonConvert.SerializeObject(r.Rules) : "{}";
+            var ruleDef = r.Rules;
+            <div class="col-lg-6">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div>
+                                <h6 class="fw-semibold mb-0">@r.TemplateName</h6>
+                                <div class="text-muted small">Course: @(r.CourseName ?? "All Courses")</div>
+                            </div>
+                            <div class="d-flex gap-1">
+                                @if (r.IsActive)
+                                {
+                                    <span class="badge bg-success">Active</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Inactive</span>
+                                }
+                                @if (r.IssuanceMode == "Auto")
+                                {
+                                    <span class="badge bg-info">Auto</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning text-dark">Manual</span>
+                                }
+                            </div>
+                        </div>
+
+                        @if (ruleDef != null && ruleDef.Conditions != null)
+                        {
+                            <div class="mt-2 mb-3">
+                                @foreach (var cond in ruleDef.Conditions)
+                                {
+                                    <div class="d-flex align-items-center gap-2 mb-1">
+                                        <i class="bi bi-check2-circle text-success"></i>
+                                        <span class="small">
+                                            @switch (cond.Type)
+                                            {
+                                                case "VideoProgress":
+                                                    @:Video completion ≥ @cond.Threshold%
+                                                    break;
+                                                case "ExamPass":
+                                                    @:Exam score ≥ @cond.Threshold%
+                                                    break;
+                                                case "Attendance":
+                                                    @:Course marked complete
+                                                    break;
+                                                default:
+                                                    @:@cond.Type ≥ @cond.Threshold
+                                                    break;
+                                            }
+                                        </span>
+                                    </div>
+                                }
+                            </div>
+                        }
+
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-sm btn-outline-primary flex-fill" onclick="editRule(@r.Id)">
+                                <i class="bi bi-pencil me-1"></i>Edit
+                            </button>
+                            <form method="post" action="@Url.Action("DeactivateRuleSet", "Admin", new { area = "Certificate" })" class="d-inline"
+                                  onsubmit="return confirm('Deactivate this rule?');">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@r.Id" />
+                                <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        @if (!rules.Any())
+        {
+            <div class="col-12">
+                <div class="text-center text-muted py-5">
+                    <i class="bi bi-sliders" style="font-size: 48px; opacity: 0.3;"></i>
+                    <p class="mt-3">No issuance rules configured yet.</p>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Rule Modal -->
+<div class="modal fade" id="ruleModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form id="ruleForm" method="post" action="@Url.Action("SaveRule", "Admin", new { area = "Certificate" })">
+                @Html.AntiForgeryToken()
+                <input type="hidden" id="ruleId" name="Id" value="0" />
+                <div class="modal-header">
+                    <h5 class="modal-title" id="ruleModalTitle">New Issuance Rule</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Rule Name</label>
+                            <input type="text" class="form-control" id="ruleName" name="Name" required placeholder="e.g. First Aid Level 3 Completion" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Course</label>
+                            <select class="form-select" id="ruleCourse" name="CourseId" required>
+                                <option value="">Select course...</option>
+                                @foreach (var c in courses)
+                                {
+                                    <option value="@c.Id">@c.Name</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Template</label>
+                            <select class="form-select" id="ruleTemplate" name="TemplateId" required>
+                                <option value="">Select template...</option>
+                                @foreach (var t in templates)
+                                {
+                                    <option value="@t.Id">@t.Name</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Issuance Mode</label>
+                            <select class="form-select" id="ruleMode" name="IssuanceMode">
+                                <option value="Auto">Automatic — issue immediately when criteria met</option>
+                                <option value="Manual">Manual — requires admin approval</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Validity Period (days, 0 = no expiry)</label>
+                            <input type="number" class="form-control" id="ruleValidity" name="ValidityDays" value="0" min="0" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">CPD Credits</label>
+                            <input type="number" class="form-control" id="ruleCredits" name="Credits" value="0" min="0" step="0.5" />
+                        </div>
+                    </div>
+
+                    <!-- Conditions Builder -->
+                    <hr class="my-3" />
+                    <h6 class="fw-semibold">Conditions</h6>
+                    <p class="text-muted small">All conditions must be met (AND logic) to trigger certificate issuance.</p>
+
+                    <div id="conditionsContainer">
+                        <!-- Default conditions are added by JS -->
+                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-secondary mt-2" onclick="addCondition()">
+                        <i class="bi bi-plus me-1"></i>Add Condition
+                    </button>
+
+                    <input type="hidden" id="rulesJsonField" name="RulesJson" />
+
+                    <div class="form-check mt-3">
+                        <input class="form-check-input" type="checkbox" id="ruleActive" name="IsActive" value="true" checked />
+                        <label class="form-check-label" for="ruleActive">Rule is active</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Rule</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+<script>
+    var conditionIndex = 0;
+
+    function resetForm() {
+        document.getElementById('ruleId').value = '0';
+        document.getElementById('ruleName').value = '';
+        document.getElementById('ruleCourse').value = '';
+        document.getElementById('ruleTemplate').value = '';
+        document.getElementById('ruleMode').value = 'Auto';
+        document.getElementById('ruleValidity').value = '0';
+        document.getElementById('ruleCredits').value = '0';
+        document.getElementById('ruleActive').checked = true;
+        document.getElementById('ruleModalTitle').textContent = 'New Issuance Rule';
+        document.getElementById('conditionsContainer').innerHTML = '';
+        conditionIndex = 0;
+        addCondition('VideoCompletion', '>=', '80');
+        addCondition('ExamScore', '>=', '70');
+    }
+
+    function addCondition(field, operator, value) {
+        conditionIndex++;
+        var html = '<div class="row g-2 align-items-center mb-2 condition-row" id="cond_' + conditionIndex + '">';
+        html += '<div class="col-md-4"><select class="form-select form-select-sm" name="cond_field_' + conditionIndex + '">';
+        html += '<option value="VideoCompletion"' + (field === 'VideoCompletion' ? ' selected' : '') + '>Video Completion %</option>';
+        html += '<option value="ExamScore"' + (field === 'ExamScore' ? ' selected' : '') + '>Exam Score %</option>';
+        html += '<option value="CourseCompleted"' + (field === 'CourseCompleted' ? ' selected' : '') + '>Course Completed</option>';
+        html += '</select></div>';
+        html += '<div class="col-md-3"><select class="form-select form-select-sm" name="cond_op_' + conditionIndex + '">';
+        html += '<option value=">="' + (operator === '>=' ? ' selected' : '') + '>≥ (at least)</option>';
+        html += '<option value="=="' + (operator === '==' ? ' selected' : '') + '>= (exactly)</option>';
+        html += '<option value=">"' + (operator === '>' ? ' selected' : '') + '>> (more than)</option>';
+        html += '</select></div>';
+        html += '<div class="col-md-3"><input type="number" class="form-control form-control-sm" name="cond_val_' + conditionIndex + '" value="' + (value || '0') + '" min="0" max="100" /></div>';
+        html += '<div class="col-md-2"><button type="button" class="btn btn-sm btn-outline-danger" onclick="removeCondition(' + conditionIndex + ')"><i class="bi bi-x"></i></button></div>';
+        html += '</div>';
+        document.getElementById('conditionsContainer').insertAdjacentHTML('beforeend', html);
+    }
+
+    function removeCondition(idx) {
+        var el = document.getElementById('cond_' + idx);
+        if (el) el.remove();
+    }
+
+    // Before form submit, build the RulesJson
+    document.getElementById('ruleForm').addEventListener('submit', function (e) {
+        var conditions = [];
+        document.querySelectorAll('.condition-row').forEach(function (row) {
+            var selects = row.querySelectorAll('select');
+            var input = row.querySelector('input[type="number"]');
+            if (selects.length >= 2 && input) {
+                conditions.push({
+                    Field: selects[0].value,
+                    Operator: selects[1].value,
+                    Value: input.value
+                });
+            }
+        });
+        var ruleDef = { Operator: 'AND', Conditions: conditions };
+        document.getElementById('rulesJsonField').value = JSON.stringify(ruleDef);
+    });
+
+    function editRule(ruleId) {
+        $.get('@Url.Action("GetRule", "Admin", new { area = "Certificate" })?id=' + ruleId, function (data) {
+            document.getElementById('ruleId').value = data.Id;
+            document.getElementById('ruleName').value = data.Name;
+            document.getElementById('ruleCourse').value = data.CourseId;
+            document.getElementById('ruleTemplate').value = data.TemplateId;
+            document.getElementById('ruleMode').value = data.IssuanceMode;
+            document.getElementById('ruleValidity').value = data.ValidityDays || 0;
+            document.getElementById('ruleCredits').value = data.Credits || 0;
+            document.getElementById('ruleActive').checked = data.IsActive;
+            document.getElementById('ruleModalTitle').textContent = 'Edit Issuance Rule';
+            document.getElementById('conditionsContainer').innerHTML = '';
+            conditionIndex = 0;
+
+            if (data.RulesJson) {
+                try {
+                    var parsed = JSON.parse(data.RulesJson);
+                    if (parsed.Conditions) {
+                        parsed.Conditions.forEach(function (c) { addCondition(c.Field, c.Operator, c.Value); });
+                    }
+                } catch (ex) { addCondition('VideoCompletion', '>=', '80'); }
+            }
+
+            new bootstrap.Modal(document.getElementById('ruleModal')).show();
+        });
+    }
+
+    // Initialize with default conditions
+    resetForm();
+</script>
+}

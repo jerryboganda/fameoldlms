@@ -1,0 +1,107 @@
+﻿@model System.Web.Mvc.HandleErrorInfo
+
+@{ Layout = ""; }
+<!DOCTYPE html>
+<html lang="en">
+<!--begin::Head-->
+<head>
+    <title> Sorry ! | First Aid Made Easy</title>
+    <meta charset="utf-8" />
+    <meta name="keywords" content="First Aid Made Easy, Medical," />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="First Aid Made Easy " />
+    <meta property="og:site_name" content="Keenthemes | First Aid Made Easy" />
+    <link rel="shortcut icon" href="~/Content/assetsn/media/logos/favicon.ico" />
+    <!--begin::Fonts-->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700" />
+    <!--end::Fonts-->
+    <!--begin::Global Stylesheets Bundle(used by all pages)-->
+    <link href="~/Content/assetsn/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/assetsn/css/style.bundle.css" rel="stylesheet" type="text/css" />
+    <!--end::Global Stylesheets Bundle-->
+</head>
+<!--end::Head-->
+<!--begin::Body-->
+<body data-kt-name="metronic" id="kt_body" class="app-blank bgi-size-cover bgi-position-center bgi-no-repeat">
+    <!--begin::Theme mode setup on page load-->
+    @Html.Partial("_ThemeScript")
+    <!--end::Theme mode setup on page load-->
+    <!--begin::Main-->
+    <!--begin::Root-->
+    <div class="d-flex flex-column flex-root">
+        <!--begin::Page bg image-->
+        <style>
+            body {
+                background-image: url('../../Content/assetsn/media/auth/bg8.jpg');
+            }
+
+            [data-theme="dark"] body {
+                background-image: url('../../Content/assetsn/media/auth/bg8-dark.jpg');
+            }
+        </style>
+        <!--end::Page bg image-->
+        <!--begin::Authentication - Signup Welcome Message -->
+        <div class="d-flex flex-column flex-center flex-column-fluid">
+            <!--begin::Content-->
+            <div class="d-flex flex-column flex-center text-center p-10">
+                <!--begin::Wrapper-->
+                <div class="card card-flush w-md-650px py-5">
+                    <div class="card-body py-15 py-lg-20">
+                        <!--begin::Logo-->
+                        <div class="mb-7">
+                            <a href="#" class="">
+                                <img alt="Logo" src="~/Areas/Landing/assets/images/logo/fame-logo.png" class="h-40px" />
+                            </a>
+                        </div>
+                        <!--end::Logo-->
+                        <!--begin::Title-->
+                        <h1 class="fw-bolder text-gray-900 mb-5">
+                            @if (ViewBag.Title != null)
+                            {
+                                <span>@Html.Raw(ViewBag.Title)</span>
+                            }
+                            else
+                            {
+                                <span>Login Blocked</span>
+                            }
+                        </h1>
+                        <!--end::Title-->
+                        <!--begin::Text-->
+                        <div class="fw-semibold fs-2 text-gray-700 mb-7">
+                            @if (ViewBag.Remarks != null)
+                            {
+                                <span>@Html.Raw(ViewBag.Remarks)</span>
+                            }
+                            else
+                            {
+                                <span>This account has been locked out, please Contact To Instructor</span>
+                            }
+                        </div>
+                        <!--end::Text-->
+                        <!--begin::Illustration-->
+                        <div class="mb-0">
+                            <img src="~/Content/assetsn/media/auth/security.png" class="mw-100 mh-300px theme-light-show" />
+                            <img src="~/Content/assetsn/media/auth/welcome-dark.png" class="mw-100 mh-300px theme-dark-show" alt="" />
+                        </div>
+
+                        <div class="mb-0"> </div>
+                    </div>
+                </div>
+                <!--end::Wrapper-->
+            </div>
+            <!--end::Content-->
+        </div>
+        <!--end::Authentication - Signup Welcome Message-->
+    </div>
+    <!--end::Root-->
+    <!--end::Main-->
+    <!--begin::Javascript-->
+    <script>var hostUrl = "~/Content/assetsn/";</script>
+    <!--begin::Global Javascript Bundle(used by all pages)-->
+    <script src="~/Content/assetsn/plugins/global/plugins.bundle.js"></script>
+    <script src="~/Content/assetsn/js/scripts.bundle.js"></script>
+</body>
+<!--end::Body-->
+</html>

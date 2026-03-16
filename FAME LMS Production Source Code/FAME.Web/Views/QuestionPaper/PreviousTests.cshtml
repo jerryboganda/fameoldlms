@@ -1,0 +1,112 @@
+﻿@model First_Aid_Made_Easy.Models.QuestionPaperVM
+@using First_Aid_Made_Easy.Models
+@using Microsoft.AspNet.Identity;
+@using First_Aid_Made_Easy.BLL
+@using First_Aid_Made_Easy.DAL
+@{
+	ViewBag.Title = "Question Bank";
+	ViewBag.BreadCrumb = new String[] { "Question Bank", "Previous Tests" };
+	Layout = "~/Views/Shared/_LayoutNew.cshtml";
+}
+<style>
+	.popover {
+		--bs-popover-max-width: 500px !important;
+	}
+</style>
+
+<div class="container-xxl" id="kt_content_container">
+
+	<div class="card">
+		
+		<div class="card-body">
+
+			@if (ViewBag.ResultList != null && ViewBag.ResultList.Count > 0)
+			{
+				<!--begin::Tab Content-->
+				<div class="tab-content">
+					<div class="d-flex flex-wrap flex-stack mb-6">
+						<!--begin::Title-->
+						<h3 class="fw-bold my-2">
+							Previouse Attempts
+							<span class="fs-6 fw-semibold ms-1">(@ViewBag.ResultList.Count)</span>
+						</h3>
+					</div>
+					<div class="card mb-5 mb-xxl-8">
+						<div class="card-body table-responsive pt-9 pb-0">
+							<table class="table table-bordered table2 fs-6 fw-bold gy-5">
+								<thead style="">
+									<tr>
+										<th style="min-width:120px"> <span class="fs-5 text-dark fw-semibold">Action</span> </th>
+										<th> <span class="fs-5 text-dark fw-semibold">Test</span> </th>
+										<th> <span class="fs-5 text-dark fw-semibold">Attempted On</span> </th>
+										<th> <span class="fs-5 text-dark fw-semibold">Status</span> </th>
+										<th> <span class="fs-5 text-dark fw-semibold">#QS</span> </th>
+									</tr>
+								</thead>
+								@foreach (ResultVM i in ViewBag.ResultList)
+								{
+									<tr>
+										<td>
+											@if (!i.IsComplete)
+											{
+												if (i.AllowReopen || i.PaperTitle == null)
+												{<a class="text-success" title="Continue" href="/QuestionPaper/Continue/@i.ID"><i class="fa fs-2x fa-play-circle text-success"></i></a> <span>&nbsp; | &nbsp;</span> }
+											}
+											else
+											{
+												if (i.AnswerAt == null || i.AnswerAt < Common.GetCurrentDate())
+												{
+													<a class="text-success" title="View Answer" href="/QuestionPaper/View/@i.ID"><i class="fa fs-2x fa-eye text-success"></i></a> <span>&nbsp; | &nbsp;</span>
+												}
+												<a class="text-primary" title="Analysis" href="/QuestionPaper/Analysis/@i.ID"><i class="fa fs-2x fa-pie-chart text-primary"></i></a><span>&nbsp; | &nbsp;</span>
+											}
+											@if (i.PaperTitle == null)
+											{<a class="text-primary" title="Delete" id="btnDeleteRow" href="#" data-url="/QuestionPaper/DeleteResult/@i.ID"><i class="fa fs-2x fa-trash text-danger"></i></a>}
+										</td>
+										<td>
+											@if (i.PaperTitle == null)
+											{
+												if (i.Mode == "Tutor")
+												{<span class="badge badge-lg badge-light-primary">Tutor</span> }
+												else
+												{ <span class="badge badge-lg badge-light text-muted">Exam</span> }
+											}
+											else
+											{ <span>@i.PaperTitle</span>}
+										</td>
+										<td>
+											<span class="badge badge-lg badge-light text-muted">
+												@string.Format("{0:dd/MM/yyyy}", i.Datetime) &emsp; @string.Format("{0:hh:mm tt}", i.Datetime)
+											</span>
+										</td>
+										<td>
+											@if (i.IsComplete)
+											{
+												<span class="badge badge-lg badge-light-primary">Completed</span>
+											}
+											else
+											{
+												<span class="badge badge-lg badge-light-danger">Incomplete</span>
+											}
+										</td>
+										<td> <span class="fs-5 text-dark text-hover-primary fw-semibold">@i.maxQPerBlock</span> </td>
+
+									</tr>
+								}
+							</table>
+						</div>
+					</div>
+
+				</div>
+			}
+		</div>
+		<!--end::Card body-->
+	</div>
+
+	<!--end::Timeline-->
+</div>
+
+@section scripts {
+
+}
+

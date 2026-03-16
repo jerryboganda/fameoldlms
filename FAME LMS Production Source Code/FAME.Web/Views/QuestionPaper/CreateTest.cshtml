@@ -1,0 +1,719 @@
+﻿@using First_Aid_Made_Easy.DAL;
+@using First_Aid_Made_Easy.Models;
+@using Microsoft.AspNet.Identity;
+@{
+    ViewBag.Title = "Create Exam";
+    Layout = "~/Views/Shared/_LayoutStudent2026.cshtml";
+
+    var SystemList = (List<SystemVM>)ViewBag.Systems;
+    var userId = User.Identity.GetUserId();
+}
+<style>
+    /* ── Create Exam Page Styles ── */
+    .ce-page-header {
+        margin-bottom: 2rem;
+    }
+    .ce-page-header h1 {
+        font-size: 1.75rem;
+        font-weight: 800;
+        color: var(--fame-heading);
+        margin: 0 0 0.25rem 0;
+    }
+    .ce-page-header p {
+        color: var(--fame-text-muted);
+        font-size: 0.925rem;
+        font-weight: 500;
+        margin: 0;
+    }
+
+    /* Step Cards */
+    .ce-step-card {
+        background: #fff;
+        border: 1px solid var(--fame-border);
+        border-radius: 16px;
+        margin-bottom: 1.25rem;
+        overflow: hidden;
+        transition: box-shadow 0.2s;
+    }
+    .ce-step-card:hover {
+        box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    }
+    .ce-step-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid var(--fame-border);
+        background: #f8fafb;
+    }
+    .ce-step-number {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: var(--fame-primary);
+        color: white;
+        font-weight: 800;
+        font-size: 0.85rem;
+        flex-shrink: 0;
+    }
+    .ce-step-title {
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: var(--fame-heading);
+        margin: 0;
+    }
+    .ce-step-subtitle {
+        font-size: 0.8rem;
+        color: var(--fame-text-muted);
+        margin: 0;
+    }
+    .ce-step-body {
+        padding: 1.25rem 1.5rem;
+    }
+
+    /* Radio / Checkbox Pill Options */
+    .ce-option-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+    .ce-option-pill {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.65rem 1.25rem;
+        border: 2px solid var(--fame-border);
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.2s;
+        user-select: none;
+        background: white;
+        min-width: 140px;
+    }
+    .ce-option-pill:hover {
+        border-color: var(--fame-primary);
+        background: #f0fdfa;
+    }
+    .ce-option-pill.selected {
+        border-color: var(--fame-primary);
+        background: #f0fdfa;
+        box-shadow: 0 0 0 1px var(--fame-primary);
+    }
+    .ce-option-pill input[type="radio"],
+    .ce-option-pill input[type="checkbox"] {
+        accent-color: var(--fame-primary);
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+    .ce-option-pill .ce-pill-label {
+        font-weight: 600;
+        font-size: 0.925rem;
+        color: var(--fame-heading);
+    }
+    .ce-option-pill .ce-pill-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.15rem 0.55rem;
+        border-radius: 20px;
+        background: var(--fame-primary);
+        color: white;
+        font-size: 0.7rem;
+        font-weight: 700;
+        margin-left: auto;
+        min-width: 24px;
+    }
+    .ce-option-pill.disabled-pill {
+        opacity: 0.5;
+        cursor: not-allowed;
+        background: #f8f9fa;
+    }
+    .ce-option-pill.disabled-pill:hover {
+        border-color: var(--fame-border);
+        background: #f8f9fa;
+    }
+    .ce-option-pill .ce-lock-icon {
+        color: #f59e0b;
+        margin-left: 4px;
+    }
+
+    /* Systems Section */
+    .ce-section-label {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: var(--fame-primary);
+        margin: 1rem 0 0.75rem 0;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #f0fdfa;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .ce-section-label:first-child {
+        margin-top: 0;
+    }
+    .ce-systems-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+    .ce-system-pill {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 0.85rem;
+        border: 1.5px solid var(--fame-border);
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.15s;
+        background: white;
+        user-select: none;
+    }
+    .ce-system-pill:hover {
+        border-color: var(--fame-primary);
+        background: #f0fdfa;
+    }
+    .ce-system-pill.selected {
+        border-color: var(--fame-primary);
+        background: #f0fdfa;
+    }
+    .ce-system-pill.disabled-pill {
+        opacity: 0.45;
+        cursor: not-allowed;
+    }
+    .ce-system-pill input[type="checkbox"] {
+        accent-color: var(--fame-primary);
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+    .ce-system-pill .ce-sys-name {
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: var(--fame-heading);
+        flex: 1;
+    }
+    .ce-system-pill .ce-sys-count {
+        font-size: 0.7rem;
+        font-weight: 700;
+        color: var(--fame-primary);
+        background: #f0fdfa;
+        padding: 0.1rem 0.5rem;
+        border-radius: 12px;
+        min-width: 20px;
+        text-align: center;
+    }
+
+    /* Select All Toggle */
+    .ce-select-all {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 0;
+    }
+    .ce-select-all label {
+        font-weight: 700;
+        font-size: 0.9rem;
+        color: var(--fame-heading);
+        cursor: pointer;
+    }
+    .ce-select-all input[type="checkbox"] {
+        accent-color: var(--fame-primary);
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+    }
+
+    /* Question Count */
+    .ce-count-row {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+    .ce-count-input {
+        width: 100px;
+        padding: 0.6rem 0.75rem;
+        border: 2px solid var(--fame-border);
+        border-radius: 10px;
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: var(--fame-heading);
+        text-align: center;
+        transition: border-color 0.2s;
+    }
+    .ce-count-input:focus {
+        outline: none;
+        border-color: var(--fame-primary);
+        box-shadow: 0 0 0 3px rgba(15,118,110,0.1);
+    }
+    .ce-count-label {
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: var(--fame-text-muted);
+    }
+    .ce-max-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.25rem 0.75rem;
+        background: #f0fdfa;
+        border: 1px solid #ccfbf1;
+        border-radius: 20px;
+        font-weight: 700;
+        font-size: 0.8rem;
+        color: var(--fame-primary);
+    }
+
+    /* Summary Bar */
+    .ce-summary {
+        background: #0f172a;
+        border-radius: 16px;
+        padding: 1.25rem 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        flex-wrap: wrap;
+        margin-bottom: 2rem;
+    }
+    .ce-summary-stats {
+        display: flex;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+    }
+    .ce-summary-stat {
+        display: flex;
+        flex-direction: column;
+    }
+    .ce-summary-stat .ce-stat-label {
+        font-size: 0.7rem;
+        font-weight: 600;
+        color: rgba(255,255,255,0.5);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .ce-summary-stat .ce-stat-value {
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: white;
+    }
+    .ce-generate-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 2rem;
+        background: var(--fame-primary);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 0.95rem;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .ce-generate-btn:hover {
+        background: #0d6b63;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 15px rgba(15,118,110,0.3);
+    }
+    .ce-generate-btn:disabled {
+        background: #94a3b8;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+    .ce-generate-btn .spinner-border {
+        width: 18px;
+        height: 18px;
+        border-width: 2px;
+    }
+
+    /* Previous Tests Link */
+    .ce-prev-tests {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--fame-primary);
+        font-weight: 600;
+        font-size: 0.875rem;
+        text-decoration: none;
+        padding: 0.5rem 0;
+    }
+    .ce-prev-tests:hover {
+        text-decoration: underline;
+    }
+
+    /* Loading overlay */
+    .ce-loading-overlay {
+        display: none;
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(15,23,42,0.7);
+        z-index: 9999;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 1rem;
+    }
+    .ce-loading-overlay.active {
+        display: flex;
+    }
+    .ce-loading-overlay .ce-loading-text {
+        color: white;
+        font-weight: 700;
+        font-size: 1.1rem;
+    }
+    .ce-loading-overlay .spinner-border {
+        width: 48px;
+        height: 48px;
+        color: var(--fame-primary);
+    }
+
+    /* Mobile responsive */
+    @@media (max-width: 640px) {
+        .ce-option-grid {
+            flex-direction: column;
+        }
+        .ce-option-pill {
+            min-width: unset;
+        }
+        .ce-systems-grid {
+            grid-template-columns: 1fr;
+        }
+        .ce-summary {
+            flex-direction: column;
+            text-align: center;
+        }
+        .ce-summary-stats {
+            justify-content: center;
+        }
+        .ce-count-row {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
+</style>
+
+<!-- Loading Overlay -->
+<div class="ce-loading-overlay" id="loadingOverlay">
+    <div class="spinner-border" role="status"></div>
+    <div class="ce-loading-text">Generating your custom exam...</div>
+</div>
+
+<!-- Page Header -->
+<div class="ce-page-header">
+    <h1>Create Custom Exam</h1>
+    <p>Build a personalized MCQ exam from our question bank. Choose your systems, mode, and question count.</p>
+</div>
+
+<!-- Step 1: Test Mode -->
+<div class="ce-step-card">
+    <div class="ce-step-header">
+        <div class="ce-step-number">1</div>
+        <div>
+            <div class="ce-step-title">Test Mode</div>
+            <div class="ce-step-subtitle">Choose how you want to practice</div>
+        </div>
+    </div>
+    <div class="ce-step-body">
+        <div class="ce-option-grid">
+            <label class="ce-option-pill selected" data-radio="TestMode">
+                <input type="radio" name="TestMode" value="Tutor" checked>
+                <div>
+                    <div class="ce-pill-label">🎓 Tutor</div>
+                    <div style="font-size:0.75rem; color:var(--fame-text-muted); margin-top:2px;">See correct answers after each question</div>
+                </div>
+            </label>
+            <label class="ce-option-pill" data-radio="TestMode">
+                <input type="radio" name="TestMode" value="Exam">
+                <div>
+                    <div class="ce-pill-label">📝 Exam</div>
+                    <div style="font-size:0.75rem; color:var(--fame-text-muted); margin-top:2px;">Timed test — see results at the end</div>
+                </div>
+            </label>
+        </div>
+    </div>
+</div>
+
+<!-- Step 2: Question Mode -->
+<div class="ce-step-card">
+    <div class="ce-step-header">
+        <div class="ce-step-number">2</div>
+        <div>
+            <div class="ce-step-title">Question Mode</div>
+            <div class="ce-step-subtitle">Filter by your performance history</div>
+        </div>
+    </div>
+    <div class="ce-step-body">
+        <div class="ce-option-grid" id="questionModeGrid">
+            @foreach (sp_QuestionCountByStudent_Result t in ViewBag.QuestionCount)
+            {
+                <label class="ce-option-pill @(t.QType == "Unused" ? "selected" : "")" data-radio="QuestionMode">
+                    <input type="radio" name="QuestionMode" value="@t.QType" @(t.QType == "Unused" ? "checked" : "")>
+                    <span class="ce-pill-label">@t.QType</span>
+                    <span class="ce-pill-badge">@t.NoOfQ</span>
+                </label>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Step 3: Systems -->
+<div class="ce-step-card">
+    <div class="ce-step-header">
+        <div class="ce-step-number">3</div>
+        <div>
+            <div class="ce-step-title">Systems</div>
+            <div class="ce-step-subtitle">Select the body systems to include in your exam</div>
+        </div>
+    </div>
+    <div class="ce-step-body">
+        <div class="ce-select-all">
+            <input type="checkbox" id="selectAllSystem">
+            <label for="selectAllSystem">Select All Systems</label>
+        </div>
+
+        @foreach (var sec in SystemList.GroupBy(x => x.Section).OrderBy(s => s.Key))
+        {
+            <div class="ce-section-label">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
+                @(sec.Key)
+            </div>
+            <div class="ce-systems-grid">
+                @foreach (SystemVM s in sec)
+                {
+                    if (s.IsAvailable)
+                    {
+                        <label class="ce-system-pill" data-checkbox="Systems">
+                            <input type="checkbox" @foreach (var a in s.QCount) { @($" data-{a.QType.ToLower()}={a.NoOfQ} ") ; } name="Systems" value="@s.ID">
+                            <span class="ce-sys-name">@s.Name</span>
+                            <span class="ce-sys-count"></span>
+                        </label>
+                    }
+                    else
+                    {
+                        <label class="ce-system-pill disabled-pill" title="Subscribe to access this system">
+                            <input type="checkbox" @foreach (var a in s.QCount) { @($" data-{a.QType.ToLower()}={a.NoOfQ} ") ; } disabled>
+                            <span class="ce-sys-name">@s.Name</span>
+                            <span class="ce-sys-count">@(s.QCount.FirstOrDefault()?.NoOfQ ?? 0)</span>
+                            <span class="ce-lock-icon">🔒</span>
+                        </label>
+                    }
+                }
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Step 4: Number of Questions -->
+<div class="ce-step-card">
+    <div class="ce-step-header">
+        <div class="ce-step-number">4</div>
+        <div>
+            <div class="ce-step-title">Number of Questions</div>
+            <div class="ce-step-subtitle">Set how many questions you want in your exam</div>
+        </div>
+    </div>
+    <div class="ce-step-body">
+        <div class="ce-count-row">
+            <input class="ce-count-input" id="maxQPerBlock" type="number" max="100" min="1" placeholder="0" value="">
+            <div class="ce-count-label">questions per block</div>
+            <div class="ce-max-badge">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg>
+                Max available: <strong class="maxBlock" style="margin-left:3px;">100</strong>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Summary & Generate Bar -->
+<div class="ce-summary">
+    <div class="ce-summary-stats">
+        <div class="ce-summary-stat">
+            <span class="ce-stat-label">Mode</span>
+            <span class="ce-stat-value" id="summaryMode">Tutor</span>
+        </div>
+        <div class="ce-summary-stat">
+            <span class="ce-stat-label">Question Type</span>
+            <span class="ce-stat-value" id="summaryType">Unused</span>
+        </div>
+        <div class="ce-summary-stat">
+            <span class="ce-stat-label">Systems</span>
+            <span class="ce-stat-value" id="summarySystems">0 selected</span>
+        </div>
+        <div class="ce-summary-stat">
+            <span class="ce-stat-label">Questions</span>
+            <span class="ce-stat-value" id="summaryCount">0</span>
+        </div>
+    </div>
+    <button class="ce-generate-btn" id="btnGenerate" disabled onclick="generateExam()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+        Generate Exam
+    </button>
+</div>
+
+<!-- Previous Tests Link -->
+<div style="text-align: center; margin-bottom: 2rem;">
+    <a href="/QuestionPaper/PreviousTests" class="ce-prev-tests">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
+        View Your Previous Custom Tests
+    </a>
+</div>
+
+@section scripts {
+    <script>
+        // ── Pill Selection Logic ──
+        $(document).on('change', 'input[name=TestMode]', function () {
+            $('[data-radio=TestMode]').removeClass('selected');
+            $(this).closest('.ce-option-pill').addClass('selected');
+            $('#summaryMode').text($(this).val());
+        });
+
+        $(document).on('change', 'input[name=QuestionMode]', function () {
+            $('[data-radio=QuestionMode]').removeClass('selected');
+            $(this).closest('.ce-option-pill').addClass('selected');
+            $('#summaryType').text($(this).val());
+            updateSystemCounts();
+        });
+
+        $(document).on('change', 'input[name=Systems]', function () {
+            var pill = $(this).closest('.ce-system-pill');
+            if ($(this).is(':checked')) pill.addClass('selected');
+            else pill.removeClass('selected');
+            updateMaxQuestions();
+        });
+
+        // ── Update system question counts based on selected QuestionMode ──
+        function updateSystemCounts() {
+            var qType = $("input[name=QuestionMode]:checked").val();
+            if (!qType) return;
+            var key = qType.toLowerCase();
+
+            $("input[name=Systems]").each(function () {
+                var el = $(this);
+                var count = parseInt(el.data(key)) || 0;
+                el.closest('.ce-system-pill').find('.ce-sys-count').text(count);
+                if (count > 0) {
+                    el.prop('disabled', false);
+                    el.closest('.ce-system-pill').removeClass('disabled-pill');
+                } else {
+                    el.prop('checked', false).prop('disabled', true);
+                    el.closest('.ce-system-pill').removeClass('selected').addClass('disabled-pill');
+                }
+            });
+            updateMaxQuestions();
+        }
+
+        // ── Calculate max available questions ──
+        function updateMaxQuestions() {
+            var max = 0;
+            $("input[name=Systems]:checked").each(function () {
+                max += parseInt($(this).closest('.ce-system-pill').find('.ce-sys-count').text()) || 0;
+            });
+            if (max > 100) max = 100;
+            $(".maxBlock").text(max);
+
+            var systemCount = $("input[name=Systems]:checked").length;
+            $('#summarySystems').text(systemCount + ' selected');
+
+            // Validate current input
+            var current = parseInt($("#maxQPerBlock").val()) || 0;
+            if (current > max) $("#maxQPerBlock").val(max);
+            validateGenerate();
+        }
+
+        // ── Question count input ──
+        $("#maxQPerBlock").on('input keyup', function () {
+            var max = parseInt($(".maxBlock").text()) || 0;
+            var val = parseInt($(this).val()) || 0;
+            if (val > max) $(this).val(max);
+            if (val > 100) $(this).val(100);
+            $('#summaryCount').text($(this).val() || '0');
+            validateGenerate();
+        });
+
+        // ── Select All ──
+        $("#selectAllSystem").change(function () {
+            if ($(this).is(":checked"))
+                $("input[name=Systems]:not([disabled])").prop("checked", true).each(function() {
+                    $(this).closest('.ce-system-pill').addClass('selected');
+                });
+            else
+                $("input[name=Systems]").prop("checked", false).each(function() {
+                    $(this).closest('.ce-system-pill').removeClass('selected');
+                });
+            updateMaxQuestions();
+        });
+
+        // ── Validate Generate button ──
+        function validateGenerate() {
+            var mode = $("input[name=TestMode]:checked").val();
+            var qMode = $("input[name=QuestionMode]:checked").val();
+            var systems = $("input[name=Systems]:checked").length;
+            var count = parseInt($("#maxQPerBlock").val()) || 0;
+
+            if (mode && qMode && systems > 0 && count > 0) {
+                $("#btnGenerate").prop("disabled", false);
+            } else {
+                $("#btnGenerate").prop("disabled", true);
+            }
+        }
+
+        // ── Initialize ──
+        $(document).ready(function () {
+            updateSystemCounts();
+        });
+
+        // ── Generate Exam ──
+        function generateExam() {
+            var data = {
+                Mode: $("input[name=TestMode]:checked").val(),
+                Systems: $("input[name=Systems]:checked").map(function () { return $(this).val(); }).get().join(','),
+                QuestionMode: $("input[name=QuestionMode]:checked").val(),
+                maxQPerBlock: parseInt($("#maxQPerBlock").val())
+            };
+
+            if (!data.Mode || !data.Systems || !data.QuestionMode || !data.maxQPerBlock) {
+                alert('Please complete all steps before generating.');
+                return;
+            }
+
+            // Show loading
+            $("#loadingOverlay").addClass('active');
+            $("#btnGenerate").prop("disabled", true).html('<span class="spinner-border spinner-border-sm"></span> Generating...');
+
+            $.ajax({
+                url: '/QuestionPaper/CreateTest',
+                method: 'POST',
+                data: JSON.stringify(data),
+                dataType: 'json',
+                contentType: 'application/json',
+                success: function (resultId) {
+                    if (resultId > 0) {
+                        // Redirect to the modern TakeExam engine with custom flag
+                        window.location.href = '/Student/TakeExam/' + resultId + '?custom=1&mode=' + encodeURIComponent(data.Mode);
+                    } else {
+                        $("#loadingOverlay").removeClass('active');
+                        $("#btnGenerate").prop("disabled", false).html('<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> Generate Exam');
+                        alert('No questions found matching your criteria. Try selecting more systems or a different question mode.');
+                    }
+                },
+                error: function (err) {
+                    console.error('CreateTest error:', err);
+                    $("#loadingOverlay").removeClass('active');
+                    $("#btnGenerate").prop("disabled", false).html('<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> Generate Exam');
+                    alert('Error generating exam. Please try again.');
+                }
+            });
+        }
+    </script>
+}
+

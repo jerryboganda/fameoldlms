@@ -1,0 +1,736 @@
+﻿@using First_Aid_Made_Easy.BLL;
+@using System.Web.Configuration;
+@using Microsoft.AspNet.Identity;
+@model First_Aid_Made_Easy.Models.QuestionPaperVM
+@{
+	ViewBag.Title = "Question Paper";
+	ViewBag.BreadCrumb = new String[] { "Question Paper", "Solve" };
+	string Back = "";
+	if (Request.IsAuthenticated)
+	{
+		Layout = "~/Views/Shared/_LayoutNew.cshtml";
+		Back = "/QuestionPaper/StudentList";
+	}
+	else
+	{
+		Layout = "~/Views/Shared/_LayoutFree.cshtml";
+		Back = "/";
+	}
+
+	var AllowInspect = Convert.ToBoolean(WebConfigurationManager.AppSettings["AllowInspect"] ?? "false");
+	var MCQs = Model.QuestionList?.Where(x => x.Type == (int)QuestionType.Mcq).ToList();
+
+	var Result = (First_Aid_Made_Easy.Models.ResultVM)ViewBag.Result ?? new First_Aid_Made_Easy.Models.ResultVM();
+
+	var user = Common.GetUserNameByASpUserID(User.Identity.GetUserId());
+
+	bool IsComplete = Result.ObtainedMarks > 0;
+
+	if (Result?.Detail != null)
+	{
+		var Ids = Result.Detail.Where(x => x.IsTrue != null).Select(x => x.QuestionID).ToList();
+		MCQs.Where(x => Ids.Contains(x.Question_Id)).ToList().ForEach(x => x.IsSolved = true);
+	}
+}
+
+
+@section styles {
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput-typeahead.css" integrity="sha512-wu4jn1tktzX0SHl5qNLDtx1uRPSj+pm9dDgqsrYUS16AqwzfdEmh1JR8IQL7h+phL/EAHpbBkISl5HXiZqxBlQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput.css" integrity="sha512-xmGTNt20S0t62wHLmQec2DauG9T+owP9e6VU8GigI0anN7OXLip9i7IwEhelasml2osdxX71XcYm6BQunTQeQg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+	<style>
+		.label-info {
+			background-color: #2e3e49;
+			padding: 4px;
+			margin: 2px;
+			border-radius: 2px;
+			margin-bottom: 4px;
+		}
+
+		.bootstrap-tagsinput {
+			min-width: 100% !important;
+		}
+
+		.btnActive {
+			background-color: #ed7c7c
+		}
+	</style>
+	<style>
+
+		.questionbar {
+			overflow: hidden;
+			background-color: #caeefb;
+			position: fixed;
+			bottom: 0;
+			width: 100%;
+			padding: 1rem;
+			display: flex;
+			justify-content: space-between;
+			box-shadow: 0px 10px 5px #b6b6b6, 0px -5px 5px #b6b6b6;
+		}
+
+		#kt_scrolltop {
+			display: none !important;
+		}
+
+		.fa-flag {
+			color: red !important;
+		}
+
+		.bullet-dot {
+			color: black !important
+		}
+
+		.bg-apna {
+			background-color: #f9fafb !important;
+		}
+	</style>
+	<style>
+		td > .fa-check, td > .fa-xmark, .CheckedByStudentsPerc {
+			font-size: 20px;
+			color: white;
+			display: none;
+		}
+
+		.rightAns {
+			background-color: #50cd89;
+		}
+
+		.wrongAns {
+			background-color: #ed7c7c;
+		}
+
+			.rightAns .fa-check, .wrongAns .fa-xmark {
+				display: contents;
+			}
+
+		.freeScroll {
+			height: 50px !important;
+			overflow: scroll;
+		}
+
+		.bg-img > * {
+			background: #f9fafbe8
+		}
+
+		.bg-img {
+			/*background-color: #ffffff;*/
+			background-image: url("/Areas/Landing/assets/images/logo/fame-logo-p.png");
+			background-repeat: no-repeat;
+			background-size: contain;
+			background-position: center;
+		}
+	</style>
+}
+<div class="container-xxl bg-apna" id="kt_content_container">
+	<div class="row">
+		<div class="col-sm-2 col-xxl-1 d-none d-sm-block wd-scrollbar" style="max-height:600px;overflow:scroll">
+			<div class="card">
+				<table class="table table-hborder">
+					@{
+						int Sr = 0;
+						foreach (var m in MCQs)
+						{
+							Sr++;
+							<tr data-id="@Sr" class="quesNo">
+								<td class="text-center">
+									<span class="bullet bullet-dot @(m.IsSolved ? "d-none" : "" )"></span>
+								</td>
+								<td class="text-center">@Sr</td>
+								<td><span class="fa fa-flag @(m.IsPopular ? "" : "d-none" )"></span></td>
+							</tr>
+						}
+					}
+				</table>
+			</div>
+		</div>
+		<div class="col-sm-10 col-xxl-11">
+			<div class="card">
+				<!--begin::Card head-->
+				<div class="card-header card-header-stretch">
+					<!--begin::Title-->
+					<div class="card-title d-flex align-items-center">
+						<!--begin::Svg Icon | path: icons/duotune/general/gen014.svg-->
+						<span class="svg-icon svg-icon-1 svg-icon-primary me-3 lh-0">
+							<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+								<path opacity="0.3" d="M21 22H3C2.4 22 2 21.6 2 21V5C2 4.4 2.4 4 3 4H21C21.6 4 22 4.4 22 5V21C22 21.6 21.6 22 21 22Z" fill="currentColor" />
+								<path d="M6 6C5.4 6 5 5.6 5 5V3C5 2.4 5.4 2 6 2C6.6 2 7 2.4 7 3V5C7 5.6 6.6 6 6 6ZM11 5V3C11 2.4 10.6 2 10 2C9.4 2 9 2.4 9 3V5C9 5.6 9.4 6 10 6C10.6 6 11 5.6 11 5ZM15 5V3C15 2.4 14.6 2 14 2C13.4 2 13 2.4 13 3V5C13 5.6 13.4 6 14 6C14.6 6 15 5.6 15 5ZM19 5V3C19 2.4 18.6 2 18 2C17.4 2 17 2.4 17 3V5C17 5.6 17.4 6 18 6C18.6 6 19 5.6 19 5Z" fill="currentColor" />
+								<path d="M8.8 13.1C9.2 13.1 9.5 13 9.7 12.8C9.9 12.6 10.1 12.3 10.1 11.9C10.1 11.6 10 11.3 9.8 11.1C9.6 10.9 9.3 10.8 9 10.8C8.8 10.8 8.59999 10.8 8.39999 10.9C8.19999 11 8.1 11.1 8 11.2C7.9 11.3 7.8 11.4 7.7 11.6C7.6 11.8 7.5 11.9 7.5 12.1C7.5 12.2 7.4 12.2 7.3 12.3C7.2 12.4 7.09999 12.4 6.89999 12.4C6.69999 12.4 6.6 12.3 6.5 12.2C6.4 12.1 6.3 11.9 6.3 11.7C6.3 11.5 6.4 11.3 6.5 11.1C6.6 10.9 6.8 10.7 7 10.5C7.2 10.3 7.49999 10.1 7.89999 10C8.29999 9.90003 8.60001 9.80003 9.10001 9.80003C9.50001 9.80003 9.80001 9.90003 10.1 10C10.4 10.1 10.7 10.3 10.9 10.4C11.1 10.5 11.3 10.8 11.4 11.1C11.5 11.4 11.6 11.6 11.6 11.9C11.6 12.3 11.5 12.6 11.3 12.9C11.1 13.2 10.9 13.5 10.6 13.7C10.9 13.9 11.2 14.1 11.4 14.3C11.6 14.5 11.8 14.7 11.9 15C12 15.3 12.1 15.5 12.1 15.8C12.1 16.2 12 16.5 11.9 16.8C11.8 17.1 11.5 17.4 11.3 17.7C11.1 18 10.7 18.2 10.3 18.3C9.9 18.4 9.5 18.5 9 18.5C8.5 18.5 8.1 18.4 7.7 18.2C7.3 18 7 17.8 6.8 17.6C6.6 17.4 6.4 17.1 6.3 16.8C6.2 16.5 6.10001 16.3 6.10001 16.1C6.10001 15.9 6.2 15.7 6.3 15.6C6.4 15.5 6.6 15.4 6.8 15.4C6.9 15.4 7.00001 15.4 7.10001 15.5C7.20001 15.6 7.3 15.6 7.3 15.7C7.5 16.2 7.7 16.6 8 16.9C8.3 17.2 8.6 17.3 9 17.3C9.2 17.3 9.5 17.2 9.7 17.1C9.9 17 10.1 16.8 10.3 16.6C10.5 16.4 10.5 16.1 10.5 15.8C10.5 15.3 10.4 15 10.1 14.7C9.80001 14.4 9.50001 14.3 9.10001 14.3C9.00001 14.3 8.9 14.3 8.7 14.3C8.5 14.3 8.39999 14.3 8.39999 14.3C8.19999 14.3 7.99999 14.2 7.89999 14.1C7.79999 14 7.7 13.8 7.7 13.7C7.7 13.5 7.79999 13.4 7.89999 13.2C7.99999 13 8.2 13 8.5 13H8.8V13.1ZM15.3 17.5V12.2C14.3 13 13.6 13.3 13.3 13.3C13.1 13.3 13 13.2 12.9 13.1C12.8 13 12.7 12.8 12.7 12.6C12.7 12.4 12.8 12.3 12.9 12.2C13 12.1 13.2 12 13.6 11.8C14.1 11.6 14.5 11.3 14.7 11.1C14.9 10.9 15.2 10.6 15.5 10.3C15.8 10 15.9 9.80003 15.9 9.70003C15.9 9.60003 16.1 9.60004 16.3 9.60004C16.5 9.60004 16.7 9.70003 16.8 9.80003C16.9 9.90003 17 10.2 17 10.5V17.2C17 18 16.7 18.4 16.2 18.4C16 18.4 15.8 18.3 15.6 18.2C15.4 18.1 15.3 17.8 15.3 17.5Z" fill="currentColor" />
+							</svg>
+						</span>
+						<!--end::Svg Icon-->
+						<h3 class="fw-bold m-0 text-gray-800"> <span id="mcqNo"></span> @Model.QuestionList.Count()</h3>
+					</div>
+					<div class="card-toolbar m-0">
+
+						<div class="d-flex align-items-center ms-3 ms-lg-4">
+							<div class="btn btn-icon btn-color-gray-700 btn-outline " id="btnPrev">
+								<i class="fa fa-backward"></i>
+							</div>
+						</div>
+						<div class="d-flex align-items-center ms-3 ms-lg-4">
+							<div class="btn btn-icon btn-color-gray-700 btn-outline" id="btnNext">
+								<i class="fa fa-forward"></i>
+							</div>
+						</div>
+						<div class="d-flex align-items-center ms-3 ms-lg-4">
+							<div class="btn btn-icon btn-color-gray-700 btn-outline btnMark">
+								<i class="fa fa-flag"></i>
+							</div>
+						</div>
+						<div class="d-flex align-items-center ms-3 ms-lg-4">
+							<div class="btn btn-icon btn-color-gray-700 btn-outline" id="fullscreenButton" onclick="toggleFullscreen()">
+								<i class="fa fa-expand"></i>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="card-body">
+					<div class="tab-content mcq-Content bg-img">
+						@if (MCQs != null)
+						{
+							Sr = 0;
+							foreach (First_Aid_Made_Easy.Models.QuestionVM m in MCQs)
+							{
+								Sr++;
+								<div id="mcq" style="display:none" data-isfav="true" data-no="@Sr" data-id="@m.Question_Id" class="card-body p-0 tab-pane fade show active allmcq">
+									<div class="expl d-none">@Html.Raw(m.AnsExplain)</div>
+									<div class="timeline">
+										<div class="timeline-item">
+											<div class="timeline-line w-40px"></div>
+											<div class="timeline-content mt-n1" style="min-height:300px">
+												<div class="pe-3 mb-5">
+													<div class="fs-5 fw-semibold mb-2">@m.Question</div>
+													<div class="d-flex align-items-center mt-1 fs-6">
+														<div class="text-muted me-2 fs-7">Marks  (@m.Marks)</div>
+													</div>
+												</div>
+												<table class="w3-table w3-bordered">
+
+													@if (m.IsSolved)
+													{
+														First_Aid_Made_Easy.Models.ResultDetailVM r = Result.Detail.FirstOrDefault(x => x.QuestionID == m.Question_Id);
+														foreach (First_Aid_Made_Easy.Models.OptionVM o in m.Options)
+														{
+															bool IsChecked = o.OptionText?.Trim() == r.Answer?.Trim();
+
+															<tr>
+																<td style="width: 60px">
+																	@*<input class="correct" name="correct@(m.Question_Id)" value="@o.OptionText" @(IsChecked ? "checked" : "") data-istrue="@o.IsCorrect" type="@( m.IsMultiAns ? "checkbox" : "radio" )" />*@
+																	<input class="option" name="option@(m.Question_Id)" value="@o.OptionText.Trim()" @(IsChecked ? "checked" : "") data-istrue="@o.IsCorrect" type="radio" />
+																</td>
+																<td onclick="ToggleCheckBx(this)" class="@(o.IsCorrect ? "tdcorrect" : "")">@o.OptionText  </td>
+																<td class="text-end"><i class="fa fa-check"></i><i class="fa fa-xmark"></i> <b class="CheckedByStudentsPerc" style="color:black">@string.Format(o.CheckedByStudentsPerc < 1 ? "{0:n1}" : "{0:n0}", o.CheckedByStudentsPerc)%</b> </td>
+															</tr>
+														}
+													}
+													else
+													{
+														foreach (var o in m.Options)
+														{
+															<tr>
+																<td style="width: 60px">
+																	<input class="option" name="option@(m.Question_Id)" value="@o.OptionText.Trim()" data-istrue="@o.IsCorrect" type="radio" />
+																</td>
+																<td onclick="ToggleCheckBx(this)" class="@(o.IsCorrect ? "tdcorrect" : "")">@o.OptionText  </td>
+																<td class="text-end"><i class="fa fa-check"></i><i class="fa fa-xmark"></i> <b class="CheckedByStudentsPerc" style="color:black">@string.Format(o.CheckedByStudentsPerc < 1 ? "{0:n1}" : "{0:n0}", o.CheckedByStudentsPerc)%</b> </td>
+															</tr>
+														}
+													}
+												</table>
+											</div>
+										</div>
+									</div>
+								</div>
+							}
+						}
+					</div>
+					<div class="row ans-explanation " style="display:none">
+						<div class="col-sm-12"><h1>Explanation</h1> </div>
+						<div class="col-sm-12 data"> </div>
+						<div class="col-sm-12"><hr /> </div>
+					</div>
+				</div>
+				<!--end::Card body-->
+			</div>
+		</div>
+	</div>
+
+	<div class="questionbar">
+		<div>
+			<h3 id="divTimer">Time Remaining : <span id="timer"> @Model.Time min </span> <br /></h3>
+			@if (ViewBag.Mode == "Tutor")
+			{<span class="badge badge-primary">Tutor Mode</span>}
+			else
+			{ <span class="badge badge-dark">Exam Mode</span>}
+		</div>
+		<div>
+
+			<button type="button" class="btn btn-sm btn-primary btnnotes-modal" data-toggle="modal" onclick="ToggleModal('show')" data-target="#notes-modal">
+				<i class="fa fa-note-sticky"></i> Notes
+			</button>
+			@if (Model.PaperTitle == null)
+			{<button onclick="return Suspend('End')" class="btn btn-sm btn-primary"><i class="fa fa-pause"></i> Suspend</button>}
+			<button onclick="return CompleteResult('End')" class="btn btn-sm btn-danger"><i class="fa fa-stop"></i> End</button>
+		</div>
+		<div></div>
+	</div>
+</div>
+
+<div class="modal fade" id="notes-modal" tabindex="-1" role="dialog" aria-labelledby="notes-modal-title" aria-hidden="true">
+	<div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="notes-modal-title">Add Notes and Tags</h5>
+				<button type="button" class="btn btn-light close" onclick="ToggleModal('hide')" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+
+				<div class="card mb-5">
+					<div class="card-body p-5">
+						<h3 class="fw-bold text-gray-800"><i class="fa fa-notes-medical"></i> Notes</h3>
+						<textarea id="Notes" name="Notes" class="form-control" rows="5"> </textarea>
+						<br />
+						<h3 class="fw-bold text-gray-800"><i class="fa fa-tags"></i> Tags</h3>
+						<input id="Tags" name="Tags" class="form-control tags" />
+						<button class="btn btn-primary" style="margin:15px;float : right" id="btnSaveNotes">Save</button>
+					</div>
+				</div>
+				<div class="card d-none">
+
+					<div class="card-header card-header-stretch">
+						<div class="card-title d-flex align-items-center">
+							<h3 class="fw-bold m-0 text-gray-800"><i class="fa fa-comment"></i> Comments</h3>
+						</div>
+					</div>
+					<div class="card-body p-3">
+						<div class="divComments">
+
+						</div>
+						<div class="mb-0">
+							<textarea class="form-control form-control-solid placeholder-gray-600 fw-bold fs-4" rows="6" id="Comment" name="Comment" placeholder="Please add your Comment"></textarea>
+							<button type="button" id="btnsendComment" class="btn btn-primary mt-n20 mb-20 position-relative float-end me-7">Send</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<div id="divLoaderid" class="divLoader">
+	<img src="~/Images/loader.gif" />
+</div>
+
+@section scripts {
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput.min.js" integrity="sha512-9UR1ynHntZdqHnwXKTaOm1s6V9fExqejKvg5XMawEMToW4sSw+3jtLrYfZPijvnwnnE8Uol1O9BcAskoxgec+g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+	<script>
+		window.addEventListener('beforeunload', function (event) {
+			event.preventDefault();
+			event.returnValue = ''; // This is required for some browsers to display the confirmation dialog
+			// You can customize the message to be displayed in the confirmation dialog
+			const confirmationMessage = 'Are you sure you want to leave this page?';
+			event.returnValue = confirmationMessage; // This is required for some browsers to display the confirmation dialog
+			return confirmationMessage;
+        });
+
+        var ResultID = @Result.ID;
+        function ApplyTags() {
+            $('.tags').tagsinput({
+                trimValue: true,
+                confirmKeys: [13, 44],
+                focusClass: 'my-focus-class'
+            });
+            $('.tags').tagsinput('removeAll');
+        }
+
+        $(document).ready(function () {
+            ApplyTags();
+            GoToQuestionNo(1);
+			$(".divLoader").hide();
+			localStorage.setItem("FreeResultID", ResultID);
+        })
+        var lastChecked;
+        $(document).on("mousedown",".option",function (e) {
+            if ($(this).data("disabled"))
+                lastChecked = $(this).closest(".allmcq").find(".option:checked");
+        })
+
+        $(".option").change(function (e) {
+            if (!$(this).data("disabled")) {
+                SubmitAns($(this).closest(".allmcq"));
+                if ('@ViewBag.Mode' == 'Tutor')
+                    ShowAnswer();
+            } else
+                lastChecked.prop("checked", true);
+        })
+        $(".quesNo").click(function () { GoToQuestionNo($(this).data("id")); })
+        $("#btnPrev").click(function () {
+            var c = $(".allmcq:visible");
+            GoToQuestionNo(c.prev().data("no"));
+        })
+        $("#btnNext").click(function () {
+            var c = $(".allmcq:visible");
+            GoToQuestionNo(c.next().data("no"));
+        })
+        function SubmitAns(c) {
+            $('tr[data-id="' + c.data('no') + '"]').find(".bullet-dot").hide();
+            if (ResultID > 0) SaveResultDetail(c);
+            else SaveResult(c);
+        }
+        function GoToQuestionNo(no) {
+            if (no > 0) {
+                $(".allmcq:visible").hide();
+                $('[data-no="' + no + '"]').show();
+                $("#mcqNo").text(no + "-");
+                GetCommentNotesTags($('[data-no="' + no + '"]').data("id"));
+                $("#btnHideAns").click();
+                $('.quesNo').removeClass("bg-primary");
+                var numtr = $('tr[data-id="' + no + '"]');
+                numtr.addClass("bg-primary");
+                if (numtr.find(".fa-flag").hasClass("d-none")) $(".btnMark").removeClass("bg-success"); else $(".btnMark").addClass("bg-success");
+                if ('@ViewBag.Mode' == 'Tutor') ShowAnswer();
+            }
+        }
+
+        function ShowAnswer() {
+            var c = $(".allmcq:visible");
+            if (c.find(".option:checked").length > 0) {
+                c.find(".option").attr("data-disabled", true);
+                $(".ans-explanation").show().find(".data").html(c.find(".expl").html());
+				$(".CheckedByStudentsPerc").show();
+                c.find(".option:checked").closest("tr").addClass("wrongAns");
+                c.find(".tdcorrect").closest("tr").removeClass("wrongAns").addClass("rightAns");
+            } else
+				$(".ans-explanation,.CheckedByStudentsPerc").hide();
+        }
+
+
+        $("#btnSaveNotes").click(function () {
+            var id = $(".allmcq:visible").data("id");
+            var Tags = $("#Tags").val();
+            var Notes = $("#Notes").val();
+            SaveNotesTags(id, Notes, Tags)
+        })
+        $("#btnsendComment").click(function () {
+            var id = $(".allmcq:visible").data("id");
+            var Comment = $("#Comment").val()
+            $("#Comment").val("");
+            SaveComment(id, Comment);
+        })
+
+        $(".btnFavourites").click(function () {
+            var c = $(".allmcq:visible");
+            var btn = $(this);
+            var id = c.data("id");
+            $.ajax({
+                url: '/Favourites/AddToFavourits/' + id ,
+                data: { Type : '@QuestionType.Mcq.ToString()' },
+                success: function (response) {
+                    if (response) {
+                        btn.addClass('btnActive');
+                    }
+                },
+                error: function (err) { }
+            });
+        })
+        $(".btnMark").click(function () {
+            var c = $(".allmcq:visible");
+            var id = c.data("id");
+            var no = c.data("no");
+            var f = $('tr[data-id="' + no + '"]').find(".fa-flag");
+            f.toggleClass("d-none");
+            if (f.hasClass("d-none")) $(".btnMark").removeClass("bg-success"); else $(".btnMark").addClass("bg-success");
+
+            $.ajax({
+                url: '/Favourites/AddToFavourits/' + id ,
+                data: { Type: '@QuestionType.Mcq.ToString()', Remove: f.hasClass("d-none") }
+            });
+        })
+
+        function SaveResult(current) {
+
+            var data = {
+                QuestionPaperID: '@Model.PaperID',
+                Mode: '@ViewBag.Mode',
+			}
+			var det = GetQuestionData(current);
+			if (det.Answer) {
+				data.Detail = [det];
+			}
+
+            $.ajax({
+                url: '/QuestionPaper/SaveResult',
+                method: 'POST',
+                data: JSON.stringify(data),
+                dataType: 'Json',
+                contentType: 'application/json',
+                success: function (response) {
+                    if (response > 0) {
+                        ResultID = response;
+                    }
+                },
+                error: function (err) {
+
+                }
+
+            });
+        }
+
+        function SaveResultDetail(current) {
+            var data = GetQuestionData(current);
+			if (data.Answer) {
+				$.ajax({
+					url: '/QuestionPaper/SaveResultDetail',
+					method: 'POST',
+					data: JSON.stringify(data),
+					dataType: 'Json',
+					contentType: 'application/json',
+					success: function (response) {
+						if (response) {
+						}
+					},
+					error: function (err) {
+
+					}
+
+				});
+			}
+        }
+
+        function GetQuestionData(current) {
+            var data = {
+                QuestionID: current.data('id'),
+                Answer: current.find(".option:checked").eq(0).val() ,
+                IsTrue: current.find(".option:checked").eq(0).data('istrue'),
+                ResultID: ResultID,
+            }
+            return data;
+        }
+
+        function GetCommentNotesTags(id) {
+            $.ajax({
+                url: "/QuestionPaper/GetCommentNotesTags/" + id,
+                success: function (data) {
+                    $("#Notes").val(data.notes);
+                    ApplyTags();
+                    if (data.tags != null) {
+                        $.each(data.tags.split(','), function (i, val) {
+                            $("#Tags").tagsinput('add', val);
+                        })
+                    } else
+                        $(".divComments").html("");
+                    $.each(data.comments, function (i, val) {
+                        AppendComment(val);
+                    })
+
+                }
+            })
+        }
+
+        function SaveComment(id, Comment) {
+            $.ajax({
+                url: '/QuestionPaper/SaveComment/' + id,
+                data: { Comment: Comment },
+                dataType: 'Json',
+                contentType: 'application/json',
+                success: function (response) {
+                    if (response) {
+                        toastr.success('Data Saved Successfully');
+                        AppendComment({
+                            User_Pic: '/Images/@user.User_Pic',
+                            User_Name: '@user.User_Name',
+                            Comment_Body: Comment
+                        });
+                    }
+                },
+                error: function (err) { }
+            });
+        }
+
+        function SaveNotesTags(id , Notes , Tags) {
+            $.ajax({
+                url: '/QuestionPaper/SaveNotesTags/' + id,
+                data: { Notes: Notes, Tags: Tags },
+                dataType: 'Json',
+                contentType: 'application/json',
+                success: function (response) {
+                    if (response) { toastr.success('Data Saved Successfully') }
+                },
+                error: function (err) { }
+            });
+        }
+
+        function AppendComment(data) {
+            var Html =  `
+                        <div class="card card-bordered mb-9 w-100">
+                            <div class="p-3 card-body">
+                                <div class="w-100 d-flex flex-stack mb-4">
+                                    <div class="d-flex align-items-center f">
+                                        <div class="symbol symbol-50px me-5">
+                                            <img src="${data.User_Pic}" />
+                                        </div>
+                                        <div class="d-flex flex-column fw-semibold fs-5 text-gray-600 text-dark">
+                                            <div class="d-flex align-items-center">
+                                                <a href="javascript:;" class="text-gray-800 fw-bold text-hover-primary fs-5 me-3">${data.User_Name}</a>
+                                                <span class="m-0"></span>
+                                            </div>
+                                            @*<span class="text-muted fw-semibold fs-6">2 Days ago</span>*@
+                                        </div>
+                                    </div>
+                                </div>
+                                <p class="fw-normal fs-5 text-gray-700 m-0">${data.Comment_Body}</p>
+                            </div>
+                        </div> `
+                ;
+            $(".divComments").append(Html);
+        }
+
+        function CompleteResult(status) {
+            IsCompleted = true;
+            if (status == "TimeUp")
+            Swal.fire(
+                'Time Up',
+                'Your time has been elasped',
+                'warning'
+                );
+            else Swal.fire(
+                'Good Job',
+                'You have solved the Question Paper',
+                'success'
+            );
+            if (ResultID > 0) {
+                $.ajax({
+                    url: "/QuestionPaper/Completed/" + ResultID,
+                    success: function () { window.location.href = "/QuestionPaper/Analysis/" + ResultID; }
+                });
+            }
+            else window.location.href = "/QuestionPaper/Analysis/" + ResultID;
+        }
+
+        function Suspend(status) {
+            Swal.fire(
+                'Good Luck Next Time',
+                'You have suspended the Question Paper',
+                'warning'
+            );
+            if (ResultID > 0) {
+                $.ajax({
+                    url: "/QuestionPaper/Suspend/" + ResultID,
+                    success: function () { window.location.href = "@Back"; }
+                });
+            } else window.location.href = "@Back";
+        }
+
+        function ToggleCheckBx(This) {
+            var el = $(This).closest("tr").find(".option");
+            if (!el.data("disabled"))
+                el.prop("checked", !el.prop("checked")).change();
+        }
+
+        function ToggleModal(action) {
+            $("#notes-modal").modal(action);
+        }
+
+	</script>
+
+	<script>
+		const fullscreenButton = document.getElementById('fullscreenButton');
+		const contentContainer = document.getElementById('kt_content_container');
+
+		fullscreenButton.addEventListener('click', () => {
+			if (!document.fullscreenElement) {
+				contentContainer.requestFullscreen().then(() => {
+					$("#kt_content_container").addClass("freeScroll");
+					$(".btnnotes-modal").hide();
+				}).catch((error) => {
+					alert('Error entering fullscreen:', JSON.stringify(error));
+				});
+			} else if (document.exitFullscreen) {
+				document.exitFullscreen();
+				$("#kt_content_container").removeClass("freeScroll");
+				$(".btnnotes-modal").show();
+			}
+		});
+
+	</script>
+
+
+	@if (!AllowInspect)
+	{
+		<script>
+
+			document.addEventListener('selectstart', function (e) {
+				e.preventDefault();
+			});
+			// Prevent right-click
+			document.addEventListener('contextmenu', function (e) {
+				e.preventDefault();
+				if (e.target.nodeName === 'IMG') {
+					// Prevent the "Save image as" option from showing up in the context menu
+				}
+			});
+
+			// Prevent keyboard shortcuts
+			document.addEventListener('keydown', function (e) {
+				if (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 105)) {
+					e.preventDefault();
+				}
+			});
+		</script>
+	}
+	@if (ViewBag.Mode == "Tutor")
+	{
+		<script>
+			var dt = new Date().getTime();
+			var StartTime = new Date().getTime();
+
+			var int = setInterval(function () {
+				var now = new Date().getTime();
+				var distance = now - StartTime;
+				var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+				var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+				var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+				var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+				document.getElementById("timer").innerHTML = display(hours) + ":" + display(minutes) + ":" + display(seconds);
+				if (distance < 0) {
+					clearInterval(int);
+					CompleteResult("TimeUp");
+				}
+			}, 1000);
+			function display(hours) {
+				return hours < 9 ? "0" + hours : hours
+			}
+		</script>
+	}
+	else
+	{
+		<script>
+            var dt = new Date().getTime();
+            var minutes = @( Result.TimeGiven ?? 40 ) ;
+            var countDownDate = new Date(dt + minutes * 60000).getTime();
+
+            var int = setInterval(function () {
+                var now = new Date().getTime();
+                var distance = countDownDate - now;
+                var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                document.getElementById("timer").innerHTML = display(hours) + ":" + display(minutes) + ":" + display(seconds);
+                if (distance < 0) {
+                    clearInterval(int);
+                    CompleteResult("TimeUp");
+                }
+            }, 1000);
+            function display(hours) {
+                return hours < 9 ? "0" + hours : hours
+            }
+		</script>
+	}
+}
+

@@ -1,0 +1,170 @@
+﻿@model First_Aid_Made_Easy.Models.BlogPostResult
+
+@{
+	ViewBag.Title = "Blogs";
+
+}
+<style>
+	.thumbnail img {
+		width: 370px;
+		height: 370px
+	}
+
+	.edu-breadcrumb-area .shape-group li.shape-2 {
+		top: 20px;
+		left: 11%;
+	}
+
+	.edu-breadcrumb-area {
+		padding: 45px 0 45px;
+	}
+
+	.p-30 {
+		padding: 30px
+	}
+
+	/* Base Skeleton Styling */
+	.skeleton {
+		background: linear-gradient( 90deg, #f0f0f0 25%, #e0e0e0 37%, #f0f0f0 63% );
+		animation: shimmer 1.2s infinite;
+		background-size: 400% 100%;
+		border-radius: 4px;
+		margin-bottom: 10px;
+	}
+
+	/* Skeleton Container */
+	.blog-card-skeleton {
+		width: 300px;
+		padding: 16px;
+		border: 1px solid #ddd;
+		border-radius: 10px;
+		background: #fff;
+		box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+	}
+
+		/* Element Sizes */
+		.blog-card-skeleton .thumbnail {
+			width: 100%;
+			height: 180px;
+			border-radius: 8px;
+		}
+
+		.blog-card-skeleton .title {
+			width: 70%;
+			height: 20px;
+			margin-top: 15px;
+		}
+
+		.blog-card-skeleton .text.line {
+			width: 100%;
+			height: 14px;
+		}
+
+		.blog-card-skeleton .text.short-line {
+			width: 60%;
+			height: 14px;
+		}
+
+	/* Animation Keyframes */
+	@@keyframes shimmer {
+		0% {
+			background-position: -400px 0;
+		}
+
+		100% {
+			background-position: 400px 0;
+		}
+	}
+</style>
+
+
+@if (ViewBag.Category != null)
+{
+	<div class="edu-breadcrumb-area">
+		<div class="container">
+
+			<div class="breadcrumb-inner">
+				<div class="page-title">
+					<h1 class="title">@ViewBag.Category</h1>
+				</div>
+				<ul class="edu-breadcrumb">
+					<li class="breadcrumb-item"><a href="/">Home</a></li>
+					<li class="separator"><i class="icon-angle-right"></i></li>
+					<li class="breadcrumb-item"><a href="/blogs">Blogs</a></li>
+					<li class="separator"><i class="icon-angle-right"></i></li>
+					<li class="breadcrumb-item active" aria-current="page">@ViewBag.Category</li>
+				</ul>
+			</div>
+		</div>
+		<ul class="shape-group">
+			<li class="shape-1">
+				<span></span>
+			</li>
+			<li class="shape-2 scene" style="transform: translate3d(0px, 0px, 0px) rotate(0.0001deg); transform-style: preserve-3d; backface-visibility: hidden; pointer-events: none;"><img data-depth="2" src="~/Areas/Landing/assets/images/about/shape-13.png" alt="shape" style="transform: translate3d(10.5px, -29px, 0px); transform-style: preserve-3d; backface-visibility: hidden; position: relative; display: block; left: 0px; top: 0px;"></li>
+			<li class="shape-3 scene" style="transform: translate3d(0px, 0px, 0px) rotate(0.0001deg); transform-style: preserve-3d; backface-visibility: hidden; pointer-events: none;"><img data-depth="-2" src="~/Areas/Landing/assets/images/about/shape-15.png" alt="shape" style="transform: translate3d(-5.7px, 6.1px, 0px); transform-style: preserve-3d; backface-visibility: hidden; position: relative; display: block; left: 0px; top: 0px;"></li>
+			<li class="shape-4">
+				<span></span>
+			</li>
+			<li class="shape-5 scene" style="transform: translate3d(0px, 0px, 0px) rotate(0.0001deg); transform-style: preserve-3d; backface-visibility: hidden; pointer-events: none;"><img data-depth="2" src="~/Areas/Landing/assets/images/about/shape-07.png" alt="shape" style="transform: translate3d(6.9px, -29.8px, 0px); transform-style: preserve-3d; backface-visibility: hidden; position: relative; display: block; left: 0px; top: 0px;"></li>
+		</ul>
+	</div>
+}
+
+<section class="p-30">
+	<div class="container">
+		<div id="blog-container">
+
+			<div class="row">
+				@for (int i = 0; i < 6; i++)
+				{
+					<div class="col-lg-4 col-md-6 col-12 mb-5">
+
+						<div class="blog-card-skeleton">
+							<div class="skeleton thumbnail"></div>
+							<div class="skeleton title"></div>
+							<div class="skeleton text line"></div>
+							<div class="skeleton text line"></div>
+							<div class="skeleton text short-line"></div>
+						</div>
+					</div>
+				}
+			</div>
+
+			@*@Html.Partial("_BlogsPage")*@
+
+		</div>
+	</div>
+</section>
+
+@section scripts {
+	<script>
+		$(document).on("click", ".pagination-link", function (e) {
+			e.preventDefault();
+			var pageNo = $(this).data("page");
+			GetPage(pageNo)
+		});
+		$(document).ready(function () {
+			GetPage(1)
+		})
+
+		function GetPage(pageNo) {
+			$.ajax({
+				url: '/Blogs/Home/GetBlogs',
+				type: 'GET',
+				data: {
+					pageNo: pageNo,
+					pagelength: 9,
+					Category: '@ViewBag.Category'
+				},
+				success: function (result) {
+					$("#blog-container").html(result);
+				},
+				error: function () {
+					alert("Failed to load blog posts.");
+				}
+			});
+		}
+		GetPage(1);
+
+	</script>
+}

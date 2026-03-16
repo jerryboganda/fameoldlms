@@ -1,0 +1,30 @@
+﻿@model First_Aid_Made_Easy.Models.TutorialVM
+@using First_Aid_Made_Easy.BLL
+@{
+    int Sr = 0;
+}
+<table style="width:100% !important" id="DTable" class="table table-bordered">
+    <thead>
+        <tr style="background-color: #364e9c">
+            <th>Sr.</th>
+            <th>Tutorial</th>
+            <th>Category</th>
+            <th style="min-width:80px">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var i in Model.List)
+        {
+            Sr++;
+            <tr>
+                <td>@Sr</td>
+                <td>@i.Title</td>
+                <td>@i.Category</td>
+                <td>
+                    <a href="/Tutorials/Index/@i.TutorialID" vlaue="" class="text-warning"><i class="fa fa-edit Font20"></i></a>
+                    <a href="javascript:;" id="btnRowDelete" data-name="Tutorial" data-url="/Tutorials/Delete/@i.TutorialID" class="text-danger"><i class="fa fa-trash Font20"></i></a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

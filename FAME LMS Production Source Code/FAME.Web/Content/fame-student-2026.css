@@ -1,0 +1,2135 @@
+/* 
+   FAME Student Dashboard 2026 
+   Design System: Enterprise Mobile-First v2.0
+   
+   DESIGN RULES (per frontend-specialist.md):
+   - NO PURPLE (banned)
+   - NO Glassmorphism clichés
+   - Mobile-first (80% mobile users)
+   - High contrast, functional design
+   - Min tap targets: 44px
+*/
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+    /* Brand Colors - Medical/Professional (NO PURPLE) */
+    --fame-primary: #0F766E;          /* Teal - Medical/Trust */
+    --fame-primary-hover: #0D9488;
+    --fame-primary-light: #CCFBF1;
+    --fame-primary-dark: #134E4A;
+    
+    --fame-accent: #EA580C;           /* Orange - CTA/Energy */
+    --fame-accent-hover: #C2410C;
+    --fame-accent-light: #FFF7ED;
+    
+    --fame-secondary: #1E293B;        /* Slate - Professional */
+
+    /* Functional Colors */
+    --fame-success: #16A34A;
+    --fame-success-bg: #DCFCE7;
+    --fame-warning: #CA8A04;
+    --fame-warning-bg: #FEF9C3;
+    --fame-danger: #DC2626;
+    --fame-danger-bg: #FEE2E2;
+    --fame-info: #0284C7;
+    --fame-info-bg: #E0F2FE;
+
+    /* Text Colors - High Contrast */
+    --fame-text-main: #0F172A;
+    --fame-text-secondary: #475569;
+    --fame-text-muted: #64748B;
+    --fame-text-inverse: #FFFFFF;
+
+    /* Background Colors - Clean & Flat */
+    --fame-bg-page: #F8FAFC;
+    --fame-bg-card: #FFFFFF;
+    --fame-bg-elevated: #FFFFFF;
+    --fame-border: #E2E8F0;
+    --fame-border-hover: #CBD5E1;
+
+    /* Shadows - Subtle, Not Glassmorphic */
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -2px rgba(0,0,0,0.05);
+    --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -4px rgba(0,0,0,0.05);
+
+    /* Mobile-First Dimensions */
+    --sidebar-width-mobile: 0px;
+    --sidebar-width-desktop: 260px;
+    --header-height: 64px;
+    --card-radius: 12px;
+    --tap-target-min: 44px;
+    --spacing-mobile: 16px;
+    --spacing-desktop: 24px;
+
+    /* Transitions */
+    --trans-fast: 150ms ease;
+    --trans-smooth: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* =========================================
+   Base & Reset - Mobile First
+   ========================================= */
+* {
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 16px;
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+    width: 100%;
+    overflow-x: hidden;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background-color: var(--fame-bg-page);
+    color: var(--fame-text-main);
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    overflow-x: hidden;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Inter', sans-serif;
+    color: var(--fame-text-main);
+    margin: 0 0 0.5em;
+    font-weight: 700;
+    line-height: 1.25;
+}
+
+h1 { font-size: 1.75rem; }
+h2 { font-size: 1.5rem; }
+h3 { font-size: 1.25rem; }
+h4 { font-size: 1.125rem; }
+
+@media (min-width: 768px) {
+    h1 { font-size: 2rem; }
+    h2 { font-size: 1.75rem; }
+    h3 { font-size: 1.5rem; }
+}
+
+a {
+    text-decoration: none;
+    color: var(--fame-primary);
+    transition: color var(--trans-fast);
+    cursor: pointer;
+}
+
+a:hover, a:focus {
+    color: var(--fame-primary-hover);
+}
+
+a:focus-visible {
+    outline: 2px solid var(--fame-primary);
+    outline-offset: 2px;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+button {
+    cursor: pointer;
+    font-family: inherit;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* =========================================
+   CRITICAL: Override Bootstrap & Old Styles
+   ========================================= */
+.fame-app-wrapper,
+.fame-main-content,
+.fame-container,
+.fame-header {
+    background-image: none !important;
+    background: var(--fame-bg-page) !important;
+}
+
+.fame-header {
+    background: var(--fame-bg-card) !important;
+    border-bottom: 1px solid var(--fame-border);
+}
+
+.fame-sidebar {
+    background: var(--fame-bg-card) !important;
+    background-image: none !important;
+}
+
+/* =========================================
+   Layout Structure - Mobile First
+   ========================================= */
+html, body {
+    width: 100vw;
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden !important;
+    position: relative;
+    -webkit-overflow-scrolling: touch;
+    -webkit-text-size-adjust: 100%;
+    touch-action: manipulation;
+}
+
+.fame-app-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    min-height: 100dvh;
+    width: 100%;
+    overflow-x: hidden;
+}
+
+@media (min-width: 992px) {
+    .fame-app-wrapper {
+        flex-direction: row;
+    }
+}
+
+/* =========================================
+   Mobile Overlay
+   ========================================= */
+.fame-sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 998;
+    opacity: 0;
+    transition: opacity var(--trans-smooth);
+}
+
+.fame-sidebar-overlay.active {
+    display: block;
+    opacity: 1;
+}
+
+/* Mobile First Sidebar Base */
+.fame-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 280px;
+    max-width: 85vw;
+    height: 100vh;
+    height: 100dvh;
+    background: var(--fame-bg-card);
+    border-right: 1px solid var(--fame-border);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    transform: translateX(-100%);
+    visibility: hidden;
+    transition: transform var(--trans-smooth), visibility var(--trans-smooth);
+    box-shadow: var(--shadow-lg);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
+.fame-sidebar.open {
+    transform: translateX(0);
+    visibility: visible;
+}
+
+/* Desktop Visibility Overrides */
+@media (min-width: 992px) {
+    .fame-sidebar {
+        transform: translate(0, 0) !important;
+        visibility: visible !important;
+        display: flex !important;
+        width: var(--sidebar-width-desktop) !important;
+        position: fixed !important;
+        box-shadow: none !important;
+        z-index: 1000 !important;
+        left: 0 !important;
+    }
+    
+    .fame-sidebar-overlay {
+        display: none !important;
+    }
+}
+
+.fame-sidebar-logo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: var(--header-height);
+    padding: 0 var(--spacing-mobile);
+    border-bottom: 1px solid var(--fame-border);
+    flex-shrink: 0;
+}
+
+.fame-sidebar-logo img {
+    height: 44px;
+    width: auto;
+    max-width: calc(100% - 52px);
+    object-fit: contain;
+}
+
+@media (min-width: 992px) {
+    .fame-sidebar-logo img {
+        height: 44px;
+        max-width: 100%;
+    }
+}
+
+.fame-sidebar-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--tap-target-min);
+    height: var(--tap-target-min);
+    border: none;
+    background: transparent;
+    color: var(--fame-text-muted);
+    border-radius: 8px;
+    transition: var(--trans-fast);
+}
+
+.fame-sidebar-close:hover,
+.fame-sidebar-close:focus {
+    background: var(--fame-bg-page);
+    color: var(--fame-text-main);
+}
+
+@media (min-width: 992px) {
+    .fame-sidebar-close {
+        display: none;
+    }
+}
+
+.fame-nav-menu {
+    flex: 1;
+    padding: 12px;
+    overflow-y: auto;
+}
+
+.fame-nav-item {
+    margin-bottom: 2px;
+}
+
+.fame-nav-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    min-height: var(--tap-target-min);
+    border-radius: 8px;
+    color: var(--fame-text-secondary);
+    font-weight: 500;
+    font-size: 0.9375rem;
+    transition: var(--trans-fast);
+    border: none;
+    background: transparent;
+    width: 100%;
+    text-align: left;
+}
+
+.fame-nav-link:hover,
+.fame-nav-link:focus {
+    background: var(--fame-primary-light);
+    color: var(--fame-primary);
+}
+
+.fame-nav-link.active {
+    background: var(--fame-primary);
+    color: var(--fame-text-inverse);
+    font-weight: 600;
+}
+
+.fame-nav-link svg,
+.fame-nav-link i {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
+/* =========================================
+   Social Media Follow Buttons
+   ========================================= */
+.fame-social-follow {
+    padding: 16px 14px 20px;
+    border-top: 1px solid var(--fame-border);
+    margin-top: auto;
+    flex-shrink: 0;
+}
+
+.fame-social-label {
+    display: block;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    color: var(--fame-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 12px;
+}
+
+.fame-social-icons {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: center;
+}
+
+.fame-social-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    min-height: 40px !important;
+    max-width: 40px;
+    max-height: 40px;
+    aspect-ratio: 1 / 1;
+    border-radius: 50%;
+    color: #fff;
+    flex-shrink: 0;
+    flex-grow: 0;
+    padding: 0;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+    text-decoration: none !important;
+    opacity: 0.9;
+}
+
+.fame-social-btn svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+}
+
+.fame-social-btn:hover,
+.fame-social-btn:focus {
+    transform: scale(1.12);
+    opacity: 1;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    color: #fff;
+    text-decoration: none !important;
+}
+
+.fame-social-btn:active {
+    transform: scale(0.95);
+}
+
+.fame-social-fb { background: #1877F2; }
+.fame-social-ig { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
+.fame-social-yt { background: #FF0000; }
+.fame-social-tt { background: #000000; }
+
+/* =========================================
+   Main Content Area
+   ========================================= */
+.fame-main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    width: 100%;
+    max-width: 100%;
+}
+
+@media (min-width: 992px) {
+    .fame-main-content {
+        margin-left: var(--sidebar-width-desktop);
+        width: calc(100% - var(--sidebar-width-desktop));
+        max-width: calc(100% - var(--sidebar-width-desktop));
+    }
+}
+
+/* =========================================
+   Header - Mobile First
+   ========================================= */
+.fame-header {
+    height: var(--header-height);
+    padding: 0 var(--spacing-mobile);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--fame-bg-card);
+    border-bottom: 1px solid var(--fame-border);
+    /* Prevent content bleed-through */
+    isolation: isolate;
+}
+
+@media (min-width: 768px) {
+    .fame-header {
+        padding: 0 var(--spacing-desktop);
+    }
+}
+
+/* Mobile Menu Toggle */
+.fame-menu-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--tap-target-min);
+    height: var(--tap-target-min);
+    border: none;
+    background: transparent;
+    color: var(--fame-text-main);
+    border-radius: 8px;
+    transition: var(--trans-fast);
+    flex-shrink: 0;
+    /* Higher tap target for mobile */
+    -webkit-tap-highlight-color: transparent;
+}
+
+.fame-menu-toggle:hover,
+.fame-menu-toggle:focus {
+    background: var(--fame-bg-page);
+}
+
+.fame-menu-toggle:active {
+    background: var(--fame-primary-light);
+}
+
+@media (min-width: 992px) {
+    .fame-menu-toggle {
+        display: none;
+    }
+}
+
+.fame-header-title {
+    flex: 1;
+    min-width: 0;
+    /* Prevent title from pushing other elements */
+    overflow: hidden;
+}
+
+.fame-header-title h2 {
+    font-size: 1.125rem;
+    font-weight: 700;
+    margin: 0;
+    color: var(--fame-text-main);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Hide title on very small screens if needed */
+@media (max-width: 374px) {
+    .fame-header-title h2 {
+        font-size: 1rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .fame-header-title h2 {
+        font-size: 1.25rem;
+    }
+}
+
+.fame-user-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+}
+
+@media (min-width: 768px) {
+    .fame-user-actions {
+        gap: 16px;
+    }
+}
+
+/* Search - Hidden on mobile, shown on tablet+ */
+.fame-header-search {
+    display: none;
+}
+
+@media (min-width: 768px) {
+    .fame-header-search {
+        display: block;
+        flex: 1;
+        max-width: 320px;
+    }
+    
+    .fame-header-search input {
+        width: 100%;
+        padding: 10px 14px 10px 40px;
+        border: 1px solid var(--fame-border);
+        border-radius: 8px;
+        background: var(--fame-bg-page);
+        font-size: 0.875rem;
+        color: var(--fame-text-main);
+        transition: var(--trans-fast);
+    }
+    
+    .fame-header-search input:focus {
+        outline: none;
+        border-color: var(--fame-primary);
+        box-shadow: 0 0 0 3px var(--fame-primary-light);
+    }
+}
+
+/* Notification Bell */
+.fame-notification-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--tap-target-min);
+    height: var(--tap-target-min);
+    border: none;
+    background: transparent;
+    color: var(--fame-text-secondary);
+    border-radius: 8px;
+    position: relative;
+    transition: var(--trans-fast);
+}
+
+.fame-notification-btn:hover,
+.fame-notification-btn:focus {
+    background: var(--fame-bg-page);
+    color: var(--fame-text-main);
+}
+
+.fame-notification-badge {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 8px;
+    height: 8px;
+    background: var(--fame-danger);
+    border-radius: 50%;
+    border: 2px solid var(--fame-bg-card);
+}
+
+/* User Profile Button */
+.fame-user-profile {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px;
+    border: none;
+    background: transparent;
+    border-radius: 8px;
+    transition: var(--trans-fast);
+    min-height: var(--tap-target-min);
+}
+
+.fame-user-profile:hover,
+.fame-user-profile:focus {
+    background: var(--fame-bg-page);
+}
+
+.fame-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: var(--fame-primary-light);
+    border: 2px solid var(--fame-border);
+}
+
+.fame-user-info {
+    display: none;
+}
+
+@media (min-width: 768px) {
+    .fame-user-profile {
+        padding: 6px 12px 6px 6px;
+    }
+    
+    .fame-user-info {
+        display: block;
+        text-align: left;
+    }
+    
+    .fame-user-info .name {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--fame-text-main);
+        line-height: 1.2;
+    }
+    
+    .fame-user-info .role {
+        font-size: 0.75rem;
+        color: var(--fame-text-muted);
+    }
+}
+
+/* =========================================
+   Page Container - Mobile First
+   ========================================= */
+.fame-container {
+    padding: var(--spacing-mobile);
+    width: 100%;
+    max-width: 100%;
+}
+
+@media (min-width: 768px) {
+    .fame-container {
+        padding: var(--spacing-desktop);
+    }
+}
+
+@media (min-width: 1200px) {
+    .fame-container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+}
+
+/* =========================================
+   Cards - Clean, Functional Design
+   ========================================= */
+.fame-card {
+    background: var(--fame-bg-card);
+    border: 1px solid var(--fame-border);
+    border-radius: var(--card-radius);
+    padding: var(--spacing-mobile);
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow var(--trans-fast), border-color var(--trans-fast);
+}
+
+@media (min-width: 768px) {
+    .fame-card {
+        padding: var(--spacing-desktop);
+    }
+}
+
+.fame-card:hover {
+    border-color: var(--fame-border-hover);
+    box-shadow: var(--shadow-md);
+}
+
+.fame-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--fame-border);
+}
+
+.fame-card-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--fame-text-main);
+    margin: 0;
+}
+
+@media (min-width: 768px) {
+    .fame-card-title {
+        font-size: 1.125rem;
+    }
+}
+
+/* =========================================
+   Buttons - Touch Friendly
+   ========================================= */
+.fame-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 20px;
+    min-height: var(--tap-target-min);
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9375rem;
+    border: none;
+    transition: var(--trans-fast);
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.fame-btn-primary {
+    background: var(--fame-primary);
+    color: var(--fame-text-inverse);
+}
+
+.fame-btn-primary:hover,
+.fame-btn-primary:focus {
+    background: var(--fame-primary-hover);
+    color: var(--fame-text-inverse);
+}
+
+.fame-btn-accent {
+    background: var(--fame-accent);
+    color: var(--fame-text-inverse);
+}
+
+.fame-btn-accent:hover,
+.fame-btn-accent:focus {
+    background: var(--fame-accent-hover);
+    color: var(--fame-text-inverse);
+}
+
+.fame-btn-outline {
+    background: transparent;
+    color: var(--fame-primary);
+    border: 2px solid var(--fame-primary);
+}
+
+.fame-btn-outline:hover,
+.fame-btn-outline:focus {
+    background: var(--fame-primary);
+    color: var(--fame-text-inverse);
+}
+
+.fame-btn-ghost {
+    background: transparent;
+    color: var(--fame-text-secondary);
+    padding: 8px 12px;
+}
+
+.fame-btn-ghost:hover,
+.fame-btn-ghost:focus {
+    background: var(--fame-bg-page);
+    color: var(--fame-text-main);
+}
+
+.fame-btn-sm {
+    padding: 8px 14px;
+    font-size: 0.875rem;
+    min-height: 36px;
+}
+
+.fame-btn-full {
+    width: 100%;
+}
+
+/* =========================================
+   Stats Grid - Mobile Stacked
+   ========================================= */
+.fame-stats-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+@media (min-width: 480px) {
+    .fame-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 768px) {
+    .fame-stats-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+    }
+}
+
+@media (min-width: 992px) {
+    .fame-stats-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+    }
+}
+
+.fame-stat-card {
+    background: var(--fame-bg-card);
+    border: 1px solid var(--fame-border);
+    border-radius: var(--card-radius);
+    padding: 16px;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    transition: var(--trans-fast);
+}
+
+.fame-stat-card:hover {
+    border-color: var(--fame-border-hover);
+    box-shadow: var(--shadow-md);
+}
+
+.fame-stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.fame-stat-icon svg,
+.fame-stat-icon i {
+    width: 24px;
+    height: 24px;
+}
+
+.fame-stat-icon.primary {
+    background: var(--fame-primary-light);
+    color: var(--fame-primary);
+}
+
+.fame-stat-icon.success {
+    background: var(--fame-success-bg);
+    color: var(--fame-success);
+}
+
+.fame-stat-icon.warning {
+    background: var(--fame-warning-bg);
+    color: var(--fame-warning);
+}
+
+.fame-stat-icon.danger {
+    background: var(--fame-danger-bg);
+    color: var(--fame-danger);
+}
+
+.fame-stat-icon.info {
+    background: var(--fame-info-bg);
+    color: var(--fame-info);
+}
+
+.fame-stat-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.fame-stat-label {
+    font-size: 0.8125rem;
+    color: var(--fame-text-muted);
+    font-weight: 500;
+    margin-bottom: 4px;
+}
+
+.fame-stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--fame-text-main);
+    line-height: 1.2;
+}
+
+@media (min-width: 768px) {
+    .fame-stat-value {
+        font-size: 1.75rem;
+    }
+}
+
+/* Legacy class support */
+.fame-stat-card-pro {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.fame-stat-content h4 {
+    font-size: 0.8125rem;
+    color: var(--fame-text-muted);
+    margin: 0 0 4px 0;
+    font-weight: 500;
+}
+
+.fame-stat-content .value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--fame-text-main);
+    line-height: 1.2;
+}
+
+/* =========================================
+   Quick Actions Grid
+   ========================================= */
+.fame-quick-actions {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+@media (min-width: 768px) {
+    .fame-quick-actions {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+    }
+}
+
+.fame-quick-action-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 20px 12px;
+    border-radius: var(--card-radius);
+    border: 1.5px solid var(--fame-border);
+    background: var(--fame-bg-card);
+    color: var(--fame-text-main);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    text-decoration: none !important;
+    transition: all 0.2s ease;
+    min-height: 100px;
+}
+
+.fame-quick-action-btn:hover {
+    border-color: var(--fame-primary);
+    background: var(--fame-primary-light);
+    color: var(--fame-primary);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.fame-quick-action-btn.fame-qa-primary {
+    background: var(--fame-primary);
+    border-color: var(--fame-primary);
+    color: #fff;
+}
+
+.fame-quick-action-btn.fame-qa-primary:hover {
+    background: var(--fame-primary-hover);
+    border-color: var(--fame-primary-hover);
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(15, 118, 110, 0.3);
+}
+
+.fame-qa-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+/* =========================================
+   Stats Grid Mobile Override
+   ========================================= */
+@media (max-width: 479px) {
+    .fame-stats-grid {
+        grid-template-columns: 1fr 1fr !important;
+    }
+    .fame-stats-grid > *:last-child {
+        grid-column: 1 / -1;
+    }
+}
+
+/* =========================================
+   Welcome Section
+   ========================================= */
+.fame-welcome-section {
+    margin-bottom: 24px;
+}
+
+.fame-welcome-card {
+    background: linear-gradient(135deg, var(--fame-primary) 0%, var(--fame-primary-dark) 100%);
+    border-radius: var(--card-radius);
+    padding: 20px;
+    color: var(--fame-text-inverse);
+    position: relative;
+    overflow: hidden;
+}
+
+@media (min-width: 768px) {
+    .fame-welcome-card {
+        padding: 28px 32px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+}
+
+.fame-welcome-content h1 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--fame-text-inverse);
+    margin: 0 0 8px;
+}
+
+@media (min-width: 768px) {
+    .fame-welcome-content h1 {
+        font-size: 1.5rem;
+    }
+}
+
+.fame-welcome-content p {
+    font-size: 0.9375rem;
+    opacity: 0.9;
+    margin: 0;
+    max-width: 500px;
+}
+
+.fame-welcome-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,255,255,0.2);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    margin-top: 16px;
+}
+
+@media (min-width: 768px) {
+    .fame-welcome-badge {
+        margin-top: 0;
+    }
+}
+
+/* =========================================
+   Content Grid - Mobile Stack, Desktop Side-by-Side
+   ========================================= */
+.fame-content-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+}
+
+@media (min-width: 992px) {
+    .fame-content-grid {
+        grid-template-columns: 2fr 1fr;
+        gap: 24px;
+    }
+}
+
+/* =========================================
+   FAME COURSE SYSTEM - Ultra-Compact Redesign (Feb 2026)
+   ========================================= */
+.fame-course-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+@media (min-width: 768px) {
+    .fame-course-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+    }
+}
+
+@media (min-width: 1200px) {
+    .fame-course-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media (min-width: 1440px) {
+    .fame-course-grid {
+        grid-template-columns: repeat(5, 1fr);
+    }
+}
+
+.fame-course-card {
+    background: var(--fame-bg-card);
+    border: 1px solid var(--fame-border);
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    transition: all 0.2s ease;
+    text-decoration: none !important;
+    position: relative;
+}
+
+.fame-course-card:hover {
+    border-color: var(--fame-primary);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(15, 118, 110, 0.1);
+}
+
+.fame-course-thumb-wrapper {
+    width: 100%;
+    height: 110px;
+    background: #F8FAFC;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 1px solid var(--fame-border);
+    position: relative;
+}
+
+@media (min-width: 992px) {
+    .fame-course-thumb-wrapper {
+        height: 130px;
+    }
+}
+
+.fame-course-thumb {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    padding: 8px;
+    transition: transform 0.3s ease;
+}
+
+.fame-course-card:hover .fame-course-thumb {
+    transform: scale(1.05);
+}
+
+.fame-course-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    padding: 2px 8px;
+    background: white;
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: var(--fame-primary);
+    border-radius: 10px;
+    box-shadow: var(--shadow-sm);
+    z-index: 2;
+}
+
+.fame-course-body {
+    padding: 8px 10px 10px 10px !important;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.fame-course-title {
+    font-size: 0.8125rem !important; /* 13px */
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--fame-text-main);
+    margin: 0 !important;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    height: 2.6em; /* Fixed height for consistency */
+}
+
+/* Hide faculty/meta in ultra-compact mode */
+.fame-course-meta {
+    display: none !important;
+}
+
+/* Stats Line: Icons and Metadata */
+.fame-course-stats {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--fame-text-muted);
+}
+
+.fame-course-stats .stat-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.fame-course-stats i {
+    font-size: 0.85rem;
+    color: var(--fame-primary);
+    opacity: 0.9;
+}
+
+/* Progress Container: Horizontal Labels + Bar */
+.fame-course-progress-container {
+    margin-top: 6px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.fame-course-progress-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--fame-text-main);
+}
+
+.fame-course-progress-label {
+    color: var(--fame-text-muted);
+    font-weight: 600;
+}
+
+.fame-course-progress-percentage {
+    color: var(--fame-primary);
+}
+
+.fame-course-progress {
+    height: 3px !important;
+    background: #E2E8F0;
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.fame-course-progress-bar {
+    height: 100%;
+    background: var(--fame-primary);
+    transition: width 0.6s ease;
+}
+
+.fame-btn-compact {
+    margin-top: 6px;
+    padding: 6px 10px !important;
+    font-size: 0.75rem !important;
+    font-weight: 700;
+    border-radius: 6px;
+    width: 100%;
+    background: var(--fame-primary-light);
+    color: var(--fame-primary) !important;
+    text-align: center;
+    border: none;
+    transition: all 150ms ease;
+}
+
+.fame-course-card:hover .fame-btn-compact {
+    background: var(--fame-primary);
+    color: white !important;
+}
+
+/* Exam Card Enhancements (Ultra-Compact) */
+.fame-exam-placeholder {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, var(--fame-primary-light) 0%, #e0f2fe 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--fame-primary);
+    padding: 15px;
+    text-align: center;
+}
+
+.fame-exam-placeholder i {
+    font-size: 2.2rem;
+    margin-bottom: 6px;
+    opacity: 0.8;
+}
+
+.fame-exam-placeholder span {
+    font-size: 0.65rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    opacity: 0.9;
+}
+
+.fame-exam-info {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.7rem;
+    color: var(--fame-text-muted);
+    font-weight: 600;
+    margin-top: 4px;
+}
+
+.fame-exam-info i {
+    font-size: 0.8rem;
+    color: var(--fame-primary);
+    opacity: 0.7;
+}
+
+.fame-exam-info .separator {
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: var(--fame-border);
+}
+
+.fame-course-badge.badge-success { background-color: var(--fame-success) !important; color: white !important; }
+.fame-course-badge.badge-primary { background-color: var(--fame-primary) !important; color: white !important; }
+
+/* Video Card Enhancements */
+.fame-video-placeholder {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.fame-video-placeholder::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>');
+    background-size: 40px;
+    opacity: 0.5;
+}
+
+.fame-video-placeholder i {
+    font-size: 2.5rem;
+    color: var(--fame-primary);
+    filter: drop-shadow(0 0 15px rgba(15, 118, 110, 0.4));
+    z-index: 1;
+    transition: transform 0.3s ease;
+}
+
+.fame-course-card:hover .fame-video-placeholder i {
+    transform: scale(1.1) rotate(5deg);
+}
+
+.fame-video-badge {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    color: white;
+    font-size: 0.6rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+/* Meeting Card Enhancements */
+.fame-meeting-placeholder {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #fff1f2 0%, #ffe4e6 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #e11d48;
+    position: relative;
+}
+
+.fame-meeting-placeholder i {
+    font-size: 2.5rem;
+    opacity: 0.8;
+}
+
+.fame-meeting-date {
+    position: absolute;
+    bottom: 8px;
+    left: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: white;
+    padding: 2px 8px;
+    border-radius: 6px;
+    box-shadow: var(--shadow-sm);
+    line-height: 1;
+}
+
+.fame-meeting-date .day { font-size: 0.8rem; font-weight: 800; color: var(--fame-primary); }
+.fame-meeting-date .month { font-size: 0.55rem; font-weight: 700; text-transform: uppercase; color: var(--fame-text-muted); }
+
+/* Filter Bar & Search */
+.fame-discovery-header {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.fame-search-wrapper {
+    position: relative;
+    max-width: 400px;
+    width: 100%;
+}
+
+.fame-search-wrapper i {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--fame-text-muted);
+    font-size: 1rem;
+}
+
+.fame-search-input {
+    width: 100%;
+    padding: 10px 16px 10px 42px;
+    border: 1.5px solid var(--fame-border);
+    border-radius: 100px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    background: white;
+}
+
+.fame-search-input:focus {
+    border-color: var(--fame-primary);
+    box-shadow: 0 0 0 4px var(--fame-primary-light);
+    outline: none;
+}
+
+.fame-filter-bar {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none;  /* IE/Edge */
+}
+
+.fame-filter-bar::-webkit-scrollbar {
+    display: none; /* Chrome/Safari */
+}
+
+.fame-filter-pill {
+    white-space: nowrap;
+    padding: 6px 16px;
+    background: white;
+    border: 1.5px solid var(--fame-border);
+    border-radius: 100px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--fame-text-muted);
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.fame-filter-pill:hover {
+    border-color: var(--fame-primary);
+    color: var(--fame-primary);
+}
+
+.fame-filter-pill.active {
+    background: var(--fame-primary);
+    border-color: var(--fame-primary);
+    color: white;
+    box-shadow: 0 4px 12px rgba(15, 118, 110, 0.2);
+}
+
+/* Animations for Filtering */
+.fame-course-card.filtering-out {
+    opacity: 0;
+    transform: scale(0.95);
+    pointer-events: none;
+    position: absolute;
+}
+
+.fame-course-card.filtering-in {
+    animation: fameFadeInScale 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes fameFadeInScale {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* =========================================
+   Color Utilities - NO PURPLE
+   ========================================= */
+.bg-primary { background: var(--fame-primary); }
+.bg-primary-light { background: var(--fame-primary-light); }
+.bg-accent { background: var(--fame-accent); }
+.bg-success { background: var(--fame-success); }
+.bg-warning { background: var(--fame-warning); }
+.bg-danger { background: var(--fame-danger); }
+.bg-info { background: var(--fame-info); }
+
+.text-primary { color: var(--fame-primary); }
+.text-accent { color: var(--fame-accent); }
+.text-success { color: var(--fame-success); }
+.text-warning { color: var(--fame-warning); }
+.text-danger { color: var(--fame-danger); }
+.text-muted { color: var(--fame-text-muted); }
+
+/* =========================================
+   Tables - Mobile Responsive
+   ========================================= */
+.fame-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.fame-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+}
+
+.fame-table th,
+.fame-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--fame-border);
+    white-space: nowrap;
+}
+
+.fame-table th {
+    background: var(--fame-bg-page);
+    font-weight: 600;
+    color: var(--fame-text-secondary);
+    font-size: 0.8125rem;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+}
+
+.fame-table tbody tr:hover {
+    background: var(--fame-bg-page);
+}
+
+@media (min-width: 768px) {
+    .fame-table th,
+    .fame-table td {
+        padding: 14px 16px;
+    }
+}
+
+/* Mobile Card Table Pattern */
+@media (max-width: 639px) {
+    .fame-table-mobile-cards thead {
+        display: none;
+    }
+    
+    .fame-table-mobile-cards tbody tr {
+        display: block;
+        padding: 16px;
+        margin-bottom: 12px;
+        background: var(--fame-bg-card);
+        border: 1px solid var(--fame-border);
+        border-radius: var(--card-radius);
+    }
+    
+    .fame-table-mobile-cards tbody td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 0;
+        border-bottom: 1px solid var(--fame-border);
+        white-space: normal;
+    }
+    
+    .fame-table-mobile-cards tbody td:last-child {
+        border-bottom: none;
+    }
+    
+    .fame-table-mobile-cards tbody td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: var(--fame-text-secondary);
+        font-size: 0.8125rem;
+    }
+}
+
+/* =========================================
+   Class/Event Cards
+   ========================================= */
+.fame-event-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.fame-event-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 14px;
+    background: var(--fame-bg-card);
+    border: 1px solid var(--fame-border);
+    border-radius: var(--card-radius);
+    transition: var(--trans-fast);
+}
+
+.fame-event-card:hover {
+    border-color: var(--fame-border-hover);
+    box-shadow: var(--shadow-sm);
+}
+
+.fame-event-date {
+    text-align: center;
+    min-width: 50px;
+    padding: 8px;
+    background: var(--fame-primary-light);
+    border-radius: 8px;
+    flex-shrink: 0;
+}
+
+.fame-event-date .day {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--fame-primary);
+    line-height: 1;
+}
+
+.fame-event-date .month {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    color: var(--fame-primary);
+    text-transform: uppercase;
+    margin-top: 2px;
+}
+
+.fame-event-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.fame-event-title {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--fame-text-main);
+    margin: 0 0 4px;
+}
+
+.fame-event-time {
+    font-size: 0.8125rem;
+    color: var(--fame-text-muted);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* =========================================
+   Empty State
+   ========================================= */
+.fame-empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--fame-text-muted);
+}
+
+.fame-empty-state svg,
+.fame-empty-state i {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+}
+
+.fame-empty-state p {
+    font-size: 0.9375rem;
+    margin: 0;
+}
+
+/* =========================================
+   Badges & Tags
+   ========================================= */
+.fame-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.fame-badge-primary {
+    background: var(--fame-primary-light);
+    color: var(--fame-primary);
+}
+
+.fame-badge-success {
+    background: var(--fame-success-bg);
+    color: var(--fame-success);
+}
+
+.fame-badge-warning {
+    background: var(--fame-warning-bg);
+    color: var(--fame-warning);
+}
+
+.fame-badge-danger {
+    background: var(--fame-danger-bg);
+    color: var(--fame-danger);
+}
+
+/* =========================================
+   Animations - Respect reduced motion
+   ========================================= */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from { 
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to { 
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.anim-fade-in {
+    animation: fadeIn 0.3s ease forwards;
+}
+
+.anim-slide-up {
+    animation: slideUp 0.4s ease forwards;
+}
+
+.anim-delay-1 { animation-delay: 0.05s; }
+.anim-delay-2 { animation-delay: 0.1s; }
+.anim-delay-3 { animation-delay: 0.15s; }
+.anim-delay-4 { animation-delay: 0.2s; }
+
+/* =========================================
+   Dropdown Menus - Mobile Friendly
+   ========================================= */
+.fame-dropdown {
+    position: relative;
+}
+
+.fame-dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    min-width: 200px;
+    max-width: calc(100vw - 32px);
+    background: var(--fame-bg-card);
+    border: 1px solid var(--fame-border);
+    border-radius: var(--card-radius);
+    box-shadow: var(--shadow-lg);
+    z-index: 1001;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: var(--trans-fast);
+    pointer-events: none;
+}
+
+/* MOBILE: Dropdown positioned fixed at bottom */
+@media (max-width: 767px) {
+    .fame-dropdown-menu {
+        position: fixed;
+        top: auto;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        max-width: 100%;
+        border-radius: 16px 16px 0 0;
+        transform: translateY(100%);
+        max-height: 70vh;
+        overflow-y: auto;
+    }
+    
+    .fame-dropdown.open .fame-dropdown-menu {
+        transform: translateY(0);
+    }
+}
+
+/* Desktop: Normal dropdown */
+@media (min-width: 768px) {
+    .fame-dropdown.open .fame-dropdown-menu,
+    .fame-dropdown:focus-within .fame-dropdown-menu {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(4px);
+        pointer-events: auto;
+    }
+}
+
+.fame-dropdown.open .fame-dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+.fame-dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    min-height: var(--tap-target-min);
+    color: var(--fame-text-secondary);
+    font-size: 0.9375rem;
+    transition: var(--trans-fast);
+    border: none;
+    background: transparent;
+    width: 100%;
+    text-align: left;
+}
+
+.fame-dropdown-item:hover,
+.fame-dropdown-item:focus {
+    background: var(--fame-bg-page);
+    color: var(--fame-text-main);
+}
+
+.fame-dropdown-divider {
+    height: 1px;
+    background: var(--fame-border);
+    margin: 4px 0;
+}
+
+/* Mobile dropdown overlay */
+.fame-dropdown-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+@media (max-width: 767px) {
+    .fame-dropdown.open .fame-dropdown-overlay {
+        display: block;
+    }
+}
+
+/* =========================================
+   Utility Classes
+   ========================================= */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.hide-mobile {
+    display: none !important;
+}
+
+@media (min-width: 768px) {
+    .hide-mobile {
+        display: block !important;
+    }
+    
+    .show-mobile-only {
+        display: none !important;
+    }
+}
+
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+
+.mt-0 { margin-top: 0; }
+.mb-0 { margin-bottom: 0; }
+.mb-1 { margin-bottom: 8px; }
+.mb-2 { margin-bottom: 16px; }
+.mb-3 { margin-bottom: 24px; }
+
+/* =========================================
+   Legacy Support - Old class names
+   ========================================= */
+.bg-grad-primary { background: var(--fame-primary); }
+.bg-grad-success { background: var(--fame-success); }
+.bg-grad-warning { background: var(--fame-warning); }
+.bg-grad-danger { background: var(--fame-danger); }
+
+.anim-enter {
+    animation: slideUp 0.4s ease forwards;
+    opacity: 0;
+}
+
+.delay-100 { animation-delay: 0.1s; }
+.delay-200 { animation-delay: 0.2s; }
+.delay-300 { animation-delay: 0.3s; }
+
+/* =========================================
+   CRITICAL MOBILE FIXES - Video Player & Course Views
+   ========================================= */
+
+/* Video Container - Full width on mobile */
+.video-container,
+.fame-video-container,
+#video-container,
+.plyr,
+.plyr__video-wrapper,
+iframe[src*="youtube"],
+iframe[src*="vimeo"],
+video {
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+/* Responsive video wrapper */
+.fame-video-wrapper,
+.video-responsive {
+    position: relative;
+    padding-bottom: 56.25%; /* 16:9 ratio */
+    height: 0;
+    overflow: hidden;
+    background: #000;
+    border-radius: var(--card-radius);
+    margin-bottom: 16px;
+}
+
+.fame-video-wrapper iframe,
+.fame-video-wrapper video,
+.video-responsive iframe,
+.video-responsive video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100% !important;
+    height: 100% !important;
+    border: 0;
+}
+
+/* Course content on TakeCourse page */
+@media (max-width: 767px) {
+    /* Fix course header overlap */
+    .course-header,
+    .fame-course-header {
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    /* Fix breadcrumb overflow */
+    .breadcrumb,
+    .fame-breadcrumb {
+        font-size: 0.8125rem;
+        flex-wrap: wrap;
+        overflow: hidden;
+    }
+    
+    /* Fix course title */
+    .course-title,
+    .fame-course-title-large {
+        font-size: 1.25rem !important;
+        word-break: break-word;
+    }
+    
+    /* Lesson list mobile optimization */
+    .lesson-list,
+    .fame-lesson-list,
+    .curriculum-list {
+        max-height: 50vh;
+        overflow-y: auto;
+    }
+    
+    .lesson-item,
+    .fame-lesson-item {
+        padding: 12px !important;
+        font-size: 0.9375rem;
+    }
+    
+    /* Fix floating action buttons */
+    .fab,
+    .floating-action,
+    .mark-complete-btn {
+        position: fixed !important;
+        bottom: 16px !important;
+        right: 16px !important;
+        left: auto !important;
+        z-index: 99 !important;
+        width: auto !important;
+        padding: 12px 20px !important;
+        border-radius: 50px !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2) !important;
+    }
+    
+    /* Fix card bodies on mobile */
+    .card-body,
+    .fame-card-body {
+        padding: 12px !important;
+    }
+    
+    /* Two-column layout fix */
+    .row > [class*="col-lg-"],
+    .row > [class*="col-xl-"] {
+        width: 100% !important;
+        max-width: 100% !important;
+        flex: 0 0 100% !important;
+    }
+}
+
+/* Fix Bootstrap conflicts */
+@media (max-width: 991px) {
+    .col-lg-8,
+    .col-lg-4,
+    .col-lg-6 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+}
+
+/* Safe area for notched phones */
+@supports (padding: max(0px)) {
+    .fame-container {
+        padding-left: max(16px, env(safe-area-inset-left));
+        padding-right: max(16px, env(safe-area-inset-right));
+    }
+    
+    .fame-header {
+        padding-left: max(16px, env(safe-area-inset-left));
+        padding-right: max(16px, env(safe-area-inset-right));
+    }
+}
+
+/* Bottom safe area for fixed elements */
+@supports (padding: max(0px)) {
+    .fab,
+    .floating-action {
+        bottom: max(16px, env(safe-area-inset-bottom)) !important;
+    }
+}
+
+/* =========================================
+   Global Mobile Touch Improvements
+   ========================================= */
+@media (max-width: 767px) {
+    /* Larger tap targets */
+    a, button, input[type="button"], input[type="submit"], .btn {
+        min-height: 44px;
+    }
+    
+    /* Better text sizing */
+    html {
+        font-size: 16px;
+        -webkit-text-size-adjust: 100%;
+    }
+    
+    /* Prevent horizontal scroll */
+    body {
+        overflow-x: hidden;
+    }
+    
+    /* Fix tables */
+    table {
+        display: block;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    /* Fix images */
+    img {
+        max-width: 100%;
+        height: auto;
+    }
+    
+    /* Fix modals */
+    .modal-dialog {
+        margin: 10px;
+        max-width: calc(100% - 20px);
+    }
+    
+    .modal-content {
+        border-radius: 12px;
+    }
+}

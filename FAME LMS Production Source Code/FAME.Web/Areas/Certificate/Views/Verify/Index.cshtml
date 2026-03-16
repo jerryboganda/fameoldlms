@@ -1,0 +1,169 @@
+@model First_Aid_Made_Easy.Models.Certificate.CertificateVerifyVM
+@{
+    ViewBag.Title = "Verify Certificate";
+    Layout = null; // standalone page — no login required
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Verify Certificate - First Aid Made Easy</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.min.css" rel="stylesheet" />
+    <style>
+        body { background: #f8fafc; min-height: 100vh; }
+        .verify-header { background: linear-gradient(135deg, #0F766E 0%, #134E4A 100%); color: #fff; padding: 20px 0; }
+        .verify-header a { color: rgba(255,255,255,0.8); text-decoration: none; }
+        .verify-card { max-width: 640px; margin: -40px auto 40px; }
+        .status-badge-lg { font-size: 18px; padding: 8px 20px; }
+        .verify-field { margin-bottom: 16px; }
+        .verify-field label { font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
+        .verify-footer { background: #1E293B; color: #94a3b8; padding: 24px 0; font-size: 13px; }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="verify-header">
+        <div class="container">
+            <div class="d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-shield-check fs-4"></i>
+                    <span class="fw-semibold">Certificate Verification</span>
+                </div>
+                <a href="/">First Aid Made Easy</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Search Bar -->
+        <div class="verify-card">
+            <div class="card border-0 shadow-sm mb-4" style="margin-top: 30px;">
+                <div class="card-body p-4">
+                    <form method="get" action="@Url.Action("Index", "Verify", new { area = "Certificate" })" class="d-flex gap-2">
+                        <div class="input-group">
+                            <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+                            <input type="text" name="id" class="form-control" placeholder="Enter Certificate ID to verify..." value="@(Model?.PublicId ?? "")" />
+                        </div>
+                        <button type="submit" class="btn btn-primary px-4" style="background: #0F766E; border-color: #0F766E;">Verify</button>
+                    </form>
+                </div>
+            </div>
+
+            @if (Model != null)
+            {
+                <!-- Result Card -->
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <!-- Status -->
+                        <div class="text-center mb-4">
+                            @if (Model.IsValid)
+                            {
+                                <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px; background: #d1fae5;">
+                                    <i class="bi bi-patch-check-fill" style="font-size: 40px; color: #059669;"></i>
+                                </div>
+                                <h4 class="fw-bold text-success">Certificate Verified</h4>
+                                <p class="text-muted">This certificate is authentic and currently valid.</p>
+                            }
+                            else if (Model.IsExpired)
+                            {
+                                <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px; background: #fef3c7;">
+                                    <i class="bi bi-exclamation-triangle-fill" style="font-size: 40px; color: #d97706;"></i>
+                                </div>
+                                <h4 class="fw-bold text-warning">Certificate Expired</h4>
+                                <p class="text-muted">This certificate was valid but has since expired.</p>
+                            }
+                            else if (Model.IsRevoked)
+                            {
+                                <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px; background: #fecaca;">
+                                    <i class="bi bi-x-circle-fill" style="font-size: 40px; color: #dc2626;"></i>
+                                </div>
+                                <h4 class="fw-bold text-danger">Certificate Revoked</h4>
+                                <p class="text-muted">This certificate has been revoked by the issuing institution.</p>
+                            }
+                            else
+                            {
+                                <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px; background: #f1f5f9;">
+                                    <i class="bi bi-question-circle-fill" style="font-size: 40px; color: #94a3b8;"></i>
+                                </div>
+                                <h4 class="fw-bold text-muted">Certificate Not Found</h4>
+                                <p class="text-muted">No certificate found with this ID. Please check and try again.</p>
+                            }
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(Model.LearnerName))
+                        {
+                            <hr />
+                            <div class="row g-3">
+                                <div class="col-sm-6">
+                                    <div class="verify-field">
+                                        <label>Issued To</label>
+                                        <div class="fw-semibold">@Model.LearnerName</div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="verify-field">
+                                        <label>Course / Programme</label>
+                                        <div class="fw-semibold">@Model.CourseName</div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="verify-field">
+                                        <label>Certificate ID</label>
+                                        <div class="font-monospace">@Model.PublicId</div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="verify-field">
+                                        <label>Issue Date</label>
+                                        <div>@(Model.IssuedAt?.ToString("MMMM dd, yyyy") ?? "—")</div>
+                                    </div>
+                                </div>
+                                @if (Model.ExpiresAt.HasValue)
+                                {
+                                    <div class="col-sm-6">
+                                        <div class="verify-field">
+                                            <label>Valid Until</label>
+                                            <div>@Model.ExpiresAt.Value.ToString("MMMM dd, yyyy")</div>
+                                        </div>
+                                    </div>
+                                }
+                                @if (Model.Credits > 0)
+                                {
+                                    <div class="col-sm-6">
+                                        <div class="verify-field">
+                                            <label>CPD Credits</label>
+                                            <div>@Model.Credits</div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+            else
+            {
+                <!-- Empty state - first visit -->
+                <div class="text-center py-5">
+                    <i class="bi bi-shield-check" style="font-size: 64px; color: #0F766E; opacity: 0.3;"></i>
+                    <h5 class="mt-3 text-muted">Verify a Certificate</h5>
+                    <p class="text-muted">Enter a certificate ID above to check its authenticity and validity.</p>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="verify-footer mt-auto">
+        <div class="container text-center">
+            <p class="mb-1">&copy; @DateTime.Now.Year First Aid Made Easy. All rights reserved.</p>
+            <p class="mb-0">This verification system is maintained by First Aid Made Easy LMS.</p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+@model List<First_Aid_Made_Easy.Models.sp_ListEnrollments_Result>
+
+@using First_Aid_Made_Easy.DAL;
+@using First_Aid_Made_Easy.BLL;
+@{
+    ViewBag.Title = "Subscription Report";
+    Layout = "~/Views/Shared/_LayoutReport.cshtml";
+    var m = (First_Aid_Made_Easy.Models.SubscriptionReport)ViewBag.Param;
+}
+
+
+<div class="row">
+    <div class="col-xs-12">
+      <table class="table table-bordered">
+          <tr>
+              <th>Date From</th>
+              <td> @m.DateFrom</td>
+              <th>Date To</th>
+              <td> @m.DateTo</td>
+              <th>Student</th>
+              <td> @(m.StudentName )</td>
+          </tr>
+          <tr>
+              <th>Course</th>
+              <td> @(m.CourseName )</td>
+              <th>Package</th>
+              <td> @(m.PackageName )</td>
+              <th>Approved By</th>
+              <td> @(m.ApprovedByName )</td>
+          </tr>
+          <tr>
+              <th>Status</th>
+              <td> @(m.IsExpire == null ? "All" : m.IsExpire == true ? "Expired" : "Active" )</td>
+              <th>Method</th>
+              <td> @(m.AddedBy )</td>
+              <th>City/Institute</th>
+              <td>@(m.City) / @(m.Institute) </td>
+          </tr>
+      </table>
+    </div>
+    <div class="col-xs-12">
+        @Html.Partial("_EnrollmentList")
+    </div>
+</div>

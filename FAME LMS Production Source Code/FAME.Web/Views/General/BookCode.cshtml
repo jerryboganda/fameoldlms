@@ -1,0 +1,143 @@
+﻿@{
+    ViewBag.Title = "Book Code";
+    Layout = "~/Views/Shared/_LayoutTeacher.cshtml";
+    var List = (List<First_Aid_Made_Easy.DAL.tbl_BookCode>)ViewBag.List;
+}
+<style>
+    .row {
+        width: 100% !important;
+    }
+</style>
+<div class="pt-32pt">
+    <div class="container-fluid page__container d-flex flex-column flex-md-row align-items-center text-center text-sm-left">
+        <div class="flex d-flex flex-column flex-sm-row align-items-center">
+            <div class="mb-24pt mb-sm-0 mr-sm-24pt">
+                <h2 class="mb-0">Book Code</h2>
+                <ol class="breadcrumb p-0 m-0">
+                    <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                    <li class="breadcrumb-item active">
+                        Book Code
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </div>
+    <div class="page-section border-bottom-2">
+        <div class="container-fluid page__container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="page-separator">
+                        <div class="page-separator__text">Basic information</div>
+                    </div>
+                    <form action="/Coupon/Index" method="post">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label class="form-label">Book Code</label>
+                                <div class="form-group mb-24pt">
+                                    @Html.TextBox("BookCode", "", new { @class = "form-control" })
+                                    <div id="BookCodeVal" class="text-danger"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <label class="form-label">Notes</label>
+                                <div class="form-group mb-24pt">
+                                    @Html.TextArea("Notes", "", new { @class = "form-control" })
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header text-center">
+                                <a href="javscript:;" id="btnCopy" class="btn btn-outline-success">Save</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="page-section border-bottom-2">
+            <div style="margin: 0;max-width: 100%" class="container-fluid page__container">
+                <div class="page-separator">
+                    <div class="page-separator__text">Code List</div>
+                </div>
+                <table id="DTable" class="table table-bordered">
+                    <thead>
+                        <tr style="background-color: #364e9c">
+                            <th>Code</th>
+                            <th>Notes</th>
+                            <th>Used By</th>
+                            <th>Used At</th>
+                            <th>Created Date</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var i in List ?? new List<First_Aid_Made_Easy.DAL.tbl_BookCode>())
+                        {
+                            <tr>
+                                <td>@i.BookCode</td>
+                                <td>@i.Notes</td>
+                                <td>@(i.AspNetUsers?.UserName) </td>
+                                <td>@string.Format("{0:dd/MM/yyyy hh:mm tt}", i.UsedAt)</td>
+                                <td>@string.Format("{0:dd/MM/yyyy}", i.CreatedDT)</td>
+                                <td>
+                                    @if (i.UsedBy != null)
+                                    {
+                                        <a href="/Admin/StudentDetail/@i.AspNetUsers.tbl_User.FirstOrDefault().User_Id" class="text-info"><i class="fa fa-book Font20"></i></a>
+                                    }
+                                                            </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    @Scripts.Render("~/Scripts/List")
+    @if (TempData["Success"] != null)
+    {
+        <script>
+            Swal.fire({
+                position: 'top-end',
+                icon: 'success',
+                title: 'Section Copied Successfully',
+                showConfirmButton: false,
+                timer: 1500
+            })
+        </script>
+    }
+
+    <script>
+        $(document).ready(function () {
+            $("#BookCodeVal").hide();
+            $("#DTable").DataTable();
+        })
+
+        $(document).on("click", "#btnCopy", function () {
+            $.ajax({
+                url: "/General/SaveCode",
+                data: {
+                    Code: $("#BookCode").val(),
+                    Notes: $("#Notes").val(),
+                },
+                method: "POST",
+                success: function (result) {
+                    if (result) {
+                        Swal.fire('Accepted!', 'The Code Has Been Saved.', 'success');
+                        $("#BookCode,#Notes").val("");
+                    } else {
+                        $("#BookCodeVal").text("Code Already Exist.").show();
+                    }
+                }, error: function (err) {
+                    alert("Error" + err);
+                }
+            })
+        })
+    </script>
+
+}
+

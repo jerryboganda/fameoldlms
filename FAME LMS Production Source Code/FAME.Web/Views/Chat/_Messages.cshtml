@@ -1,0 +1,72 @@
+﻿@using Microsoft.AspNet.Identity
+@model First_Aid_Made_Easy.Models.ChatVM
+
+@if (Model.LoadMore)
+{
+    <div id="btnLoadMore" data-id="@Model.Replies.Min(x=>x.ID)" class="chat-message-Left pb-4">
+        <div class="flex-shrink-1 btn-light rounded py-2 px-3 ml-3">
+            <div class="font-weight-bold text-center mb-1">Load More</div>
+        </div>
+    </div>
+}
+@if (Model.Replies != null && Model.Replies.Count() > 0)
+{
+    if (User.IsInRole("Student"))
+    {
+        foreach (var i in Model.Replies)
+        {
+            string side = i.Side == "left" ? "start" : "end";
+            <div class="d-flex justify-content-@side mb-10">
+                <div class="d-flex flex-column align-items-start">
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="symbol symbol-35px symbol-circle">
+                            <img alt="Pic" src="@Url.Content("~/Images/" + i.Pic)" />
+                        </div>
+                        <div class="ms-3">
+                            <a href="#" class="fs-5 fw-bold text-gray-900 text-hover-primary me-1">@i.Name</a>
+                            <span class="text-muted fs-7 mb-1">@string.Format("{0:hh:mm tt}", i.SentAt)</span>
+                        </div>
+                    </div>
+                    <div class="p-5 rounded bg-light-info text-dark fw-semibold mw-lg-400px text-start" data-kt-element="message-text">
+                        @i.ReplyBody
+                        @if (i.FilePath != null)
+                        {<br /> <a href="@Url.Content("~/Images/Chat/"+i.FilePath)" target="_blank"><i class="bi bi-paperclip fs-3"></i><b>@i.FilePath</b></a>}
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        foreach (var i in Model.Replies)
+        {
+
+            <div class="chat-message-@i.Side pb-4">
+                <div>
+                    <img src="@Url.Content("~/Images/"+i.Pic)" class="rounded-circle mr-1" alt="Pic" width="40" height="40">
+                    <div class="text-muted small text-nowrap mt-2">@string.Format("{0:hh:mm tt}", i.SentAt)</div>
+                </div>
+                <div class="flex-shrink-1 bg-light rounded py-2 px-3 ml-3">
+                    <div class="font-weight-bold mb-1">@i.Name</div>
+                    @i.ReplyBody
+                    @if (i.FilePath != null)
+                    {
+                        <br />
+                        <a href="@Url.Content("~/Images/Chat/"+i.FilePath)" target="_blank"><i class="material-icons font-size-24pt">attach_file</i><b>@i.FilePath</b></a>
+                    }
+                </div>
+            </div>
+        }
+    }
+}
+else
+{
+
+    <div style="padding-top:3rem !important " id="NoMessage" class="mdk-box__content d-flex align-items-center justify-content-center container page__container text-center py-112pt">
+        <div class="card card--transparent mb-0">
+            <div class="card-body px-32pt py-24pt">
+                <h1>Oops! No Messages Yet</h1>
+            </div>
+        </div>
+    </div>
+}

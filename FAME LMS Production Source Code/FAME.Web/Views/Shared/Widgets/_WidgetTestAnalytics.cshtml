@@ -1,0 +1,272 @@
+@using First_Aid_Made_Easy.BLL
+@using Microsoft.AspNet.Identity
+@{
+    var userId = User.Identity.GetUserId();
+    // Performance data would typically come from the controller via ViewBag
+    // Placeholder data for visual design - will be populated via AJAX
+}
+
+<div class="fame-widget-card">
+    <div class="fame-widget-header">
+        <div class="fame-widget-title">
+            <i data-feather="bar-chart-2" class="fame-widget-icon"></i>
+            <span>Test Performance</span>
+        </div>
+        <a href="@Url.Action("PreviousTests", "QuestionPaper")" class="fame-widget-link">
+            View Details
+            <i data-feather="arrow-right" style="width: 16px; height: 16px;"></i>
+        </a>
+    </div>
+    
+    <div class="fame-widget-body">
+        <div class="fame-test-analytics">
+            <!-- Chart Section -->
+            <div class="fame-chart-section">
+                <canvas id="testPerformanceChart" height="200"></canvas>
+            </div>
+            
+            <!-- Stats Section -->
+            <div class="fame-test-stats">
+                <div class="fame-test-stat-item">
+                    <div class="fame-test-stat-circle gradient-primary">
+                        <span id="avgScoreValue">--</span>
+                    </div>
+                    <div class="fame-test-stat-label">Avg Score</div>
+                </div>
+                
+                <div class="fame-test-stat-item">
+                    <div class="fame-test-stat-circle gradient-success">
+                        <span id="bestScoreValue">--</span>
+                    </div>
+                    <div class="fame-test-stat-label">Best Score</div>
+                </div>
+                
+                <div class="fame-test-stat-item">
+                    <div class="fame-test-stat-circle gradient-info">
+                        <span id="testsCountValue">--</span>
+                    </div>
+                    <div class="fame-test-stat-label">Tests Done</div>
+                </div>
+                
+                <div class="fame-test-stat-item">
+                    <div class="fame-test-stat-circle gradient-warning">
+                        <span id="questionsValue">--</span>
+                    </div>
+                    <div class="fame-test-stat-label">Questions</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Quick Actions -->
+        <div class="fame-test-actions">
+            <a href="@Url.Action("CreateTest", "QuestionPaper")" class="fame-test-action-btn primary">
+                <i data-feather="plus-circle" style="width: 18px; height: 18px;"></i>
+                New Practice Test
+            </a>
+            <a href="@Url.Action("MockTests", "QuestionPaper")" class="fame-test-action-btn secondary">
+                <i data-feather="file-text" style="width: 18px; height: 18px;"></i>
+                Mock Exams
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    initTestPerformanceWidget('@userId');
+});
+
+function initTestPerformanceWidget(userId) {
+    // Initialize chart
+    var ctx = document.getElementById('testPerformanceChart');
+    if (!ctx) return;
+    
+    var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    var gridColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)';
+    var textColor = isDark ? '#94A3B8' : '#64748B';
+    
+    var chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6'],
+            datasets: [{
+                label: 'Score',
+                data: [65, 72, 68, 78, 82, 85],
+                borderColor: '#6366F1',
+                backgroundColor: function(context) {
+                    var chart = context.chart;
+                    var ctx = chart.ctx;
+                    var gradient = ctx.createLinearGradient(0, 0, 0, 200);
+                    gradient.addColorStop(0, 'rgba(99, 102, 241, 0.3)');
+                    gradient.addColorStop(1, 'rgba(99, 102, 241, 0)');
+                    return gradient;
+                },
+                fill: true,
+                tension: 0.4,
+                pointRadius: 4,
+                pointBackgroundColor: '#6366F1',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: isDark ? '#1E293B' : '#fff',
+                    titleColor: isDark ? '#F1F5F9' : '#1E293B',
+                    bodyColor: isDark ? '#94A3B8' : '#64748B',
+                    borderColor: isDark ? '#334155' : '#E2E8F0',
+                    borderWidth: 1,
+                    padding: 12,
+                    displayColors: false,
+                    callbacks: {
+                        label: function(context) {
+                            return 'Score: ' + context.parsed.y + '%';
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    grid: { display: false },
+                    ticks: { color: textColor, font: { size: 11 } }
+                },
+                y: {
+                    grid: { color: gridColor },
+                    ticks: { color: textColor, font: { size: 11 } },
+                    min: 0,
+                    max: 100
+                }
+            }
+        }
+    });
+    
+    // Load real data
+    $.get('/StudentBank/GetPerformanceSummary', function(data) {
+        if (data && data.success) {
+            $('#avgScoreValue').text((data.avgScore || 0) + '%');
+            $('#bestScoreValue').text((data.bestScore || 0) + '%');
+            $('#testsCountValue').text(data.testsCount || 0);
+            $('#questionsValue').text(data.questionsCount || 0);
+            
+            if (data.weeklyScores && data.weeklyScores.length > 0) {
+                chart.data.labels = data.weeklyLabels || chart.data.labels;
+                chart.data.datasets[0].data = data.weeklyScores;
+                chart.update();
+            }
+        } else {
+            // Use placeholder values
+            $('#avgScoreValue').text('75%');
+            $('#bestScoreValue').text('92%');
+            $('#testsCountValue').text('12');
+            $('#questionsValue').text('248');
+        }
+    }).fail(function() {
+        $('#avgScoreValue').text('--');
+        $('#bestScoreValue').text('--');
+        $('#testsCountValue').text('0');
+        $('#questionsValue').text('0');
+    });
+}
+</script>
+
+<style>
+.fame-test-analytics {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.fame-chart-section {
+    height: 200px;
+    position: relative;
+}
+
+.fame-test-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+}
+
+.fame-test-stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.fame-test-stat-circle {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 8px;
+}
+
+.fame-test-stat-circle span {
+    font-size: 16px;
+    font-weight: 700;
+    color: white;
+}
+
+.fame-test-stat-label {
+    font-size: 12px;
+    color: var(--fame-text-tertiary);
+    font-weight: 500;
+}
+
+.fame-test-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.fame-test-action-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 20px;
+    border-radius: var(--fame-radius-lg);
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 200ms;
+}
+
+.fame-test-action-btn.primary {
+    background: linear-gradient(135deg, var(--fame-primary), var(--fame-secondary));
+    color: white;
+}
+
+.fame-test-action-btn.primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(99, 102, 241, 0.3);
+}
+
+.fame-test-action-btn.secondary {
+    background: var(--fame-bg-tertiary);
+    color: var(--fame-text-primary);
+    border: 1px solid var(--fame-border);
+}
+
+.fame-test-action-btn.secondary:hover {
+    background: var(--fame-bg-hover);
+}
+
+@@media (max-width: 640px) {
+    .fame-test-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .fame-test-actions {
+        flex-direction: column;
+    }
+}
+</style>

@@ -1,0 +1,66 @@
+@using First_Aid_Made_Easy.BLL
+@using Microsoft.AspNet.Identity
+@{
+    var userDetails = Common.GetUserNameByASpUserID(User.Identity.GetUserId());
+}
+
+            <div class="navbar navbar-expand pr-0 navbar-dark navbar-dark-dodger-blue navbar-shadow" id="default-navbar" data-primary>
+                <!-- Navbar toggler -->
+                <button class="navbar-toggler w-auto mr-16pt d-block d-lg-none rounded-0" type="button" data-toggle="sidebar">
+                    <span class="material-icons">short_text</span>
+                </button>
+
+                <!-- Navbar Brand -->
+                <a href="/Admin/Index" class="navbar-brand mr-16pt d-lg-none">
+                    <span class="avatar avatar-sm navbar-brand-icon mr-0 mr-lg-8pt">
+                        <span class="avatar-title rounded bg-primary"><img src="~/Content/assets/images/illustration/student/128/white.svg" alt="logo" class="img-fluid" /></span>
+                    </span>
+                    <span class="d-none d-lg-block">Instructor</span>
+                </a>
+                <span class="d-none d-md-flex align-items-center font-size-20pt mr-16pt text-white"> @userDetails.User_Name  </span>
+
+                <div class="search-form navbar-search d-none d-md-flex mr-16pt ">
+                    <div class="nav-item dropdown">
+                        <div class="d-flex">
+                            <button class="btn" disabled><i class="material-icons">search</i></button>
+                            <input type="text" id="inputSearchMenu" class="form-control" placeholder="Search Menu...">
+                        </div>
+                        <div id="MenuSearch" class="dropdown-menu dropdown-menu-right">
+                            <div class="dropdown-header"><strong>Account</strong></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex"></div>
+                <div class="nav navbar-nav flex-nowrap d-flex mr-16pt">
+
+                    <!-- Notifications dropdown -->
+                    @*@{ Html.RenderAction("Notifications", "Student", new { area = "" });
+                        }*@
+                    <!-- // END Notifications dropdown -->
+
+                    <div class="nav-item dropdown">
+                        <a href="#" class="nav-link d-flex align-items-center dropdown-toggle" data-toggle="dropdown" data-caret="false">
+                            <span class="avatar avatar-sm mr-8pt2">
+                                <span class="avatar-title rounded-circle bg-primary"><i class="material-icons">account_box</i></span>
+                            </span>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <div class="dropdown-header"><strong>Account</strong></div>
+                            @if (User.IsInRole("Student"))
+                            {
+                                <a class="dropdown-item" href="/Student">Student Panel</a>
+                            }
+                            <a class="dropdown-item" href="/Profile/MyProfile">My Profile</a>
+                            @*<a class="dropdown-item" href="/Home/Index">Back To Student</a>*@
+                            @if (Request.IsAuthenticated)
+                            {
+                                using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
+                                {
+                                    @Html.AntiForgeryToken()
+                                    <a class="dropdown-item" href="javascript:document.getElementById('logoutForm').submit()">Log off</a>
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>

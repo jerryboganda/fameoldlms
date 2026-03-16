@@ -1,0 +1,882 @@
+﻿@model First_Aid_Made_Easy.Models.StudentNotifVM
+@{
+    ViewBag.Title = "Popup Slides Manager";
+    Layout = "~/Views/Shared/_LayoutTeacher.cshtml";
+}
+
+<style>
+    /* ── Popup Slides Admin ── */
+    .ps-manager { padding: 24px 0; }
+    .ps-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 16px;
+        margin-bottom: 28px;
+    }
+    .ps-header h2 {
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: #1e293b;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 0;
+    }
+    .ps-header h2 .material-icons { font-size: 28px; color: #0f766e; }
+    .ps-header .ps-subtitle {
+        font-size: 0.85rem;
+        color: #64748b;
+        font-weight: 400;
+        display: block;
+        margin-top: 2px;
+    }
+
+    .ps-btn-add {
+        background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
+        color: #fff;
+        border: none;
+        padding: 10px 22px;
+        border-radius: 10px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.2s;
+        box-shadow: 0 2px 8px rgba(15,118,110,0.3);
+    }
+    .ps-btn-add:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 16px rgba(15,118,110,0.4);
+        color: #fff;
+        text-decoration: none;
+    }
+
+    /* Stats Bar */
+    .ps-stats {
+        display: flex;
+        gap: 16px;
+        margin-bottom: 24px;
+        flex-wrap: wrap;
+    }
+    .ps-stat-card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 16px 24px;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 160px;
+    }
+    .ps-stat-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+    }
+    .ps-stat-icon.total { background: #ede9fe; color: #7c3aed; }
+    .ps-stat-icon.active { background: #d1fae5; color: #059669; }
+    .ps-stat-icon.inactive { background: #fee2e2; color: #dc2626; }
+    .ps-stat-value { font-size: 1.4rem; font-weight: 700; color: #1e293b; line-height: 1; }
+    .ps-stat-label { font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    /* Empty State */
+    .ps-empty {
+        text-align: center;
+        padding: 60px 20px;
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+    .ps-empty .material-icons { font-size: 64px; color: #cbd5e1; margin-bottom: 16px; }
+    .ps-empty h3 { font-size: 1.2rem; color: #475569; margin-bottom: 8px; }
+    .ps-empty p { color: #94a3b8; font-size: 0.9rem; }
+
+    /* Slides Grid */
+    .ps-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 20px;
+    }
+
+    .ps-card {
+        background: #fff;
+        border-radius: 14px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+        transition: all 0.2s;
+        position: relative;
+    }
+    .ps-card:hover {
+        box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+        transform: translateY(-2px);
+    }
+
+    .ps-card-img {
+        position: relative;
+        width: 100%;
+        height: 200px;
+        background: #f1f5f9;
+        overflow: hidden;
+    }
+    .ps-card-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    .ps-card-badge {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .ps-card-badge.active { background: #d1fae5; color: #059669; }
+    .ps-card-badge.inactive { background: #fee2e2; color: #dc2626; }
+
+    .ps-card-order {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: rgba(0,0,0,0.6);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8rem;
+        font-weight: 700;
+    }
+
+    .ps-card-body { padding: 16px; }
+    .ps-card-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #1e293b;
+        margin-bottom: 4px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .ps-card-link {
+        font-size: 0.8rem;
+        color: #64748b;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: block;
+        margin-bottom: 8px;
+    }
+    .ps-card-date {
+        font-size: 0.75rem;
+        color: #94a3b8;
+    }
+
+    .ps-card-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px solid #f1f5f9;
+    }
+    .ps-card-actions button {
+        flex: 1;
+        padding: 8px;
+        border: none;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        transition: all 0.15s;
+    }
+    .ps-card-actions button .material-icons { font-size: 16px; }
+    .ps-btn-edit { background: #ede9fe; color: #7c3aed; }
+    .ps-btn-edit:hover { background: #ddd6fe; }
+    .ps-btn-toggle { background: #fef3c7; color: #d97706; }
+    .ps-btn-toggle:hover { background: #fde68a; }
+    .ps-btn-delete { background: #fee2e2; color: #dc2626; }
+    .ps-btn-delete:hover { background: #fecaca; }
+
+    /* Modal */
+    .ps-modal-overlay {
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.5);
+        z-index: 10000;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+    .ps-modal-overlay.show { display: flex; }
+
+    .ps-modal {
+        background: #fff;
+        border-radius: 16px;
+        width: 100%;
+        max-width: 560px;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        animation: psSlideIn 0.25s ease;
+    }
+    @@keyframes psSlideIn {
+        from { transform: translateY(20px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+
+    .ps-modal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px 24px;
+        border-bottom: 1px solid #f1f5f9;
+    }
+    .ps-modal-header h3 {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin: 0;
+    }
+    .ps-modal-close {
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: #94a3b8;
+        font-size: 24px;
+        padding: 0;
+        line-height: 1;
+    }
+    .ps-modal-close:hover { color: #475569; }
+
+    .ps-modal-body { padding: 24px; }
+
+    .ps-form-group { margin-bottom: 18px; }
+    .ps-form-group label {
+        display: block;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 6px;
+    }
+    .ps-form-group label span.req { color: #dc2626; }
+    .ps-form-group input[type="text"],
+    .ps-form-group input[type="url"],
+    .ps-form-group input[type="number"] {
+        width: 100%;
+        padding: 10px 14px;
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        color: #1e293b;
+        transition: border-color 0.2s;
+        box-sizing: border-box;
+    }
+    .ps-form-group input:focus {
+        outline: none;
+        border-color: #0f766e;
+    }
+
+    .ps-upload-zone {
+        border: 2px dashed #cbd5e1;
+        border-radius: 12px;
+        padding: 24px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s;
+        background: #f8fafc;
+        position: relative;
+    }
+    .ps-upload-zone:hover { border-color: #0f766e; background: #f0fdfa; }
+    .ps-upload-zone input[type="file"] {
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 100%;
+        opacity: 0;
+        cursor: pointer;
+    }
+    .ps-upload-zone .material-icons { font-size: 36px; color: #94a3b8; }
+    .ps-upload-zone p { color: #64748b; font-size: 0.85rem; margin: 8px 0 0; }
+
+    .ps-upload-preview {
+        margin-top: 12px;
+        border-radius: 10px;
+        overflow: hidden;
+        max-height: 200px;
+        display: none;
+    }
+    .ps-upload-preview img {
+        width: 100%;
+        height: auto;
+        display: block;
+        object-fit: cover;
+        max-height: 200px;
+    }
+
+    .ps-toggle-wrap {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .ps-toggle {
+        width: 48px;
+        height: 26px;
+        background: #cbd5e1;
+        border-radius: 13px;
+        position: relative;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    .ps-toggle.on { background: #0f766e; }
+    .ps-toggle::after {
+        content: '';
+        position: absolute;
+        top: 3px;
+        left: 3px;
+        width: 20px;
+        height: 20px;
+        background: #fff;
+        border-radius: 50%;
+        transition: transform 0.2s;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+    .ps-toggle.on::after { transform: translateX(22px); }
+    .ps-toggle-label { font-size: 0.85rem; color: #475569; font-weight: 500; }
+
+    .ps-modal-footer {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+        padding: 16px 24px;
+        border-top: 1px solid #f1f5f9;
+    }
+    .ps-btn-cancel {
+        padding: 10px 20px;
+        border: 2px solid #e2e8f0;
+        background: #fff;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        color: #475569;
+    }
+    .ps-btn-cancel:hover { background: #f8fafc; }
+    .ps-btn-save {
+        padding: 10px 24px;
+        border: none;
+        background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
+        color: #fff;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(15,118,110,0.3);
+    }
+    .ps-btn-save:hover { box-shadow: 0 4px 12px rgba(15,118,110,0.4); }
+    .ps-btn-save:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    /* Loading overlay */
+    .ps-loading {
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(255,255,255,0.8);
+        z-index: 20000;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 12px;
+    }
+    .ps-loading.show { display: flex; }
+    .ps-loading .ps-spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid #e2e8f0;
+        border-top-color: #0f766e;
+        border-radius: 50%;
+        animation: psSpin 0.8s linear infinite;
+    }
+    @@keyframes psSpin { to { transform: rotate(360deg); } }
+    .ps-loading p { color: #475569; font-size: 0.9rem; font-weight: 500; }
+
+    /* Toast */
+    .ps-toast {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 14px 22px;
+        border-radius: 10px;
+        color: #fff;
+        font-weight: 600;
+        font-size: 0.9rem;
+        z-index: 30000;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+        transform: translateX(120%);
+        transition: transform 0.3s ease;
+    }
+    .ps-toast.show { transform: translateX(0); }
+    .ps-toast.success { background: #059669; }
+    .ps-toast.error { background: #dc2626; }
+
+    @@media (max-width: 768px) {
+        .ps-header { flex-direction: column; align-items: flex-start; }
+        .ps-grid { grid-template-columns: 1fr; }
+        .ps-stats { flex-direction: column; }
+        .ps-stat-card { min-width: auto; }
+        .ps-modal { margin: 10px; }
+    }
+</style>
+
+<div class="container-fluid page__container ps-manager">
+
+    <!-- Header -->
+    <div class="ps-header">
+        <div>
+            <h2>
+                <span class="material-icons">photo_library</span>
+                Popup Slides Manager
+            </h2>
+            <span class="ps-subtitle">Manage the image slideshow that appears on the landing page</span>
+        </div>
+        <button class="ps-btn-add" onclick="openModal()">
+            <span class="material-icons">add_photo_alternate</span>
+            Add New Slide
+        </button>
+    </div>
+
+    <!-- Stats -->
+    <div class="ps-stats">
+        <div class="ps-stat-card">
+            <div class="ps-stat-icon total"><span class="material-icons">collections</span></div>
+            <div>
+                <div class="ps-stat-value" id="statTotal">0</div>
+                <div class="ps-stat-label">Total Slides</div>
+            </div>
+        </div>
+        <div class="ps-stat-card">
+            <div class="ps-stat-icon active"><span class="material-icons">visibility</span></div>
+            <div>
+                <div class="ps-stat-value" id="statActive">0</div>
+                <div class="ps-stat-label">Active</div>
+            </div>
+        </div>
+        <div class="ps-stat-card">
+            <div class="ps-stat-icon inactive"><span class="material-icons">visibility_off</span></div>
+            <div>
+                <div class="ps-stat-value" id="statInactive">0</div>
+                <div class="ps-stat-label">Inactive</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slides Grid -->
+    <div id="slidesGrid" class="ps-grid"></div>
+
+    <!-- Empty State -->
+    <div id="emptyState" class="ps-empty" style="display:none;">
+        <span class="material-icons">photo_library</span>
+        <h3>No Slides Yet</h3>
+        <p>Add your first popup slide to display on the landing page.</p>
+        <button class="ps-btn-add" onclick="openModal()" style="margin:16px auto 0;">
+            <span class="material-icons">add_photo_alternate</span>
+            Add First Slide
+        </button>
+    </div>
+</div>
+
+<!-- Add/Edit Modal -->
+<div class="ps-modal-overlay" id="slideModal">
+    <div class="ps-modal">
+        <div class="ps-modal-header">
+            <h3 id="modalTitle">Add New Slide</h3>
+            <button class="ps-modal-close" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="ps-modal-body">
+            <input type="hidden" id="slideId" value="0" />
+            <input type="hidden" id="existingImagePath" value="" />
+
+            <div class="ps-form-group">
+                <label>Slide Title</label>
+                <input type="text" id="slideTitle" placeholder="e.g. Summer Offer 2026" />
+            </div>
+
+            <div class="ps-form-group">
+                <label>Image <span class="req">*</span></label>
+                <div class="ps-upload-zone" id="uploadZone">
+                    <input type="file" id="slideImage" accept="image/*" onchange="previewImage(this)" />
+                    <span class="material-icons">cloud_upload</span>
+                    <p>Click or drag to upload image (JPG, PNG, WebP &mdash; max 10MB)</p>
+                </div>
+                <div class="ps-upload-preview" id="imagePreview">
+                    <img id="previewImg" src="" alt="Preview" />
+                </div>
+            </div>
+
+            <div class="ps-form-group">
+                <label>Link URL <small style="color:#94a3b8;">(optional &mdash; where to go when clicked)</small></label>
+                <input type="url" id="slideLinkUrl" placeholder="https://example.com/offer" />
+            </div>
+
+            <div style="display:flex; gap:16px;">
+                <div class="ps-form-group" style="flex:1;">
+                    <label>Sort Order</label>
+                    <input type="number" id="slideSortOrder" value="0" min="0" max="999" />
+                </div>
+                <div class="ps-form-group" style="flex:1;">
+                    <label>Status</label>
+                    <div class="ps-toggle-wrap" style="margin-top:6px;">
+                        <div class="ps-toggle on" id="slideActiveToggle" onclick="toggleActiveSwitch()"></div>
+                        <span class="ps-toggle-label" id="slideActiveLabel">Active</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="ps-modal-footer">
+            <button class="ps-btn-cancel" onclick="closeModal()">Cancel</button>
+            <button class="ps-btn-save" id="btnSaveSlide" onclick="saveSlide()">
+                <span class="material-icons" style="font-size:18px;vertical-align:middle;margin-right:4px;">save</span>
+                Save Slide
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Loading Overlay -->
+<div class="ps-loading" id="loadingOverlay">
+    <div class="ps-spinner"></div>
+    <p>Processing...</p>
+</div>
+
+<!-- Toast -->
+<div class="ps-toast" id="psToast"></div>
+
+@section scripts {
+<script>
+    var API_URL = '/PopupSlidesHandler.ashx';
+    var allSlides = [];
+    var modalIsActive = true;
+
+    // ── Load slides ──
+    function loadSlides() {
+        showLoading(true);
+        $.ajax({
+            url: API_URL,
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                showLoading(false);
+                if (data.success) {
+                    allSlides = data.slides || [];
+                    renderSlides();
+                    updateStats();
+                } else {
+                    showToast('Failed to load slides: ' + (data.error || ''), 'error');
+                }
+            },
+            error: function () {
+                showLoading(false);
+                showToast('Network error loading slides', 'error');
+            }
+        });
+    }
+
+    // ── Render slides grid ──
+    function renderSlides() {
+        var grid = $('#slidesGrid');
+        var empty = $('#emptyState');
+
+        if (allSlides.length === 0) {
+            grid.hide();
+            empty.show();
+            return;
+        }
+
+        empty.hide();
+        grid.show();
+
+        var html = '';
+        for (var i = 0; i < allSlides.length; i++) {
+            var s = allSlides[i];
+            var badgeClass = s.isActive ? 'active' : 'inactive';
+            var badgeText = s.isActive ? 'Active' : 'Inactive';
+            var toggleText = s.isActive ? 'Deactivate' : 'Activate';
+            var toggleIcon = s.isActive ? 'visibility_off' : 'visibility';
+
+            html += '<div class="ps-card" data-id="' + s.id + '">';
+            html += '  <div class="ps-card-img">';
+            html += '    <img src="' + escHtml(s.imagePath) + '" alt="' + escHtml(s.title) + '" onerror="this.style.display=\'none\'" />';
+            html += '    <span class="ps-card-badge ' + badgeClass + '">' + badgeText + '</span>';
+            html += '    <span class="ps-card-order">' + s.sortOrder + '</span>';
+            html += '  </div>';
+            html += '  <div class="ps-card-body">';
+            html += '    <div class="ps-card-title">' + escHtml(s.title || '(No title)') + '</div>';
+            if (s.linkUrl) {
+                html += '    <div class="ps-card-link"><a href="' + escHtml(s.linkUrl) + '" target="_blank" style="color:#0f766e;">' + escHtml(s.linkUrl) + '</a></div>';
+            } else {
+                html += '    <div class="ps-card-link"><em style="color:#cbd5e1;">No link</em></div>';
+            }
+            html += '    <div class="ps-card-date">Created: ' + escHtml(s.createdDate) + '</div>';
+            html += '    <div class="ps-card-actions">';
+            html += '      <button class="ps-btn-edit" onclick="editSlide(' + s.id + ')"><span class="material-icons">edit</span> Edit</button>';
+            html += '      <button class="ps-btn-toggle" onclick="toggleSlide(' + s.id + ')"><span class="material-icons">' + toggleIcon + '</span> ' + toggleText + '</button>';
+            html += '      <button class="ps-btn-delete" onclick="deleteSlide(' + s.id + ')"><span class="material-icons">delete</span> Delete</button>';
+            html += '    </div>';
+            html += '  </div>';
+            html += '</div>';
+        }
+
+        grid.html(html);
+    }
+
+    // ── Update stats ──
+    function updateStats() {
+        var total = allSlides.length;
+        var active = 0;
+        for (var i = 0; i < allSlides.length; i++) {
+            if (allSlides[i].isActive) active++;
+        }
+        $('#statTotal').text(total);
+        $('#statActive').text(active);
+        $('#statInactive').text(total - active);
+    }
+
+    // ── Modal ──
+    function openModal(slideData) {
+        $('#slideId').val(0);
+        $('#existingImagePath').val('');
+        $('#slideTitle').val('');
+        $('#slideLinkUrl').val('');
+        $('#slideSortOrder').val(0);
+        modalIsActive = true;
+        $('#slideActiveToggle').addClass('on');
+        $('#slideActiveLabel').text('Active');
+        $('#imagePreview').hide();
+        $('#slideImage').val('');
+        $('#modalTitle').text('Add New Slide');
+
+        if (slideData) {
+            $('#slideId').val(slideData.id);
+            $('#existingImagePath').val(slideData.imagePath);
+            $('#slideTitle').val(slideData.title);
+            $('#slideLinkUrl').val(slideData.linkUrl);
+            $('#slideSortOrder').val(slideData.sortOrder);
+            modalIsActive = slideData.isActive;
+            if (modalIsActive) {
+                $('#slideActiveToggle').addClass('on');
+                $('#slideActiveLabel').text('Active');
+            } else {
+                $('#slideActiveToggle').removeClass('on');
+                $('#slideActiveLabel').text('Inactive');
+            }
+            $('#previewImg').attr('src', slideData.imagePath);
+            $('#imagePreview').show();
+            $('#modalTitle').text('Edit Slide');
+        }
+
+        $('#slideModal').addClass('show');
+    }
+
+    function closeModal() {
+        $('#slideModal').removeClass('show');
+    }
+
+    function toggleActiveSwitch() {
+        modalIsActive = !modalIsActive;
+        if (modalIsActive) {
+            $('#slideActiveToggle').addClass('on');
+            $('#slideActiveLabel').text('Active');
+        } else {
+            $('#slideActiveToggle').removeClass('on');
+            $('#slideActiveLabel').text('Inactive');
+        }
+    }
+
+    function previewImage(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                $('#previewImg').attr('src', e.target.result);
+                $('#imagePreview').show();
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    // ── Save slide ──
+    function saveSlide() {
+        var fileInput = document.getElementById('slideImage');
+        var existingPath = $('#existingImagePath').val();
+        var slideId = parseInt($('#slideId').val()) || 0;
+
+        if (!existingPath && (!fileInput.files || fileInput.files.length === 0)) {
+            showToast('Please upload an image', 'error');
+            return;
+        }
+
+        var formData = new FormData();
+        formData.append('id', slideId);
+        formData.append('title', $('#slideTitle').val());
+        formData.append('linkUrl', $('#slideLinkUrl').val());
+        formData.append('sortOrder', $('#slideSortOrder').val());
+        formData.append('isActive', modalIsActive ? 'true' : 'false');
+        formData.append('existingImagePath', existingPath);
+
+        if (fileInput.files && fileInput.files.length > 0) {
+            formData.append('image', fileInput.files[0]);
+        }
+
+        $('#btnSaveSlide').prop('disabled', true);
+        showLoading(true);
+
+        $.ajax({
+            url: API_URL,
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            dataType: 'json',
+            success: function (data) {
+                showLoading(false);
+                $('#btnSaveSlide').prop('disabled', false);
+                if (data.success) {
+                    closeModal();
+                    showToast(slideId > 0 ? 'Slide updated successfully!' : 'Slide added successfully!', 'success');
+                    loadSlides();
+                } else {
+                    showToast(data.error || 'Failed to save', 'error');
+                }
+            },
+            error: function () {
+                showLoading(false);
+                $('#btnSaveSlide').prop('disabled', false);
+                showToast('Network error saving slide', 'error');
+            }
+        });
+    }
+
+    // ── Edit slide ──
+    function editSlide(id) {
+        var slide = null;
+        for (var i = 0; i < allSlides.length; i++) {
+            if (allSlides[i].id === id) { slide = allSlides[i]; break; }
+        }
+        if (slide) openModal(slide);
+    }
+
+    // ── Toggle slide active/inactive ──
+    function toggleSlide(id) {
+        showLoading(true);
+        $.ajax({
+            url: API_URL + '?action=toggle&id=' + id,
+            type: 'POST',
+            dataType: 'json',
+            success: function (data) {
+                showLoading(false);
+                if (data.success) {
+                    showToast('Slide status updated', 'success');
+                    loadSlides();
+                } else {
+                    showToast(data.error || 'Failed to toggle', 'error');
+                }
+            },
+            error: function () {
+                showLoading(false);
+                showToast('Network error', 'error');
+            }
+        });
+    }
+
+    // ── Delete slide ──
+    function deleteSlide(id) {
+        Swal.fire({
+            title: 'Delete Slide?',
+            text: 'This will permanently remove the slide and its image.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#dc2626',
+            cancelButtonColor: '#94a3b8',
+            confirmButtonText: 'Yes, delete it'
+        }).then(function (result) {
+            if (result.isConfirmed) {
+                showLoading(true);
+                $.ajax({
+                    url: API_URL + '?id=' + id,
+                    type: 'DELETE',
+                    dataType: 'json',
+                    success: function (data) {
+                        showLoading(false);
+                        if (data.success) {
+                            showToast('Slide deleted', 'success');
+                            loadSlides();
+                        } else {
+                            showToast(data.error || 'Failed to delete', 'error');
+                        }
+                    },
+                    error: function () {
+                        showLoading(false);
+                        showToast('Network error', 'error');
+                    }
+                });
+            }
+        });
+    }
+
+    // ── Helpers ──
+    function showLoading(show) {
+        if (show) $('#loadingOverlay').addClass('show');
+        else $('#loadingOverlay').removeClass('show');
+    }
+
+    function showToast(msg, type) {
+        var t = document.getElementById('psToast');
+        t.textContent = msg;
+        t.className = 'ps-toast ' + type;
+        setTimeout(function () { t.classList.add('show'); }, 10);
+        setTimeout(function () { t.classList.remove('show'); }, 3500);
+    }
+
+    function escHtml(str) {
+        if (!str) return '';
+        var d = document.createElement('div');
+        d.appendChild(document.createTextNode(str));
+        return d.innerHTML;
+    }
+
+    // ── Close modal on overlay click ──
+    $(document).on('click', '.ps-modal-overlay', function (e) {
+        if (e.target === this) closeModal();
+    });
+
+    // ── ESC to close modal ──
+    $(document).on('keydown', function (e) {
+        if (e.key === 'Escape') closeModal();
+    });
+
+    // ── Init ──
+    $(document).ready(function () {
+        loadSlides();
+    });
+</script>
+}
+

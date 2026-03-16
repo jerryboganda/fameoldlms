@@ -1,0 +1,384 @@
+@{
+    ViewBag.Title = "Exam Result Analysis";
+    Layout = "~/Views/Shared/_LayoutStudent2026.cshtml";
+    int resultId = ViewBag.ExamID;
+}
+
+<style>
+    .result-score-circle {
+        position: relative;
+        width: 240px;
+        height: 240px;
+        margin: 0 auto;
+    }
+    .score-percentage {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 2;
+    }
+    .metric-card {
+        background: white;
+        border-radius: 16px;
+        padding: 1.5rem;
+        border: 1px solid var(--fame-border);
+        transition: transform 0.2s ease;
+    }
+    .metric-card:hover { transform: translateY(-5px); }
+    .q-dot {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.75rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    .q-dot.correct { background: var(--fame-success-bg); color: var(--fame-success); border: 1px solid #16a34a33; }
+    .q-dot.wrong { background: var(--fame-danger-bg); color: var(--fame-danger); border: 1px solid #dc262633; }
+    .q-dot.skipped { background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0; }
+    .q-dot:hover { transform: scale(1.1); filter: brightness(0.95); }
+</style>
+
+<div class="fame-container py-4">
+    <!-- Header -->
+    <div class="d-flex align-items-center justify-content-between mb-5">
+        <div>
+            <h2 class="fw-extrabold text-slate-900 mb-1" id="examName">...</h2>
+            <p class="text-muted small" id="examDate">Performance Report Analysis</p>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-light border btn-sm rounded-pill px-3" onclick="window.print()">
+                <i data-feather="printer" class="me-1" style="width:14px"></i> Export PDF
+            </button>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Main Score -->
+        <div class="col-xl-4 col-lg-5">
+            <div class="metric-card h-100 text-center d-flex flex-column justify-content-center">
+                <h6 class="text-uppercase small fw-bold text-muted mb-4 ls-1">Overall Performance</h6>
+                <div class="result-score-circle">
+                    <div id="resultChart"></div>
+                    <div class="score-percentage">
+                        <span class="display-4 fw-black text-slate-900" id="finalPercentage">0%</span>
+                        <span class="small fw-bold text-muted text-uppercase" id="passStatusText">...</span>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <div class="badge bg-soft-primary text-primary px-3 py-1 rounded-pill mb-2" id="scoreLabel">SCORE: 0/0</div>
+                </div>
+                <div class="pt-4 border-top mt-auto">
+                    <a href="/Student/TakeExam/@resultId?review=true" class="btn btn-primary w-100 rounded-pill py-3 fw-bold">
+                        <i data-feather="eye" class="me-2" style="width:18px"></i> REVIEW ALL QUESTIONS
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Metrics Grid -->
+        <div class="col-xl-8 col-lg-7">
+            <div class="row g-3 h-100">
+                <div class="col-md-6 col-12">
+                    <div class="metric-card d-flex align-items-center gap-4">
+                        <div class="symbol symbol-50px symbol-circle bg-light-success p-3">
+                            <i data-feather="check-circle" class="text-success" style="width:28px; height:28px"></i>
+                        </div>
+                        <div>
+                            <div class="h3 fw-black mb-0 text-success" id="valCorrect">0</div>
+                            <div class="small fw-bold text-muted text-uppercase ls-1">Correct Answers</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-12">
+                    <div class="metric-card d-flex align-items-center gap-4 border-danger border-opacity-10">
+                        <div class="symbol symbol-50px symbol-circle bg-light-danger p-3">
+                            <i data-feather="x-circle" class="text-danger" style="width:28px; height:28px"></i>
+                        </div>
+                        <div>
+                            <div class="h3 fw-black mb-0 text-danger" id="valWrong">0</div>
+                            <div class="small fw-bold text-muted text-uppercase ls-1">Wrong Answers</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-12">
+                    <div class="metric-card d-flex align-items-center gap-4">
+                        <div class="symbol symbol-50px symbol-circle bg-light-secondary p-3">
+                            <i data-feather="minus-circle" class="text-secondary" style="width:28px; height:28px"></i>
+                        </div>
+                        <div>
+                            <div class="h3 fw-black mb-0 text-slate-700" id="valSkip">0</div>
+                            <div class="small fw-bold text-muted text-uppercase ls-1">Skipped/Timed Out</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-12">
+                    <div class="metric-card d-flex align-items-center gap-4">
+                        <div class="symbol symbol-50px symbol-circle bg-light-warning p-3">
+                            <i data-feather="clock" class="text-warning" style="width:28px; height:28px"></i>
+                        </div>
+                        <div>
+                            <div class="h3 fw-black mb-0 text-slate-700" id="valTime">0m</div>
+                            <div class="small fw-bold text-muted text-uppercase ls-1">Total Time Spent</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Question Grid -->
+                <div class="col-12 mt-2">
+                    <div class="metric-card">
+                        <h6 class="text-uppercase small fw-bold text-muted mb-3 ls-1">Question Quick-Jump Navigator</h6>
+                        <div class="d-flex flex-wrap gap-2" id="qDotGrid">
+                            <!-- Injected Dots -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Final Actions -->
+    <div class="mt-5 d-flex gap-3 justify-content-center">
+        <a href="/Student/MockTests" class="btn btn-outline-secondary rounded-pill px-5">
+            <i data-feather="arrow-left" class="me-2" style="width:16px"></i> BACK TO EXAMS
+        </a>
+        <a href="/Student/Index" class="btn btn-dark rounded-pill px-5">
+            <i data-feather="home" class="me-2" style="width:16px"></i> STUDENT DASHBOARD
+        </a>
+    </div>
+</div>
+
+@section scripts {
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script>
+        $(document).ready(function () {
+             var resultId = @resultId;
+             
+             // Initial UI state
+             console.log('[ExamResult] Initializing for ID:', resultId);
+             
+             function loadData() {
+                 console.log('[ExamResult] Requesting data...');
+                 
+                 // Show loading state if it's the first time
+                 if (retryCount === 0) {
+                    $('#passStatusText').text("Loading Result...");
+                 }
+                 
+                 var cacheBuster = '&_t=' + new Date().getTime();
+                 
+                 // Strategy: Try both endpoints in parallel or sequence to ensure real-time data
+                 $.ajax({
+                    url: '/QuestionPaper/GetResultByID/' + resultId + '?v=4&t=' + new Date().getTime(),
+                    type: 'GET',
+                    success: function (data) {
+                        console.log('[ExamResult] Received data:', data);
+                        var details = data.Detail || data.detail || data.Details || data.details || [];
+                        var obtained = (data.ObtainedMarks !== null && data.ObtainedMarks !== undefined) ? data.ObtainedMarks : 
+                                      ((data.obtainedMarks !== null && data.obtainedMarks !== undefined) ? data.obtainedMarks : 0);
+                        
+                        if (data && (data.ID > 0 || data.id > 0) && (details.length > 0)) {
+                            renderResultAnalysis(data);
+                            if (obtained === 0 && details.length > 0 && retryCount < maxRetries) {
+                                var anyTrue = details.some(x => (x.IsTrue === true || x.isTrue === true || x.IsTrue === 1 || x.isTrue === 1));
+                                if (!anyTrue) scheduleRetry();
+                            } else {
+                                if (retryTimer) clearTimeout(retryTimer);
+                            }
+                        } else {
+                            scheduleRetry();
+                        }
+                    },
+                    error: function (xhr) {
+                        scheduleRetry();
+                    }
+                });
+             }
+
+             var retryCount = 0;
+             var maxRetries = 15; // Try for ~45 seconds
+             var retryTimer = null;
+
+             function scheduleRetry() {
+                 if (retryTimer) clearTimeout(retryTimer);
+                 if (retryCount < maxRetries) {
+                     retryCount++;
+                     if ($('#finalPercentage').text() === '0%') {
+                        $('#passStatusText').text("Analyzing (" + retryCount + ")...");
+                     }
+                     retryTimer = setTimeout(loadData, 4000); 
+                 } else {
+                     tryApiFallback();
+                 }
+             }
+
+             function tryApiFallback() {
+                 $.ajax({
+                    url: '/api/StudentBank/GetQuestionToSolve?id=' + resultId + '&t=' + new Date().getTime(),
+                    type: 'GET',
+                    success: function (response) {
+                        if (response && response.success && response.data) {
+                            renderResultAnalysis(response.data);
+                        } else if (response && response.ID > 0) {
+                            renderResultAnalysis(response);
+                        }
+                    }
+                });
+             }
+
+             // Refresh data when window is focused (Real-time feel)
+             window.addEventListener('focus', function() {
+                 console.log('[ExamResult] Window focused, refreshing data...');
+                 loadData();
+             });
+
+             function tryApiFallback() {
+                 $.ajax({
+                    url: '/api/StudentBank/GetQuestionToSolve?id=' + resultId + '&t=' + new Date().getTime(),
+                    type: 'GET',
+                    success: function (response) {
+                        console.log('[ExamResult] API response:', response);
+                        if (response && response.success && response.data) {
+                            renderResultAnalysis(response.data);
+                        } else {
+                            showError("Result not found or still processing.");
+                        }
+                    },
+                    error: function(xhr) {
+                        console.error('[ExamResult] API error:', xhr.status);
+                        showError("Failed to connect to server.");
+                    }
+                });
+             }
+
+             function showError(msg) {
+                 $('#examName').text("Error");
+                 $('#examDate').text(msg);
+             }
+
+             loadData();
+             
+             if (typeof feather !== 'undefined') {
+                 feather.replace();
+             }
+        });
+
+        function renderResultAnalysis(data) {
+            console.log('[ExamResult] Rendering data:', data);
+            if (!data) return;
+            
+            // Handle both PascalCase and camelCase
+            var paperTitle = data.PaperTitle || data.paperTitle || "Exam Result";
+            var answerAt = data.AnswerAt || data.answerAt || data.Datetime || data.datetime;
+            var details = data.Details || data.details || data.Detail || data.detail || [];
+            
+            // Use values from DB if available, otherwise calculate from details
+            var obtained = (data.ObtainedMarks !== null && data.ObtainedMarks !== undefined) ? data.ObtainedMarks : 
+                          ((data.obtainedMarks !== null && data.obtainedMarks !== undefined) ? data.obtainedMarks : -1);
+            
+            // If obtained marks from DB is 0 or less, check if details say otherwise
+            if (obtained <= 0 && correctCount > 0) {
+                 obtained = correctCount;
+            } else if (obtained === -1) {
+                 obtained = correctCount;
+            }
+
+            var totalMarks = (data.TotalMarks > 0) ? data.TotalMarks : 
+                            ((data.totalMarks > 0) ? data.totalMarks : details.length);
+
+            $('#examName').text(paperTitle);
+            
+            if(answerAt) {
+                 var date = new Date(answerAt);
+                 $('#examDate').text("Completed: " + date.toLocaleDateString() + " " + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}));
+            }
+
+            var correctCount = 0;
+            var wrongCount = 0;
+            var skipCount = 0;
+            var totalTime = 0;
+            var dotsHtml = '';
+
+            details.forEach((q, idx) => {
+                var qTime = q.TimeSpent || q.timeSpent || 0;
+                totalTime += qTime;
+                
+                var status = 'skipped';
+                var answer = q.Answer || q.answer;
+                var isTrue = (q.IsTrue === true || q.isTrue === true || q.IsTrue === 1 || q.isTrue === 1);
+
+                if(!answer || answer === "" || answer === "0") {
+                    skipCount++;
+                    status = 'skipped';
+                } else if(isTrue) {
+                    correctCount++;
+                    status = 'correct';
+                } else {
+                    wrongCount++;
+                    status = 'wrong';
+                }
+
+                dotsHtml += `<div class="q-dot ${status}" title="Question ${idx + 1}" onclick="window.location.href='/Student/TakeExam/${data.ID || data.id}?review=true&q=${idx}'">${idx + 1}</div>`;
+            });
+
+            // Result calculation complete
+            $('#valCorrect').text(correctCount);
+            $('#valWrong').text(wrongCount);
+            // Ensure skipped count matches if DB says 0 but we counted more
+            $('#valSkip').text(skipCount);
+            $('#valTime').text(Math.round(totalTime / 60) + 'm');
+            $('#qDotGrid').html(dotsHtml);
+
+            var percent = 0;
+            if(totalMarks > 0) {
+                percent = Math.round((obtained / totalMarks) * 100);
+            }
+            
+            $('#finalPercentage').text(percent + '%');
+            $('#scoreLabel').text(`OBTAINED: ${obtained} / ${totalMarks}`);
+
+            var passPer = data.PassPer || data.passPer || 50;
+            var isPass = percent >= passPer;
+            
+            $('#passStatusText').text(isPass ? "Passed" : "Failed")
+                                .removeClass('text-success text-danger')
+                                .addClass(isPass ? 'text-success' : 'text-danger');
+
+            renderChart(percent, isPass);
+            
+            if (typeof feather !== 'undefined') {
+                 feather.replace();
+            }
+        }
+
+        function renderChart(percent, isPass) {
+            $("#resultChart").empty(); // Clear existing
+            var options = {
+                series: [percent],
+                chart: {
+                    height: 280,
+                    type: 'radialBar',
+                },
+                plotOptions: {
+                    radialBar: {
+                        hollow: { size: '70%', },
+                        dataLabels: { show: false }
+                    }
+                },
+                colors: [isPass ? '#0F766E' : '#DC2626'],
+                stroke: { lineCap: 'round' },
+            };
+
+            var chart = new ApexCharts(document.querySelector("#resultChart"), options);
+            chart.render();
+        }
+    </script>
+}
+

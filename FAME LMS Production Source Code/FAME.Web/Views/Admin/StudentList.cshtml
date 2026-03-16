@@ -1,0 +1,168 @@
+﻿@model First_Aid_Made_Easy.Models.StudentVM
+@{
+	ViewBag.Title = "Admin";
+	Layout = "~/Views/Shared/_LayoutTeacher.cshtml";
+	string name = First_Aid_Made_Easy.BLL.Common.Universities.FirstOrDefault(y=>y.Value == (int)ViewBag.Type).Text;
+}
+<!-- Select2 -->
+<link type="text/css" href="~/Content/assets/css/select2.css" rel="stylesheet">
+<link type="text/css" href="~/Content/assets/vendor/select2/select2.min.css" rel="stylesheet">
+
+<!-- DateRangePicker -->
+<link type="text/css" href="~/Content/assets/vendor/daterangepicker.css" rel="stylesheet">
+
+<div class="pt-32pt">
+	<div class="container-fluid page__container d-flex flex-column flex-md-row align-items-center text-center text-sm-left">
+		<div class="flex d-flex flex-column flex-sm-row align-items-center">
+			<div class="mb-24pt mb-sm-0 mr-sm-24pt">
+				<h2 class="mb-0">@name Student List </h2>
+				<ol class="breadcrumb p-0 m-0">
+					<li class="breadcrumb-item"><a href="/Teacher/Index">Home</a></li>
+					<li class="breadcrumb-item active">
+						@name  Student List
+					</li>
+				</ol>
+			</div>
+		</div>
+	</div>
+	<div class="page-section border-bottom-2">
+		<div style="margin: 0; max-width: 100%" class="container-fluid page__container">
+			<div class="row">
+				<div class="col-md-12">
+					<div class="page-separator">
+						<div class="page-separator__text">Search Filters</div>
+					</div>
+					<div class="row" style="margin-bottom:20px !important">
+						<div class="col-md-3">
+							<label>Date Range</label>
+							<input id="dateRange" type="text" class="form-control" data-daterangepicker-locale-format="DD/MM/YYYY" placeholder="Select A Date Range" data-toggle="daterangepicker" data-daterangepicker-ranges="true" data-daterangepicker-drops="down">
+						</div>
+						<div class="col-md-4">
+							<label>Search (City, Intitute, Mobile, Email, Job-Location) </label>
+							@Html.TextBox("Text", "", new { @class = "form-control" })
+						</div>
+						<div style="margin-top:25px" class="text-left col-md-3">
+							<button id="btnShow" class="btn btn-outline-primary" onclick="FilterList('Show')">Show</button>
+						</div>
+
+						@*<div style="margin-top:25px" class="col-md-2">
+								<button id="btnShowAll" class="btn btn-outline-success" onclick="FilterList('ShowAll')">Show All</button>
+							</div>*@
+					</div>
+				</div>
+				<div class="col-md-12">
+					<div class="page-separator">
+						<div class="page-separator__text">Basic Information</div>
+					</div>
+					<div class="table-responsive" style="margin-top:20px" id="divPartial">
+						@Html.Partial("_StudentList")
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+@section scripts {
+	<!-- Select2 -->
+	<script src="~/Content/assets/vendor/select2/select2.min.js"></script>
+	<script src="~/Content/assets/js/select2.js"></script>
+	<!-- DateRangePicker -->
+	<script src="~/Content/assets/vendor/moment.min.js"></script>
+	<script src="~/Content/assets/vendor/daterangepicker.js"></script>
+	<script src="~/Content/assets/js/daterangepicker.js?v=321"></script>
+	@Scripts.Render("~/Scripts/List")
+
+	@if (TempData["Success"] != null)
+	{
+		<script>
+			toastr.success("Data Saved Successfully");
+		</script>
+	}
+
+	<script>
+        $(document).ready(function () {
+            $("#DTable").DataTable();
+        })
+
+        function FilterList(Type) {
+            var DateFrom = "", DateTo = "", Text = "";
+            if (Type == "Show") {
+
+                var Dates = $("#dateRange").val().split(" to ");
+                DateFrom = Dates[0];
+                DateTo = Dates[1];
+
+                Text = $("#Text").val().trim();
+
+                // If user entered search text, clear dates so search works across ALL students
+                if (Text.length > 0) {
+                    DateFrom = "";
+                    DateTo = "";
+                }
+            }
+            $("#divLoaderid").show();
+            $.ajax({
+                url: "/Admin/FilterStudentList?DateFrom=" + DateFrom + "&DateTo=" + DateTo + "&Text=" + Text +"&Type=" + @ViewBag.Type,
+                method: "POST",
+                success: function (result) {
+                    if (result != null) {
+                        $("#DTable").DataTable().destroy();
+                        $("#divPartial").html(result);
+                        $("#DTable").DataTable({
+                            paging: false
+                        });
+                        $("#DTable").css("width", "100%");
+                    }
+                    $("#divLoaderid").hide();
+                }, error: function (err) {
+                    alert("Error" + err);
+                    $("#divLoaderid").hide();
+                }
+            })
+        }
+
+
+        $(document).on("click", "#btnBlock", function () {
+            var url = $(this).data("url");
+            var Name = $(this).data("name");
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You Want To " + Name + " this Student ?",
+                icon: 'warning',
+                showCancelButton: false,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: url,
+                        method: "GET",
+                        success: function (result) {
+                            Swal.fire(
+                                'Success!',
+                                'Student ' + Name + 'ed  Successfully.',
+                                'success'
+                            )
+                        }, error: function (err) {
+                            Swal.fire(
+                                'Sorry!',
+                                'The ' + Name + '  Has Been Used and cannot be deleted.',
+                                'warning'
+                            )
+                            var win = window.open("");
+                            win.document.write(err.responseText);
+                        }
+                    })
+
+                }
+            })
+        })
+
+	</script>
+
+}
+

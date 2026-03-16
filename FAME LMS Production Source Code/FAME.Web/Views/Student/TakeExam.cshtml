@@ -1,0 +1,1297 @@
+@{
+    Layout = null; // Fullscreen Mode
+    int examId = ViewBag.ExamID;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Exam Engine - First Aid Made Easy</title>
+    <!-- Core CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="@Url.Content("~/Content/fame-student-2026.css")" rel="stylesheet" />
+    <script src="https://unpkg.com/feather-icons"></script>
+    <style>
+        :root {
+            --exam-bg: #f1f5f9;
+            --sidebar-width: 320px;
+            --brand-primary: #0f766e;
+            --brand-slate: #0f172a;
+            --surface: #ffffff;
+            --accent-soft: #f0fdfa;
+            --header-h: 64px;
+            --nav-h: 84px;
+        }
+
+        body { 
+            background: var(--exam-bg); 
+            overflow: hidden; 
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            color: #1e293b;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* High-Density Header - Locked & Solid */
+        .exam-header { 
+            height: var(--header-h); 
+            background-color: var(--brand-slate) !important; 
+            background-image: none !important;
+            display: flex; 
+            align-items: center; 
+            padding: 0 1.5rem; 
+            justify-content: space-between; 
+            position: fixed; 
+            top: 0; left: 0; right: 0; 
+            z-index: 9999 !important; /* Absolute priority */
+            border-bottom: 2px solid var(--brand-primary);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        /* Prevent legacy background leaks */
+        header, body, html, .exam-layout, .exam-main, .exam-sidebar { 
+            background-image: none !important; 
+        }
+
+        .brand-text { 
+            color: white !important; 
+            font-weight: 800; 
+            letter-spacing: -0.02em; 
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .header-meta-text {
+            color: rgba(255,255,255,0.7);
+            font-size: 0.85rem;
+            font-weight: 600;
+            max-width: 300px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .header-logo-img {
+            height: 32px !important;
+            width: auto !important;
+            filter: brightness(0) invert(1);
+            object-fit: contain;
+        }
+        
+        /* Font Size Control */
+        body.font-small .q-text { font-size: 1rem; }
+        body.font-large .q-text { font-size: 1.45rem; }
+        body.font-small .option-text { font-size: 0.85rem; }
+        body.font-large .option-text { font-size: 1.1rem; }
+
+        /* Layout Grid - Force Viewport Fit */
+        .exam-layout { 
+            display: grid;
+            grid-template-columns: var(--sidebar-width) 1fr;
+            height: calc(100vh - var(--header-h)); 
+            margin-top: var(--header-h);
+            overflow: hidden;
+        }
+
+        /* Sidebar: Information Hub */
+        .exam-sidebar { 
+            background: var(--surface); 
+            border-right: 1px solid #e2e8f0; 
+            overflow: hidden; 
+            display: flex; 
+            flex-direction: column; 
+            height: 100%;
+        }
+
+        /* Palette Grid - Compact */
+        .palette-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+            background: #fff;
+        }
+
+        .q-palette-grid { 
+            display: grid; 
+            grid-template-columns: repeat(6, 1fr); 
+            gap: 6px; 
+        }
+
+        .q-btn { 
+            width: 100%; 
+            aspect-ratio: 1;
+            border-radius: 6px; 
+            border: 1px solid #e2e8f0; 
+            background: white; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-weight: 700; 
+            cursor: pointer; 
+            color: #64748b; 
+            font-size: 0.8rem; 
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .q-btn:hover { border-color: var(--brand-primary); color: var(--brand-primary); background: var(--accent-soft); }
+        .q-btn.active { background: var(--brand-slate); color: white; border-color: var(--brand-slate); transform: scale(1.05); }
+        .q-btn.answered { background: var(--brand-primary); color: white; border-color: var(--brand-primary); }
+        .q-btn.marked { border: 2px solid #f59e0b; color: #b45309; background: #fffbeb; }
+
+        /* Main Content Area - Scroll Controlled */
+        .exam-main { 
+            padding: 1.5rem; 
+            overflow: hidden;
+            background: var(--exam-bg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100%;
+            position: relative;
+        }
+
+        .question-wrapper {
+            width: 100%;
+            max-width: 1000px;
+            height: calc(100% - var(--nav-h));
+            display: flex;
+            flex-direction: column;
+        }
+
+        .question-card { 
+            background: var(--surface);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden; /* Header fixed, content scrollable */
+            max-height: 100%;
+        }
+
+        .question-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.25rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #f1f5f9;
+            flex-shrink: 0;
+        }
+
+        .q-number-badge {
+            background: var(--accent-soft);
+            color: var(--brand-primary);
+            padding: 0.4rem 1rem;
+            border-radius: 100px;
+            font-weight: 800;
+            font-size: 0.8rem;
+            letter-spacing: 0.05em;
+        }
+
+        /* Scrollable Question and Options */
+        .q-scroll-area {
+            overflow-y: auto;
+            flex: 1;
+            padding-right: 0.5rem;
+        }
+
+        .q-scroll-area::-webkit-scrollbar { width: 6px; }
+        .q-scroll-area::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+
+        .q-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+            line-height: 1.6;
+            color: var(--brand-slate);
+            margin-bottom: 2rem;
+        }
+
+        /* Options: High Density Grid */
+        #optionsContainer {
+            display: grid;
+            grid-template-columns: 1fr; /* Default 1 col */
+            gap: 0.75rem;
+            padding-bottom: 1rem;
+        }
+
+        @@media (min-width: 1200px) {
+            #optionsContainer {
+                grid-template-columns: 1fr 1fr; /* 2 columns for high density */
+            }
+        }
+
+        .option-item { 
+            border: 1px solid #e2e8f0; 
+            padding: 1rem 1.25rem; 
+            border-radius: 10px; 
+            cursor: pointer; 
+            transition: all 0.2s ease; 
+            display: flex; 
+            align-items: center; 
+            gap: 1rem; 
+            background: white;
+            min-height: 56px;
+            position: relative;
+            user-select: none; /* Prevent text selection during rapid clicking */
+        }
+
+        .option-text { 
+            font-size: 0.95rem; 
+            font-weight: 500; 
+            padding-right: 32px; /* Space for strike button */
+        }
+        .option-item:hover {
+            border-color: var(--brand-primary); 
+            background: var(--accent-soft);
+        }
+
+        .option-item.selected { 
+            border-color: var(--brand-primary); 
+            background: #f0fdfa; 
+            border-width: 2px;
+            box-shadow: 0 4px 12px rgba(15, 118, 110, 0.08); 
+        }
+
+        .option-prefix {
+            width: 28px;
+            height: 28px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 0.85rem;
+            color: #64748b;
+            flex-shrink: 0;
+        }
+
+        .option-item.selected .option-prefix {
+            background: var(--brand-primary);
+            color: white;
+            border-color: var(--brand-primary);
+        }
+
+        /* Choice Strike-through */
+        .strike-action {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 24px;
+            height: 24px;
+            background: #fee2e2;
+            color: #ef4444;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            opacity: 0;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .option-item:hover .strike-action { opacity: 1; pointer-events: auto; }
+        .strike-action:hover { background: #ef4444; color: white; }
+
+        .option-item.struck-out {
+            opacity: 0.4;
+            filter: grayscale(1);
+        }
+        
+        .option-item.struck-out .option-text {
+            text-decoration: line-through;
+            color: #94a3b8;
+        }
+
+        .strike-action.active {
+            opacity: 1;
+            background: #ef4444;
+            color: white;
+            pointer-events: auto;
+        }
+
+        /* Strike button hidden by default, only clickable on hover or when active */
+        .strike-action {
+             pointer-events: none;
+        }
+
+        /* Lab Values Modal Styling */
+        .lab-modal .modal-content {
+            border-radius: 20px;
+            border: none;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+        }
+        .lab-search {
+            border-radius: 100px;
+            padding: 0.75rem 1.5rem;
+            border: 2px solid #e2e8f0;
+            margin-bottom: 1.5rem;
+        }
+        .lab-item {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .lab-value { font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--brand-primary); }
+
+        .option-text { font-size: 0.95rem; font-weight: 500; }
+
+        /* Floating Navigation Bar - Integrated into Layout */
+        .exam-navigation {
+            height: var(--nav-h);
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--brand-slate);
+            padding: 0 2rem;
+            border-radius: 12px;
+            margin-top: 1.25rem;
+            flex-shrink: 0;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+        }
+
+        .timer-portal { 
+            color: white; 
+            padding: 0.5rem 1.25rem; 
+            border-radius: 100px; 
+            font-weight: 800; 
+            font-family: 'JetBrains Mono', monospace; 
+            font-size: 1.1rem; 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+            background: rgba(255,255,255,0.1);
+        }
+
+        .btn-exam {
+            padding: 0.7rem 1.75rem;
+            border-radius: 100px;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: none;
+            font-size: 0.9rem;
+        }
+
+        .btn-prev { background: rgba(255,255,255,0.1); color: white; }
+        .btn-next { background: var(--brand-primary); color: white; }
+        .btn-finish { background: #ef4444; color: white; }
+
+        .btn-exam:hover:not(:disabled) { transform: translateY(-2px); filter: brightness(1.1); }
+        .btn-exam:disabled { opacity: 0.3; cursor: not-allowed; }
+
+        /* Tutor Mode Styles */
+        .option-item.correct {
+            border-color: #22c55e !important;
+            background-color: #f0fdf4 !important;
+            border-width: 2px;
+        }
+        .option-item.correct .option-prefix {
+            background: #22c55e !important;
+            color: white !important;
+        }
+
+        .option-item.incorrect {
+            border-color: #ef4444 !important;
+            background-color: #fef2f2 !important;
+            border-width: 2px;
+        }
+        .option-item.incorrect .option-prefix {
+            background: #ef4444 !important;
+            color: white !important;
+        }
+
+        .explanation-box {
+            margin-top: 1.5rem;
+            padding: 1.5rem;
+            background: #f8fafc;
+            border-radius: 12px;
+            border-left: 4px solid var(--brand-primary);
+            display: none;
+        }
+
+        .tutor-badge {
+            font-size: 0.65rem;
+            padding: 2px 8px;
+            border-radius: 4px;
+            background: #f59e0b;
+            color: white;
+            font-weight: 800;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+
+        /* Keyboard Shortcut Legend */
+        .kbs-hint {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(15, 23, 42, 0.8);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            z-index: 1000;
+            display: none;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* Loader Overhaul */
+        #loader {
+            background: var(--brand-slate) !important;
+            color: white !important;
+        }
+
+        @@media (max-width: 992px) {
+            .exam-layout { grid-template-columns: 1fr; }
+            .exam-sidebar { 
+                position: fixed; 
+                left: -100%; 
+                top: var(--header-h); 
+                bottom: var(--nav-h); 
+                width: 280px; 
+                z-index: 1000; 
+                box-shadow: 20px 0 50px rgba(0,0,0,0.2);
+                transition: left 0.3s ease;
+                display: flex !important;
+            }
+            .exam-sidebar.active { left: 0; }
+            .exam-navigation { border-radius: 0; margin-top: 0; position: fixed; bottom: 0; left: 0; right: 0; }
+            .question-wrapper { height: calc(100% - var(--nav-h)); }
+            .question-card { border-radius: 0; border: none; padding: 1.25rem; }
+            .exam-main { padding: 0; }
+        }
+
+        .sidebar-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+            display: none;
+            backdrop-filter: blur(2px);
+        }
+        .sidebar-overlay.active { display: block; }
+        
+        .bg-soft-teal { background-color: #f0fdfa !important; }
+        .text-teal { color: #0f766e !important; }
+
+        /* Search Box */
+        .q-search-container {
+            padding: 1rem;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .q-search-input {
+            border-radius: 100px;
+            font-size: 0.8rem;
+            padding: 0.5rem 1rem;
+            border: 1px solid #e2e8f0;
+            width: 100%;
+        }
+
+        /* Mobile Toggle Button */
+        .mobile-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            padding: 0;
+            margin-right: 1rem;
+        }
+        @@media (max-width: 992px) {
+            .mobile-toggle { display: block; }
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+    <!-- Loader -->
+    <div id="loader" style="position:fixed;inset:0;background:white;z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;">
+        <div class="spinner-border text-light" style="width: 3rem; height: 3rem;" role="status"></div>
+        <p class="mt-4 fw-bold letter-spacing-lg">INITIALIZING SECURE EXAM ENGINE...</p>
+    </div>
+
+    <!-- Header -->
+    <header class="exam-header">
+        <div class="d-flex align-items-center gap-3">
+             <button class="mobile-toggle" onclick="toggleSidebar()">
+                <i data-feather="menu"></i>
+             </button>
+             <img src="@Url.Content("~/Images/FAME_Logo_Final.png")" class="header-logo-img" />
+             <div class="vr mx-2 bg-white opacity-25" style="height: 20px"></div>
+             <div class="d-none d-lg-block">
+                 <div class="brand-text fs-5" id="examTitle">STUDENT EXAMINATION PORTAL</div>
+             </div>
+             <div class="d-lg-none">
+                 <div class="brand-text fs-6">FAME EXAM</div>
+             </div>
+        </div>
+
+        <div class="d-flex align-items-center gap-4">
+            <div class="header-meta-text d-none d-xl-block" id="paperTitleHeader">...</div>
+            
+            <div class="form-check form-switch d-none d-md-flex align-items-center gap-2 text-white me-2">
+                <input class="form-check-input" type="checkbox" id="tutorModeToggle">
+                <label class="form-check-label small fw-bold" for="tutorModeToggle">TUTOR MODE</label>
+            </div>
+
+            <button class="btn btn-outline-light btn-sm rounded-pill px-3 fw-bold d-flex align-items-center gap-2" style="border-color: rgba(255,255,255,0.3);" data-bs-toggle="modal" data-bs-target="#labsModal">
+                <i data-feather="database" style="width:14px;"></i> LABS
+            </button>
+            <div class="timer-portal d-none d-md-flex">
+                <i data-feather="clock" style="width:18px;"></i>
+                <span id="timerDisplay">00:00:00</span>
+            </div>
+
+            <div class="dropdown me-2">
+                <button class="btn btn-link text-white p-0 opacity-75" data-bs-toggle="dropdown">
+                    <i data-feather="settings" style="width:20px;"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0">
+                    <li><h6 class="dropdown-header">DISPLAY SETTINGS</h6></li>
+                    <li><a class="dropdown-item d-flex justify-content-between" href="#" onclick="setFontSize('small')">Small Font <span>A-</span></a></li>
+                    <li><a class="dropdown-item d-flex justify-content-between" href="#" onclick="setFontSize('normal')">Default <span>A</span></a></li>
+                    <li><a class="dropdown-item d-flex justify-content-between" href="#" onclick="setFontSize('large')">Large Font <span>A+</span></a></li>
+                </ul>
+            </div>
+
+            <button class="btn btn-danger btn-sm rounded-pill px-4 fw-bold shadow-sm" style="height: 36px;" onclick="submitExam()">
+                FINISH
+            </button>
+        </div>
+    </header>
+
+    <div class="exam-layout">
+        <!-- Sidebar -->
+        <aside class="exam-sidebar">
+            <div class="q-search-container">
+                <input type="text" class="form-control q-search-input" placeholder="Search questions..." id="qSearch">
+            </div>
+
+            <div class="p-4 bg-light border-bottom">
+                <h6 class="mb-1 fw-bold text-uppercase small text-secondary">Overall Progress</h6>
+                <div class="progress mb-3" style="height: 6px;">
+                    <div id="examProgress" class="progress-bar bg-success" role="progressbar" style="width: 0%"></div>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="fw-bold h5 mb-0"><span id="solvedCount">0</span><small class="text-muted"> / <span id="totalQ">0</span></small></span>
+                    <span class="badge bg-soft-primary text-primary px-3 py-1 rounded-pill small">Validated</span>
+                </div>
+            </div>
+            
+            <div class="palette-container">
+                <div class="q-palette-grid" id="qPalette"></div>
+                
+                <div class="mt-4 p-3 bg-light rounded-3 border border-dashed border-primary">
+                    <h6 class="small fw-bold text-uppercase text-primary mb-3">Pacing Analytics</h6>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="small text-muted">Time per Question</span>
+                        <span class="small fw-bold" id="avgTime">0s</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span class="small text-muted">Proj. Completion</span>
+                        <span class="small fw-bold" id="projTime">--</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="p-3 border-top bg-light">
+                <div class="row row-cols-2 g-2">
+                    <div class="col"><div class="d-flex align-items-center gap-2" style="font-size: 0.7rem;"><span class="q-btn active" style="width:8px;height:8px;"></span> Current</div></div>
+                    <div class="col"><div class="d-flex align-items-center gap-2" style="font-size: 0.7rem;"><span class="q-btn answered" style="width:8px;height:8px;"></span> Solved</div></div>
+                    <div class="col"><div class="d-flex align-items-center gap-2" style="font-size: 0.7rem;"><span class="q-btn marked" style="width:8px;height:8px;"></span> Review</div></div>
+                    <div class="col"><div class="d-flex align-items-center gap-2" style="font-size: 0.7rem;"><span class="q-btn" style="width:8px;height:8px;"></span> Unseen</div></div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main -->
+        <main class="exam-main">
+            <div class="question-wrapper">
+                <div class="question-card">
+                    <div class="question-meta">
+                        <div class="q-number-badge">QUESTION <span id="currentQNum">1</span></div>
+                        <button class="btn btn-link text-warning fw-bold text-decoration-none d-flex align-items-center gap-2 p-0" onclick="markReview()">
+                            <i data-feather="flag" style="width:16px;"></i> <span class="small d-none d-sm-inline">MARK FOR REVIEW</span>
+                        </button>
+                    </div>
+                    
+                    <div class="q-scroll-area">
+                        <div class="q-text" id="qText">Loading question content...</div>
+                        <div id="optionsContainer">
+                            <!-- Options injected here -->
+                        </div>
+                        <div id="explanationContainer" class="explanation-box">
+                            <h6 class="fw-bold text-primary mb-2">EDUCATIONAL OBJECTIVE & EXPLANATION</h6>
+                            <div id="explanationText" class="small text-muted line-height-lg"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigation Hub -->
+                <div class="exam-navigation">
+                    <button class="btn-exam btn-prev" onclick="prevQ()" id="btnPrev">
+                        <i data-feather="chevron-left"></i> Previous
+                    </button>
+                    
+                    <div class="timer-portal d-md-none">
+                        <span id="timerDisplayMobile">00:00</span>
+                    </div>
+
+                    <button class="btn-exam btn-next" onclick="nextQ()" id="btnNext">
+                        Save & Next <i data-feather="arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Labs Modal -->
+    <div class="modal fade lab-modal" id="labsModal" tabindex="-1" aria-hidden="true" style="z-index: 100000 !important;">
+        <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header bg-brand-slate text-white border-0 py-3" style="background-color: #0f172a !important;">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="symbol symbol-35px symbol-circle">
+                            <div class="symbol-label bg-white bg-opacity-10">
+                                <i data-feather="database" class="text-white" style="width:18px;"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <h5 class="modal-title fw-bold text-white">LABORATORY REFERENCE VALUES</h5>
+                            <p class="mb-0 small opacity-75">Search for common clinical measurements</p>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="position-relative mb-4">
+                        <i data-feather="search" class="position-absolute translate-middle-y top-50 start-0 ms-3 text-muted" style="width:18px;"></i>
+                        <input type="text" id="labSearch" class="form-control lab-search ps-5 border-2" placeholder="Search for glucose, sodium, hemoglobin...">
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="bg-light sticky-top" style="top: -1px; z-index: 10;">
+                                <tr>
+                                    <th class="border-0 py-3 ps-3 text-uppercase small fw-bold text-muted">Laboratory Test</th>
+                                    <th class="border-0 py-3 text-uppercase small fw-bold text-muted">Reference Interval (SI Units)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="labTableBody">
+                                <!-- BLOOD, PLASMA, SERUM -->
+                                <tr class="bg-soft-teal"><td colspan="2" class="fw-bold py-2 ps-3 text-teal small">BLOOD, PLASMA, SERUM</td></tr>
+                                <tr><td class="ps-3 fw-semibold">Alanine aminotransferase (ALT)</td><td>10-40 U/L</td></tr>
+                                <tr><td class="ps-3 fw-semibold">Albumin, serum</td><td>3.5-5.5 g/dL (35-55 g/L)</td></tr>
+                                <tr><td class="ps-3 fw-semibold">Alkaline phosphatase</td><td>30-120 U/L</td></tr>
+                                <tr><td class="ps-3 fw-semibold">Amylase, serum</td><td>25-125 U/L</td></tr>
+                                <tr><td class="ps-3 fw-semibold">Bilirubin, serum (total)</td><td>0.1-1.2 mg/dL (2-21 &micro;mol/L)</td></tr>
+                                <tr><td class="ps-3 fw-semibold">Calcium, serum (total)</td><td>8.4-10.2 mg/dL (2.1-2.6 mmol/L)</td></tr>
+                                <tr><td class="ps-3 fw-semibold">Chloride, serum</td><td>96-106 mEq/L (96-106 mmol/L)</td></tr>
+                                <tr><td class="ps-3 fw-semibold">Cholesterol, total</td><td>&lt;200 mg/dL (&lt;5.2 mmol/L)</td></tr>
+                                <tr><td class="ps-3 fw-semibold">Creatinine, serum</td><td>0.6-1.2 mg/dL (53-106 &micro;mol/L)</td></tr>
+                                <tr><td class="ps-3 fw-semibold">Glucose, serum (fasting)</td><td>70-100 mg/dL (3.9-5.6 mmol/L)</td></tr>
+                                <tr><td class="ps-3 fw-semibold">Magnesium, serum</td><td>1.5-2.5 mg/dL (0.75-1.25 mmol/L)</td></tr>
+                                <tr><td class="ps-3 fw-semibold">Potassium, serum</td><td>3.5-5.0 mEq/L (3.5-5.0 mmol/L)</td></tr>
+                                <tr><td class="ps-3 fw-semibold">Sodium, serum</td><td>136-145 mEq/L (136-145 mmol/L)</td></tr>
+                                <tr><td class="ps-3 fw-semibold">Thyroid-stimulating hormone (TSH)</td><td>0.5-5.0 &micro;U/mL (0.5-5.0 mU/L)</td></tr>
+                                <tr><td class="ps-3 fw-semibold">Urea nitrogen, blood (BUN)</td><td>7-20 mg/dL (2.5-7.1 mmol/L)</td></tr>
+                                
+                                <!-- HEMATOLOGY -->
+                                <tr class="bg-soft-teal"><td colspan="2" class="fw-bold py-2 ps-3 text-teal small text-uppercase">Hematology</td></tr>
+                                <tr><td class="ps-3 fw-semibold">Hemoglobin, blood (Male)</td><td>13.5-17.5 g/dL (135-175 g/L)</td></tr>
+                                <tr><td class="ps-3 fw-semibold">Hemoglobin, blood (Female)</td><td>12.0-16.0 g/dL (120-160 g/L)</td></tr>
+                                <tr><td class="ps-3 fw-semibold">Hematocrit (Male)</td><td>41%-53% (0.41-0.53)</td></tr>
+                                <tr><td class="ps-3 fw-semibold">Hematocrit (Female)</td><td>36%-46% (0.36-0.46)</td></tr>
+                                <tr><td class="ps-3 fw-semibold">Platelet count</td><td>150,000-400,000/mm&sup3;</td></tr>
+                                <tr><td class="ps-3 fw-semibold">White blood cell (WBC) count</td><td>4,500-11,000/mm&sup3;</td></tr>
+                                
+                                <!-- CSF -->
+                                <tr class="bg-soft-teal"><td colspan="2" class="fw-bold py-2 ps-3 text-teal small text-uppercase">Cerebrospinal Fluid</td></tr>
+                                <tr><td class="ps-3 fw-semibold">Glucose, CSF</td><td>40-70 mg/dL (2.2-3.9 mmol/L)</td></tr>
+                                <tr><td class="ps-3 fw-semibold">Protein, CSF</td><td>&lt;40 mg/dL (&lt;0.40 g/L)</td></tr>
+                                <tr><td class="ps-3 fw-semibold">Pressure, CSF</td><td>70-180 mm H2O</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light border-0">
+                    <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Close Reference Values</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- KBS Hint -->
+    <div class="kbs-hint" id="kbsHint">
+        <b>KEYS:</b> [A-E] Select | [→] Next | [←] Prev | [F] Flag | [S] Strike | [L] Labs
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // State
+        var examId = @examId;
+        var userId = '@User.Identity.GetUserId()';
+        var currentData = null; // SolvePaperDto
+        var currentIndex = 0;
+        var timeRemaining = 0; // Seconds
+        var totalTimer = 0; // Total seconds since start
+        var timerInterval;
+        
+        // Pacing & Feature State
+        var qStartTime = null;
+        var isTutorMode = false;
+
+        // Review Mode Detection
+        var urlParams = new URLSearchParams(window.location.search);
+        var isReviewMode = urlParams.get('review') === 'true';
+        var reviewStartQ = parseInt(urlParams.get('q')) || 0;
+
+        // Custom Test Detection (from Create Exam page)
+        var isCustomTest = urlParams.get('custom') === '1';
+        var customTestMode = urlParams.get('mode') || 'Exam';
+
+        function setFontSize(size) {
+            $('body').removeClass('font-small font-large').addClass('font-' + size);
+        }
+
+        function toggleSidebar() {
+            $('.exam-sidebar').toggleClass('active');
+            $('#sidebarOverlay').toggleClass('active');
+        }
+        
+        // Lab Search Logic
+        $(document).on('keyup', '#labSearch', function() {
+            var val = $(this).val().toLowerCase();
+            $("#labTableBody tr").filter(function() {
+                $(this).toggle($(this).text().toLowerCase().indexOf(val) > -1)
+            });
+        });
+
+        // Omni-Search (Question Palette Filter)
+        $(document).on('keyup', '#qSearch', function() {
+            var val = $(this).val().toLowerCase();
+            if (!val) {
+                $('.q-btn').show();
+                return;
+            }
+            currentData.Details.forEach((q, idx) => {
+                var match = q.Question.toLowerCase().indexOf(val) > -1;
+                $(`#pal-${idx}`).toggle(match);
+            });
+        });
+
+        // Tutor Mode Toggle
+        $(document).on('change', '#tutorModeToggle', function() {
+            isTutorMode = $(this).is(':checked');
+            if (isTutorMode) {
+                $('.header-meta-text').append('<span class="tutor-badge">TUTOR</span>');
+                // If current question already answered, show explanation
+                var q = currentData.Details[currentIndex];
+                if (q.Answer) revealTutorFeedback();
+            } else {
+                $('.tutor-badge').remove();
+                $('#explanationContainer').fadeOut();
+                $('.option-item').removeClass('correct incorrect');
+            }
+        });
+
+        // Keyboard Shortcuts
+        $(document).on('keydown', function(e) {
+            // Avoid shortcuts when typing in search or if modal open
+            if ($(':focus').is('input') || $('.modal.show').length) return;
+
+            var key = e.key.toUpperCase();
+            
+            // Options A-E or 1-5
+            if (["A","B","C","D","E"].includes(key) || ["1","2","3","4","5"].includes(key)) {
+                var idx = ["A","B","C","D","E"].includes(key) ? key.charCodeAt(0) - 65 : parseInt(key) - 1;
+                $('.option-item').eq(idx).click();
+            }
+            // Navigation
+            if (key === "ARROWLEFT") prevQ();
+            if (key === "ARROWRIGHT") nextQ();
+            // Actions
+            if (key === "F") markReview();
+            if (key === "L") $('#labsModal').modal('toggle');
+            if (key === "S") {
+                var hovered = $('.option-item:hover');
+                if (hovered.length) hovered.find('.strike-action').click();
+            }
+
+            // Show KBS hint briefly on first use
+            if (!$('#kbsHint').is(':visible')) {
+                $('#kbsHint').fadeIn().delay(3000).fadeOut();
+            }
+        });
+        
+        // Init
+        $(document).ready(function() {
+            initExam();
+            feather.replace();
+        });
+
+        function initExam() {
+            if (isReviewMode) {
+                // Review Mode: Load existing completed result (don't create new test)
+                $.ajax({
+                    url: '/api/StudentBank/GetQuestionToSolve?id=' + examId + '&t=' + new Date().getTime(),
+                    type: 'GET',
+                    success: function(response) {
+                        if (response && response.success && response.data) {
+                            currentData = response.data;
+                            enterReviewMode();
+                        } else if (response && response.ID > 0) {
+                            currentData = response;
+                            enterReviewMode();
+                        } else {
+                            alert('Could not load exam data for review.');
+                        }
+                    },
+                    error: function(e) {
+                        console.error(e);
+                        alert('Error loading exam for review.');
+                    }
+                });
+            } else if (isCustomTest) {
+                // Custom Test: Already created by CreateExam page, load directly by result ID
+                $.ajax({
+                    url: '/api/StudentBank/GetQuestionToSolve?id=' + examId + '&t=' + new Date().getTime(),
+                    type: 'GET',
+                    success: function(response) {
+                        if (response && response.success && response.data) {
+                            currentData = response.data;
+                        } else if (response && response.ID > 0) {
+                            currentData = response;
+                        } else {
+                            alert('Could not load custom exam data. Please go back and try again.');
+                            return;
+                        }
+                        // Set tutor mode if that's what user chose
+                        if (customTestMode === 'Tutor') {
+                            isTutorMode = true;
+                            $('#tutorModeToggle').prop('checked', true);
+                        }
+                        renderUI();
+                    },
+                    error: function(e) {
+                        console.error(e);
+                        alert('Error loading custom exam. Please go back and try again.');
+                    }
+                });
+            } else {
+                // Normal Exam Mode: Create Test Instance
+                var input = { StudentID: userId, ID: examId, Mode: "Exam" };
+                
+                $.ajax({
+                    url: '/api/StudentBank/CreateTest',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(input),
+                    success: function(response) {
+                        if(response.success) {
+                            currentData = response.data;
+                            renderUI();
+                        } else {
+                            alert(response.message || "Failed to start exam.");
+                        }
+                    },
+                    error: function(e) { 
+                        console.error(e);
+                        alert("Error connection to server.");
+                    }
+                });
+            }
+        }
+
+        function enterReviewMode() {
+            $('#loader').fadeOut();
+            var title = currentData.PaperTitle || "Examination Module";
+            $('#examTitle').text('REVIEW MODE');
+            $('#paperTitleHeader').text(title);
+            var totalCount = currentData.Details.length;
+            $('#totalQ').text(totalCount);
+
+            // Hide timer — not needed in review
+            $('#timerDisplay').text('REVIEW');
+            $('#timerDisplayMobile').text('REVIEW');
+
+            // Hide submit-related buttons, show Back to Results
+            // Replace the Next button label logic for last question
+            isTutorMode = true; // Force tutor mode to show correct/incorrect
+            $('#tutorModeToggle').prop('checked', true).prop('disabled', true);
+
+            // Add review mode banner
+            $('.exam-header').after('<div class="text-center py-2" style="background:#0f766e;color:white;font-weight:700;font-size:0.85rem;"><i data-feather="eye" style="width:14px;display:inline;"></i> REVIEW MODE — Viewing your submitted answers with explanations</div>');
+
+            // Render palette and load first question (or specific question from URL)
+            renderPalette();
+
+            // In review mode, pre-mark all answered questions in the palette
+            currentData.Details.forEach(function(q, idx) {
+                if (q.Answer) {
+                    $('#pal-' + idx).addClass('answered');
+                }
+            });
+
+            loadQuestion(reviewStartQ);
+            updateProgress();
+
+            if (typeof feather !== 'undefined') feather.replace();
+        }
+
+        function renderUI() {
+            $('#loader').fadeOut();
+            var title = currentData.PaperTitle || "Examination Module";
+            $('#examTitle').text("EXAM PORTAL"); 
+            $('#paperTitleHeader').text(title);
+            var totalCount = currentData.Details.length;
+            $('#totalQ').text(totalCount);
+            
+            // Timer
+            if (currentData.TimeGiven) {
+                timeRemaining = (currentData.TimeGiven * 60) - (currentData.TimeElapsed || 0);
+                startTimer();
+            }
+
+            // Palette
+            renderPalette();
+            // Load Q1
+            loadQuestion(0);
+            updateProgress();
+        }
+
+        function updateProgress() {
+            var solved = currentData.Details.filter(x => x.Answer).length;
+            var total = currentData.Details.length;
+            var percent = (solved / total) * 100;
+            $('#examProgress').css('width', percent + '%');
+            $('#solvedCount').text(solved);
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(function() {
+                timeRemaining--;
+                totalTimer++;
+                
+                var h = Math.floor(timeRemaining / 3600);
+                var m = Math.floor((timeRemaining % 3600) / 60);
+                var s = timeRemaining % 60;
+                
+                var timeStr = (h > 0 ? (h < 10 ? "0" + h : h) + ":" : "") + 
+                             (m < 10 ? "0" + m : m) + ":" + 
+                             (s < 10 ? "0" + s : s);
+                
+                $('#timerDisplay').text(timeStr);
+                $('#timerDisplayMobile').text(timeStr);
+
+                // Update Pacing Every 5 Sec
+                if (totalTimer % 5 === 0) updatePacingUI();
+
+                if(timeRemaining <= 0) {
+                    clearInterval(timerInterval);
+                    alert("Time's up! Submitting exam automatically.");
+                    submitExam();
+                }
+            }, 1000);
+        }
+
+        function updatePacingUI() {
+            var solved = currentData.Details.filter(x => x.Answer).length;
+            if (solved > 0) {
+                var avg = Math.round(totalTimer / solved);
+                $('#avgTime').text(avg + 's');
+                
+                var remaining = currentData.Details.length - solved;
+                var proj = Math.round((avg * remaining) / 60);
+                $('#projTime').text(proj + ' min');
+            }
+        }
+
+        function renderPalette() {
+            var html = '';
+            currentData.Details.forEach((q, idx) => {
+                var statusClass = '';
+                if(q.Answer) statusClass = 'answered';
+                if(q.IsMarked) statusClass += ' marked';
+                html += `<div class="q-btn ${statusClass}" id="pal-${idx}" onclick="navigateToQuestion(${idx})">${idx+1}</div>`;
+            });
+            $('#qPalette').html(html);
+        }
+
+        function navigateToQuestion(idx) {
+            capturePacing();
+            loadQuestion(idx);
+            // Auto-close sidebar on mobile after selection
+            if ($(window).width() <= 992) toggleSidebar();
+        }
+
+        function capturePacing() {
+            if (qStartTime && currentData && currentData.Details[currentIndex]) {
+                var now = new Date();
+                var spent = Math.floor((now - qStartTime) / 1000);
+                var q = currentData.Details[currentIndex];
+                q.TimeSpent = (q.TimeSpent || 0) + spent;
+                qStartTime = now;
+                // Optional: Save to server periodically or on answer
+            }
+        }
+
+        function loadQuestion(idx) {
+            capturePacing(); // Ensure previous is captured
+            currentIndex = idx;
+            qStartTime = new Date();
+            var q = currentData.Details[idx];
+            
+            // Fade effect for question change
+            $('.q-scroll-area').animate({ opacity: 0 }, 100, function() {
+                $('#currentQNum').text(idx + 1);
+                $('#qText').html(q.Question);
+                
+                // Tutor Mode Reset
+                $('#explanationContainer').hide();
+                $('#explanationText').html(q.AnsExplain || "No explanation available.");
+
+                // Update Palette Active State
+                $('.q-btn').removeClass('active');
+                $(`#pal-${idx}`).addClass('active');
+
+                // Render Options — uses data-index to avoid inline string escaping issues
+                var optHtml = '';
+                if(!q.StruckChoices) q.StruckChoices = [];
+
+                q.QuestOptions.forEach((opt, oIdx) => {
+                    var label = opt.OptionName || String.fromCharCode(65 + oIdx); 
+                    var optText = opt.OptionText || opt.OptionValue || opt.Details || "Option Data Error";
+                    var isSelected = (q.Answer === optText) ? 'selected' : '';
+                    var isStruck = q.StruckChoices.includes(optText) ? 'struck-out' : '';
+                    
+                    // Tutor Mode Visuals for previously answered questions
+                    var tutorClass = '';
+                    if (isTutorMode && q.Answer) {
+                        if (opt.IsCorrect) tutorClass = 'correct';
+                        else if (isSelected) tutorClass = 'incorrect';
+                    }
+
+                    // Use data-oidx attribute — NO inline onclick, NO string escaping needed
+                    optHtml += '<div class="option-item ' + isSelected + ' ' + isStruck + ' ' + tutorClass + '" data-oidx="' + oIdx + '">' +
+                        '<div class="option-prefix">' + label + '</div>' +
+                        '<div class="option-text"></div>' +
+                        '<div class="strike-action ' + (isStruck ? 'active' : '') + '" data-strike="' + oIdx + '">' +
+                            '<i data-feather="x" style="width:14px;"></i>' +
+                        '</div>' +
+                    '</div>';
+                });
+                $('#optionsContainer').html(optHtml);
+
+                // Safely set option text via .text() — handles ALL special chars (quotes, newlines, HTML)
+                q.QuestOptions.forEach((opt, oIdx) => {
+                    var optText = opt.OptionText || opt.OptionValue || opt.Details || "Option Data Error";
+                    $('#optionsContainer .option-item[data-oidx="' + oIdx + '"] .option-text').text(optText);
+                });
+                
+                if (isTutorMode && q.Answer) $('#explanationContainer').show();
+
+                // Scroll to top of question
+                $('.q-scroll-area').scrollTop(0).animate({ opacity: 1 }, 100);
+
+                // Btn State
+                $('#btnPrev').prop('disabled', idx === 0);
+                if (isReviewMode) {
+                    $('#btnNext').html(idx === currentData.Details.length - 1 ? 'Back to Results <i data-feather="arrow-left" style="width:16px;"></i>' : 'Next <i data-feather="arrow-right" style="width:16px;"></i>');
+                } else {
+                    $('#btnNext').html(idx === currentData.Details.length - 1 ? 'Finish Exam <i data-feather="check-circle" style="width:16px;"></i>' : 'Save & Next <i data-feather="arrow-right" style="width:16px;"></i>');
+                }
+                feather.replace();
+            });
+        }
+
+        function revealTutorFeedback() {
+            var q = currentData.Details[currentIndex];
+            $('.option-item').each(function(i) {
+                var opt = q.QuestOptions[i];
+                if (opt.IsCorrect) $(this).addClass('correct');
+                else if ($(this).hasClass('selected')) $(this).addClass('incorrect');
+            });
+            $('#explanationContainer').fadeIn();
+        }
+
+        // ========== EVENT DELEGATION (replaces inline onclick) ==========
+        // Option click — uses data-oidx to look up the option value safely
+        $(document).on('click', '.option-item', function(e) {
+            // Ignore if strike button was clicked
+            if ($(e.target).closest('.strike-action').length) return;
+            
+            var oIdx = parseInt($(this).attr('data-oidx'));
+            if (isNaN(oIdx) || !currentData) return;
+            var q = currentData.Details[currentIndex];
+            var opt = q.QuestOptions[oIdx];
+            if (!opt) return;
+            var val = opt.OptionText || opt.OptionValue || opt.Details || "";
+            selectOption(val, this);
+        });
+
+        // Right-click on option — toggle strike
+        $(document).on('contextmenu', '.option-item', function(e) {
+            e.preventDefault();
+            var oIdx = parseInt($(this).attr('data-oidx'));
+            if (isNaN(oIdx) || !currentData) return;
+            var q = currentData.Details[currentIndex];
+            var opt = q.QuestOptions[oIdx];
+            if (!opt) return;
+            var val = opt.OptionText || opt.OptionValue || opt.Details || "";
+            toggleStrike(e, val, $(this).find('.strike-action')[0]);
+        });
+
+        // Strike button click
+        $(document).on('click', '.strike-action', function(e) {
+            e.stopPropagation();
+            var optItem = $(this).closest('.option-item');
+            var oIdx = parseInt(optItem.attr('data-oidx'));
+            if (isNaN(oIdx) || !currentData) return;
+            var q = currentData.Details[currentIndex];
+            var opt = q.QuestOptions[oIdx];
+            if (!opt) return;
+            var val = opt.OptionText || opt.OptionValue || opt.Details || "";
+            toggleStrike(e, val, this);
+        });
+
+        function toggleStrike(e, val, el) {
+            if (e && e.stopPropagation) e.stopPropagation();
+            if (isReviewMode) return; // Review mode is read-only
+            var q = currentData.Details[currentIndex];
+            var parent = $(el).closest('.option-item');
+            
+            if (q.StruckChoices.includes(val)) {
+                q.StruckChoices = q.StruckChoices.filter(x => x !== val);
+                parent.removeClass('struck-out');
+                $(el).removeClass('active');
+            } else {
+                q.StruckChoices.push(val);
+                parent.addClass('struck-out');
+                $(el).addClass('active');
+                // Remove selection if striking it
+                if (q.Answer === val) {
+                    q.Answer = null;
+                    parent.removeClass('selected');
+                    $(`#pal-${currentIndex}`).removeClass('answered');
+                }
+            }
+        }
+
+        function selectOption(val, el) {
+            if (isReviewMode) return; // Review mode is read-only
+            var q = currentData.Details[currentIndex];
+            if (q.StruckChoices && q.StruckChoices.includes(val)) return; // Can't select struck
+            
+            // If already answered in tutor mode, prevents re-answering (standard USMLE)
+            if (isTutorMode && q.Answer) return;
+
+            $('.option-item').removeClass('selected');
+            $(el).addClass('selected');
+            
+            q.Answer = val; // Local Update
+
+            // Calculate IsTrue for storage
+            var correctOption = q.QuestOptions.find(o => o.IsCorrect);
+            q.IsTrue = (val === (correctOption ? correctOption.OptionText : null));
+            
+            // Sync to Palette
+            $(`#pal-${currentIndex}`).addClass('answered');
+            updateProgress();
+
+            // API Save (Silent)
+            saveAnswerAPI(q);
+
+            // Tutor Feedback
+            if (isTutorMode) {
+                revealTutorFeedback();
+            }
+        }
+
+        function markReview() {
+            if (isReviewMode) return;
+            var q = currentData.Details[currentIndex];
+            q.IsMarked = !q.IsMarked;
+            $(`#pal-${currentIndex}`).toggleClass('marked');
+            saveAnswerAPI(q); // Save marked state too
+        }
+
+        function saveAnswerAPI(q) {
+             if (isReviewMode) return; // Don't save anything in review mode
+             capturePacing(); // Get latest time
+             var payload = {
+                 ResultID: currentData.ID, 
+                 QuestionID: q.QuestionId,
+                 Answer: q.Answer || "",
+                 IsTrue: q.IsTrue,
+                 TimeElapsed: totalTimer,
+                 TimeSpent: q.TimeSpent || 0 
+             };
+             
+             $.ajax({
+                 url: '/api/StudentBank/SaveResultDetail',
+                 type: 'POST',
+                 contentType: 'application/json',
+                 data: JSON.stringify(payload)
+             });
+        }
+
+        function nextQ() {
+            if(currentIndex < currentData.Details.length - 1) {
+                navigateToQuestion(currentIndex + 1);
+            } else {
+                submitExam();
+            }
+        }
+
+        function prevQ() {
+            if(currentIndex > 0) {
+                navigateToQuestion(currentIndex - 1);
+            }
+        }
+
+        function submitExam() {
+            if (isReviewMode) {
+                window.location.href = '/Student/ExamResult/' + examId;
+                return;
+            }
+            if(confirm("Are you sure you want to submit the exam?")) {
+                capturePacing(); // Capture last question time
+                clearInterval(timerInterval);
+                $('#loader').fadeIn().find('p').text('Calculating Result...');
+                
+                // Final save for current question before completion
+                var q = currentData.Details[currentIndex];
+                saveAnswerAPI(q);
+
+                setTimeout(function() {
+                    $.ajax({
+                        url: '/api/StudentBank/Completed?ID=' + currentData.ID,
+                        type: 'GET',
+                        success: function() {
+                            window.location.href = '/Student/ExamResult/' + currentData.ID;
+                        }
+                    });
+                }, 500); // Small delay to ensure saveAnswerAPI finishes
+            }
+        }
+    </script>
+</body>
+</html>

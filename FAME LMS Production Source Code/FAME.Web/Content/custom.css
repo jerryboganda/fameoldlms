@@ -1,0 +1,93 @@
+﻿.button-bt {
+    width: 100%;
+    height: 120px;
+    text-align: center;
+    padding: 30px 10px;
+    transition: 0.5s;
+    margin-bottom: 25px;
+    box-shadow: 0px 4px 6px #4a4a4a;
+}
+
+.emp-icon {
+    color: #fff;
+    font-size: 40px;
+    line-height: 40px !important;
+}
+
+.button-bt p {
+    color: #fff;
+    margin-top: 5px;
+    font-size: 1.5rem;
+}
+
+.employee-bg {
+    background: #fb9215;
+    border-left: 5px solid #c36a00;
+}
+
+    .employee-bg:hover {
+        background: #c36a00;
+    }
+
+.product-bgs {
+    background: #53ac59;
+    border-left: 5px solid #038c0c;
+}
+
+    .product-bgs:hover {
+        background: #038c0c;
+    }
+
+.parties-bgs {
+    background: #f23e41;
+    border-left: 5px solid #a50204;
+}
+
+    .parties-bgs:hover {
+        background: #a50204;
+    }
+
+.order-bgs {
+    background: #17b1d4;
+    border-left: 5px solid #068492;
+}
+
+    .order-bgs:hover {
+        background: #068492;
+    }
+
+.collection-bgs {
+    background: #942aae;
+    border-left: 5px solid #73068e;
+}
+
+    .collection-bgs:hover {
+        background: #73068e;
+    }
+
+.expenses-bgs {
+    background: #555555;
+    border-left: 5px solid #2d2b2b;
+}
+
+    .expenses-bgs:hover {
+        background: #2d2b2b;
+    }
+
+.tasks-bgs {
+    background: #009688;
+    border-left: 5px solid #02635a;
+}
+
+    .tasks-bgs:hover {
+        background: #02635a;
+    }
+
+.announcements-bgs {
+    background: #db6741;
+    border-left: 5px solid #8e2604;
+}
+
+    .announcements-bgs:hover {
+        background: #8e2604;
+    }

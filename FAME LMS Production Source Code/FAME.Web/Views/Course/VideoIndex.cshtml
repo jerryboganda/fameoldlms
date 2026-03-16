@@ -1,0 +1,323 @@
+﻿@model First_Aid_Made_Easy.Models.VideoVM
+@using First_Aid_Made_Easy.BLL
+@{
+	Layout = "~/Views/Shared/_LayoutTeacher.cshtml";
+	var ContentType = Convert.ToInt32(Request.Params["ContentType"]);
+	var Type = ""; bool IsVideo = false, IsAudio = false, IsFile = false, IsTrial = false;
+	switch (ContentType)
+	{
+		case (int)First_Aid_Made_Easy.BLL.ContentType.Video:
+			Type = "Video"; IsVideo = true;
+			break;
+		case (int)First_Aid_Made_Easy.BLL.ContentType.Audio:
+			Type = "Audio"; IsAudio = true;
+			break;
+		case (int)First_Aid_Made_Easy.BLL.ContentType.File:
+			Type = "File"; IsFile = true;
+			break;
+		case (int)First_Aid_Made_Easy.BLL.ContentType.Trial:
+			Type = "Trial Video"; IsTrial = true;
+			break;
+	};
+	ViewBag.Title = Type + " Describe";
+}
+
+<div class="pt-32pt">
+	<div class="container-fluid page__container d-flex flex-column flex-md-row align-items-center text-center text-sm-left">
+		<div class="flex d-flex flex-column flex-sm-row align-items-center">
+			<div class="mb-24pt mb-sm-0 mr-sm-24pt">
+				<h2 class="mb-0">Describe @Type</h2>
+				<ol class="breadcrumb p-0 m-0">
+					<li class="breadcrumb-item"><a href="index.html">Home</a></li>
+					<li class="breadcrumb-item active">
+						Describe @Type
+					</li>
+				</ol>
+			</div>
+		</div>
+	</div>
+
+
+	<div class="page-section border-bottom-2">
+		<div class="container-fluid page__container">
+
+			<div class="row">
+				<div class="col-md-12">
+					@Html.ValidationSummary("", new { @class = "text-danger" })
+					<form action="/Course/VideoIndex" enctype="multipart/form-data" method="post">
+						@Html.HiddenFor(model => model.Course_Fid)
+						@Html.HiddenFor(model => model.Section_Fid)
+						@Html.HiddenFor(model => model.SectionSub_Fid)
+						<input type="hidden" id="Video_Id" name="Video_Id" value="@Model.Video_Id" />
+						<input type="hidden" id="Type" name="Type" value="@ContentType" />
+						<label class="form-label">@Type Title</label>
+						<div class="form-group mb-24pt">
+							@Html.TextBoxFor(model => model.Video_Name, new { @class = "form-control form-control-lg", @placeholder = "Name / Title", @required = "required" })
+							@Html.ValidationMessageFor(model => model.Video_Name, "", new { @class = "text-accent-red" })
+							<small class="form-text text-muted"></small>
+						</div>
+
+						<label class="form-label">@Type Description</label>
+						<div class="form-group mb-24pt">
+							@Html.TextBoxFor(model => model.Video_ShortDescription, new { @class = "form-control form-control-lg", @placeholder = "Short Description" })
+							@Html.ValidationMessageFor(model => model.Video_ShortDescription, "", new { @class = "text-accent-red" })
+							<small class="form-text text-muted">Paste Your @Type Url Here Without Iframe</small>
+						</div>
+
+						@if (!IsTrial)
+						{
+							<div class="row">
+								<div class="col-12 col-md-6 mb-3">
+									<label class="form-label">Difficulty Level</label>
+									@Html.DropDownListFor(model => model.Difficulty, new SelectList(First_Aid_Made_Easy.BLL.Common.Difficulty, "Value", "Text"), new { @class = "form-control select2", @required = "required", @data_toggle = "select" })
+									@Html.ValidationMessageFor(model => model.Difficulty, "", new { @class = "text-accent-red" })
+								</div>
+								<div class="col-12 col-md-6 mb-3">
+									<label class="form-label">@Type Tags</label>
+									@Html.TextBoxFor(model => model.Video_Tags, new { @class = "form-control form-control-lg", @placeholder = "Tags for Search" })
+									@Html.ValidationMessageFor(model => model.Video_Tags, "", new { @class = "text-accent-red" })
+									<small class="form-text text-muted"></small>
+								</div>
+							</div>
+						}
+						@if (IsFile)
+						{
+							<label class="form-label">File</label>
+							<div class="form-group mb-24pt">
+								@Html.TextBoxFor(model => model.File, new { @class = "form-control form-control-lg", @type = "file" })
+								@Html.ValidationMessageFor(model => model.File, "", new { @class = "text-accent-red" })
+							</div>
+							if (Model.Video_Id > 0)
+							{
+								<a class="btn btn-outline-primary" target="_blank" href="@Url.Content(Model.Video_Path)">Open File</a>
+							}
+						}
+						else
+						{
+							<label class="form-label">@Type Path</label>
+							<div class="form-group mb-24pt">
+								@Html.TextBoxFor(model => model.Video_Path, new { @class = "form-control form-control-lg", @placeholder = "Paste Here", @required = "required" })
+								@Html.ValidationMessageFor(model => model.Video_Path, "", new { @class = "text-accent-red" })
+								<small class="form-text text-muted">Paste Your @Type Url Here Without Iframe</small>
+							</div>
+							<label class="form-label">@Type Lenght</label>
+							<div class="form-group mb-24pt">
+								@Html.TextBoxFor(model => model.Video_Length, new { @class = "form-control form-control-lg", type = "datetime", @placeholder = "Length", @required = "required" })
+								@Html.ValidationMessageFor(model => model.Video_Length, "", new { @class = "text-accent-red" })
+								<small class="form-text text-muted">Give The Lenght OF @Type In Minutes</small>
+							</div>
+						}
+						<div class="card">
+							<div class="card-header text-center">
+								<a href="@Url.Action("VideoIndex","Course",new {id=0,SectionFid = Model.Section_Fid ,ContentType=ContentType })" class="btn btn-outline-accent-electric-violet"><i class="fa fa-recycle"></i>&nbsp; New</a>
+								@if (Model.Video_Id > 0)
+								{
+									<input type="submit" class="btn btn-outline-accent-red" value="Update" />
+									<a href="javascript:;" id="btnDelete" data-name="@Model.Video_Name" data-id="@Model.Video_Id" class="btn btn-outline-accent-red"><i class="fa fa-trash"></i>&nbsp;  Delete</a>
+								}
+								else
+								{
+									<input type="submit" class="btn btn-outline-success" value="Save" />
+								}
+								@if (IsTrial)
+								{<a href="/Tutorials/TrialList" class="btn btn-outline-accent-dodger-blue"><i class="fa fa-backward"></i>&nbsp;  Back To List</a> }
+								else
+								{ <a href="@Url.Action("CourseIndex","Course",new { id = Model.Course_Fid,sectionID=Model.Section_Fid })" class="btn btn-outline-accent-dodger-blue"><i class="fa fa-backward"></i>&nbsp;  Back To Course</a>}
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+			@if (IsVideo && Model.Video_Id > 0)
+			{
+				int Sr = 0;
+				<div class="row">
+					<div class="col-md-12">
+						<div class="page-separator">
+							<div class="page-separator__text">FAQs For Video</div>
+						</div>
+						@Html.Hidden("Question_Id")
+						<label class="form-label">Question</label>
+						<div class="form-group mb-24pt">
+							@Html.TextBox("Question", "", new { @class = "form-control form-control-lg", @placeholder = "Question", @required = "required" })
+							<div id="Questionval" class="divValidate"></div>
+						</div>
+
+						<div id="divAnswer">
+							<label class="form-label">Answer</label>
+							<div class="form-group mb-24pt">
+								@Html.TextArea("Answer", new { @class = "form-control form-control-lg", @placeholder = "Answer", @rows = 3 })
+								<div id="Answerval" class="divValidate"></div>
+							</div>
+						</div>
+
+						<button onclick="Save()" id="btnSave" class="btn btn-outline-success">Save</button>
+					</div>
+					<div class="col-md-12">
+						<table id="DTable" class="table  table-bordered">
+							<thead>
+								<tr style="background-color: #364e9c">
+									<th>Sr.</th>
+									<th>Question</th>
+									<th>Answer</th>
+									<th>Action</th>
+								</tr>
+							</thead>
+							<tbody>
+								@foreach (First_Aid_Made_Easy.DAL.sp_lstVideoFaqs_Result i in ViewBag.Faq)
+								{
+									Sr++;
+									<tr>
+										<td>@Sr</td>
+										<td><div class="limit-text mw-350px">@i.Question</div></td>
+										<td><div class="limit-text mw-450px">@i.Answer</div></td>
+										<td>
+											<a href="javascript:;" id="btnEdit" data-id="@i.Question_Id" class="text-warning"><i class="fa fa-edit Font20"></i></a>
+											<a href="javascript:;" id="btnRowDelete" data-name=" FAQ " data-url="/Questions/Delete/@i.Question_Id" class="text-danger"><i class="fa fa-trash Font20"></i></a>
+										</td>
+									</tr>
+								}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			}
+		</div>
+	</div>
+</div>
+@section scripts {
+	@Scripts.Render("~/bundles/jqueryval")
+
+	@if (TempData["Success"] != null)
+	{
+		<script>
+			toastr.success("Data Saved Successfully");
+		</script>
+	}
+	<script>
+    $(document).ready(function () {
+
+    })
+    $(document).on("click", "#btnDelete", function () {
+        var btn = $(this);
+        var id = btn.data("id");
+        var Name = btn.data("name");
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You Want To Delete the @Type '" + Name + "' ?",
+            icon: 'warning',
+            showCancelButton: false,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: "/Course/DeleteVideo/" + id,
+                    method: "GET",
+                    beforeSend: function () {
+                        swal.fire({
+                            html: '<h5>Deleting @Type...</h5>',
+                            showConfirmButton: false,
+                            onRender: function () {
+                                // there will only ever be one sweet alert open.
+                                $('.swal2-content').prepend(sweet_loader);
+                            }
+                        });
+                    },
+                    success: function (result) {
+                        if (result) {
+                            btn.hide();
+                            Swal.fire(
+                                'Delete!',
+                                'The @Type ' + Name +' Has Been Deleted.',
+                                'success'
+                            )
+                            window.location.href = "/Course/CourseIndex/@Model.Course_Fid";
+                        }
+                    }, error: function (err) {
+                        alert("Error" + err);
+                    }
+                })
+
+            }
+        })
+    })
+	</script>
+
+	<script>
+        function Save() {
+
+            var data = {
+                Question_Id: $("#Question_Id").val(),
+                Question: $("#Question").val(),
+                Answer: $("#Answer").val(),
+                VideoID: $("#Video_Id").val(),
+                Section_Fid: $("#Section_Fid").val() == 0 ? "" : $("#Section_Fid").val(),
+                Course_Fid: $("#Course_Fid").val() == 0 ? "" : $("#Course_Fid").val(),
+                Type: '@((int)QuestionType.FAQVideo)',
+            }
+
+            var result = ISPageValid(data);
+            if (result) {
+                $.ajax({
+                    url: '/Questions/Index',
+                    method: 'POST',
+                    data: JSON.stringify(data),
+                    dataType: 'Json',
+                    contentType: 'application/json',
+                    success: function (response) {
+                        if (response.Question_Id > 0) {
+                            $("#Question_Id").val(""), $("#Question").val(""), $("#Answer").val("");
+                            DataSaved();
+                            $("tbody").prepend(`
+                                    <tr>
+                                        <td>1</td>
+                                        <td><div class="limit-text mw-350px">${response.Question}</div></td>
+                                        <td><div class="limit-text mw-450px">${response.Answer}</div></td>
+                                        <td>
+                                            <a href="javascript:;" id="btnEdit" data-id="${response.Question_Id}" class="text-warning"><i class="fa fa-edit Font20"></i></a>
+                                            <a href="javascript:;" id="btnRowDelete" data-name=" FAQ " data-url="/Questions/Delete/${response.Question_Id}" class="text-danger"><i class="fa fa-trash Font20"></i></a>
+                                        </td>
+                                    </tr>`);
+                        }
+                    },
+                    error: function (err) {
+
+                    }
+                });
+            }
+        }
+
+
+        function ISPageValid(data) {
+            $(".divValidate").hide();
+            if (data.Question == "" || data.Answer == "") {
+                if (data.Question == "") $("#Questionval").show().text("Required");
+                if (data.Answer == "") $("#Answerval").show().text("Required");
+                return false
+            }
+            else
+                return true
+        }
+
+        $(document).on("click", "#btnEdit", function (){
+            var id = $(this).data("id");
+            var tr = $(this).closest("tr");
+            $("#Question_Id").val(id), $("#Question").val(tr.find("td:eq(1)").text()), $("#Answer").val(tr.find("td:eq(2)").text());
+            tr.remove();
+        })
+
+		$("#Video_Path").on("keyup", function () {
+			var text = $(this).val();
+			var regex = /src="([^"]+)"/;
+			var match = text.match(regex);
+			var url = match ? match[1] : null;
+			if (url) {
+				$(this).val(url.split('&')[0]);
+			}
+		})
+
+	</script>
+}
+

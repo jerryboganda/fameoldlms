@@ -1,0 +1,143 @@
+﻿@model First_Aid_Made_Easy.Models.SubscriptionsVM
+
+@{int Sr = 0; }
+
+<div class="container-fluid page__container page-section">
+    <div class="row mb-8pt">
+        @if (Model.PackList.Count > 0)
+        {
+            <div class="col-lg-12">
+                <div class="page-separator">
+                    <div class="page-separator__text">Package Enrollments</div>
+                </div>
+
+                <table id="DTable" class="table  table-bordered">
+                    <thead>
+                        <tr style="background-color: #364e9c">
+                            <th>Sr.</th>
+                            <th>Package Name</th>
+                            <th>Enroll. Date</th>
+                            <th>End Date</th>
+                            <th>Rem. Day</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var i in Model.PackList)
+                        {
+                            Sr++;
+                            <tr>
+                                <td>@Sr</td>
+                                <td>@i.CourseName</td>
+                                <td>@i.EnrollmentDate</td>
+                                <td>@i.ExpiryDate</td>
+                                <td>@i.RemainingDays</td>
+                                <td>@i.Status</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        @if (Model.CorList.Count > 0)
+        {
+            <div class="col-lg-12">
+                <div class="page-separator">
+                    <div class="page-separator__text">Course Enrollments</div>
+                </div>
+                <table id="DTable" class="table  table-bordered">
+                    <thead>
+                        <tr style="background-color: #364e9c">
+                            <th>Sr.</th>
+                            <th>Course Name</th>
+                            <th>Enroll. Date</th>
+                            <th>End Date</th>
+                            <th>Rem. Day</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{ Sr = 0; }
+                        @foreach (var i in Model.CorList)
+                        {
+                            Sr++;
+                            <tr>
+                                <td>@Sr</td>
+                                <td>@i.CourseName</td>
+                                <td>@i.EnrollmentDate</td>
+                                <td>@i.ExpiryDate</td>
+                                <td>@i.RemainingDays</td>
+                                <td>@i.Status</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        @if (Model.SecList.Count > 0)
+        {
+            <div class="col-lg-12">
+                <div class="page-separator">
+                    <div class="page-separator__text">Section Enrollments</div>
+                </div>
+                <table id="DTable" class="table  table-bordered">
+                    <thead>
+                        <tr style="background-color: #364e9c">
+                            <th>Sr.</th>
+                            <th>Course Name</th>
+                            <th>Enroll. Date</th>
+                            <th>End Date</th>
+                            <th>Rem. Day</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{ Sr = 0; }
+                        @foreach (var i in Model.SecList)
+                        {
+                            Sr++;
+                            <tr>
+                                <td>@Sr</td>
+                                <td>@i.SectionName</td>
+                                <td>@i.EnrollmentDate</td>
+                                <td>@i.ExpiryDate</td>
+                                <td>@i.RemainingDays</td>
+                                <td>@i.Status</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        @if (Model.InstList.Count > 0)
+        {
+            <div class="col-lg-12">
+                <div class="page-separator">
+                    <div class="page-separator__text">Installments</div>
+                </div>
+                <table id="DTable" class="table  table-bordered">
+                    <thead>
+                        <tr style="background-color: #364e9c">
+                            <th>Installment No</th>
+                            <th>Installment Date</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{ Sr = 0; }
+                        @foreach (var i in Model.InstList)
+                        {
+                            <tr>
+                                <td>@i.InstallmentNo</td>
+                                <td>@string.Format("{0:dd/MM/yyyy}", i.InstallmentDate)</td>
+                                <td>@string.Format("{0:n0}", i.InstallmentPrice)</td>
+                                <td>@(i.IsPaid == true? "Paid" : "Pending" )</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>

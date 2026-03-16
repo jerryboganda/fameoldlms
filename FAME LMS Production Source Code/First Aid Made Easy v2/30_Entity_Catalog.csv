@@ -1,0 +1,37 @@
+Entity,Module,Table Name,Primary Key,Key Fields,Relationships,Notes
+User,Identity,users,Id (Guid),Email; PasswordHash; FirstName; LastName; AvatarUrl; PhoneNumber; IsActive; EmailConfirmed; SecurityStamp; ConcurrencyStamp; CreatedAt; UpdatedAt,"Roles (M2M); Enrollments (1:M); Subscriptions (1:M); Payments (1:M); ExamAttempts (1:M); ReviewCards (1:M); Notifications (1:M); AuditLogs (1:M); ChatMessages (1:M); Certificates (1:M)",Central entity; ASP.NET Core Identity base
+Role,Identity,roles,Id (Guid),Name; NormalizedName; Description; IsSystem,"Users (M2M); Permissions (M2M)",8 system roles + custom
+Permission,Identity,permissions,Id (int),Name; Description; Category,"Roles (M2M)",40+ permissions across categories
+ExamTrack,Catalog,exam_tracks,Id (Guid),Name; Slug; Description; IconUrl; DisplayOrder; IsActive,"Courses (1:M)",13+ exam tracks (PLAB; USMLE; etc.)
+Course,Catalog,courses,Id (Guid),ExamTrackId; Title; Slug; Description; ThumbnailUrl; DurationHours; DifficultyLevel; Price; Currency; IsPublished; DisplayOrder; CreatedAt,"ExamTrack (M:1); Modules (1:M); Enrollments (1:M)",Core content container
+Module,Catalog,modules,Id (Guid),CourseId; Title; DisplayOrder; Description,"Course (M:1); Chapters (1:M)",Groups chapters within course
+Chapter,Catalog,chapters,Id (Guid),ModuleId; Title; ContentHtml; DisplayOrder; EstimatedMinutes; VideoId,"Module (M:1); ChapterProgress (1:M); Bookmarks (1:M)",Leaf content unit; optional video
+Lecture,Catalog,lectures,Id (Guid),ChapterId; Title; VideoUrl; VideoPlatform; DurationSeconds; DisplayOrder,"Chapter (M:1); VideoProgress (1:M)",Video content; YouTube MVP
+Package,Payment,packages,Id (Guid),Name; Slug; Description; PricePKR; PriceUSD; DurationDays; Features (JSONB); IsActive; DisplayOrder,"Subscriptions (1:M)",6 subscription packages
+Subscription,Payment,subscriptions,Id (Guid),UserId; PackageId; Status; StartsAt; ExpiresAt; GracePeriodEndsAt; CancelledAt; AutoRenew,"User (M:1); Package (M:1); Payments (1:M)",States: Active; Expired; Cancelled; GracePeriod; PendingPayment
+Payment,Payment,payments,Id (Guid),UserId; SubscriptionId; Gateway; GatewayTransactionId; Amount; Currency; Status; PaidAt; FailureReason; WebhookPayload (JSONB),"User (M:1); Subscription (M:1)",Gateways: JazzCash; Easypaisa; Stripe; Manual
+Coupon,Payment,coupons,Id (Guid),Code; Type; Value; MaxUses; CurrentUses; ExpiresAt; IsActive; MinPurchaseAmount; ApplicablePackageIds (JSONB),"Payments (1:M)",Types: Percentage; Fixed; FreeTrial
+Invoice,Payment,invoices,Id (Guid),PaymentId; UserId; InvoiceNumber; SubTotal; Discount; Tax; Total; IssuedAt; PdfUrl,"Payment (1:1); User (M:1)",Auto-generated on payment
+Enrollment,Enrollment,enrollments,Id (Guid),UserId; CourseId; SubscriptionId; EnrolledAt; CompletedAt; ProgressPercent; LastAccessedAt,"User (M:1); Course (M:1); Subscription (M:1); ChapterProgress (1:M)",Links user to course access
+ChapterProgress,Enrollment,chapter_progress,Id (Guid),EnrollmentId; ChapterId; IsCompleted; CompletedAt; TimeSpentSeconds,"Enrollment (M:1); Chapter (M:1)",Tracks per-chapter completion
+VideoProgress,Enrollment,video_progress,Id (Guid),EnrollmentId; LectureId; WatchedSeconds; TotalSeconds; IsCompleted; LastPosition,"Enrollment (M:1); Lecture (M:1)",Resume playback support
+Bookmark,Enrollment,bookmarks,Id (Guid),UserId; ChapterId; CreatedAt; Note,"User (M:1); Chapter (M:1)",Optional note on bookmark
+Question,Assessment,questions,Id (Guid),ExamTrackId; ChapterId; QuestionText; Explanation; DifficultyLevel; IsActive; Tags (JSONB); CreatedAt,"ExamTrack (M:1); Chapter (M:1 optional); Options (1:M); ExamQuestions (1:M)",20000+ MCQs
+Option,Assessment,options,Id (Guid),QuestionId; OptionText; IsCorrect; DisplayOrder,"Question (M:1)",4 options per question typically
+Exam,Assessment,exams,Id (Guid),ExamTrackId; Title; Description; TimeLimitMinutes; QuestionCount; PassPercentage; IsPublished; ShuffleQuestions,"ExamTrack (M:1); ExamQuestions (1:M); ExamAttempts (1:M)",Exam definition with rules
+ExamQuestion,Assessment,exam_questions,Id (Guid),ExamId; QuestionId; DisplayOrder,"Exam (M:1); Question (M:1)",Junction table for exam composition
+ExamAttempt,Assessment,exam_attempts,Id (Guid),UserId; ExamId; StartedAt; SubmittedAt; Score; TotalQuestions; CorrectAnswers; TimeTakenSeconds; Status,"User (M:1); Exam (M:1); AttemptAnswers (1:M)",States: InProgress; Submitted; TimedOut; Abandoned
+AttemptAnswer,Assessment,attempt_answers,Id (Guid),ExamAttemptId; QuestionId; SelectedOptionId; IsCorrect; TimeTakenSeconds,"ExamAttempt (M:1); Question (M:1); Option (M:1)",Per-question answer record
+ReviewCard,Assessment,review_cards,Id (Guid),UserId; QuestionId; EaseFactor; Interval; Repetitions; NextReviewAt; LastReviewedAt,"User (M:1); Question (M:1)",SM-2 spaced repetition data
+Notification,Communication,notifications,Id (Guid),UserId; Title; Body; Category; Priority; IsRead; ReadAt; ActionUrl; CreatedAt,"User (M:1)",Categories: System; Payment; Academic; Social
+NotificationPreference,Communication,notification_preferences,Id (Guid),UserId; Category; EmailEnabled; PushEnabled; InAppEnabled,"User (M:1)",Per-category toggle
+Announcement,Communication,announcements,Id (Guid),Title; Body; Type; TargetAudience (JSONB); PublishedAt; ExpiresAt; CreatedByUserId,"User (M:1 CreatedBy)",Types: Banner; Modal; Inline; Email
+ChatRoom,Communication,chat_rooms,Id (Guid),Name; Type; CreatedAt,"ChatParticipants (1:M); ChatMessages (1:M)",Types: DirectMessage; Support; Group
+ChatMessage,Communication,chat_messages,Id (Guid),ChatRoomId; SenderUserId; Content; SentAt; EditedAt; IsDeleted,"ChatRoom (M:1); User (M:1)",Soft delete support
+Certificate,Certificate,certificates,Id (Guid),UserId; TemplateId; CourseId; ExamAttemptId; CertificateNumber; IssuedAt; PdfUrl; VerificationCode,"User (M:1); CertificateTemplate (M:1); Course (M:1 optional); ExamAttempt (M:1 optional)",Unique verification code
+CertificateTemplate,Certificate,certificate_templates,Id (Guid),Name; HtmlTemplate; IsActive; CreatedAt,"Certificates (1:M)",QuestPDF template definitions
+Ambassador,Ambassador,ambassadors,Id (Guid),UserId; ReferralCode; CommissionRate; Status; TotalEarnings; TotalReferrals; ApprovedAt,"User (1:1); Referrals (1:M); Payouts (1:M)",States: Pending; Active; Suspended
+Referral,Ambassador,referrals,Id (Guid),AmbassadorId; ReferredUserId; PaymentId; Commission; Status; CreatedAt,"Ambassador (M:1); User (M:1); Payment (M:1)",States: Pending; Confirmed; Paid
+Payout,Ambassador,payouts,Id (Guid),AmbassadorId; Amount; Method; Status; RequestedAt; ProcessedAt; TransactionRef,"Ambassador (M:1)",States: Requested; Processing; Completed; Failed
+AuditLog,Admin,audit_logs,Id (long),UserId; EntityType; EntityId; Action; OldValues (JSONB); NewValues (JSONB); IpAddress; UserAgent; Timestamp,"User (M:1)",EF Core interceptor auto-populates
+FileAsset,Content,file_assets,Id (Guid),FileName; ContentType; SizeBytes; StoragePath; BucketName; UploadedByUserId; CreatedAt,"User (M:1)",S3-compatible object storage reference

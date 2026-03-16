@@ -1,0 +1,203 @@
+﻿@model List<First_Aid_Made_Easy.Models.sp_ListEnrollments_Result>
+@{
+    ViewBag.Title = "Subscription Report";
+    Layout = "~/Views/Shared/_LayoutTeacher.cshtml";
+
+    <!-- Select2 -->
+    <link type="text/css" href="~/Content/assets/css/select2.css" rel="stylesheet">
+    <link type="text/css" href="~/Content/assets/vendor/select2/select2.min.css" rel="stylesheet">
+
+    <!-- DateRangePicker -->
+    <link type="text/css" href="~/Content/assets/vendor/daterangepicker.css" rel="stylesheet">
+}
+
+<div class="pt-32pt">
+    <div class="page__container d-flex flex-column flex-md-row align-items-center text-center text-sm-left">
+        <div class="flex d-flex flex-column flex-sm-row align-items-center">
+            <div class="mb-24pt mb-sm-0 mr-sm-24pt">
+                <h2 class="mb-0">Subscription Report</h2>
+                <ol class="breadcrumb p-0 m-0">
+                    <li class="breadcrumb-item"><a href="/Teacher/Index">Home</a></li>
+                    <li class="breadcrumb-item active">
+                        Subscription Report
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </div>
+    <div class="page-section border-bottom-2">
+        <div style="margin: 0; max-width: 100%" class="container-fluid page__container">
+            <div class="row">
+    
+                <div class="col-md-12 mb-10" style="margin-bottom:20px">
+                    <div class="text-muted">
+                        <strong>About this Report:</strong><br />
+                        The <b>Subscription Report</b> allows you to view, filter, and export student enrollment data. Use the filters below to narrow results by date range, subscription status, method, student, course, package, manager, city, or institute.<br />
+                        <ul style="margin-bottom:0">
+                            <li><b>Date Range</b>: Select a start and end date to view enrollments within a specific period.</li>
+                            <li><b>Subscription Status</b>: Filter by active or expired subscriptions.</li>
+                            <li><b>Method</b>: Choose how the enrollment was added (Manual, Request, or All).</li>
+                            <li><b>Report Type</b>: Select <b>Detail</b> for full records or <b>Summary</b> for grouped totals.</li>
+                            <li><b>Student, Course, Package, Approved By, City, Institute</b>: Further refine your search by these fields.</li>
+                        </ul>
+                        <b>Actions:</b> After setting your filters, click <b>Preview Report</b> to view results on screen, or use <b>Export To PDF</b> or <b>Export To Excel</b> to download the report.
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="page-separator">
+                        <div class="page-separator__text">Search Filters</div>
+                    </div>
+                    <div style="margin:20px">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label>Date Range</label>
+                                <input id="dateRange" type="text" class="form-control" data-daterangepicker-locale-format="DD/MM/YYYY" placeholder="Select A Date Range" data-toggle="daterangepicker" data-daterangepicker-ranges="true" data-daterangepicker-drops="down">
+                            </div>
+                            <div class="col-md-3">
+                                <label>Subscription Status</label>
+                                <select id="IsExpire" class="form-control select2" data_toggle="select">
+                                    <option selected value="">All</option>
+                                    <option value="false">Active</option>
+                                    <option value="true">Expired</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label>Method</label>
+                                <select id="AddedBy" class="form-control select2" data_toggle="select">
+                                    <option value="All" selected>All</option>
+                                    <option value="Manual">Manual</option>
+                                    <option value="Request">Request</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label>Report Type</label><br />
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="ReportType" id="radioDetail" value="Detail" checked>
+                                    <label class="form-check-label" for="radioDetail">Detail</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="ReportType" id="radioSummary" value="Summary">
+                                    <label class="form-check-label" for="radioSummary">Summary</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label>Student</label>
+                                @Html.DropDownList("StudentID", new SelectList(ViewBag.Students, "Value", "Text"), "All Students", new { @class = "form-control select2", @data_toggle = "select" })
+                            </div>
+                            <div class="col-md-4">
+                                <label>Course</label>
+                                @Html.DropDownList("CourseID", new SelectList(ViewBag.Courses, "Value", "Text"), "All Courses", new { @class = "form-control  select2", @data_toggle = "select" })
+                            </div>
+                            <div class="col-md-4">
+                                <label>Package</label>
+                                @Html.DropDownList("PackageID", new SelectList(ViewBag.Packages, "Value", "Text"), "All Packages", new { @class = "form-control  select2", @data_toggle = "select" })
+                            </div>
+                            <div class="col-md-4">
+                                <label>Approved By</label>
+                                @Html.DropDownList("ApprovedBy", new SelectList(ViewBag.Teachers, "ID", "Name"), "All Managers", new { @class = "form-control  select2", @data_toggle = "select" })
+                            </div>
+                            <div class="col-md-4">
+                                <label>City</label>
+                                @Html.TextBox("City", "", new { @class = "form-control" })
+                            </div>
+                            <div class="col-md-4">
+                                <label>Institute</label>
+                                @Html.TextBox("Institute", "", new { @class = "form-control" })
+                            </div>
+
+                            <div style="margin-top:25px" class="text-right col-md-12">
+                                <button id="btnShow" class="btn btn-outline-primary" onclick="ShowReport(false)">Preview Report</button>
+                                <button id="btnShow" class="btn btn-outline-primary" onclick="ShowReport(true)">Export To PDF</button>
+                                <button id="btnShow" class="btn btn-outline-primary" onclick="ShowReport(false , true)">Export To Excel</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="table-responsive" style="margin-top:20px" id="divReport">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section scripts {
+    <!-- Select2 -->
+    <script src="~/Content/assets/vendor/select2/select2.min.js"></script>
+    <script src="~/Content/assets/js/select2.js"></script>
+    <!-- DateRangePicker -->
+    <script src="~/Content/assets/vendor/moment.min.js"></script>
+    <script src="~/Content/assets/vendor/daterangepicker.js"></script>
+    <script src="~/Content/assets/js/daterangepicker.js"></script>
+    @Scripts.Render("~/Scripts/List")
+
+    @if (TempData["Success"] != null)
+    {
+        <script>
+            toastr.success("Data Saved Successfully");
+        </script>
+    }
+
+    <script>
+        $(document).ready(function () {
+            $("#DTable").DataTable({ "lengthMenu": [[-1, 25, 50, 100], ["All", 25, 50, 100]] });
+            // Initialize select2 for all selects
+            $(".select2").select2({ width: 'resolve' });
+        })
+
+        function ShowReport(IsPDF, IsExcel) {
+            var range = $("#dateRange").val() || "";
+            var [DateFrom = "", DateTo = ""] = range.split(" to ");
+            // Helper to get comma-separated string from multiselect
+            function getMultiVal(id, ifNull) {
+                var v = $(id).val();
+                return Array.isArray(v) ? v.join(",") : (v || ifNull);
+            }
+            var reportType = $("input[name='ReportType']:checked").val();
+            var params = {
+                DateFrom,
+                DateTo,
+                Sid: getMultiVal("#StudentID", ""),
+                CourseID: getMultiVal("#CourseID", 0),
+                PackageID: getMultiVal("#PackageID", 0),
+                IsExpire: $("#IsExpire").val() || "",
+                Institute: $("#Institute").val() || "",
+                City: $("#City").val() || "",
+                AddedBy: $("#AddedBy").val() || "",
+                IsSummary: reportType === "Summary",
+                IsPDF: IsPDF || false,
+                IsExcel: IsExcel || false,
+
+                ApprovedBy: getMultiVal("#ApprovedBy", ""),
+                ApprovedByName: $("#ApprovedBy option:selected").text(),
+                StudentName: $("#StudentID option:selected").text(),
+                CourseName: $("#CourseID option:selected").text(),
+                PackageName: $("#PackageID option:selected").text()
+            };
+            // Build query string
+            let url = "/Admin/FilterEnrollmentList?" + $.param(params);
+            if (params.IsPDF || params.IsExcel) {
+                window.open(url, "_blank");
+            } else {
+                $(".divLoader").show();
+                $.ajax({
+                    url: url,
+                    success: function (html) {
+                        $("#DTable").DataTable().destroy();
+                        $("#divReport").html(html);
+                        $("#DTable").DataTable();
+                        $(".divLoader").hide();
+                    },
+                    error: function () {
+                        $(".divLoader").hide();
+                    }
+                });
+            }
+        }
+    </script>
+
+}
+

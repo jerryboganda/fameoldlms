@@ -1,0 +1,52 @@
+﻿@using First_Aid_Made_Easy.DAL
+@model List<sp_lstEnrollStatus_Result>
+
+@{
+    int Sr = 0;
+    var list = Model.OrderByDescending(x => x.Enrollment_Date).ToList();
+    var sList = new List<SelectListItem>() {
+        new SelectListItem() { Text="Pending" , Value = "Pending" },
+        new SelectListItem() { Text="Approved" , Value = "Approved" },
+        new SelectListItem() { Text="Paid" , Value = "Paid" },
+        new SelectListItem() { Text="Rejected" , Value = "Rejected" },
+    };
+}
+<table id="DTable" class="table  table-bordered">
+    <thead>
+        <tr style="background-color: #364e9c">
+            <th>Date</th>
+            <th>Name</th>
+            <th>Email/Ph. No.</th>
+            <th style="min-width:150px">Package</th>
+            <th title="Duration">Dur</th>
+            <th>Price</th>
+            <th>Status</th>
+            <th>Save / Send</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var i in list)
+        {
+            Sr++;
+            <tr>
+                <td>@string.Format("{0:dd/MM/yyy}", i.Enrollment_Date)</td>
+                <td><a href="/Admin/StudentDetail/@i.User_Id">@(i.StudentName)</a></td>
+                <td>@i.Email<br />@i.MobileNo</td>
+                <td>@i.PackageName</td>
+                <td>@(new First_Aid_Made_Easy.BLL.PackageRepository().getText(i.Duration).Replace("--- Rs.", ""))</td>
+                <td style="min-width:90px"><input id="Price" class="form-control" value="@i.Enrollment_Price" /></td>
+                <td style="min-width:90px">@Html.DropDownList("Status", new SelectList(sList, "Value", "Text",i.Enrollment_Status), new { @class = "form-control" })</td>
+                <td>
+                    @if (i.IsEmailSent)
+                    {
+                        <a href="#" data-id="@i.Enrollment_Id" id="btnAccept" vlaue="" class="text-warning"><i class="fa fa-check-circle Font20"></i></a>
+                    }
+                    else
+                    {
+                        <a href="#" data-id="@i.Enrollment_Id" id="btnAccept" vlaue="" class="text-warning"><i class="fa fa-check-circle Font20"></i></a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

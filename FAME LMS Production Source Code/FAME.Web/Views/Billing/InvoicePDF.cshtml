@@ -1,0 +1,114 @@
+﻿@model  First_Aid_Made_Easy.Models.SubscriptionsVM
+
+@using Microsoft.AspNet.Identity;
+@using First_Aid_Made_Easy.BLL;
+@{
+	ViewBag.Title = "Invoice Print";
+	Layout = "~/Views/Shared/_LayoutReport.cshtml";
+}
+@section styles{
+	<style>
+		.fw-bold{
+			font-weight:600 !important;
+		}
+		.table > thead > tr > th {
+			border-bottom: 1px solid #e7ecf1;
+		}
+		.table > thead > tr {
+			border: 0px solid #e7ecf1;
+		}
+
+	</style>
+}
+
+
+<div class="card">
+	<!--begin::Body-->
+	<div class="card-body p-lg-20">
+		<!--begin::Layout-->
+		<div class="row">
+			<!--begin::Content-->
+			<div style="" class="col-xs-7">
+				<!--begin::Invoice 2 content-->
+				<div class="mt-n1">
+					<div class="m-0">
+						<div class="fw-bold fs-3 text-gray-800 mb-8">Invoice #@Model.EnrollmentID</div>
+						<div class="row g-5 mb-11">
+							<div class="col-xs-6">
+								<div class="fw-semibold fs-7 text-gray-600 mb-1">Issue Date:</div>
+								<div class="fw-bold fs-6 text-gray-800">@string.Format("{0:dd MMM yyyy}", Model.DEnrollmentDate)</div>
+							</div>
+							<div class="col-xs-6">
+								<div class="fw-semibold fs-7 text-gray-600 mb-1">Due Date:</div>
+								<div class="fw-bold fs-6 text-gray-800">@string.Format("{0:dd MMM yyyy}", Model.DExpiryDate) </div>
+							</div>
+						</div>
+						<div class="row g-5 mb-12">
+							<div class="col-xs-6">
+								<div class="fw-semibold fs-7 text-gray-600 mb-1">Package Name:</div>
+								<div class="fw-bold fs-6 text-gray-800">@Model.CourseName</div>
+							</div>
+							<div class="col-xs-6">
+								<div class="fw-semibold fs-7 text-gray-600 mb-1">Total Amount:</div>
+								<div class="fw-bold fs-6 text-gray-800">Rs. @Model.Amount</div>
+							</div>
+						</div>
+						<div class="flex-grow-1">
+							<!--begin::Table-->
+							<div class="table-responsive mb-9">
+								<table class="table mb-3">
+									<thead>
+										<tr class="fs-6 fw-bold text-muted" style="border-bottom:0px">
+											<th class="min-w-175px pb-2"> &nbsp; Course</th>
+											<th class="text-end min-w-70px pb-2">Videos</th>
+											<th class="text-end min-w-100px pb-2">Amount &nbsp;</th>
+										</tr>
+									</thead>
+									<tbody>
+										@foreach (var a in Model.CorList)
+										{
+											<tr class="fw-bold text-gray-700 fs-6 text-end">
+												<td class="pt-6 text-start">&nbsp; @a.CourseName</td>
+												<td class="pt-6">@a.ID</td>
+												<td class="pt-6 text-dark fw-bolder">Rs. @a.Amount &nbsp;</td>
+											</tr>
+										}
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-xs-5">
+				<div style="border: 1px dashed #808080" class="border border-gray-300 card-rounded h-lg-100 min-w-md-350px p-9 bg-lighten">
+					<h6 class="mb-8 fw-bolder text-gray-600 text-hover-primary">1-Bank Details</h6>
+					<div class="mb-6">
+						<div class="fw-semibold text-gray-600 fs-7">Account Title:</div>
+						<div class="fw-bold text-gray-800 fs-6">ATIF HUSSAIN SARWAR</div>
+					</div>
+					<div class="mb-6">
+						<div class="fw-semibold text-gray-600 fs-7">Account:</div>
+						<div class="fw-bold text-gray-800 fs-6">
+							24787000100903
+							<br />Habib Bank Limited (HBL)
+						</div>
+					</div>
+					<div class="mb-6">
+						<div class="fw-semibold text-gray-600 fs-7">IBAN:</div>
+						<div class="fw-bold text-gray-800 fs-6">Pk69HABB0024787000100903</div>
+					</div>
+					<h6 class="mb-8 fw-bolder text-gray-600 text-hover-primary">2-Jazzcash</h6>
+					<div class="mb-6">
+						<div class="fw-semibold text-gray-600 fs-7">Account Title:</div>
+						<div class="fw-bold text-gray-800 fs-6">
+							ATIF HUSSAIN SARWAR <br />
+							+923007131730
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!--end::Invoice 2 main-->

@@ -1,0 +1,116 @@
+﻿@model First_Aid_Made_Easy.Models.QuestionSystemVM
+@using First_Aid_Made_Easy.BLL
+@{
+    Layout = "~/Views/Shared/_LayoutTeacher.cshtml";
+    ViewBag.Title = " Question System";
+}
+
+<div class="pt-32pt">
+    <div class="container-fluid page__container d-flex flex-column flex-md-row align-items-center text-center text-sm-left">
+        <div class="flex d-flex flex-column flex-sm-row align-items-center">
+            <div class="mb-24pt mb-sm-0 mr-sm-24pt">
+				<h2 class="mb-0">Question System</h2>
+                <ol class="breadcrumb p-0 m-0">
+                    <li class="breadcrumb-item"><a href="/Admin/Index">Home</a></li>
+					<li class="breadcrumb-item active">
+						Question System
+					</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="page-section border-bottom-2">
+        <div class="container-fluid page__container">
+
+            <div class="row">
+				<div class="col-md-12">
+
+					<div class="page-separator">
+						<div class="page-separator__text">Basic information</div>
+					</div>
+					@Html.ValidationSummary("", new { @class = "text-danger" })
+					@Html.HiddenFor(model => model.ID)
+
+					<div id="divTitle">
+						<label class="form-label">Title</label>
+						<div class="form-group mb-24pt">
+							@Html.TextBoxFor(model => model.Name, new { @class = "form-control form-control-lg", @placeholder = "Title" })
+							@Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-accent-red" })
+						</div>
+					</div>
+					<div id="divTitle">
+						<label class="form-label">Section</label>
+						<div class="form-group mb-24pt">
+							@Html.TextBoxFor(model => model.Section, new { @class = "form-control form-control-lg", @placeholder = "Title" })
+							@Html.ValidationMessageFor(model => model.Section, "", new { @class = "text-accent-red" })
+						</div>
+					</div>
+					<div class="col-12 col-md-4 mb-3">
+						<label class="form-label">
+							@Html.CheckBoxFor(x => x.IsActive, new { @class = "", @required = true }) IsActive
+						</label>
+					</div>
+
+					<div class="card">
+						<div class="card-header text-center">
+							<a href="@Url.Action("Index","QuestionSystems")" class="btn btn-outline-accent-electric-violet"><i class="fa fa-recycle"></i>&nbsp; New</a>
+							@if (Model.ID > 0)
+							{
+								<button onclick="Save()" id="btnSave" class="btn btn-outline-accent-red">Update</button>
+							}
+							else
+							{
+								<button onclick="Save()" id="btnSave" class="btn btn-outline-success">Save</button>
+							}
+							<a href="@Url.Action("List","QuestionSystems")" class="btn btn-outline-accent-dodger-blue"><i class="fa fa-backward"></i>&nbsp;  Back To List</a>
+						</div>
+					</div>
+				</div>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+
+    <script>
+        $(document).ready(function () {
+        })
+
+        function Save() {
+
+            var data = {
+                ID: $("#ID").val(),
+                Name: $("#Name").val(),
+                Section: $("#Section").val(),
+				IsActive: $("#IsActive").is(":checked"),
+            }
+
+            $("#btnSave").hide();
+            $.ajax({
+                url: '/QuestionSystems/Index',
+                method: 'POST',
+                data: JSON.stringify(data),
+                dataType: 'Json',
+                contentType: 'application/json',
+                success: function (response) {
+                    if (response.ID > 0) {
+                        DataSaved();
+                        $("#btnSave").attr("disabled", true);
+                    }
+                },
+                error: function (err) {
+
+                }
+
+            });
+        }
+
+
+    </script>
+
+}
+

@@ -1,0 +1,247 @@
+@using First_Aid_Made_Easy.BLL
+@using Microsoft.AspNet.Identity
+@{
+    var userId = User.Identity.GetUserId();
+    // Activity data loaded via AJAX
+}
+
+<div class="fame-widget-card">
+    <div class="fame-widget-header">
+        <div class="fame-widget-title">
+            <i data-feather="activity" class="fame-widget-icon"></i>
+            <span>Recent Activity</span>
+        </div>
+    </div>
+    
+    <div class="fame-widget-body" style="padding: 0; max-height: 400px; overflow-y: auto;">
+        <div class="fame-activity-timeline" id="activityTimeline">
+            <!-- Loading skeleton -->
+            <div class="fame-activity-loading">
+                @for (int i = 0; i < 4; i++)
+                {
+                    <div class="fame-activity-skeleton">
+                        <div class="fame-skeleton" style="width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;"></div>
+                        <div style="flex: 1;">
+                            <div class="fame-skeleton" style="width: 70%; height: 14px; margin-bottom: 6px;"></div>
+                            <div class="fame-skeleton" style="width: 40%; height: 12px;"></div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    loadRecentActivity();
+});
+
+function loadRecentActivity() {
+    var $container = $('#activityTimeline');
+    
+    $.get('/StudentData/GetRecentActivity?count=10', function(data) {
+        if (data && data.length > 0) {
+            var html = '';
+            
+            data.forEach(function(item, index) {
+                var icon = getActivityIcon(item.Type);
+                var iconClass = getActivityClass(item.Type);
+                var timeAgo = formatTimeAgo(item.Timestamp);
+                
+                html += `
+                    <div class="fame-activity-item ${index === 0 ? 'latest' : ''}">
+                        <div class="fame-activity-icon ${iconClass}">
+                            <i data-feather="${icon}" style="width: 16px; height: 16px;"></i>
+                        </div>
+                        <div class="fame-activity-content">
+                            <div class="fame-activity-text">${item.Title}</div>
+                            <div class="fame-activity-meta">
+                                ${item.Description ? `<span>${item.Description}</span>` : ''}
+                                <span class="fame-activity-time">${timeAgo}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            $container.html(html);
+            feather.replace();
+        } else {
+            showEmptyState($container);
+        }
+    }).fail(function() {
+        showEmptyState($container);
+    });
+}
+
+function showEmptyState($container) {
+    $container.html(`
+        <div class="fame-widget-empty" style="padding: 32px;">
+            <i data-feather="clock" style="width: 40px; height: 40px; margin-bottom: 12px; opacity: 0.5;"></i>
+            <p style="margin: 0; color: var(--fame-text-tertiary);">No recent activity</p>
+        </div>
+    `);
+    feather.replace();
+}
+
+function getActivityIcon(type) {
+    var icons = {
+        'video_watch': 'play-circle',
+        'test_complete': 'check-circle',
+        'test_start': 'edit-3',
+        'course_enroll': 'book-open',
+        'live_join': 'video',
+        'login': 'log-in',
+        'profile_update': 'user',
+        'ticket_create': 'message-circle'
+    };
+    return icons[type] || 'activity';
+}
+
+function getActivityClass(type) {
+    var classes = {
+        'video_watch': 'primary',
+        'test_complete': 'success',
+        'test_start': 'warning',
+        'course_enroll': 'info',
+        'live_join': 'danger',
+        'login': 'secondary',
+        'profile_update': 'secondary',
+        'ticket_create': 'warning'
+    };
+    return classes[type] || 'secondary';
+}
+
+function formatTimeAgo(timestamp) {
+    var now = new Date();
+    var then = new Date(timestamp);
+    var diff = Math.floor((now - then) / 1000);
+    
+    if (diff < 60) return 'Just now';
+    if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
+    if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
+    if (diff < 604800) return Math.floor(diff / 86400) + 'd ago';
+    
+    return then.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+</script>
+
+<style>
+.fame-activity-loading {
+    padding: 16px 20px;
+}
+
+.fame-activity-skeleton {
+    display: flex;
+    gap: 12px;
+    padding: 12px 0;
+}
+
+.fame-activity-timeline {
+    padding: 8px 0;
+}
+
+.fame-activity-item {
+    display: flex;
+    gap: 14px;
+    padding: 14px 20px;
+    position: relative;
+    transition: background 200ms;
+}
+
+.fame-activity-item:hover {
+    background: var(--fame-bg-tertiary);
+}
+
+.fame-activity-item.latest .fame-activity-icon::after {
+    content: '';
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    width: 8px;
+    height: 8px;
+    background: #10B981;
+    border-radius: 50%;
+    border: 2px solid var(--fame-bg-secondary);
+}
+
+.fame-activity-item::before {
+    content: '';
+    position: absolute;
+    left: 37px;
+    top: 50px;
+    bottom: -14px;
+    width: 2px;
+    background: var(--fame-border);
+}
+
+.fame-activity-item:last-child::before {
+    display: none;
+}
+
+.fame-activity-icon {
+    position: relative;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    z-index: 1;
+}
+
+.fame-activity-icon.primary {
+    background: rgba(99, 102, 241, 0.15);
+    color: #6366F1;
+}
+
+.fame-activity-icon.success {
+    background: rgba(16, 185, 129, 0.15);
+    color: #10B981;
+}
+
+.fame-activity-icon.warning {
+    background: rgba(245, 158, 11, 0.15);
+    color: #F59E0B;
+}
+
+.fame-activity-icon.danger {
+    background: rgba(239, 68, 68, 0.15);
+    color: #EF4444;
+}
+
+.fame-activity-icon.info {
+    background: rgba(59, 130, 246, 0.15);
+    color: #3B82F6;
+}
+
+.fame-activity-icon.secondary {
+    background: var(--fame-bg-tertiary);
+    color: var(--fame-text-tertiary);
+}
+
+.fame-activity-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.fame-activity-text {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--fame-text-primary);
+    margin-bottom: 4px;
+}
+
+.fame-activity-meta {
+    display: flex;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--fame-text-tertiary);
+}
+
+.fame-activity-time {
+    color: var(--fame-text-tertiary);
+}
+</style>

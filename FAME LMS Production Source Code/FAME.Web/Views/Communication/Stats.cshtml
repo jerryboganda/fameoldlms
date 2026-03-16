@@ -1,0 +1,254 @@
+@model First_Aid_Made_Easy.Models.CampaignStatsVM
+@{
+    ViewBag.Title = "Campaign Stats - " + Model.Campaign.CampaignName;
+    Layout = "~/Views/Shared/_LayoutTeacher.cshtml";
+}
+
+<div class="pt-32pt">
+    <div class="container-fluid page__container">
+        <div class="d-flex align-items-center mb-24pt">
+            <div class="flex">
+                <h2 class="mb-0">@Model.Campaign.CampaignName</h2>
+                <ol class="breadcrumb p-0 m-0">
+                    <li class="breadcrumb-item"><a href="/Communication/Index">Email Marketing</a></li>
+                    <li class="breadcrumb-item active">Campaign Stats</li>
+                </ol>
+            </div>
+            <div>
+                @if (Model.Campaign.Status == "Sent")
+                {
+                    <button class="btn btn-outline-primary mr-2" id="btnResend" data-id="@Model.Campaign.Id">
+                        <i class="material-icons mr-1" style="vertical-align:middle;font-size:18px;">replay</i> Resend to Non-Openers
+                    </button>
+                }
+                <a href="/Communication/Duplicate?id=@Model.Campaign.Id" class="btn btn-outline-secondary">
+                    <i class="material-icons mr-1" style="vertical-align:middle;font-size:18px;">content_copy</i> Duplicate
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="page-section">
+    <div class="container-fluid page__container">
+        <!-- Hero Stats -->
+        <div class="row mb-4">
+            <div class="col-md-2">
+                <div class="card text-center">
+                    <div class="card-body py-3">
+                        <h3 class="mb-0 text-primary">@Model.Campaign.TotalSent.ToString("N0")</h3>
+                        <small class="text-muted">Delivered</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="card text-center">
+                    <div class="card-body py-3">
+                        <h3 class="mb-0 text-success">@Model.Campaign.UniqueOpens.ToString("N0")</h3>
+                        <small class="text-muted">Unique Opens</small>
+                        <div class="text-success"><strong>@Model.Campaign.OpenRate%</strong></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="card text-center">
+                    <div class="card-body py-3">
+                        <h3 class="mb-0 text-info">@Model.Campaign.TotalOpens.ToString("N0")</h3>
+                        <small class="text-muted">Total Opens</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="card text-center">
+                    <div class="card-body py-3">
+                        <h3 class="mb-0 text-warning">@Model.Campaign.UniqueClicks.ToString("N0")</h3>
+                        <small class="text-muted">Unique Clicks</small>
+                        <div class="text-warning"><strong>@Model.Campaign.ClickRate%</strong></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="card text-center">
+                    <div class="card-body py-3">
+                        <h3 class="mb-0 text-danger">@Model.Campaign.TotalBounces.ToString("N0")</h3>
+                        <small class="text-muted">Bounces</small>
+                        <div class="text-danger"><strong>@Model.Campaign.BounceRate%</strong></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="card text-center">
+                    <div class="card-body py-3">
+                        <h3 class="mb-0 text-muted">@Model.Campaign.TotalUnsubscribes.ToString("N0")</h3>
+                        <small class="text-muted">Unsubscribes</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Opens/Clicks Timeline -->
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header"><h4 class="card-title mb-0">Opens & Clicks Over Time</h4></div>
+                    <div class="card-body">
+                        <canvas id="timelineChart" height="250"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top Links -->
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header"><h4 class="card-title mb-0">Top Clicked Links</h4></div>
+                    <div class="card-body p-0">
+                        @if (Model.TopLinks.Any())
+                        {
+                            <div class="list-group list-group-flush">
+                                @foreach (var link in Model.TopLinks.Take(10))
+                                {
+                                    <div class="list-group-item">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+                                                <small><a href="@link.Url" target="_blank" title="@link.Url">@link.Url</a></small>
+                                            </div>
+                                            <span class="badge badge-primary">@link.TotalClicks clicks</span>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="text-center py-4 text-muted">No clicks recorded yet</div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Campaign Info -->
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header"><h4 class="card-title mb-0">Campaign Details</h4></div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3"><strong>Subject:</strong> @Model.Campaign.Subject</div>
+                            <div class="col-md-3"><strong>From:</strong> @Model.Campaign.SenderName (@Model.Campaign.SenderEmail)</div>
+                            <div class="col-md-3"><strong>Status:</strong> <span class="badge badge-success">@Model.Campaign.Status</span></div>
+                            <div class="col-md-3"><strong>Completed:</strong> @(Model.Campaign.CompletedAt.HasValue ? Model.Campaign.CompletedAt.Value.ToString("MMM dd, yyyy HH:mm") : "-")</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recipients Table -->
+        <div class="card">
+            <div class="card-header d-flex align-items-center">
+                <h4 class="card-title flex mb-0">Recipients</h4>
+                <select id="recipientFilter" class="form-control form-control-sm" style="width:auto;">
+                    <option value="">All</option>
+                    <option value="Sent">Sent</option>
+                    <option value="Opened">Opened</option>
+                    <option value="Clicked">Clicked</option>
+                    <option value="Bounced">Bounced</option>
+                    <option value="Failed">Failed</option>
+                </select>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Email</th>
+                            <th>Name</th>
+                            <th>Status</th>
+                            <th>Sent At</th>
+                            <th>Opened</th>
+                            <th>Clicked</th>
+                            <th>Opens</th>
+                            <th>Clicks</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var r in Model.Recipients)
+                        {
+                            var sClass = r.Status == "Clicked" ? "success" : r.Status == "Opened" ? "info" : r.Status == "Sent" ? "primary" : r.Status == "Failed" ? "danger" : "secondary";
+                            <tr>
+                                <td>@r.Email</td>
+                                <td>@r.Name</td>
+                                <td><span class="badge badge-@sClass">@r.Status</span></td>
+                                <td>@(r.SentAt.HasValue ? r.SentAt.Value.ToString("MMM dd HH:mm") : "-")</td>
+                                <td>@(r.FirstOpenedAt.HasValue ? r.FirstOpenedAt.Value.ToString("MMM dd HH:mm") : "-")</td>
+                                <td>@(r.FirstClickedAt.HasValue ? r.FirstClickedAt.Value.ToString("MMM dd HH:mm") : "-")</td>
+                                <td>@r.OpenCount</td>
+                                <td>@r.ClickCount</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            @if (Model.TotalRecipientPages > 1)
+            {
+                <div class="card-footer text-center">
+                    @for (int p = 1; p <= Math.Min(Model.TotalRecipientPages, 10); p++)
+                    {
+                        <a href="/Communication/Stats/@Model.Campaign.Id?page=@p" class="btn btn-sm @(p == Model.CurrentPage ? "btn-primary" : "btn-outline-primary") mr-1">@p</a>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <script>
+        var openData = @Html.Raw(Model.OpenTimelineJson ?? "[]");
+        var clickData = @Html.Raw(Model.ClickTimelineJson ?? "[]");
+
+        if (openData.length > 0 || clickData.length > 0) {
+            var allDates = [];
+            openData.forEach(function (d) { if (allDates.indexOf(d.Date) === -1) allDates.push(d.Date); });
+            clickData.forEach(function (d) { if (allDates.indexOf(d.Date) === -1) allDates.push(d.Date); });
+            allDates.sort();
+
+            var labels = allDates.map(function (d) { return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }); });
+            var opens = allDates.map(function (d) { var item = openData.find(function (x) { return x.Date === d; }); return item ? item.Count : 0; });
+            var clicks = allDates.map(function (d) { var item = clickData.find(function (x) { return x.Date === d; }); return item ? item.Count : 0; });
+
+            new Chart(document.getElementById('timelineChart'), {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        { label: 'Opens', data: opens, borderColor: '#1a73e8', backgroundColor: 'rgba(26,115,232,0.1)', fill: true, tension: 0.3 },
+                        { label: 'Clicks', data: clicks, borderColor: '#ff9800', backgroundColor: 'rgba(255,152,0,0.1)', fill: true, tension: 0.3 }
+                    ]
+                },
+                options: { responsive: true, plugins: { legend: { position: 'top' } }, scales: { y: { beginAtZero: true } } }
+            });
+        }
+
+        // Resend to non-openers
+        $("#btnResend").on("click", function () {
+            var id = $(this).data("id");
+            Swal.fire({
+                title: 'Resend to Non-Openers?',
+                input: 'text',
+                inputLabel: 'New subject line (optional)',
+                inputPlaceholder: 'Leave blank to use same subject',
+                showCancelButton: true,
+                confirmButtonText: 'Resend'
+            }).then(function (result) {
+                if (result.isConfirmed) {
+                    $.post('/Communication/ResendNonOpeners', { id: id, newSubject: result.value || '' }, function (res) {
+                        if (res.success) Swal.fire('Sent!', 'Resend campaign created.', 'success').then(function () { location.reload(); });
+                        else Swal.fire('Error', 'No non-openers found or failed.', 'warning');
+                    });
+                }
+            });
+        });
+    </script>
+}

@@ -1,0 +1,292 @@
+﻿@model First_Aid_Made_Easy.Models.CampaignDashboardVM
+@{
+    ViewBag.Title = "Email Marketing";
+    Layout = "~/Views/Shared/_LayoutTeacher.cshtml";
+}
+
+<div class="pt-32pt">
+    <div class="container-fluid page__container d-flex flex-column flex-md-row align-items-center text-center text-sm-left">
+        <div class="flex d-flex flex-column flex-sm-row align-items-center">
+            <div class="mb-24pt mb-sm-0 mr-sm-24pt">
+                <h2 class="mb-0">Email Marketing</h2>
+                <ol class="breadcrumb p-0 m-0">
+                    <li class="breadcrumb-item"><a href="/Admin">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Email Marketing</li>
+                </ol>
+            </div>
+        </div>
+        <div class="ml-auto">
+            <a href="/Communication/Create" class="btn btn-success"><i class="material-icons mr-1">add</i> New Campaign</a>
+        </div>
+    </div>
+</div>
+
+<!-- Stats Cards -->
+<div class="page-section">
+    <div class="container-fluid page__container">
+        <div class="row mb-lg-12pt">
+            <div class="col-lg-3 col-md-6">
+                <div class="card border-left-3 border-left-primary">
+                    <div class="card-body d-flex align-items-center">
+                        <div class="flex">
+                            <strong class="text-muted d-block">Total Campaigns</strong>
+                            <h4 class="mb-0">@Model.TotalCampaigns</h4>
+                        </div>
+                        <i class="material-icons text-primary" style="font-size:36px;">campaign</i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="card border-left-3 border-left-success">
+                    <div class="card-body d-flex align-items-center">
+                        <div class="flex">
+                            <strong class="text-muted d-block">Sent This Month</strong>
+                            <h4 class="mb-0">@Model.TotalEmailsSentThisMonth.ToString("N0")</h4>
+                        </div>
+                        <i class="material-icons text-success" style="font-size:36px;">send</i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="card border-left-3 border-left-info">
+                    <div class="card-body d-flex align-items-center">
+                        <div class="flex">
+                            <strong class="text-muted d-block">Avg. Open Rate</strong>
+                            <h4 class="mb-0">@Model.AverageOpenRate%</h4>
+                        </div>
+                        <i class="material-icons text-info" style="font-size:36px;">visibility</i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="card border-left-3 border-left-warning">
+                    <div class="card-body d-flex align-items-center">
+                        <div class="flex">
+                            <strong class="text-muted d-block">Avg. Click Rate</strong>
+                            <h4 class="mb-0">@Model.AverageClickRate%</h4>
+                        </div>
+                        <i class="material-icons text-warning" style="font-size:36px;">touch_app</i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Campaigns Table -->
+        <div class="card">
+            <div class="card-header d-flex align-items-center">
+                <h4 class="card-title flex mb-0">Campaigns</h4>
+                <div>
+                    <select id="statusFilter" class="form-control form-control-sm" style="width:auto;display:inline-block;">
+                        <option value="">All Status</option>
+                        <option value="Draft">Draft</option>
+                        <option value="Scheduled">Scheduled</option>
+                        <option value="Sending">Sending</option>
+                        <option value="Sent">Sent</option>
+                        <option value="Paused">Paused</option>
+                        <option value="Failed">Failed</option>
+                    </select>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover mb-0" id="campaignTable">
+                    <thead>
+                        <tr>
+                            <th>Campaign</th>
+                            <th>Status</th>
+                            <th>Sent</th>
+                            <th>Opens</th>
+                            <th>Clicks</th>
+                            <th>Open Rate</th>
+                            <th>Click Rate</th>
+                            <th>Date</th>
+                            <th style="width:150px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Campaigns != null)
+                        {
+                            foreach (var c in Model.Campaigns)
+                            {
+                                var statusClass = c.Status == "Sent" ? "success" :
+                                                  c.Status == "Sending" ? "info" :
+                                                  c.Status == "Scheduled" ? "primary" :
+                                                  c.Status == "Draft" ? "secondary" :
+                                                  c.Status == "Paused" ? "warning" :
+                                                  c.Status == "Failed" ? "danger" : "dark";
+                                <tr data-status="@c.Status">
+                                    <td>
+                                        <strong>@c.CampaignName</strong>
+                                        <br /><small class="text-muted">@c.Subject</small>
+                                        <br /><small class="text-muted">From: @c.SenderEmail</small>
+                                    </td>
+                                    <td><span class="badge badge-@statusClass">@c.Status</span></td>
+                                    <td>@c.TotalSent.ToString("N0")</td>
+                                    <td>@c.UniqueOpens.ToString("N0")</td>
+                                    <td>@c.UniqueClicks.ToString("N0")</td>
+                                    <td><strong>@c.OpenRate%</strong></td>
+                                    <td><strong>@c.ClickRate%</strong></td>
+                                    <td>
+                                        @if (c.CompletedAt.HasValue)
+                                        {
+                                            @c.CompletedAt.Value.ToString("MMM dd, yyyy")
+                                        }
+                                        else if (c.ScheduledAt.HasValue)
+                                        {
+                                            <span class="text-primary">@c.ScheduledAt.Value.ToString("MMM dd, yyyy HH:mm")</span>
+                                        }
+                                        else
+                                        {
+                                            @c.CreatedAt.ToString("MMM dd, yyyy")
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            @if (c.Status == "Sent" || c.Status == "Sending")
+                                            {
+                                                <a href="/Communication/Stats/@c.Id" class="btn btn-outline-info" title="Stats"><i class="material-icons" style="font-size:16px;">bar_chart</i></a>
+                                            }
+                                            @if (c.Status == "Draft")
+                                            {
+                                                <a href="/Communication/Edit/@c.Id" class="btn btn-outline-primary" title="Edit"><i class="material-icons" style="font-size:16px;">edit</i></a>
+                                                <button class="btn btn-outline-success btn-send" data-id="@c.Id" title="Send Now"><i class="material-icons" style="font-size:16px;">send</i></button>
+                                            }
+                                            @if (c.Status == "Failed" || c.Status == "Sending")
+                                            {
+                                                <button class="btn btn-outline-warning btn-reset" data-id="@c.Id" title="Reset to Draft"><i class="material-icons" style="font-size:16px;">refresh</i></button>
+                                            }
+                                            <button class="btn btn-outline-secondary btn-duplicate" data-id="@c.Id" title="Duplicate"><i class="material-icons" style="font-size:16px;">content_copy</i></button>
+                                            @if (c.Status == "Draft" || c.Status == "Cancelled" || c.Status == "Failed")
+                                            {
+                                                <button class="btn btn-outline-danger btn-delete" data-id="@c.Id" title="Delete"><i class="material-icons" style="font-size:16px;">delete</i></button>
+                                            }
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+            @if (Model.Campaigns == null || !Model.Campaigns.Any())
+            {
+                <div class="card-body text-center py-5">
+                    <i class="material-icons text-muted" style="font-size:64px;">mail_outline</i>
+                    <h4 class="text-muted mt-3">No campaigns yet</h4>
+                    <p class="text-muted">Create your first email campaign to start engaging with your students.</p>
+                    <a href="/Communication/Create" class="btn btn-success mt-2"><i class="material-icons mr-1">add</i> Create Campaign</a>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        // Status filter
+        $("#statusFilter").on("change", function () {
+            var status = $(this).val();
+            $("#campaignTable tbody tr").each(function () {
+                if (!status || $(this).data("status") === status) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }
+            });
+        });
+
+        // Send Now
+        $(document).on("click", ".btn-send", function () {
+            var id = $(this).data("id");
+            var btn = $(this);
+            Swal.fire({
+                title: 'Send Campaign?',
+                text: 'This will send the campaign to all recipients immediately.',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Send Now',
+                confirmButtonColor: '#28a745'
+            }).then(function (result) {
+                if (result.isConfirmed) {
+                    btn.prop("disabled", true).html('<i class="material-icons spin" style="font-size:16px;">sync</i>');
+                    Swal.fire({ title: 'Sending...', text: 'Campaign is being queued for delivery. This may take a moment.', allowOutsideClick: false, didOpen: function () { Swal.showLoading(); } });
+                    $.post('/Communication/SendNow', { id: id })
+                        .done(function (res) {
+                            if (res.success) {
+                                Swal.fire('Sending!', 'Campaign is being sent to all recipients in the background.', 'success').then(function () { location.reload(); });
+                            } else {
+                                Swal.fire('Error', 'Failed to send campaign. It may not be in Draft status.', 'error');
+                                btn.prop("disabled", false).html('<i class="material-icons" style="font-size:16px;">send</i>');
+                            }
+                        })
+                        .fail(function (xhr) {
+                            Swal.fire('Error', 'Server error while sending campaign. Please try again.', 'error');
+                            btn.prop("disabled", false).html('<i class="material-icons" style="font-size:16px;">send</i>');
+                        });
+                }
+            });
+        });
+
+        // Reset stuck campaign back to Draft
+        $(document).on("click", ".btn-reset", function () {
+            var id = $(this).data("id");
+            Swal.fire({
+                title: 'Reset Campaign?',
+                text: 'This will reset the campaign to Draft status. Previously sent emails will not be affected.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Reset to Draft',
+                confirmButtonColor: '#ffc107'
+            }).then(function (result) {
+                if (result.isConfirmed) {
+                    $.post('/Communication/ResetToDraft', { id: id })
+                        .done(function (res) {
+                            if (res.success) {
+                                Swal.fire('Reset!', 'Campaign has been reset to Draft. You can edit and resend it.', 'success').then(function () { location.reload(); });
+                            } else {
+                                Swal.fire('Error', res.message || 'Failed to reset campaign.', 'error');
+                            }
+                        })
+                        .fail(function () {
+                            Swal.fire('Error', 'Server error. Please try again.', 'error');
+                        });
+                }
+            });
+        });
+
+        // Duplicate
+        $(document).on("click", ".btn-duplicate", function () {
+            var id = $(this).data("id");
+            $.post('/Communication/Duplicate', { id: id })
+                .done(function (res) {
+                    if (res.success) {
+                        Swal.fire('Duplicated!', 'Campaign duplicated as draft.', 'success').then(function () { location.reload(); });
+                    } else {
+                        Swal.fire('Error', 'Failed to duplicate campaign.', 'error');
+                    }
+                })
+                .fail(function () { Swal.fire('Error', 'Server error. Please try again.', 'error'); });
+        });
+
+        // Delete
+        $(document).on("click", ".btn-delete", function () {
+            var id = $(this).data("id");
+            Swal.fire({
+                title: 'Delete Campaign?',
+                text: 'This action cannot be undone.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                confirmButtonText: 'Delete'
+            }).then(function (result) {
+                if (result.isConfirmed) {
+                    $.post('/Communication/Delete', { id: id })
+                        .done(function (res) {
+                            if (res.success) { location.reload(); }
+                            else { Swal.fire('Error', 'Failed to delete campaign.', 'error'); }
+                        })
+                        .fail(function () { Swal.fire('Error', 'Server error. Please try again.', 'error'); });
+                }
+            });
+        });
+    </script>
+}

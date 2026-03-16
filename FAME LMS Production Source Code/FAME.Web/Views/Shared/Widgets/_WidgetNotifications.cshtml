@@ -1,0 +1,235 @@
+@using First_Aid_Made_Easy.BLL
+@using Microsoft.AspNet.Identity
+@{
+    var userId = User.Identity.GetUserId();
+}
+
+<div class="fame-widget-card">
+    <div class="fame-widget-header">
+        <div class="fame-widget-title">
+            <i data-feather="bell" class="fame-widget-icon"></i>
+            <span>Notifications</span>
+            <span class="fame-notif-badge" id="widgetNotifBadge" style="display: none;">0</span>
+        </div>
+        <a href="@Url.Action("Notifications", "Student")" class="fame-widget-link">
+            View All
+            <i data-feather="arrow-right" style="width: 16px; height: 16px;"></i>
+        </a>
+    </div>
+    
+    <div class="fame-widget-body" style="padding: 0; max-height: 350px; overflow-y: auto;">
+        <div class="fame-notif-widget-list" id="widgetNotifications">
+            <!-- Loading skeleton -->
+            <div class="fame-notif-loading">
+                @for (int i = 0; i < 3; i++)
+                {
+                    <div class="fame-notif-skeleton">
+                        <div class="fame-skeleton" style="width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;"></div>
+                        <div style="flex: 1;">
+                            <div class="fame-skeleton" style="width: 80%; height: 14px; margin-bottom: 8px;"></div>
+                            <div class="fame-skeleton" style="width: 50%; height: 12px;"></div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    
+    <div class="fame-widget-footer">
+        <a href="@Url.Action("Ticket", "Student")" class="fame-notif-action-btn">
+            <i data-feather="message-circle" style="width: 16px; height: 16px;"></i>
+            Create Support Ticket
+        </a>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    loadWidgetNotifications();
+});
+
+function loadWidgetNotifications() {
+    var $container = $('#widgetNotifications');
+    
+    $.get('/Student/Notifications?side=widget', function(html) {
+        if (html && html.trim()) {
+            // Parse count if available
+            var match = html.match(/data-count="(\d+)"/);
+            if (match) {
+                var count = parseInt(match[1]);
+                if (count > 0) {
+                    $('#widgetNotifBadge').text(count > 99 ? '99+' : count).show();
+                }
+            }
+            
+            $container.html(html);
+        } else {
+            $container.html(`
+                <div class="fame-notif-empty">
+                    <div class="fame-notif-empty-icon">
+                        <i data-feather="bell-off" style="width: 32px; height: 32px;"></i>
+                    </div>
+                    <p>You're all caught up!</p>
+                    <span>No new notifications</span>
+                </div>
+            `);
+        }
+        feather.replace();
+    }).fail(function() {
+        $container.html(`
+            <div class="fame-notif-empty">
+                <p>Unable to load notifications</p>
+            </div>
+        `);
+    });
+}
+</script>
+
+<style>
+.fame-notif-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    background: linear-gradient(135deg, #EF4444, #DC2626);
+    color: white;
+    font-size: 11px;
+    font-weight: 600;
+    border-radius: 10px;
+    margin-left: 8px;
+}
+
+.fame-notif-loading,
+.fame-notif-skeleton {
+    padding: 16px 20px;
+}
+
+.fame-notif-skeleton {
+    display: flex;
+    gap: 12px;
+}
+
+.fame-notif-widget-list {
+    min-height: 100px;
+}
+
+/* Notification item styles - for content loaded via AJAX */
+.fame-notif-item {
+    display: flex;
+    gap: 14px;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--fame-border);
+    transition: background 200ms;
+    cursor: pointer;
+}
+
+.fame-notif-item:last-child {
+    border-bottom: none;
+}
+
+.fame-notif-item:hover {
+    background: var(--fame-bg-tertiary);
+}
+
+.fame-notif-item.unread {
+    background: rgba(99, 102, 241, 0.05);
+}
+
+.fame-notif-item.unread::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: var(--fame-primary);
+}
+
+.fame-notif-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.fame-notif-icon.info { background: rgba(59, 130, 246, 0.15); color: #3B82F6; }
+.fame-notif-icon.success { background: rgba(16, 185, 129, 0.15); color: #10B981; }
+.fame-notif-icon.warning { background: rgba(245, 158, 11, 0.15); color: #F59E0B; }
+.fame-notif-icon.danger { background: rgba(239, 68, 68, 0.15); color: #EF4444; }
+
+.fame-notif-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.fame-notif-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--fame-text-primary);
+    margin-bottom: 4px;
+    line-height: 1.4;
+}
+
+.fame-notif-time {
+    font-size: 12px;
+    color: var(--fame-text-tertiary);
+}
+
+.fame-notif-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 24px;
+    text-align: center;
+}
+
+.fame-notif-empty-icon {
+    width: 64px;
+    height: 64px;
+    background: var(--fame-bg-tertiary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+    color: var(--fame-text-tertiary);
+}
+
+.fame-notif-empty p {
+    margin: 0;
+    font-weight: 500;
+    color: var(--fame-text-primary);
+}
+
+.fame-notif-empty span {
+    font-size: 13px;
+    color: var(--fame-text-tertiary);
+    margin-top: 4px;
+}
+
+.fame-notif-action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 14px;
+    background: var(--fame-bg-tertiary);
+    color: var(--fame-text-secondary);
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 200ms;
+}
+
+.fame-notif-action-btn:hover {
+    background: var(--fame-bg-hover);
+    color: var(--fame-text-primary);
+}
+</style>

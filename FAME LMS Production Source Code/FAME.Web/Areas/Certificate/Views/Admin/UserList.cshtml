@@ -1,0 +1,361 @@
+@model First_Aid_Made_Easy.Models.Certificate.ManualCertificateUserListVM
+@{
+    ViewBag.Title = "Upload Certificates";
+    Layout = "~/Views/Shared/_LayoutTeacher.cshtml";
+}
+
+@section styles {
+<style>
+    .ul-page { max-width: 1200px; margin: 0 auto; padding: 20px 16px; }
+
+    /* Filter card */
+    .filter-card {
+        background: #fff;
+        border: 1px solid #E2E8F0;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+
+    /* Stats header */
+    .stats-bar {
+        background: linear-gradient(135deg, #0F766E 0%, #14B8A6 100%);
+        color: #fff;
+        border-radius: 10px;
+        padding: 14px 20px;
+        margin-bottom: 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .stats-bar h5 { margin: 0; font-size: 14px; font-weight: 600; }
+    .stats-badge { background: rgba(255,255,255,0.2); padding: 3px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; }
+
+    /* Table */
+    .user-table-wrap {
+        background: #fff;
+        border: 1px solid #E2E8F0;
+        border-top: none;
+        border-radius: 0 0 10px 10px;
+        overflow: hidden;
+    }
+    .user-table { width: 100%; border-collapse: collapse; }
+    .user-table thead th {
+        background: #F8FAFC;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #64748B;
+        padding: 10px 14px;
+        border-bottom: 1px solid #E2E8F0;
+        white-space: nowrap;
+    }
+    .user-table tbody td {
+        padding: 10px 14px;
+        font-size: 13px;
+        color: #334155;
+        border-bottom: 1px solid #F1F5F9;
+        vertical-align: middle;
+    }
+    .user-table tbody tr:hover { background: #F8FAFC; }
+    .user-table tbody tr:last-child td { border-bottom: none; }
+
+    .td-name { font-weight: 600; color: #1E293B; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .td-email { color: #64748B; font-size: 12px; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .td-date { white-space: nowrap; font-size: 12px; color: #64748B; }
+    .td-num { text-align: center; width: 40px; color: #94A3B8; font-size: 12px; }
+    .td-certs { text-align: center; width: 60px; }
+    .td-action { text-align: right; width: 160px; white-space: nowrap; }
+
+    .cert-count { display: inline-block; min-width: 22px; padding: 2px 6px; border-radius: 10px; font-size: 11px; font-weight: 700; text-align: center; }
+    .cert-count.has { background: #DCFCE7; color: #16A34A; }
+    .cert-count.none { background: #F1F5F9; color: #94A3B8; }
+
+    .btn-upload {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        background: #0F766E;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        padding: 6px 14px;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.15s;
+    }
+    .btn-upload:hover { background: #0D6E67; }
+    .btn-upload .material-icons { font-size: 16px; }
+
+    /* Empty state */
+    .empty-state { text-align: center; padding: 60px 20px; }
+    .empty-state .material-icons { font-size: 56px; color: #CBD5E1; }
+    .empty-state h5 { color: #64748B; margin-top: 12px; font-size: 16px; }
+    .empty-state p { color: #94A3B8; font-size: 13px; }
+
+    /* Modal */
+    .modal-header-cert { background: #0F766E; color: #fff; border-radius: 8px 8px 0 0; }
+    .modal-header-cert .btn-close { filter: brightness(0) invert(1); }
+
+    /* Fix for sticky action column */
+    @@media (max-width: 992px) {
+        .user-table-wrap { overflow-x: auto; }
+    }
+</style>
+}
+
+<div class="ul-page">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h4 class="fw-bold mb-1" style="color:#1E293B;">
+                <span class="material-icons" style="font-size:24px; vertical-align:middle; color:#0F766E; margin-right:6px;">upload_file</span>
+                Manual Certificate Upload
+            </h4>
+            <p style="color:#94A3B8; font-size:13px; margin:0;">Select a course or package, then upload PDF certificates for enrolled students</p>
+        </div>
+        <a href="@Url.Action("Index", "Admin", new { area = "Certificate" })" class="btn btn-outline-secondary btn-sm" style="font-size:12px;">
+            <span class="material-icons" style="font-size:14px; vertical-align:middle;">arrow_back</span> Dashboard
+        </a>
+    </div>
+
+    <!-- Filter Card -->
+    <div class="filter-card">
+        <form method="get" action="@Url.Action("UserList", "Admin", new { area = "Certificate" })" id="filterForm">
+            <div class="row g-3 align-items-end">
+                <div class="col-md-2 col-sm-4">
+                    <label style="font-size:11px; font-weight:700; color:#64748B; text-transform:uppercase; letter-spacing:0.5px;">Filter By</label>
+                    <select name="filterType" id="filterType" class="form-select form-select-sm mt-1">
+                        <option value="">-- Select --</option>
+                        <option value="course" @(Model.FilterType == "course" ? "selected" : "")>Course</option>
+                        <option value="package" @(Model.FilterType == "package" ? "selected" : "")>Package</option>
+                    </select>
+                </div>
+                <div class="col-md-6 col-sm-5" id="courseFilterCol" style="display:@(Model.FilterType == "course" ? "block" : "none")">
+                    <label style="font-size:11px; font-weight:700; color:#64748B; text-transform:uppercase; letter-spacing:0.5px;">Select Course</label>
+                    <select name="courseId" id="courseSelect" class="form-select form-select-sm mt-1">
+                        <option value="">-- Select Course --</option>
+                        @foreach (var c in Model.Courses)
+                        {
+                            <option value="@c.Id" @(Model.SelectedCourseId == c.Id ? "selected" : "")>@c.Name</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-6 col-sm-5" id="packageFilterCol" style="display:@(Model.FilterType == "package" ? "block" : "none")">
+                    <label style="font-size:11px; font-weight:700; color:#64748B; text-transform:uppercase; letter-spacing:0.5px;">Select Package</label>
+                    <select name="packageId" id="packageSelect" class="form-select form-select-sm mt-1">
+                        <option value="">-- Select Package --</option>
+                        @foreach (var p in Model.Packages)
+                        {
+                            <option value="@p.Id" @(Model.SelectedPackageId == p.Id ? "selected" : "")>@p.Name</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2 col-sm-3">
+                    <button type="submit" class="btn-upload w-100" style="padding:7px 14px;">
+                        <span class="material-icons">search</span> Load Users
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Results Section -->
+    @if (Model.Users != null && Model.Users.Any())
+    {
+        var contextLabel = Model.FilterType == "course"
+            ? Model.Users.First().CourseName
+            : Model.Users.First().PackageName;
+
+        <!-- Stats Header -->
+        <div class="stats-bar">
+            <h5>
+                <span class="material-icons" style="font-size:16px; vertical-align:middle; margin-right:4px;">school</span>
+                Students enrolled in: @contextLabel
+            </h5>
+            <span class="stats-badge">@Model.Users.Count students</span>
+        </div>
+
+        <!-- Table -->
+        <div class="user-table-wrap">
+            <table class="user-table">
+                <thead>
+                    <tr>
+                        <th class="td-num">#</th>
+                        <th>Name</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Enrolled</th>
+                        <th style="text-align:center;">Certs</th>
+                        <th style="text-align:right; padding-right:20px;">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{ int idx = 0; }
+                    @foreach (var user in Model.Users)
+                    {
+                        idx++;
+                        <tr>
+                            <td class="td-num">@idx</td>
+                            <td class="td-name" title="@(user.FullName ?? "")">@(string.IsNullOrEmpty(user.FullName) ? "—" : user.FullName)</td>
+                            <td class="td-email" title="@user.UserName">@user.UserName</td>
+                            <td class="td-email" title="@user.Email">@user.Email</td>
+                            <td class="td-date">
+                                @if (user.EnrollmentDate.HasValue)
+                                {
+                                    @user.EnrollmentDate.Value.ToString("MMM dd, yyyy")
+                                }
+                            </td>
+                            <td class="td-certs">
+                                <span class="cert-count @(user.ManualCertCount > 0 ? "has" : "none")">@user.ManualCertCount</span>
+                            </td>
+                            <td class="td-action">
+                                <button type="button" class="btn-upload btn-upload-cert"
+                                        data-userid="@user.UserId"
+                                        data-username="@user.UserName"
+                                        data-fullname="@(user.FullName ?? user.UserName)"
+                                        data-email="@user.Email"
+                                        data-courseid="@user.CourseId"
+                                        data-packageid="@user.PackageId"
+                                        data-coursename="@user.CourseName"
+                                        data-packagename="@user.PackageName">
+                                    <span class="material-icons">upload_file</span> Upload
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else if (!string.IsNullOrEmpty(Model.FilterType))
+    {
+        <div class="empty-state">
+            <span class="material-icons">group_off</span>
+            <h5>No enrolled students found</h5>
+            <p>Try selecting a different course or package.</p>
+        </div>
+    }
+    else
+    {
+        <div class="empty-state">
+            <span class="material-icons">filter_list</span>
+            <h5>Select a course or package above to view enrolled students</h5>
+            <p>Then you can upload PDF certificates for each student.</p>
+        </div>
+    }
+</div>
+
+@section modals {
+<!-- Upload Certificate Modal (rendered outside drawer layout) -->
+<div class="modal fade" id="uploadCertModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content" style="border:none; box-shadow:0 10px 40px rgba(0,0,0,0.2); border-radius:10px;">
+            <div class="modal-header" style="background:#0F766E; color:#fff; border-radius:10px 10px 0 0;">
+                <h5 class="modal-title" style="font-weight:700; font-size:16px;">
+                    <span class="material-icons" style="font-size:20px; vertical-align:middle; margin-right:6px;">upload_file</span>
+                    Upload Certificate
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color:#fff; opacity:0.8; text-shadow:none;">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="uploadCertForm" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+                <div class="modal-body" style="padding:24px;">
+                    <div class="form-group">
+                        <label style="font-size:11px; font-weight:700; color:#64748B; text-transform:uppercase; letter-spacing:0.5px;">Student</label>
+                        <input type="text" id="modalStudentName" class="form-control form-control-sm" readonly style="background:#F8FAFC;" />
+                    </div>
+                    <div class="form-group">
+                        <label style="font-size:11px; font-weight:700; color:#64748B; text-transform:uppercase; letter-spacing:0.5px;">Context</label>
+                        <input type="text" id="modalContext" class="form-control form-control-sm" readonly style="background:#F8FAFC;" />
+                    </div>
+                    <div class="form-group">
+                        <label style="font-size:11px; font-weight:700; color:#64748B; text-transform:uppercase; letter-spacing:0.5px;">Certificate Title <small style="text-transform:none; color:#94A3B8;">(optional)</small></label>
+                        <input type="text" name="title" id="modalTitle" class="form-control form-control-sm" placeholder="e.g. First Aid Level 2 Completion" />
+                    </div>
+                    <div class="form-group">
+                        <label style="font-size:11px; font-weight:700; color:#64748B; text-transform:uppercase; letter-spacing:0.5px;">Certificate PDF <span style="color:#DC2626;">*</span></label>
+                        <input type="file" name="certificateFile" id="modalFile" class="form-control-file" accept=".pdf" required />
+                        <small style="font-size:11px; color:#94A3B8;">Only PDF files up to 10 MB</small>
+                    </div>
+                    <input type="hidden" name="userId" id="modalUserId" />
+                    <input type="hidden" name="courseId" id="modalCourseId" />
+                    <input type="hidden" name="packageId" id="modalPackageId" />
+                    <input type="hidden" name="learnerName" id="modalLearnerName" />
+                </div>
+                <div class="modal-footer" style="border-top:none; padding-top:0;">
+                    <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-sm" id="btnUpload" style="background:#0F766E; color:#fff; font-weight:600;">
+                        <span class="material-icons" style="font-size:16px; vertical-align:middle;">cloud_upload</span> Upload
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+}
+
+@section scripts {
+<script>
+    $(function () {
+        // Toggle filter dropdowns
+        $('#filterType').on('change', function () {
+            var val = $(this).val();
+            $('#courseFilterCol').toggle(val === 'course');
+            $('#packageFilterCol').toggle(val === 'package');
+            if (val !== 'course') $('#courseSelect').val('');
+            if (val !== 'package') $('#packageSelect').val('');
+        });
+
+        // Open upload modal (Bootstrap 4)
+        $(document).on('click', '.btn-upload-cert', function () {
+            var btn = $(this);
+            var fullName = btn.data('fullname') || btn.data('username');
+            $('#modalUserId').val(btn.data('userid'));
+            $('#modalLearnerName').val(fullName);
+            $('#modalStudentName').val(fullName + ' (' + btn.data('email') + ')');
+            $('#modalCourseId').val(btn.data('courseid') || '');
+            $('#modalPackageId').val(btn.data('packageid') || '');
+            var context = btn.data('coursename') ? 'Course: ' + btn.data('coursename') : 'Package: ' + btn.data('packagename');
+            $('#modalContext').val(context);
+            $('#modalTitle').val('');
+            $('#modalFile').val('');
+            $('#uploadCertModal').modal('show');
+        });
+
+        // Submit upload
+        $('#uploadCertForm').on('submit', function (e) {
+            e.preventDefault();
+            var formData = new FormData(this);
+            var btn = $('#btnUpload');
+            btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span>Uploading...');
+
+            $.ajax({
+                url: '@Url.Action("UploadManualCertificate", "Admin", new { area = "Certificate" })',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (res) {
+                    btn.prop('disabled', false).html('<span class="material-icons">cloud_upload</span> Upload');
+                    if (res.success) {
+                        $('#uploadCertModal').modal('hide');
+                        toastr.success(res.message || 'Certificate uploaded successfully!', 'Success');
+                        setTimeout(function () { location.reload(); }, 1500);
+                    } else {
+                        toastr.error(res.message || 'Upload failed.', 'Error');
+                    }
+                },
+                error: function () {
+                    btn.prop('disabled', false).html('<span class="material-icons">cloud_upload</span> Upload');
+                    toastr.error('An error occurred. Please try again.', 'Error');
+                }
+            });
+        });
+    });
+</script>
+}

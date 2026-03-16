@@ -1,0 +1,58 @@
+﻿@using First_Aid_Made_Easy.BLL
+@using Microsoft.AspNet.Identity
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>@ViewBag.Title | FIRST AID MADE EASY</title>
+	<link href="@Server.MapPath("~/Content/Print.css")" rel="stylesheet" type="text/css" />
+	<link href="@Server.MapPath("~/Content/bootstrap.min.css")" rel="stylesheet" type="text/css" />
+	@*<link href="@Server.MapPath("~/Content/assetsn/css/style.bundle.css")" rel="stylesheet" />*@
+	<link href="@Server.MapPath("~/Content/assetsn/plugins/global/plugins.bundle.css")" rel="stylesheet" />
+
+	<link href="~/Content/assetsn/plugins/global/plugins.bundle.css" rel="stylesheet" />
+	@*<link href="~/Content/assetsn/css/style.bundle.css" rel="stylesheet" />*@
+	<link href="~/Content/Print.css" rel="stylesheet" />
+	<link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+	<style>
+
+		body {
+			font-family: system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue","Noto Sans","Liberation Sans",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
+		}
+
+		.rptHeader {
+			text-align: center;
+			margin: 0px auto;
+			background: rgba(218, 232, 239, 0.18);
+			padding: 10px 10px;
+			font-weight: bold;
+		}
+
+		.breakHere {
+			page-break-after: always;
+		}
+        thead th {
+            background-color: #dcdada;
+        }
+	</style>
+	@RenderSection("styles", required: false)
+	@Html.Partial("_TrackingPixels")
+</head>
+<body>
+	<div class="rptHeader">
+		<div class="row">
+			<div class="col-xs-6 ">
+				<img style="height:70px" src="@Server.MapPath("~/Areas/Landing/assets/images/logo/fullLightLogo.png")" />
+			</div>
+			<div class="col-xs-6">
+				<div style="font-size:large;margin-top:20px">@ViewBag.Title</div>
+			</div>
+		</div>
+	</div>
+
+	@RenderBody()
+</body>
+
+</html>
+
+

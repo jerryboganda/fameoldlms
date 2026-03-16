@@ -1,0 +1,186 @@
+﻿@{
+    ViewBag.Title = "Contact Us";
+    ViewBag.BreadCrumb = new String[] { "Support Center", "Contact Us" };
+    Layout = "~/Views/Shared/_LayoutNew.cshtml";
+}
+
+
+<div class="container-xxl" id="kt_content_container">
+    <!--begin::Hero card-->
+    <div class="card mb-12">
+        <!--begin::Hero body-->
+        <div class="card-body flex-column p-5">
+            <!--begin::Hero content-->
+            <div class="d-flex align-items-center h-lg-300px p-5 p-lg-15">
+                <!--begin::Wrapper-->
+                <div class="d-flex flex-column align-items-start justift-content-center flex-equal me-5">
+                    <!--begin::Title-->
+                    <h1 class="fw-bold fs-4 fs-lg-1 text-gray-800 mb-5 mb-lg-10">How Can We Help You?</h1>
+                    <!--end::Title-->
+                    <!--begin::Input group-->
+                    <div class="position-relative w-100">
+                        <!--begin::Svg Icon | path: icons/duotune/general/gen021.svg-->
+                        <span class="svg-icon svg-icon-2 svg-icon-primary position-absolute top-50 translate-middle ms-8">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect opacity="0.5" x="17.0365" y="15.1223" width="8.15546" height="2" rx="1" transform="rotate(45 17.0365 15.1223)" fill="currentColor" />
+                                <path d="M11 19C6.55556 19 3 15.4444 3 11C3 6.55556 6.55556 3 11 3C15.4444 3 19 6.55556 19 11C19 15.4444 15.4444 19 11 19ZM11 5C7.53333 5 5 7.53333 5 11C5 14.4667 7.53333 17 11 17C14.4667 17 17 14.4667 17 11C17 7.53333 14.4667 5 11 5Z" fill="currentColor" />
+                            </svg>
+                        </span>
+                        <!--end::Svg Icon-->
+                        <input type="text" class="form-control fs-4 py-4 ps-14 text-gray-700 placeholder-gray-400 mw-500px" name="search" value="" placeholder="Ask a question" />
+                    </div>
+                    <!--end::Input group-->
+                </div>
+                <!--end::Wrapper-->
+                <!--begin::Wrapper-->
+                <div class="flex-equal d-flex justify-content-center align-items-end ms-5">
+                    <!--begin::Illustration-->
+                    <img src="~/Content/assetsn/media/illustrations/dozzy-1/20.png" alt="" class="mw-100 mh-125px mh-lg-275px mb-lg-n12" />
+                    <!--end::Illustration-->
+                </div>
+                <!--end::Wrapper-->
+            </div>
+            <!--end::Hero content-->
+            <!--begin::Hero nav-->
+            <div class="card-rounded bg-light d-flex flex-stack flex-wrap p-5">
+                @Html.Partial("_TicketNav")
+            </div>
+            <!--end::Hero nav-->
+        </div>
+        <!--end::Hero body-->
+    </div>
+    <!--end::Hero card-->
+    <!--begin::Contact-->
+    <div class="card">
+        <!--begin::Body-->
+        <div class="card-body p-lg-17">
+            <!--begin::Row-->
+            <div class="row mb-3">
+                <!--begin::Col-->
+                <div class="col-md-6 pe-lg-10">
+                    <!--begin::Form-->
+                    <form action="" class="form mb-15" method="post" id="kt_contact_form">
+                        <h1 class="fw-bold text-dark mb-9">Send Us Email</h1>
+                        <!--begin::Input group-->
+                        <div class="row mb-5">
+                            <!--begin::Col-->
+                            <div class="col-md-6 fv-row">
+                                <!--begin::Label-->
+                                <label class="fs-5 fw-semibold mb-2">Name</label>
+                                <!--end::Label-->
+                                <!--begin::Input-->
+                                <input type="text" class="form-control form-control-solid" placeholder="" name="name" />
+                                <!--end::Input-->
+                            </div>
+                            <!--end::Col-->
+                            <!--begin::Col-->
+                            <div class="col-md-6 fv-row">
+                                <!--end::Label-->
+                                <label class="fs-5 fw-semibold mb-2">Email</label>
+                                <!--end::Label-->
+                                <!--end::Input-->
+                                <input type="text" class="form-control form-control-solid" placeholder="" name="email" />
+                                <!--end::Input-->
+                            </div>
+                            <!--end::Col-->
+                        </div>
+                        <!--end::Input group-->
+                        <!--begin::Input group-->
+                        <div class="d-flex flex-column mb-5 fv-row">
+                            <!--begin::Label-->
+                            <label class="fs-5 fw-semibold mb-2">Subject</label>
+                            <!--end::Label-->
+                            <!--begin::Input-->
+                            <input class="form-control form-control-solid" placeholder="" name="subject" />
+                            <!--end::Input-->
+                        </div>
+                        <!--end::Input group-->
+                        <!--begin::Input group-->
+                        <div class="d-flex flex-column mb-10 fv-row">
+                            <label class="fs-6 fw-semibold mb-2">Message</label>
+                            <textarea class="form-control form-control-solid" rows="6" name="message" placeholder=""></textarea>
+                        </div>
+                        <!--end::Input group-->
+                        <!--begin::Submit-->
+                        <button type="submit" class="btn btn-primary" id="kt_contact_submit_button">
+                            <!--begin::Indicator label-->
+                            <span class="indicator-label">Send Feedback</span>
+                            <!--end::Indicator label-->
+                            <!--begin::Indicator progress-->
+                            <span class="indicator-progress">
+                                Please wait...
+                                <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                            </span>
+                            <!--end::Indicator progress-->
+                        </button>
+                        <!--end::Submit-->
+                    </form>
+                    <!--end::Form-->
+                </div>
+                <!--end::Col-->
+                <!--begin::Col-->
+                <div style="display:none" class="col-md-6 ps-lg-10">
+                    <!--begin::Map-->
+                    <div id="kt_contact_map" class="w-100 rounded mb-2 mb-lg-0 mt-2" style="height: 486px"></div>
+                    <!--end::Map-->
+                </div>
+                <!--end::Col-->
+            </div>
+            <!--end::Row-->
+            <!--begin::Row-->
+            <div class="row g-5 mb-5 mb-lg-15">
+                <!--begin::Col-->
+                <div class="col-sm-6 pe-lg-10">
+                    <!--begin::Phone-->
+                    <div class="text-center bg-light card-rounded d-flex flex-column justify-content-center p-10 h-100">
+                        <!--begin::Icon-->
+                        <!--SVG file not found: icons/duotune/finance/fin006.svgPhone.svg-->
+                        <!--end::Icon-->
+                        <!--begin::Subtitle-->
+                        <h1 class="text-dark fw-bold my-5">Let’s Speak</h1>
+                        <!--end::Subtitle-->
+                        <!--begin::Number-->
+                        <div class="text-gray-700 fw-semibold fs-2">+92 (318) 0049-742</div>
+                        <!--end::Number-->
+                    </div>
+                    <!--end::Phone-->
+                </div>
+                <!--end::Col-->
+                <!--begin::Col-->
+                <div class="col-sm-6 ps-lg-10">
+                    <!--begin::Address-->
+                    <div class="text-center bg-light card-rounded d-flex flex-column justify-content-center p-10 h-100">
+                        <!--begin::Icon-->
+                        <!--begin::Svg Icon | path: icons/duotune/general/gen018.svg-->
+                        <span class="svg-icon svg-icon-3tx svg-icon-primary">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path opacity="0.3" d="M18.0624 15.3453L13.1624 20.7453C12.5624 21.4453 11.5624 21.4453 10.9624 20.7453L6.06242 15.3453C4.56242 13.6453 3.76242 11.4453 4.06242 8.94534C4.56242 5.34534 7.46242 2.44534 11.0624 2.04534C15.8624 1.54534 19.9624 5.24534 19.9624 9.94534C20.0624 12.0453 19.2624 13.9453 18.0624 15.3453Z" fill="currentColor" />
+                                <path d="M12.0624 13.0453C13.7193 13.0453 15.0624 11.7022 15.0624 10.0453C15.0624 8.38849 13.7193 7.04535 12.0624 7.04535C10.4056 7.04535 9.06241 8.38849 9.06241 10.0453C9.06241 11.7022 10.4056 13.0453 12.0624 13.0453Z" fill="currentColor" />
+                            </svg>
+                        </span>
+                        <!--end::Svg Icon-->
+                        <!--end::Icon-->
+                        <!--begin::Subtitle-->
+                        <h1 class="text-dark fw-bold my-5">Our Head Office</h1>
+                        <!--end::Subtitle-->
+                        <!--begin::Description-->
+                        <div class="text-gray-700 fs-3 fw-semibold">Mall Road , Lahore</div>
+                        <!--end::Description-->
+                    </div>
+                    <!--end::Address-->
+                </div>
+                <!--end::Col-->
+            </div>
+            <!--end::Row-->
+        </div>
+        <!--end::Body-->
+    </div>
+</div>
+
+@section scripts {
+    <!--begin::Custom Javascript(used by this page)-->
+    <script src="~/Content/assetsn/plugins/custom/leaflet/leaflet.bundle.js"></script>
+    <script src="~/Content/assetsn/js/custom/apps/support-center/tickets/create.js?v=1"></script>
+    <script src="~/Content/assetsn/js/custom/pages/general/contact.js?v=4"></script>
+
+}

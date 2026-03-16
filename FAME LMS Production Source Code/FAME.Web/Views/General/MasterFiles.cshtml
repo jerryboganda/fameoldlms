@@ -1,0 +1,81 @@
+﻿@using First_Aid_Made_Easy.BLL
+@using First_Aid_Made_Easy.Models
+
+@{
+    ViewBag.Title = "DashBoard Advertisment";
+    Layout = "~/Views/Shared/_LayoutTeacher.cshtml";
+    var List = (List<MasterVM>)ViewBag.List;
+    int Sr = 0;
+}
+
+<div class="pt-32pt">
+    <div class="container-fluid page__container d-flex flex-column flex-md-row align-items-center text-center text-sm-left">
+        <div class="flex d-flex flex-column flex-sm-row align-items-center">
+            <div class="mb-24pt mb-sm-0 mr-sm-24pt">
+                <h2 class="mb-0">DashBoard Advertisment</h2>
+                <ol class="breadcrumb p-0 m-0">
+                    <li class="breadcrumb-item"><a href="/Teacher/Index">Home</a></li>
+                    <li class="breadcrumb-item active">
+                        DashBoard Advertisment
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="page-section border-bottom-2">
+        <div style="margin: 0; max-width: 100%" class="container-fluid page__container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="page-separator">
+                        <div class="page-separator__text">Add Picture</div>
+                    </div>
+                    <div style="margin-top:20px;margin-bottom:30px">
+                        <form action="/General/SaveMaster" method="post" enctype="multipart/form-data">
+                            @{ var ad = List.FirstOrDefault(x => x.Master_Group == (int)MasterGroup.DashBoardAd); }
+                            @Html.Hidden("Master_Group", (int)MasterGroup.DashBoardAd)
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <label class="form-label">DashBoard Advertisment (600 x 200)</label>
+                                    <div class="form-group mb-24pt">
+                                        <input id="File" name="File" class="form-control form-control-lg" type="file" accept="image/png, image/gif, image/jpeg" />
+                                        <div class="text-accent-red" id="MaessageBodyval"></div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <img src="@Url.Content(ad.Master_Value)" style="width:600px ; height:200px" />
+                                </div>
+                                <div class="col-md-4 mt-4">
+                                    <button type="submit" id="btnSave" class="btn btn-outline-success">Save</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section scripts {
+
+    @Scripts.Render("~/Scripts/List")
+
+    @if (TempData["Success"] != null)
+    {
+        <script>
+            toastr.success("Data Saved Successfully");
+        </script>
+    }
+    <script>
+
+        $(document).on("change", "#File", function (event) {
+            var link = URL.createObjectURL(event.target.files[0]);
+            $(this).closest(".row").find("img").attr("src", link);
+        })
+    </script>
+}
+

@@ -1,0 +1,354 @@
+﻿@model First_Aid_Made_Easy.Models.ExamVM
+@using First_Aid_Made_Easy.BLL
+@{
+    Layout = "~/Views/Shared/_LayoutTeacher.cshtml";
+
+    ViewBag.Title = " Describe Question Exam";
+}
+<style>
+    #btnUnSelect {
+        display: none
+    }
+
+    .selected > td > #btnSelect {
+        display: none
+    }
+
+    .selected > td > #btnUnSelect {
+        display: block !important
+    }
+</style>
+<div class="pt-32pt">
+    <div class="container-fluid page__container d-flex flex-column flex-md-row align-items-center text-center text-sm-left">
+        <div class="flex d-flex flex-column flex-sm-row align-items-center">
+            <div class="mb-24pt mb-sm-0 mr-sm-24pt">
+                <h2 class="mb-0">Describe Exam</h2>
+                <ol class="breadcrumb p-0 m-0">
+                    <li class="breadcrumb-item"><a href="/Admin/Index">Home</a></li>
+                    <li class="breadcrumb-item active">
+                        Describe Exam
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="page-section border-bottom-2">
+        <div class="page__container">
+
+            <div class="row">
+                <div class="col-md-12">
+
+                    <div class="page-separator">
+                        <div class="page-separator__text">Basic information</div>
+                    </div>
+                    @Html.ValidationSummary("", new { @class = "text-danger" })
+                    @Html.HiddenFor(model => model.ExamID)
+                    <label class="form-label">Exam Title</label>
+                    <div class="form-group mb-24pt">
+                        @Html.TextBoxFor(model => model.ExamTitle, new { @class = "form-control form-control-lg", @placeholder = "", @required = "required" })
+                        @Html.ValidationMessageFor(model => model.ExamTitle, "", new { @class = "text-accent-red" })
+                        <small class="form-text text-muted"></small>
+                    </div>
+                    <div>
+                        <label class="form-label">Description</label>
+                        <div class="form-group mb-24pt">
+                            @Html.TextBoxFor(model => model.Description, new { @class = "form-control form-control-lg", @placeholder = "" })
+                            @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-accent-red" })
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="col-12 col-md-6 mb-3">
+                            <label class="form-label">Courses</label>
+                            @Html.DropDownListFor(x => x.CourseIDs, new SelectList(ViewBag.Courses, "Course_Id", "Course_Name"), new { @class = "form-control select2", @multiple = true })
+                        </div>
+                        <div class="col-12 col-md-6 mb-3">
+                            <label class="form-label">Packages</label>
+                            @Html.DropDownListFor(x => x.PackageIDs, new SelectList(ViewBag.Packages, "PackageID", "PackageName"), new { @class = "form-control select2", @multiple = true })
+                        </div>
+                        <div class="col-12 col-md-6 mb-3">
+                            <label class="form-label">Tags</label>
+                            @Html.TextBoxFor(model => model.Tags, new { @class = "form-control form-control-lg tags", @placeholder = "Tags for Search", @required = "required" })
+                            @Html.ValidationMessageFor(model => model.Tags, "", new { @class = "text-accent-red" })
+                            <small class="form-text text-muted">Separate keywords with a comma, space bar, or enter key</small>
+                        </div>
+                        <div class="col-12 col-md-3 mb-3">
+                            <label class="form-label">Price</label>
+                            @Html.TextBoxFor(model => model.Price, new { @class = "form-control form-control-lg", @required = "required" })
+                            @Html.ValidationMessageFor(model => model.Price, "", new { @class = "text-accent-red" })
+                        </div>
+                        <div class="col-12 col-md-3 mb-3">
+                            <label class="form-label">Difficulty Level</label>
+                            @Html.DropDownListFor(model => model.DifficultyLevel, new SelectList(First_Aid_Made_Easy.BLL.Common.Difficulty, "Value", "Text"), "Please Select", new { @class = "form-control select2", @required = "required", @data_toggle = "select" })
+                            @Html.ValidationMessageFor(model => model.DifficultyLevel, "", new { @class = "text-accent-red" })
+                        </div>
+
+                        <div class="col-12 col-md-4">
+                            <label class="form-label">Thumbnail</label>
+                            <input name="File" id="File" class="form-control" type="file" accept="image/png, image/gif, image/jpeg">
+                        </div>
+                        @if (Model.Thumbnail != null)
+                        {
+                            <div class="col-12 col-md-4">
+                                <img style="width:150px;height:150px" src="@Url.Content("~/Images/"+Model.Thumbnail)" />
+                            </div>
+                        }
+                    </div>
+                    @* =========== MCQs ==================*@
+                    <div class="row">
+                        <h2 class="col-md-12">Question Papers (<span id="Count">@(Model.PaperList?.Count ?? 0)</span>)</h2>
+                        <div class="col-md-6">
+                            <label>Tags</label>
+                            <input id="TagsF" type="text" class="form-control tags" placeholder="TagsF">
+                        </div>
+                        <div class="col-md-2">
+                            <label>Difficulty Level</label>
+                            @Html.DropDownList("DifficultyLevelF", new SelectList(First_Aid_Made_Easy.BLL.Common.Difficulty, "Value", "Text"), "Please Select", new { @class = "form-control select2", @required = "required", @data_toggle = "select" })
+                        </div>
+                        <div class="col-md-4">
+                            <label>Text</label>
+                            <input id="Text" type="text" class="form-control" placeholder="Text">
+                        </div>
+                        <div class="col-md-12">
+                            <table id="mDTable" class="table table-bordered">
+                                <thead>
+                                    <tr style="background-color: #364e9c">
+                                        <th>Question</th>
+                                        <th>Marks</th>
+                                        <th>Level</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="qBody">
+                                    @if (Model.PaperList != null)
+                                    {
+                                        foreach (var q in Model.PaperList)
+                                        {
+                                            <tr data-id="@q.PaperID" class="selected">
+                                                <td>@q.PaperTitle</td>
+                                                <td>@q.Marks</td>
+                                                <td>@Common.DifficultyS(q.DifficultyLevel)</td>
+                                                <td>
+                                                    <button href="javascript:;" id="btnSelect" class="btn btn-success"><i class="fa fa-check-circle Font20"></i></button>
+                                                    <button href="javascript:;" id="btnUnSelect" class="btn btn-danger">x</button>
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header text-center">
+                            <a href="/Exam/Index" class="btn btn-outline-accent-electric-violet"><i class="fa fa-recycle"></i>&nbsp; New</a>
+                            @if (Model.ExamID > 0)
+                            {
+                                <button onclick="Save()" id="btnSave" class="btn btn-outline-accent-red">Update</button>
+                                <a href="javascript:;" id="btnDelete" data-id="@Model.ExamID" class="btn btn-outline-accent-red"><i class="fa fa-trash"></i>&nbsp;  Delete</a>
+                            }
+                            else
+                            {
+                                <button onclick="Save()" id="btnSave" class="btn btn-outline-success">Save</button>
+                            }
+                            <a href="@Url.Action("List","Exam")" class="btn btn-outline-accent-dodger-blue"><i class="fa fa-backward"></i>&nbsp;  Back To List</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script>
+
+        $(document).ready(function () {
+            $("#mDTable").DataTable();
+
+            if ($("#ExamID").val() > 0) {
+                $("#CourseIDs").val(@Html.Raw(Json.Encode(Model.CourseIDs?.Split(',')))).change();
+                $("#PackageIDs").val(@Html.Raw(Json.Encode(Model.PackageIDs?.Split(',')))).change();
+            }
+        })
+
+
+        $(document).on("click", "#btnSelect", function () {
+            $(this).closest("tr").addClass("selected");
+            $(this).closest("tr").removeClass("notSelected");
+            Count($(this), 1)
+        })
+        $(document).on("click", "#btnUnSelect", function () {
+            $(this).closest("tr").removeClass("selected");
+            $(this).closest("tr").addClass("notSelected");
+            Count($(this), -1)
+        })
+        function Count(th, count) {
+            var c = th.closest(".row").find("#Count").text();
+            th.closest(".row").find("#Count").text(parseInt(c) + count);
+        }
+
+
+        function Save() {
+            $(".divLoader").show();
+            var data = {
+                ExamID: $("#ExamID").val(),
+                ExamTitle: $("#ExamTitle").val(),
+                Description: $("#Description").val(),
+                Tags: $("#Tags").val(),
+                Price: $("#Price").val(),
+                CourseIDs: $("#CourseIDs").val().join(','),
+                PackageIDs: $("#PackageIDs").val().join(','),
+                DifficultyLevel: $("#DifficultyLevel option:selected").val(),
+                Papers: $(".selected").map(function () { return $(this).data("id") }).toArray(),
+            }
+
+            $("#btnSave").hide();
+            $.ajax({
+                url: '/Exam/Index',
+                method: 'POST',
+                data: JSON.stringify(data),
+                dataType: 'Json',
+                contentType: 'application/json',
+                success: function (response) {
+                    if (response.ExamID > 0) {
+                        DataSaved();
+                        UploadFiles(response.ExamID)
+                        $(".divLoader").hide();
+                    }
+                },
+                error: function (err) {
+                    $(".divLoader").hide();
+
+                }
+
+            });
+        }
+
+        $(document).on("click", "#btnDelete", function () {
+            var btn = $(this);
+            var id = btn.data("id");
+            var Name = btn.data("name");
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You Want To Delete the Exam ?",
+                icon: 'warning',
+                showCancelButton: false,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: "/Exam/Delete/" + id,
+                        method: "GET",
+                        beforeSend: function () {
+                            swal.fire({
+                                html: '<h5>Deleting Exam...</h5>',
+                                showConfirmButton: false,
+                                onRender: function () { $('.swal2-content').prepend(sweet_loader); }
+                            });
+                        },
+                        success: function (result) {
+                            if (result) {
+                                btn.hide();
+                                Swal.fire(
+                                    'Delete!',
+                                    'The Exam  Has Been Deleted.',
+                                    'success'
+                                )
+                                window.location.href = "/Exam/List?Type=" + $("#Type").val();
+                            }
+                        }, error: function (err) {
+                            alert("Error" + err);
+                        }
+                    })
+
+                }
+            })
+        })
+    </script>
+    <script>
+
+        $(document).on("keyup", "#Text", function (e) {
+            if (e.which == 13) {
+                FilterList($(this))
+            }
+        })
+        $(document).on("change", "#TagsF,#DifficultyLevelF", function (e) {
+            FilterList($(this))
+        })
+
+        function FilterList(th) {
+            var row = th.closest(".row");
+            var DifficultyLevel = row.find("#DifficultyLevelF option:selected").val() || 0;
+            var Tags = row.find("#TagsF").val() || "";
+            var Text = row.find("#Text").val() || "";
+            $(".divLoader").show();
+            $.ajax({
+                url: "/QuestionPaper/FilterList?DifficultyLevel=" + DifficultyLevel + "&Tags=" + Tags + "&Text=" + Text,
+                method: "POST",
+                success: function (result) {
+                    if (result != null) {
+                        row.find(".table").DataTable().destroy();
+                        row.find("#qBody > .notSelected").remove();
+                        AppendRows(result.List, row)
+                        row.find(".table").DataTable();
+                        $(".divLoader").hide();
+                    }
+                }, error: function (err) {
+                    alert("Error" + err);
+                }
+            })
+        }
+
+        function AppendRows(data, row) {
+            var body = row.find("#qBody");
+            $.each(data, function (i, q) {
+                if (!row.find("#qBody > .selected[data-id=" + q.PaperID + "]").is(":visible")) {
+                    var html = `
+                                        <tr data-id="${q.PaperID}" class="notSelected">
+                                            <td>${q.PaperTitle || ""}</td>
+                                            <td>${q.Marks || ""}</td>
+                                            <td>${(q.DifficultyLevel == 1 ? "Easy" : q.DifficultyLevel == 2 ? "Medium" : "Hard") || ""}</td>
+                                            <td>
+                                                <button href="javascript:;" id="btnSelect" class="btn btn-success"><i class="fa fa-check-circle Font20"></i></button>
+                                                <button href="javascript:;" id="btnUnSelect" class="btn btn-danger">x</button>
+                                            </td>
+                                        </tr>
+                                        `;
+                    body.append(html);
+                }
+            })
+        }
+    </script>
+    <script>
+
+        function UploadFiles(ExamID) {
+            var formdata = new FormData();
+            var File = document.getElementById('File');
+            if (File.files.length > 0) {
+                var sfilename = File.files[0].name;
+                formdata.append(sfilename, File.files[0]);
+                $.ajax({
+                    url: '/Exam/UploadImage/' + ExamID,
+                    type: "POST",
+                    contentType: false,
+                    processData: false,
+                    data: formdata,
+                    success: function (result) {
+                    },
+                    error: function (err) {
+                        alert(err.statusText);
+                    }
+                });
+            }
+        }
+
+
+    </script>
+}
+

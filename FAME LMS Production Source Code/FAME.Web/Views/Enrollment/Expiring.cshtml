@@ -1,0 +1,235 @@
+﻿@using System
+@model First_Aid_Made_Easy.Models.UserLockoutVM
+@{
+    ViewBag.Title = "Expiring Students";
+    Layout = "~/Views/Shared/_LayoutTeacher.cshtml";
+    var Sr = 0;
+    var List = (List<First_Aid_Made_Easy.Models.UserLockoutVM>)ViewBag.List ?? new List<First_Aid_Made_Easy.Models.UserLockoutVM>();
+}
+
+<!-- Select2 -->
+<link type="text/css" href="~/Content/assets/css/select2.css" rel="stylesheet">
+<link type="text/css" href="~/Content/assets/vendor/select2/select2.min.css" rel="stylesheet">
+
+<!-- DateRangePicker -->
+<link type="text/css" href="~/Content/assets/vendor/daterangepicker.css" rel="stylesheet">
+
+<div class="pt-32pt">
+    <div class="container-fluid page__container d-flex flex-column flex-md-row align-items-center text-center text-sm-left">
+        <div class="flex d-flex flex-column flex-sm-row align-items-center">
+            <div class="mb-24pt mb-sm-0 mr-sm-24pt">
+                <h2 class="mb-0">Block / Unblock Students</h2>
+                <ol class="breadcrumb p-0 m-0">
+                    <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                    <li class="breadcrumb-item active">
+                        Students Login Expiry
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </div>
+    <div class="page-section border-bottom-2">
+        <div class="container-fluid page__container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="page-separator">
+                        <div class="page-separator__text">Basic information</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-8">
+                            @Html.HiddenFor(x => x.ID)
+                            @Html.HiddenFor(x => x.AspUserID)
+                            <label class="form-label">Student</label>
+                            <div class="form-group mb-24pt">
+                                @Html.TextBoxFor(x => x.UserEmail, new { @class = "form-control form-control-lg", @placeholder = "Enter Student's Email", @required = "required" })
+                                <div id="UserEmailVal" class="text-danger"></div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Expiry Date</label>
+                            <div class="form-group mb-24pt">
+                                @Html.TextBoxFor(x => x.LockoutDT, new { @class = "form-control form-control-lg", @data_toggle = "daterangepicker", @data_daterangepicker_locale_format = "DD/MM/YYYY", @data_daterangepicker_start_date = Model.LockoutDT, @data_daterangepicker_drops = "down", @data_daterangepicker_single_date_picker = "true" })
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Comments </label>
+                            <div class="form-group mb-24pt">
+                                @Html.TextAreaFor(x => x.Remarks, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header text-center">
+                            <a href="#" id="btnSave" class="btn btn-outline-success">Save</a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="page-section border-bottom-2">
+        <div style="margin: 0;max-width: 100%" class="container-fluid page__container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="page-separator">
+                        <div class="page-separator__text">Basic information</div>
+                    </div>
+                    <table id="DTable" class="table  table-bordered">
+                        <thead>
+                            <tr style="background-color: #364e9c">
+                                <th>Sr</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Expiry Date</th>
+                                <th>Rem Days</th>
+                                <th style="min-width:80px">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var i in List)
+                            {
+                                var days = i.LockoutDate.Value.Subtract(DateTime.Now).Days;
+                                Sr++;
+                                <tr style="background-color:@(days<1 ? "#fba7a7" : "")">
+                                    <td>@Sr</td>
+                                    <td>@i.UserName</td>
+                                    <td>@i.UserEmail</td>
+                                    <td>@i.LockoutDT</td>
+                                    <td>@(days)</td>
+                                    <td>
+                                        <a href="/Enrollment/Expiring/@i.ID" vlaue="" class="text-warning"><i class="fa fa-edit Font20"></i></a>
+                                        <a href="#" id="btnDelete" data-id="@i.ID" class="text-danger"><i class="fa fa-trash Font20"></i></a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@section scripts {
+    @Scripts.Render("~/Scripts/List")
+    <!-- DateRangePicker -->
+    <script src="~/Content/assets/vendor/moment.min.js"></script>
+    <script src="~/Content/assets/vendor/daterangepicker.js"></script>
+    <script src="~/Content/assets/js/daterangepicker.js"></script>
+    @if (TempData["Success"] != null)
+    {
+        <script>
+            Swal.fire({
+                position: 'top-end',
+                icon: 'success',
+                title: 'Data Saved Successfully',
+                showConfirmButton: false,
+                timer: 1500
+            })
+        </script>
+    }
+
+    <script>
+
+        $(document).ready(function () {
+            $("#DTable").DataTable({ "lengthMenu": [[-1, 25, 50, 100], ["All", 25, 50, 100]] });
+        })
+        $(document).on("focusout", "#UserEmail", function () {
+            var email = $(this).val();
+            $("#UserEmailVal").hide();
+            $.ajax({
+                url: "/Enrollment/GetStudentID?email=" + email,
+                method: "GET",
+                success: function (result) {
+                    if (result == "" || result == null) {
+                        $("#UserEmailVal").text("Email Is Not Valid").show();
+                    }
+                    $("#AspUserID").val(result);
+                },
+                error: function (err) {
+                    $("#UserEmailVal").text("Email Is Not Valid").show();
+                }
+            })
+        })
+
+        $(document).on("click", "#btnSave", function () {
+            if ($("#AspUserID").val() != "") {
+                $.ajax({
+                    url: "/Enrollment/SaveExpire",
+                    data: {
+                        ID: $("#ID").val(),
+                        AspUserID: $("#AspUserID").val(),
+                        Remarks: $("#Remarks").val(),
+                        LockoutDT: $("#LockoutDT").val(),
+                    },
+                    method: "POST",
+                    beforeSend: function () {
+                        swal.fire({
+                            html: '<h5>Loading...</h5>',
+                            showConfirmButton: false,
+                            onRender: function () {
+                                $('.swal2-content').prepend(sweet_loader);
+                            }
+                        });
+                    },
+                    success: function (result) {
+                        if (result) {
+                            window.location.href = "/Enrollment/Expiring"
+                        }
+                    }, error: function (err) {
+                        alert("Error" + err);
+                    }
+                })
+            }
+        })
+        $(document).on("click", "#btnDelete", function () {
+            var id = $(this).data("id");
+            var tr = $(this).closest("tr");
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You Want To Delete This Expiry?",
+                icon: 'warning',
+                showCancelButton: false,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: "/Enrollment/DeleteExpire/" + id,
+                        beforeSend: function () {
+                            swal.fire({
+                                html: '<h5>Loading...</h5>',
+                                showConfirmButton: false,
+                                onRender: function () {
+                                    // there will only ever be one sweet alert open.
+                                    $('.swal2-content').prepend(sweet_loader);
+                                }
+                            });
+                        },
+                        success: function (result) {
+                            if (result) {
+                                Swal.fire(
+                                    'Deleted!',
+                                    'The Expiry Has Been Removed.',
+                                    'success'
+                                )
+                                tr.remove();
+                            }
+                        }, error: function (err) {
+                            alert("Error" + err);
+                        }
+                    })
+
+                }
+            })
+        })
+    </script>
+
+}
+

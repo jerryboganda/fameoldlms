@@ -1,0 +1,323 @@
+@using First_Aid_Made_Easy.BLL
+@{
+    var liveClasses = ViewBag.LiveClasses as IEnumerable<dynamic>;
+    var upcomingClasses = liveClasses?.OrderBy(x => x.StartTime).Take(5) ?? Enumerable.Empty<dynamic>();
+    var activeClass = liveClasses?.FirstOrDefault(x => x.Status == "Active");
+}
+
+<div class="fame-widget-card @(activeClass != null ? "fame-live-active" : "")">
+    <div class="fame-widget-header">
+        <div class="fame-widget-title">
+            <i data-feather="video" class="fame-widget-icon" style="color: #EF4444;"></i>
+            <span>Live Classes</span>
+            @if (activeClass != null)
+            {
+                <span class="fame-live-badge">
+                    <span class="fame-live-pulse"></span>
+                    LIVE NOW
+                </span>
+            }
+        </div>
+        <a href="@Url.Action("MyMeetings", "Student")" class="fame-widget-link">
+            Schedule
+            <i data-feather="arrow-right" style="width: 16px; height: 16px;"></i>
+        </a>
+    </div>
+    
+    <div class="fame-widget-body" style="padding: 0;">
+        @if (upcomingClasses.Any())
+        {
+            <div class="fame-live-list">
+                @foreach (var meeting in upcomingClasses)
+                {
+                    DateTime meetingTime = meeting.StartTime ?? DateTime.Now;
+                    string timeStr = meetingTime.ToString("h:mm tt");
+                    string dateStr = meetingTime.Date == DateTime.Today 
+                        ? "Today" 
+                        : meetingTime.Date == DateTime.Today.AddDays(1) 
+                            ? "Tomorrow" 
+                            : meetingTime.ToString("ddd, MMM d");
+                    string status = meeting.Status ?? "Upcoming";
+                    bool isLive = status == "Active";
+                    string topic = meeting.Topic ?? "Live Session";
+                    string instructor = meeting.InstructorName ?? "Instructor";
+                    int duration = meeting.Duration ?? 60;
+                    
+                    <div class="fame-live-item @(isLive ? "is-live" : "")">
+                        <div class="fame-live-time-block">
+                            <div class="fame-live-time">@timeStr</div>
+                            <div class="fame-live-date">@dateStr</div>
+                        </div>
+                        
+                        <div class="fame-live-divider">
+                            <div class="fame-live-dot @(isLive ? "live" : "")"></div>
+                            <div class="fame-live-line"></div>
+                        </div>
+                        
+                        <div class="fame-live-details">
+                            <div class="fame-live-topic">@topic</div>
+                            <div class="fame-live-meta">
+                                <span>
+                                    <i data-feather="user" style="width: 12px; height: 12px;"></i>
+                                    @instructor
+                                </span>
+                                <span>
+                                    <i data-feather="clock" style="width: 12px; height: 12px;"></i>
+                                    @duration min
+                                </span>
+                            </div>
+                        </div>
+                        
+                        @if (isLive)
+                        {
+                            <a href="@Url.Action("JoinMeeting", "Zoom", new { id = meeting.ID })" class="fame-live-join-btn">
+                                <i data-feather="video" style="width: 16px; height: 16px;"></i>
+                                Join Now
+                            </a>
+                        }
+                        else
+                        {
+                            <div class="fame-live-countdown" data-time="@meetingTime.ToString("o")">
+                                <span class="fame-live-countdown-text">Starts in</span>
+                                <span class="fame-live-countdown-time">--:--</span>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="fame-widget-empty" style="padding: 48px 24px;">
+                <div style="width: 64px; height: 64px; background: linear-gradient(135deg, rgba(239,68,68,0.1), rgba(220,38,38,0.1)); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+                    <i data-feather="video-off" style="width: 28px; height: 28px; color: var(--fame-text-tertiary);"></i>
+                </div>
+                <p style="margin: 0 0 6px 0; font-weight: 500; color: var(--fame-text-primary);">No upcoming classes</p>
+                <p style="margin: 0; font-size: 13px; color: var(--fame-text-tertiary);">Check back later for scheduled sessions</p>
+            </div>
+        }
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    updateCountdowns();
+    setInterval(updateCountdowns, 60000); // Update every minute
+});
+
+function updateCountdowns() {
+    $('.fame-live-countdown').each(function() {
+        var $el = $(this);
+        var time = new Date($el.data('time'));
+        var now = new Date();
+        var diff = Math.floor((time - now) / 1000 / 60); // difference in minutes
+        
+        var text;
+        if (diff <= 0) {
+            text = 'Starting soon';
+        } else if (diff < 60) {
+            text = diff + ' min';
+        } else if (diff < 1440) {
+            var hrs = Math.floor(diff / 60);
+            var mins = diff % 60;
+            text = hrs + 'h ' + mins + 'm';
+        } else {
+            var days = Math.floor(diff / 1440);
+            text = days + ' day' + (days > 1 ? 's' : '');
+        }
+        
+        $el.find('.fame-live-countdown-time').text(text);
+    });
+}
+</script>
+
+<style>
+.fame-live-active {
+    border-color: rgba(239, 68, 68, 0.3);
+    box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.1);
+}
+
+.fame-live-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    background: linear-gradient(135deg, #EF4444, #DC2626);
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    border-radius: 12px;
+    margin-left: 8px;
+}
+
+.fame-live-pulse {
+    width: 6px;
+    height: 6px;
+    background: white;
+    border-radius: 50%;
+    animation: pulse 1s infinite;
+}
+
+.fame-live-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.fame-live-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px;
+    border-bottom: 1px solid var(--fame-border);
+    transition: background 200ms;
+}
+
+.fame-live-item:last-child {
+    border-bottom: none;
+}
+
+.fame-live-item:hover {
+    background: var(--fame-bg-tertiary);
+}
+
+.fame-live-item.is-live {
+    background: rgba(239, 68, 68, 0.05);
+}
+
+.fame-live-time-block {
+    min-width: 80px;
+    text-align: center;
+}
+
+.fame-live-time {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--fame-text-primary);
+}
+
+.fame-live-date {
+    font-size: 11px;
+    color: var(--fame-text-tertiary);
+    margin-top: 2px;
+}
+
+.fame-live-divider {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    height: 48px;
+}
+
+.fame-live-dot {
+    width: 12px;
+    height: 12px;
+    background: var(--fame-bg-tertiary);
+    border: 3px solid var(--fame-primary);
+    border-radius: 50%;
+    z-index: 1;
+}
+
+.fame-live-dot.live {
+    border-color: #EF4444;
+    background: #EF4444;
+    animation: pulse 1.5s infinite;
+}
+
+.fame-live-line {
+    position: absolute;
+    top: 12px;
+    width: 2px;
+    height: 100%;
+    background: var(--fame-border);
+}
+
+.fame-live-details {
+    flex: 1;
+    min-width: 0;
+}
+
+.fame-live-topic {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--fame-text-primary);
+    margin-bottom: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.fame-live-meta {
+    display: flex;
+    gap: 16px;
+    font-size: 12px;
+    color: var(--fame-text-tertiary);
+}
+
+.fame-live-meta span {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.fame-live-join-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: linear-gradient(135deg, #EF4444, #DC2626);
+    color: white;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: var(--fame-radius-md);
+    text-decoration: none;
+    transition: all 200ms;
+    animation: pulse 2s infinite;
+}
+
+.fame-live-join-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 24px rgba(239, 68, 68, 0.4);
+}
+
+.fame-live-countdown {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 8px 16px;
+    background: var(--fame-bg-tertiary);
+    border-radius: var(--fame-radius-md);
+}
+
+.fame-live-countdown-text {
+    font-size: 10px;
+    color: var(--fame-text-tertiary);
+}
+
+.fame-live-countdown-time {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--fame-text-primary);
+}
+
+@@media (max-width: 640px) {
+    .fame-live-item {
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+    
+    .fame-live-divider {
+        display: none;
+    }
+    
+    .fame-live-time-block {
+        text-align: left;
+    }
+    
+    .fame-live-join-btn,
+    .fame-live-countdown {
+        width: 100%;
+        justify-content: center;
+    }
+}
+</style>

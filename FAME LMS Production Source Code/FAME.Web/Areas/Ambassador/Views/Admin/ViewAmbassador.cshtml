@@ -1,0 +1,121 @@
+@model First_Aid_Made_Easy.Models.AmbassadorDashboardVM
+@{
+    ViewBag.Title = "Ambassador Details";
+    Layout = "~/Views/Shared/_LayoutAmbassador.cshtml";
+    var initials = !string.IsNullOrWhiteSpace(Model?.Ambassador?.FullName)
+        ? Model.Ambassador.FullName.Substring(0, 1).ToUpper()
+        : "A";
+}
+
+<div class="container-fluid py-4">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h4 class="mb-1">Ambassador Details</h4>
+            <p class="text-muted mb-0">Viewing profile for @Model.Ambassador.FullName</p>
+        </div>
+        <div>
+            <a href="@Url.Action("Ambassadors")" class="btn btn-outline-secondary">
+                <i class="material-icons align-middle mr-1">arrow_back</i>
+                Back to Ambassadors
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Ambassador Info Card -->
+        <div class="col-lg-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Profile</h6>
+                </div>
+                <div class="card-body text-center">
+                    <div class="avatar-lg bg-primary text-white mx-auto mb-3" style="width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.5rem;">
+                        @initials
+                    </div>
+                    <h5>@Model.Ambassador.FullName</h5>
+                    <p class="text-muted">@Model.Ambassador.Email</p>
+                    <span class="badge badge-@(Model.Ambassador.Tier?.ToLower() == "gold" ? "warning" : Model.Ambassador.Tier?.ToLower() == "silver" ? "secondary" : Model.Ambassador.Tier?.ToLower() == "platinum" ? "dark" : "info") badge-pill px-3 py-2">
+                        @Model.Ambassador.Tier Tier
+                    </span>
+                    <hr>
+                    <div class="text-left">
+                        <p><strong>Referral Code:</strong> <code>@Model.Ambassador.ReferralCode</code></p>
+                        <p><strong>Status:</strong> 
+                            <span class="badge badge-@(Model.Ambassador.IsActive ? "success" : "danger")">
+                                @(Model.Ambassador.IsActive ? "Active" : "Inactive")
+                            </span>
+                        </p>
+                        <p><strong>Joined:</strong> @Model.Ambassador.CreatedAt.ToString("MMM dd, yyyy")</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="col-lg-8">
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <div class="card border-left-primary shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Referrals</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.Stats.TotalReferrals</div>
+                            <small class="text-muted">@Model.Stats.ReferralsThisMonth this month</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <div class="card border-left-success shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Converted</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.Stats.ConvertedReferrals</div>
+                            <small class="text-muted">@Model.Stats.ConversionRate% conversion rate</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <div class="card border-left-info shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Available Balance</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.Stats.Currency @Model.Stats.AvailableBalance.ToString("N0")</div>
+                            <small class="text-muted">@Model.Stats.Currency @Model.Stats.PendingEarnings.ToString("N0") pending</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <div class="card border-left-warning shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Total Earnings</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.Stats.Currency @Model.Stats.TotalEarnings.ToString("N0")</div>
+                            <small class="text-muted">@Model.Stats.Currency @Model.Stats.PaidOutTotal.ToString("N0") paid out</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Referral Link -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Referral Link</h6>
+                </div>
+                <div class="card-body">
+                    <div class="input-group">
+                        <input type="text" class="form-control bg-light" value="@Model.Ambassador.FullReferralUrl" readonly id="refLink">
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-primary" onclick="navigator.clipboard.writeText($('#refLink').val()); toastr.success('Copied!');">
+                                <i class="material-icons align-middle">content_copy</i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .border-left-primary { border-left: 4px solid #4e73df !important; }
+    .border-left-success { border-left: 4px solid #1cc88a !important; }
+    .border-left-info { border-left: 4px solid #36b9cc !important; }
+    .border-left-warning { border-left: 4px solid #f6c23e !important; }
+</style>

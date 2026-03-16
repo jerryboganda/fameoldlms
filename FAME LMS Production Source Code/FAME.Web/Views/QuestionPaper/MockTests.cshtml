@@ -1,0 +1,243 @@
+﻿@model First_Aid_Made_Easy.Models.QuestionPaperVM
+@using First_Aid_Made_Easy.Models
+@using Microsoft.AspNet.Identity;
+@using First_Aid_Made_Easy.BLL
+@using First_Aid_Made_Easy.DAL
+@{
+	ViewBag.BreadCrumb = new String[] { "Question Bank", "Tests" };
+	Layout = "~/Views/Shared/_LayoutNew.cshtml";
+	var isAccepted = Common.IsRequestAccepted(User.Identity.GetUserId());
+	var user = Common.GetUserNameByASpUserID(User.Identity.GetUserId());
+	ViewBag.Title = Common.MockTestTypesDdl.FirstOrDefault(y => y.Value == user.MockTestType.ToString())?.Text ?? "Mock Test";
+}
+<style>
+	.popover {
+		--bs-popover-max-width: 500px !important;
+	}
+
+	.badge {
+		margin-top: 6px;
+	}
+
+	.nav-item {
+		border: 2px solid;
+		border-radius: 5px
+	}
+</style>
+
+<div class="container-xxl" id="kt_content_container">
+
+	@if (Model.List != null && Model.List.Count() > 0 && isAccepted)
+	{
+		<div class="card mb-10">
+			<div class="card-body">
+
+				<!--begin::Tab Content-->
+				<div class="tab-content">
+					<div class="d-flex flex-wrap flex-stack mb-6">
+						<!--begin::Title-->
+
+						<ul class="nav nav-tabs nav-line-tabs mb-5 fs-6">
+							@foreach (var t in Common.MockTestTypesDdl)
+							{
+								<li class="nav-item p-3 m-2">
+									<a class="nav-link fs-2 m-0" data-bs-toggle="tab" href="#kt_tab_pane_@t.Value"> @t.Text</a>
+								</li>
+							}
+							<li class="nav-item p-3 m-2">
+								<a class="nav-link fs-2 m-0" data-bs-toggle="tab" href="#kt_tab_pane_Uncategorized"> Uncategorized</a>
+							</li>
+						</ul>
+					</div>
+					<div class="card mb-5 mb-xxl-8">
+						<div class="card-body table-responsive p-0">
+
+
+							<div class="tab-content" id="myTabContent">
+								@foreach (var t in Common.MockTestTypesDdl)
+								{
+									<div class="tab-pane fade" id="kt_tab_pane_@t.Value" role="tabpanel">
+										<h2><b>@t.Text</b></h2>
+										<div class="" style="overflow:hidden">
+
+
+											@foreach (sp_lstQuestionPapers_Result i in Model.List.Where(y => y.MockTestType.ToString() == t.Value))
+											{
+												<div class="separator separator-dashed my-3"></div>
+
+												<div class="row">
+													<div class="col-md-6 col-12">
+														<div><b>@i.PaperTitle</b></div>
+														<div>
+															@if (i.ExpiryDT != null)
+															{
+																<span class="badge badge-lg badge-light ">
+																	Expiry : @string.Format("{0:dd/MM/yyyy hh:mm tt}", i.ExpiryDT)
+																</span>
+															}
+														</div>
+													</div>
+													<div class="col-md-2 col-6">
+														<span class="badge badge-lg badge-light ">
+															<i class="fa fa-clock"></i> &nbsp; @i.Time min
+														</span>
+													</div>
+													<div class="col-md-4 text-end col-6">
+														<div>
+															@if (i.ExpiryDT < Common.GetCurrentDate())
+															{
+																<span class="badge badge-danger badge-lg" href="#">Expired</span>
+															}
+															else if (i.StartDT > Common.GetCurrentDate())
+															{
+																<span class="badge badge-lg badge-light ">
+																	Strat-At :	@string.Format("{0:dd/MM/yyyy hh:mm tt}", i.StartDT)
+																</span>
+															}
+															else
+															{
+																<a href="/QuestionPaper/Solve/@i.PaperID?m=Exam"><span class="badge badge-primary badge-lg">Solve</span></a>
+															}
+														</div>
+													</div>
+												</div>
+											}
+										</div>
+									</div>
+								}
+								<div class="tab-pane fade" id="kt_tab_pane_Uncategorized" role="tabpanel">
+									<h2><b>Uncategorized</b></h2>
+
+									<div class="" style="overflow:hidden">
+
+
+										@foreach (sp_lstQuestionPapers_Result i in Model.List.Where(y => y.MockTestType == null))
+										{
+											<div class="separator separator-dashed my-3"></div>
+
+											<div class="row">
+												<div class="col-md-6 col-12">
+													<div><b>@i.PaperTitle</b></div>
+													<div>
+														@if (i.ExpiryDT != null)
+														{
+															<span class="badge badge-lg badge-light ">
+																Expiry : @string.Format("{0:dd/MM/yyyy hh:mm tt}", i.ExpiryDT)
+															</span>
+														}
+													</div>
+												</div>
+												<div class="col-md-2 col-6">
+													<span class="badge badge-lg badge-light ">
+														<i class="fa fa-clock"></i> &nbsp; @i.Time min
+													</span>
+												</div>
+												<div class="col-md-4 text-end col-6">
+													<div>
+														@if (i.ExpiryDT < Common.GetCurrentDate())
+														{
+															<span class="badge badge-danger badge-lg" href="#">Expired</span>
+														}
+														else if (i.StartDT > Common.GetCurrentDate())
+														{
+															<span class="badge badge-lg badge-light ">
+																Strat-At :	@string.Format("{0:dd/MM/yyyy hh:mm tt}", i.StartDT)
+															</span>
+														}
+														else
+														{
+															<a href="/QuestionPaper/Solve/@i.PaperID?m=Exam"><span class="badge badge-primary badge-lg">Solve</span></a>
+														}
+													</div>
+												</div>
+											</div>
+										}
+									</div>
+								</div>
+							</div>
+
+						</div>
+					</div>
+
+				</div>
+			</div>
+		</div>
+	}
+	else if (!isAccepted)
+	{
+		<div style="padding-top:3rem !important " id="NoMessage" class="mdk-box__content d-flex align-items-center justify-content-center container page__container text-center py-112pt">
+			<div class="card card--transparent mb-0">
+				<div class="card-body px-32pt py-24pt">
+					<h1>Your request is not approved yet! Kindly submit your fee then we will approve your account.</h1>
+				</div>
+			</div>
+		</div>
+	}
+	else
+	{
+		<div style="padding-top:3rem !important " id="NoMessage" class="mdk-box__content d-flex align-items-center justify-content-center container page__container text-center py-112pt">
+			<div class="card card--transparent mb-0">
+				<div class="card-body px-32pt py-24pt">
+					<h1>Tests will be shown here.</h1>
+				</div>
+			</div>
+		</div>
+	}
+</div>
+@if (user.MockTestType == null && false)
+{
+	<div class="modal fade" id="kt_modal_select_type" tabindex="-1" aria-hidden="true">
+		<div class="modal-dialog mw-650px">
+			<div class="modal-content">
+				<div class="modal-header pb-0 border-0 justify-content-end">
+					<div class="btn btn-sm btn-icon btn-active-color-primary" data-bs-dismiss="modal">
+						<span class="svg-icon svg-icon-1">
+							<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+								<rect opacity="0.5" x="6" y="17.3137" width="16" height="2" rx="1" transform="rotate(-45 6 17.3137)" fill="currentColor" />
+								<rect x="7.41422" y="6" width="16" height="2" rx="1" transform="rotate(45 7.41422 6)" fill="currentColor" />
+							</svg>
+						</span>
+					</div>
+				</div>
+				<div class="modal-body scroll-y mx-5 mx-xl-18 pt-0 pb-15">
+					<div class="text-center mb-13">
+						<h1 class="mb-3">Select Mock Test Type</h1>
+					</div>
+					<label>Select a Mock Test Type then mock test will be displayed.</label>
+					@Html.DropDownList("MockTestType", new SelectList(Common.MockTestTypesDdl, "Value", "Text"), "Please Select", new { @class = "form-select form-select-solid form-select-sm", @data_control = "select2", @data_hide_search = "true" })
+
+				</div>
+				<div class="modal-footer">
+					<button type="button" id="btnSave" class="btn btn-primary"> Save</button>
+				</div>
+			</div>
+		</div>
+	</div>
+}
+@section scripts {
+	@if (user.MockTestType == null)
+	{
+		<script>
+			$(document).ready(function () {
+				$("#kt_modal_select_type").modal('show');
+			})
+
+			$("#btnSave").click(function () {
+				if ($("#MockTestType").val()) {
+					$.ajax({
+						url: "/QuestionPaper/SelectMockTests/" + $("#MockTestType").val(),
+						success: function () {
+							window.location.href = "/QuestionPaper/MockTests";
+						},
+						error: function () {
+						}
+					})
+				}
+			})
+		</script>
+	}
+	<script>
+
+	</script>
+}
+

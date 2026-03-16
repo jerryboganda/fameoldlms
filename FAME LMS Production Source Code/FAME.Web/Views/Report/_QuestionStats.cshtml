@@ -1,0 +1,38 @@
+﻿@model  List<First_Aid_Made_Easy.DAL.sp_rptQuestionStats_Result>
+@using Microsoft.AspNet.Identity;
+@using First_Aid_Made_Easy.DAL;
+@using System.Linq;
+@using First_Aid_Made_Easy.BLL;
+@{
+	int Sr = 0;
+}
+
+<div class="row">
+	<div class="col-xs-12">
+
+		<table id="DTable" class="table tbl-data table-row-dashed table-bordered">
+			<thead style="background-color:#a3b0ba">
+				<tr>
+					<th> <span class="fs-5 fw-semibold">Sr.</span> </th>
+					<th> <span class="fs-5 fw-semibold">Question</span> </th>
+					<th> <span class="fs-5 fw-semibold">Attempts</span> </th>
+					<th> <span class="fs-5 fw-semibold">Omitted</span> </th>
+					<th> <span class="fs-5 fw-semibold">Correct</span> </th>
+					<th> <span class="fs-5 fw-semibold">Wrong</span> </th>
+				</tr>
+			</thead>
+			@foreach (sp_rptQuestionStats_Result i in Model)
+			{
+				Sr++;
+				<tr>
+					<td>@Sr</td>
+					<td>@i.Question</td>
+					<td> <span class="">@(i.Attempts)</span> </td>
+					<td>@i.Ommitted <br /> <span style="color : #5567ff !important"> @string.Format("{0:n0}", (decimal)i.Ommitted / (decimal)i.Attempts * 100)% </span> </td>
+					<td>@i.Correct <br /> <span style="color : #5567ff !important"> @string.Format("{0:n0}", (decimal)i.Correct / (decimal)i.Attempts * 100)%</span> </td>
+					<td>@i.Wrong <br /> <span style="color : #5567ff !important"> @string.Format("{0:n0}", (decimal)i.Wrong / (decimal)i.Attempts * 100)%</span> </td>
+				</tr>
+			}
+		</table>
+	</div>
+</div>

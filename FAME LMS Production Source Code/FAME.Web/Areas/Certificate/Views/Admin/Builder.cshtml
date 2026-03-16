@@ -1,0 +1,1147 @@
+@model First_Aid_Made_Easy.Models.Certificate.CertificateTemplateVM
+@{
+    ViewBag.Title = (Model != null && Model.Id > 0) ? "Edit Template" : "Certificate Builder";
+    Layout = "~/Views/Shared/_LayoutTeacher.cshtml";
+    var isEdit = Model != null && Model.Id > 0;
+}
+
+@section styles {
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+<style>
+    /* ══════════════════════════════════════════════════════════════
+       CERTIFICATE BUILDER — Full Redesign
+       ══════════════════════════════════════════════════════════════ */
+    :root {
+        --cb-primary: #0F766E;
+        --cb-primary-light: #14B8A6;
+        --cb-primary-bg: #F0FDFA;
+        --cb-dark: #1E293B;
+        --cb-border: #E2E8F0;
+        --cb-muted: #94A3B8;
+        --cb-sidebar-w: 290px;
+        --cb-props-w: 280px;
+    }
+
+    /* Layout */
+    .builder-wrapper {
+        display: flex;
+        height: calc(100vh - 64px);
+        overflow: hidden;
+        margin: 0 -24px;
+    }
+
+    /* — Left Sidebar —————————————————————————————————————— */
+    .builder-sidebar {
+        width: var(--cb-sidebar-w);
+        min-width: var(--cb-sidebar-w);
+        background: #fff;
+        border-right: 1px solid var(--cb-border);
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+    .builder-sidebar::-webkit-scrollbar { width: 5px; }
+    .builder-sidebar::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 3px; }
+
+    .sidebar-section {
+        padding: 16px;
+        border-bottom: 1px solid #F1F5F9;
+    }
+    .sidebar-section-title {
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--cb-muted);
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .sidebar-section-title .material-icons {
+        font-size: 14px;
+    }
+
+    /* Template name input */
+    .template-name-input {
+        border: 1px solid transparent;
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--cb-dark);
+        padding: 6px 10px;
+        border-radius: 6px;
+        background: #F8FAFC;
+        width: 100%;
+        transition: all 0.2s;
+    }
+    .template-name-input:hover { border-color: var(--cb-border); }
+    .template-name-input:focus { outline: none; border-color: var(--cb-primary); background: #fff; box-shadow: 0 0 0 3px rgba(15,118,110,0.08); }
+
+    /* Styled dropdowns */
+    .cb-select {
+        font-size: 12px;
+        font-weight: 500;
+        border: 1px solid var(--cb-border);
+        border-radius: 6px;
+        padding: 5px 8px;
+        color: var(--cb-dark);
+        background: #fff;
+        cursor: pointer;
+    }
+    .cb-select:focus { border-color: var(--cb-primary); outline: none; box-shadow: 0 0 0 3px rgba(15,118,110,0.08); }
+
+    /* Tool buttons (elements) */
+    .elem-btn {
+        width: 48px;
+        height: 48px;
+        border: 1px solid var(--cb-border);
+        border-radius: 8px;
+        background: #fff;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.15s;
+        gap: 2px;
+    }
+    .elem-btn .material-icons { font-size: 20px; color: #64748B; transition: color 0.15s; }
+    .elem-btn span.elem-label { font-size: 8px; color: var(--cb-muted); line-height: 1; letter-spacing: 0.3px; }
+    .elem-btn:hover { border-color: var(--cb-primary); background: var(--cb-primary-bg); }
+    .elem-btn:hover .material-icons { color: var(--cb-primary); }
+
+    /* Token chips */
+    .token-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        background: var(--cb-primary-bg);
+        color: var(--cb-primary);
+        border: 1px solid #CCFBF1;
+        border-radius: 6px;
+        padding: 4px 10px;
+        font-size: 11px;
+        font-weight: 600;
+        font-family: 'Courier New', monospace;
+        cursor: pointer;
+        transition: all 0.15s;
+        margin: 2px;
+    }
+    .token-chip:hover { background: var(--cb-primary); color: #fff; border-color: var(--cb-primary); }
+
+    /* Asset thumbnails */
+    .asset-thumb {
+        width: 52px;
+        height: 52px;
+        object-fit: contain;
+        border: 1px solid var(--cb-border);
+        border-radius: 8px;
+        cursor: pointer;
+        padding: 4px;
+        background: #FAFAFA;
+        transition: all 0.15s;
+    }
+    .asset-thumb:hover { border-color: var(--cb-primary); box-shadow: 0 0 0 3px rgba(15,118,110,0.1); }
+
+    /* Layer items */
+    .layer-item {
+        padding: 7px 10px;
+        border-radius: 6px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12px;
+        font-weight: 500;
+        color: #475569;
+        transition: all 0.1s;
+        margin-bottom: 2px;
+    }
+    .layer-item:hover { background: #F1F5F9; }
+    .layer-item.active { background: var(--cb-primary-bg); color: var(--cb-primary); font-weight: 600; }
+    .layer-item .material-icons { font-size: 15px; opacity: 0.6; }
+    .layer-item.active .material-icons { opacity: 1; }
+
+    /* — Main Canvas Area ————————————————————————————————— */
+    .builder-main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        background: #F1F5F9;
+        min-width: 0;
+    }
+
+    /* Toolbar */
+    .builder-toolbar {
+        background: #fff;
+        border-bottom: 1px solid var(--cb-border);
+        padding: 6px 12px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        flex-wrap: nowrap;
+        min-height: 44px;
+    }
+    .tb-btn {
+        width: 32px;
+        height: 32px;
+        border: none;
+        border-radius: 6px;
+        background: transparent;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.12s;
+        color: #64748B;
+        position: relative;
+    }
+    .tb-btn:hover { background: #F1F5F9; color: var(--cb-dark); }
+    .tb-btn.active { background: var(--cb-primary); color: #fff; }
+    .tb-btn .material-icons { font-size: 18px; }
+    .tb-sep { width: 1px; height: 20px; background: var(--cb-border); margin: 0 4px; flex-shrink: 0; }
+
+    /* Zoom control */
+    .zoom-group {
+        display: flex;
+        align-items: center;
+        gap: 2px;
+        margin-left: auto;
+        background: #F8FAFC;
+        border-radius: 8px;
+        padding: 2px;
+        border: 1px solid var(--cb-border);
+    }
+    .zoom-group .tb-btn { width: 28px; height: 28px; border-radius: 6px; }
+    .zoom-label { font-size: 11px; font-weight: 600; min-width: 42px; text-align: center; color: var(--cb-dark); }
+
+    /* Status & action buttons */
+    .save-status { font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 20px; display: inline-flex; align-items: center; gap: 4px; }
+    .save-status.ready { background: #F0FDF4; color: #16A34A; }
+    .save-status.saving { background: #FFFBEB; color: #D97706; }
+    .save-status.saved { background: #F0FDF4; color: #16A34A; }
+    .save-status.error { background: #FEF2F2; color: #DC2626; }
+
+    .btn-preview {
+        font-size: 12px;
+        font-weight: 600;
+        border: 1px solid var(--cb-border);
+        border-radius: 8px;
+        padding: 5px 14px;
+        background: #fff;
+        color: var(--cb-dark);
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        cursor: pointer;
+        transition: all 0.15s;
+    }
+    .btn-preview:hover { border-color: var(--cb-primary); color: var(--cb-primary); }
+    .btn-save {
+        font-size: 12px;
+        font-weight: 600;
+        border: none;
+        border-radius: 8px;
+        padding: 5px 18px;
+        background: var(--cb-primary);
+        color: #fff;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        cursor: pointer;
+        transition: all 0.15s;
+    }
+    .btn-save:hover { background: #0D6E67; }
+    .btn-back {
+        font-size: 12px;
+        font-weight: 500;
+        border: none;
+        background: transparent;
+        color: var(--cb-muted);
+        padding: 5px 8px;
+        border-radius: 6px;
+        transition: all 0.15s;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+    .btn-back:hover { color: var(--cb-dark); background: #F1F5F9; text-decoration: none; }
+
+    /* Canvas viewport */
+    .builder-canvas-area {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: auto;
+        padding: 24px;
+    }
+    .canvas-container { box-shadow: 0 8px 32px rgba(0,0,0,0.10), 0 1px 3px rgba(0,0,0,0.06); border-radius: 2px; }
+
+    /* — Right Properties Panel ——————————————————————————— */
+    .builder-properties {
+        width: var(--cb-props-w);
+        min-width: var(--cb-props-w);
+        background: #fff;
+        border-left: 1px solid var(--cb-border);
+        overflow-y: auto;
+        padding: 16px;
+    }
+    .builder-properties::-webkit-scrollbar { width: 5px; }
+    .builder-properties::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 3px; }
+
+    .props-header {
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--cb-muted);
+        padding-bottom: 10px;
+        border-bottom: 1px solid #F1F5F9;
+        margin-bottom: 14px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .props-header .material-icons { font-size: 14px; }
+
+    .prop-group { margin-bottom: 14px; }
+    .prop-group label {
+        font-size: 11px;
+        font-weight: 600;
+        color: #64748B;
+        margin-bottom: 4px;
+        display: block;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+    }
+    .prop-group .form-control-sm, .prop-group .form-select-sm { font-size: 12px; border-radius: 6px; }
+    .prop-group .form-control-color { width: 100%; height: 32px; }
+
+    .prop-btn-group .btn {
+        font-size: 13px;
+        padding: 4px 0;
+        border-color: var(--cb-border);
+        color: #64748B;
+    }
+    .prop-btn-group .btn:hover { color: var(--cb-primary); border-color: var(--cb-primary); }
+    .prop-btn-group .btn.active { background: var(--cb-primary); color: #fff; border-color: var(--cb-primary); }
+
+    /* Empty state */
+    .props-empty {
+        text-align: center;
+        padding: 32px 16px;
+    }
+    .props-empty .material-icons { font-size: 40px; color: #E2E8F0; margin-bottom: 8px; display: block; }
+    .props-empty p { font-size: 12px; color: var(--cb-muted); margin: 0; }
+
+    /* Responsive adjustments for canvas-container generated by Fabric.js */
+    .builder-canvas-area .canvas-container {
+        box-shadow: 0 8px 32px rgba(0,0,0,0.10), 0 1px 3px rgba(0,0,0,0.06) !important;
+    }
+</style>
+}
+
+<div class="builder-wrapper">
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <!-- LEFT SIDEBAR                                              -->
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <div class="builder-sidebar">
+        <!-- Template Info -->
+        <div class="sidebar-section">
+            <input type="text" id="templateNameInput" class="template-name-input"
+                   value="@(Model?.Name ?? "Untitled Template")" placeholder="Template name..." />
+            <div class="d-flex gap-2 mt-3">
+                <select id="templateType" class="cb-select flex-fill">
+                    <option value="Completion" @(Model?.Type == "Completion" ? "selected" : "")>Completion</option>
+                    <option value="Attendance" @(Model?.Type == "Attendance" ? "selected" : "")>Attendance</option>
+                    <option value="CME" @(Model?.Type == "CME" ? "selected" : "")>CME / CPD</option>
+                    <option value="Program" @(Model?.Type == "Program" ? "selected" : "")>Program</option>
+                </select>
+                <select id="pageLayout" class="cb-select flex-fill">
+                    <option value="Landscape" @(Model?.Orientation == "Landscape" || Model?.Orientation == null ? "selected" : "")>Landscape</option>
+                    <option value="Portrait" @(Model?.Orientation == "Portrait" ? "selected" : "")>Portrait</option>
+                </select>
+            </div>
+            <div class="d-flex align-items-center mt-2 gap-1" style="font-size: 11px; color: var(--cb-muted);">
+                <span class="material-icons" style="font-size: 13px;">straighten</span>
+                A4 (210 &times; 297 mm)
+            </div>
+        </div>
+
+        <!-- Add Elements -->
+        <div class="sidebar-section">
+            <div class="sidebar-section-title">
+                <span class="material-icons">add_box</span> Add Elements
+            </div>
+            <div class="d-flex flex-wrap gap-2">
+                <button class="elem-btn" onclick="addText()" title="Text">
+                    <span class="material-icons">text_fields</span>
+                    <span class="elem-label">Text</span>
+                </button>
+                <button class="elem-btn" onclick="addHeading()" title="Heading">
+                    <span class="material-icons">title</span>
+                    <span class="elem-label">Heading</span>
+                </button>
+                <button class="elem-btn" onclick="addRect()" title="Rectangle">
+                    <span class="material-icons">crop_square</span>
+                    <span class="elem-label">Rect</span>
+                </button>
+                <button class="elem-btn" onclick="addCircle()" title="Circle">
+                    <span class="material-icons">circle</span>
+                    <span class="elem-label">Circle</span>
+                </button>
+                <button class="elem-btn" onclick="addLine()" title="Line">
+                    <span class="material-icons">horizontal_rule</span>
+                    <span class="elem-label">Line</span>
+                </button>
+                <button class="elem-btn" onclick="addImage()" title="Upload Image">
+                    <span class="material-icons">add_photo_alternate</span>
+                    <span class="elem-label">Image</span>
+                </button>
+                <button class="elem-btn" onclick="addBorder()" title="Page Border">
+                    <span class="material-icons">crop_free</span>
+                    <span class="elem-label">Border</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Dynamic Tokens -->
+        <div class="sidebar-section">
+            <div class="sidebar-section-title">
+                <span class="material-icons">data_object</span> Dynamic Tokens
+            </div>
+            <p style="font-size: 10px; color: var(--cb-muted); margin-bottom: 8px;">Click to add as text element on canvas</p>
+            <div class="d-flex flex-wrap">
+                <span class="token-chip" onclick="insertToken('{LEARNER_NAME}')">{LEARNER_NAME}</span>
+                <span class="token-chip" onclick="insertToken('{COURSE_TITLE}')">{COURSE_TITLE}</span>
+                <span class="token-chip" onclick="insertToken('{CERT_ID}')">{CERT_ID}</span>
+                <span class="token-chip" onclick="insertToken('{ISSUE_DATE}')">{ISSUE_DATE}</span>
+                <span class="token-chip" onclick="insertToken('{EXPIRY_DATE}')">{EXPIRY_DATE}</span>
+                <span class="token-chip" onclick="insertToken('{CREDITS}')">{CREDITS}</span>
+                <span class="token-chip" onclick="insertToken('{QR_CODE}')">{QR_CODE}</span>
+            </div>
+        </div>
+
+        <!-- Assets -->
+        <div class="sidebar-section">
+            <div class="sidebar-section-title">
+                <span class="material-icons">collections</span> Assets
+            </div>
+            <div id="assetList" class="d-flex flex-wrap gap-2">
+                <div style="font-size: 11px; color: var(--cb-muted);"><span class="material-icons" style="font-size: 14px; vertical-align: middle;">hourglass_empty</span> Loading assets...</div>
+            </div>
+        </div>
+
+        <!-- Layers -->
+        <div class="sidebar-section" style="flex: 1;">
+            <div class="sidebar-section-title">
+                <span class="material-icons">layers</span> Layers
+            </div>
+            <div id="layerList"></div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <!-- MAIN CANVAS AREA                                          -->
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <div class="builder-main">
+        <!-- Toolbar -->
+        <div class="builder-toolbar">
+            <a href="@Url.Action("Templates", "Admin", new { area = "Certificate" })" class="btn-back">
+                <span class="material-icons" style="font-size:16px;">arrow_back</span> Back
+            </a>
+            <div class="tb-sep"></div>
+
+            <button class="tb-btn active" id="btnSelect" onclick="setMode('select')" title="Select">
+                <span class="material-icons">near_me</span>
+            </button>
+            <div class="tb-sep"></div>
+
+            <button class="tb-btn" onclick="bringForward()" title="Bring Forward">
+                <span class="material-icons">flip_to_front</span>
+            </button>
+            <button class="tb-btn" onclick="sendBackward()" title="Send Backward">
+                <span class="material-icons">flip_to_back</span>
+            </button>
+            <div class="tb-sep"></div>
+
+            <button class="tb-btn" onclick="duplicateSelected()" title="Duplicate">
+                <span class="material-icons">content_copy</span>
+            </button>
+            <button class="tb-btn" onclick="deleteSelected()" title="Delete">
+                <span class="material-icons">delete_outline</span>
+            </button>
+            <div class="tb-sep"></div>
+
+            <button class="tb-btn" onclick="undoAction()" title="Undo (Ctrl+Z)">
+                <span class="material-icons">undo</span>
+            </button>
+            <button class="tb-btn" onclick="redoAction()" title="Redo (Ctrl+Y)">
+                <span class="material-icons">redo</span>
+            </button>
+            <div class="tb-sep"></div>
+
+            <button class="tb-btn" onclick="toggleGrid()" title="Toggle Grid" id="btnGrid">
+                <span class="material-icons">grid_on</span>
+            </button>
+            <button class="tb-btn" onclick="toggleSnap()" title="Toggle Snap" id="btnSnap">
+                <span class="material-icons">grid_4x4</span>
+            </button>
+
+            <!-- Zoom (pushed right) -->
+            <div class="zoom-group">
+                <button class="tb-btn" onclick="zoomOut()" title="Zoom Out"><span class="material-icons">remove</span></button>
+                <span class="zoom-label" id="zoomLevel">100%</span>
+                <button class="tb-btn" onclick="zoomIn()" title="Zoom In"><span class="material-icons">add</span></button>
+                <button class="tb-btn" onclick="zoomFit()" title="Fit to View"><span class="material-icons">fit_screen</span></button>
+            </div>
+
+            <div class="tb-sep"></div>
+            <span class="save-status ready" id="saveIndicator">
+                <span class="material-icons" style="font-size:12px;">check_circle</span> Ready
+            </span>
+            <button class="btn-preview" onclick="previewCert()">
+                <span class="material-icons" style="font-size:14px;">visibility</span> Preview
+            </button>
+            <button class="btn-save" onclick="saveTemplate()" id="btnSave">
+                <span class="material-icons" style="font-size:14px;">save</span> Save
+            </button>
+        </div>
+
+        <!-- Canvas Viewport -->
+        <div class="builder-canvas-area">
+            <canvas id="certCanvas"></canvas>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <!-- RIGHT PROPERTIES PANEL                                    -->
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <div class="builder-properties" id="propsPanel">
+        <div class="props-header">
+            <span class="material-icons">tune</span> Properties
+        </div>
+        <div id="propsContent">
+            <div class="props-empty">
+                <span class="material-icons">touch_app</span>
+                <p>Select an element on the canvas to edit its properties</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Hidden file input -->
+<input type="file" id="imageUpload" style="display:none" accept="image/*" />
+
+<!-- Preview Modal -->
+<div class="modal fade" id="previewModal" tabindex="-1">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold"><span class="material-icons me-2" style="vertical-align:middle; color:var(--cb-primary);">preview</span>Certificate Preview</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center p-4">
+                <img id="previewImage" src="" class="img-fluid" style="max-height: 70vh; box-shadow: 0 8px 32px rgba(0,0,0,0.15); border-radius: 4px;" />
+            </div>
+            <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
+<script>
+    // ═══════════════════════════════════════════════════════════════
+    // INITIALIZATION
+    // ═══════════════════════════════════════════════════════════════
+    var CANVAS_WIDTH = 1122;   // A4 Landscape at 96dpi
+    var CANVAS_HEIGHT = 793;
+    var templateId = @(Model?.Id ?? 0);
+    var canvas, gridVisible = false, snapEnabled = true;
+    var undoStack = [], redoStack = [], maxHistory = 30;
+    var saving = false;
+
+    document.addEventListener('DOMContentLoaded', function () {
+        canvas = new fabric.Canvas('certCanvas', {
+            width: CANVAS_WIDTH,
+            height: CANVAS_HEIGHT,
+            backgroundColor: '#ffffff',
+            preserveObjectStacking: true,
+            selection: true
+        });
+
+        canvas.on('object:modified', saveState);
+        canvas.on('object:added', function () { updateLayers(); });
+        canvas.on('object:removed', function () { updateLayers(); });
+        canvas.on('selection:created', showProperties);
+        canvas.on('selection:updated', showProperties);
+        canvas.on('selection:cleared', hideProperties);
+
+        // Page layout toggle
+        document.getElementById('pageLayout').addEventListener('change', function () {
+            if (this.value === 'Portrait') {
+                CANVAS_WIDTH = 793; CANVAS_HEIGHT = 1122;
+            } else {
+                CANVAS_WIDTH = 1122; CANVAS_HEIGHT = 793;
+            }
+            canvas.setWidth(CANVAS_WIDTH);
+            canvas.setHeight(CANVAS_HEIGHT);
+            canvas.renderAll();
+        });
+
+        // Load existing template
+        @if (Model != null && !string.IsNullOrEmpty(Model.FabricJson))
+        {
+            <text>
+            try {
+                var jsonData = @Html.Raw(Model.FabricJson);
+                canvas.loadFromJSON(jsonData, function () {
+                    canvas.renderAll();
+                    updateLayers();
+                    saveState();
+                });
+            } catch (e) {
+                console.error('Failed to load template JSON:', e);
+                saveState();
+            }
+            </text>
+        }
+        else
+        {
+            <text>saveState();</text>
+        }
+
+        loadAssets();
+        updateLayers();
+
+        // Snap on move
+        canvas.on('object:moving', snapToGrid);
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function (e) {
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
+            if (e.key === 'Delete' || e.key === 'Backspace') { deleteSelected(); e.preventDefault(); }
+            if (e.ctrlKey && e.key === 'z') { undoAction(); e.preventDefault(); }
+            if (e.ctrlKey && e.key === 'y') { redoAction(); e.preventDefault(); }
+            if (e.ctrlKey && e.key === 'd') { duplicateSelected(); e.preventDefault(); }
+            if (e.ctrlKey && e.key === 's') { saveTemplate(); e.preventDefault(); }
+        });
+    });
+
+    // ═══════════════════════════════════════════════════════════════
+    // STATE MANAGEMENT (Undo/Redo)
+    // ═══════════════════════════════════════════════════════════════
+    function saveState() {
+        var json = JSON.stringify(canvas.toJSON(['name', 'selectable', 'isToken']));
+        if (undoStack.length > 0 && undoStack[undoStack.length - 1] === json) return;
+        undoStack.push(json);
+        if (undoStack.length > maxHistory) undoStack.shift();
+        redoStack = [];
+    }
+
+    function undoAction() {
+        if (undoStack.length <= 1) return;
+        redoStack.push(undoStack.pop());
+        var prev = undoStack[undoStack.length - 1];
+        canvas.loadFromJSON(prev, function () { canvas.renderAll(); updateLayers(); });
+    }
+
+    function redoAction() {
+        if (redoStack.length === 0) return;
+        var next = redoStack.pop();
+        undoStack.push(next);
+        canvas.loadFromJSON(next, function () { canvas.renderAll(); updateLayers(); });
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // ADD ELEMENTS
+    // ═══════════════════════════════════════════════════════════════
+    function addText() {
+        var text = new fabric.IText('Double-click to edit', {
+            left: 100, top: 100, fontSize: 18, fontFamily: 'Arial',
+            fill: '#333333', name: 'Text'
+        });
+        canvas.add(text).setActiveObject(text);
+        saveState();
+    }
+
+    function addHeading() {
+        var text = new fabric.IText('Certificate of Completion', {
+            left: 200, top: 80, fontSize: 36, fontFamily: 'Georgia',
+            fill: '#1E293B', fontWeight: 'bold', textAlign: 'center', name: 'Heading'
+        });
+        canvas.add(text).setActiveObject(text);
+        saveState();
+    }
+
+    function addRect() {
+        var rect = new fabric.Rect({
+            left: 100, top: 100, width: 200, height: 120,
+            fill: 'transparent', stroke: '#0F766E', strokeWidth: 2, name: 'Rectangle'
+        });
+        canvas.add(rect).setActiveObject(rect);
+        saveState();
+    }
+
+    function addCircle() {
+        var circle = new fabric.Circle({
+            left: 200, top: 200, radius: 50,
+            fill: 'transparent', stroke: '#0F766E', strokeWidth: 2, name: 'Circle'
+        });
+        canvas.add(circle).setActiveObject(circle);
+        saveState();
+    }
+
+    function addLine() {
+        var line = new fabric.Line([50, 100, 300, 100], {
+            stroke: '#0F766E', strokeWidth: 2, name: 'Line'
+        });
+        canvas.add(line).setActiveObject(line);
+        saveState();
+    }
+
+    function addBorder() {
+        var border = new fabric.Rect({
+            left: 20, top: 20,
+            width: CANVAS_WIDTH - 40, height: CANVAS_HEIGHT - 40,
+            fill: 'transparent', stroke: '#0F766E', strokeWidth: 3,
+            selectable: true, name: 'Border'
+        });
+        canvas.add(border);
+        canvas.sendToBack(border);
+        saveState();
+    }
+
+    function addImage() {
+        document.getElementById('imageUpload').click();
+    }
+
+    document.getElementById('imageUpload').addEventListener('change', function (e) {
+        if (!e.target.files[0]) return;
+        var reader = new FileReader();
+        reader.onload = function (evt) {
+            fabric.Image.fromURL(evt.target.result, function (img) {
+                img.scaleToWidth(200);
+                img.set({ left: 100, top: 100, name: 'Image' });
+                canvas.add(img).setActiveObject(img);
+                saveState();
+            });
+        };
+        reader.readAsDataURL(e.target.files[0]);
+        e.target.value = '';
+    });
+
+    function addAssetToCanvas(url, assetName) {
+        fabric.Image.fromURL(url, function (img) {
+            img.scaleToWidth(150);
+            img.set({ left: 100, top: 100, name: assetName || 'Asset' });
+            canvas.add(img).setActiveObject(img);
+            saveState();
+        }, { crossOrigin: 'anonymous' });
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // TOKENS
+    // ═══════════════════════════════════════════════════════════════
+    function insertToken(token) {
+        if (token === '{QR_CODE}') {
+            var qrRect = new fabric.Rect({
+                width: 100, height: 100, fill: '#F8FAFC', stroke: '#CBD5E1',
+                strokeWidth: 1, rx: 4, ry: 4
+            });
+            var qrLabel = new fabric.Text('{QR_CODE}', {
+                fontSize: 11, fill: '#94A3B8', fontFamily: 'Arial', textAlign: 'center',
+                originX: 'center', originY: 'center', top: 50, left: 50
+            });
+            var group = new fabric.Group([qrRect, qrLabel], {
+                left: CANVAS_WIDTH - 140, top: CANVAS_HEIGHT - 140,
+                name: '{QR_CODE}', isToken: true
+            });
+            canvas.add(group).setActiveObject(group);
+        } else {
+            var text = new fabric.IText(token, {
+                left: 200, top: 300, fontSize: 22, fontFamily: 'Arial',
+                fill: '#0F766E', name: token, isToken: true
+            });
+            canvas.add(text).setActiveObject(text);
+        }
+        saveState();
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // LAYERS PANEL
+    // ═══════════════════════════════════════════════════════════════
+    function updateLayers() {
+        var list = document.getElementById('layerList');
+        if (!list) return;
+        list.innerHTML = '';
+        var objects = canvas.getObjects();
+        if (objects.length === 0) {
+            list.innerHTML = '<div style="font-size:11px; color:var(--cb-muted); text-align:center; padding:12px;">No elements yet</div>';
+            return;
+        }
+        for (var i = objects.length - 1; i >= 0; i--) {
+            var obj = objects[i];
+            if (obj._isGrid) continue;
+            var div = document.createElement('div');
+            div.className = 'layer-item' + (canvas.getActiveObject() === obj ? ' active' : '');
+            var iconName = obj.type === 'i-text' || obj.type === 'text' ? 'text_fields' :
+                           obj.type === 'rect' ? 'crop_square' :
+                           obj.type === 'circle' ? 'circle' :
+                           obj.type === 'image' ? 'image' :
+                           obj.type === 'line' ? 'horizontal_rule' :
+                           obj.type === 'group' ? 'layers' : 'crop_square';
+            div.innerHTML = '<span class="material-icons">' + iconName + '</span><span>' + (obj.name || obj.type) + '</span>';
+            (function (o) {
+                div.addEventListener('click', function () {
+                    canvas.setActiveObject(o);
+                    canvas.renderAll();
+                    updateLayers();
+                    showProperties();
+                });
+            })(obj);
+            list.appendChild(div);
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // PROPERTIES PANEL
+    // ═══════════════════════════════════════════════════════════════
+    function showProperties() {
+        var obj = canvas.getActiveObject();
+        if (!obj) { hideProperties(); return; }
+        var html = '';
+
+        // Name
+        html += '<div class="prop-group"><label>Name</label>';
+        html += '<input type="text" class="form-control form-control-sm" value="' + escHtml(obj.name || '') + '" onchange="updateProp(\'name\', this.value)" /></div>';
+
+        // Position
+        html += '<div class="prop-group"><label>Position</label><div class="row g-1">';
+        html += '<div class="col-6"><div class="input-group input-group-sm"><span class="input-group-text" style="font-size:10px;padding:2px 6px;">X</span><input type="number" class="form-control form-control-sm" value="' + Math.round(obj.left) + '" onchange="updateProp(\'left\', +this.value)" /></div></div>';
+        html += '<div class="col-6"><div class="input-group input-group-sm"><span class="input-group-text" style="font-size:10px;padding:2px 6px;">Y</span><input type="number" class="form-control form-control-sm" value="' + Math.round(obj.top) + '" onchange="updateProp(\'top\', +this.value)" /></div></div>';
+        html += '</div></div>';
+
+        // Size
+        if (obj.width !== undefined && obj.type !== 'line') {
+            html += '<div class="prop-group"><label>Size</label><div class="row g-1">';
+            html += '<div class="col-6"><div class="input-group input-group-sm"><span class="input-group-text" style="font-size:10px;padding:2px 6px;">W</span><input type="number" class="form-control form-control-sm" value="' + Math.round(obj.width * (obj.scaleX || 1)) + '" onchange="updateSize(\'w\', this.value)" /></div></div>';
+            html += '<div class="col-6"><div class="input-group input-group-sm"><span class="input-group-text" style="font-size:10px;padding:2px 6px;">H</span><input type="number" class="form-control form-control-sm" value="' + Math.round(obj.height * (obj.scaleY || 1)) + '" onchange="updateSize(\'h\', this.value)" /></div></div>';
+            html += '</div></div>';
+        }
+
+        // Rotation
+        html += '<div class="prop-group"><label>Rotation</label>';
+        html += '<div class="input-group input-group-sm"><input type="number" class="form-control form-control-sm" value="' + Math.round(obj.angle || 0) + '" min="0" max="360" onchange="updateProp(\'angle\', +this.value)" /><span class="input-group-text" style="font-size:10px;padding:2px 6px;">&deg;</span></div></div>';
+
+        // Opacity
+        html += '<div class="prop-group"><label>Opacity</label>';
+        html += '<input type="range" class="form-range" min="0" max="1" step="0.05" value="' + obj.opacity + '" oninput="updateProp(\'opacity\', +this.value)" style="height:16px;" /></div>';
+
+        // Text properties
+        if (obj.type === 'i-text' || obj.type === 'text') {
+            html += '<hr style="border-color:#F1F5F9; margin: 8px 0;" />';
+            html += '<div class="prop-group"><label>Font Size</label>';
+            html += '<input type="number" class="form-control form-control-sm" value="' + obj.fontSize + '" min="6" max="200" onchange="updateProp(\'fontSize\', +this.value)" /></div>';
+
+            html += '<div class="prop-group"><label>Font Family</label><select class="form-select form-select-sm" onchange="updateProp(\'fontFamily\', this.value)">';
+            ['Arial', 'Georgia', 'Times New Roman', 'Helvetica', 'Courier New', 'Verdana', 'Trebuchet MS', 'Garamond', 'Palatino'].forEach(function (f) {
+                html += '<option' + (obj.fontFamily === f ? ' selected' : '') + '>' + f + '</option>';
+            });
+            html += '</select></div>';
+
+            html += '<div class="prop-group"><label>Text Color</label>';
+            html += '<input type="color" class="form-control form-control-sm form-control-color" value="' + rgbToHex(obj.fill || '#000000') + '" onchange="updateProp(\'fill\', this.value)" /></div>';
+
+            html += '<div class="prop-group"><label>Style</label><div class="btn-group btn-group-sm w-100 prop-btn-group">';
+            html += '<button class="btn btn-outline-secondary' + (obj.fontWeight === 'bold' ? ' active' : '') + '" onclick="toggleProp(\'fontWeight\',\'bold\',\'normal\')" title="Bold"><strong>B</strong></button>';
+            html += '<button class="btn btn-outline-secondary' + (obj.fontStyle === 'italic' ? ' active' : '') + '" onclick="toggleProp(\'fontStyle\',\'italic\',\'normal\')" title="Italic"><em>I</em></button>';
+            html += '<button class="btn btn-outline-secondary' + (obj.underline ? ' active' : '') + '" onclick="toggleBool(\'underline\')" title="Underline"><u>U</u></button>';
+            html += '</div></div>';
+
+            html += '<div class="prop-group"><label>Align</label><div class="btn-group btn-group-sm w-100 prop-btn-group">';
+            html += '<button class="btn btn-outline-secondary' + (obj.textAlign === 'left' ? ' active' : '') + '" onclick="updateProp(\'textAlign\',\'left\')" title="Left"><span class="material-icons" style="font-size:14px;">format_align_left</span></button>';
+            html += '<button class="btn btn-outline-secondary' + (obj.textAlign === 'center' ? ' active' : '') + '" onclick="updateProp(\'textAlign\',\'center\')" title="Center"><span class="material-icons" style="font-size:14px;">format_align_center</span></button>';
+            html += '<button class="btn btn-outline-secondary' + (obj.textAlign === 'right' ? ' active' : '') + '" onclick="updateProp(\'textAlign\',\'right\')" title="Right"><span class="material-icons" style="font-size:14px;">format_align_right</span></button>';
+            html += '</div></div>';
+        }
+
+        // Shape properties
+        if (obj.type === 'rect' || obj.type === 'circle' || obj.type === 'line') {
+            html += '<hr style="border-color:#F1F5F9; margin: 8px 0;" />';
+
+            if (obj.type !== 'line') {
+                html += '<div class="prop-group"><label>Fill Color</label>';
+                var fillVal = (obj.fill === 'transparent' || obj.fill === '' || !obj.fill) ? '#ffffff' : rgbToHex(obj.fill);
+                html += '<div class="d-flex gap-2 align-items-center"><input type="color" class="form-control form-control-sm form-control-color" style="width:48px;height:28px;" value="' + fillVal + '" onchange="updateProp(\'fill\', this.value)" />';
+                html += '<button class="btn btn-sm btn-outline-secondary" style="font-size:10px;padding:2px 8px;" onclick="updateProp(\'fill\',\'transparent\')">None</button></div></div>';
+            }
+
+            html += '<div class="prop-group"><label>Stroke Color</label>';
+            html += '<input type="color" class="form-control form-control-sm form-control-color" style="width:48px;height:28px;" value="' + rgbToHex(obj.stroke || '#000000') + '" onchange="updateProp(\'stroke\', this.value)" /></div>';
+
+            html += '<div class="prop-group"><label>Stroke Width</label>';
+            html += '<input type="number" class="form-control form-control-sm" value="' + (obj.strokeWidth || 1) + '" min="0" max="20" onchange="updateProp(\'strokeWidth\', +this.value)" /></div>';
+        }
+
+        document.getElementById('propsContent').innerHTML = html;
+    }
+
+    function hideProperties() {
+        document.getElementById('propsContent').innerHTML =
+            '<div class="props-empty"><span class="material-icons">touch_app</span><p>Select an element on the canvas to edit its properties</p></div>';
+    }
+
+    function updateProp(prop, value) {
+        var obj = canvas.getActiveObject();
+        if (!obj) return;
+        obj.set(prop, value);
+        canvas.renderAll();
+        if (prop === 'name') updateLayers();
+        saveState();
+    }
+
+    function toggleProp(prop, val1, val2) {
+        var obj = canvas.getActiveObject();
+        if (!obj) return;
+        obj.set(prop, obj[prop] === val1 ? val2 : val1);
+        canvas.renderAll();
+        showProperties();
+        saveState();
+    }
+
+    function toggleBool(prop) {
+        var obj = canvas.getActiveObject();
+        if (!obj) return;
+        obj.set(prop, !obj[prop]);
+        canvas.renderAll();
+        showProperties();
+        saveState();
+    }
+
+    function updateSize(dim, value) {
+        var obj = canvas.getActiveObject();
+        if (!obj) return;
+        if (dim === 'w') { obj.set('scaleX', +value / obj.width); }
+        else { obj.set('scaleY', +value / obj.height); }
+        canvas.renderAll();
+        saveState();
+    }
+
+    // Helper: escape HTML for attribute values
+    function escHtml(str) {
+        var div = document.createElement('div');
+        div.appendChild(document.createTextNode(str));
+        return div.innerHTML;
+    }
+
+    // Helper: convert rgb()/named colors to hex for color inputs
+    function rgbToHex(color) {
+        if (!color || color === 'transparent') return '#ffffff';
+        if (color.charAt(0) === '#') return color.length > 7 ? color.substring(0, 7) : color;
+        var temp = document.createElement('div');
+        temp.style.color = color;
+        document.body.appendChild(temp);
+        var computed = getComputedStyle(temp).color;
+        document.body.removeChild(temp);
+        var match = computed.match(/\d+/g);
+        if (!match) return '#000000';
+        return '#' + match.slice(0, 3).map(function (x) { return ('0' + parseInt(x).toString(16)).slice(-2); }).join('');
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // TOOLBAR ACTIONS
+    // ═══════════════════════════════════════════════════════════════
+    function setMode(mode) {
+        document.querySelectorAll('.builder-toolbar .tb-btn').forEach(function (b) { b.classList.remove('active'); });
+        document.getElementById('btnSelect').classList.add('active');
+    }
+
+    function bringForward() { var obj = canvas.getActiveObject(); if (obj) { canvas.bringForward(obj); updateLayers(); saveState(); } }
+    function sendBackward() { var obj = canvas.getActiveObject(); if (obj) { canvas.sendBackwards(obj); updateLayers(); saveState(); } }
+
+    function duplicateSelected() {
+        var obj = canvas.getActiveObject();
+        if (!obj) return;
+        obj.clone(function (cloned) {
+            cloned.set({ left: cloned.left + 20, top: cloned.top + 20, name: (cloned.name || 'Copy') + ' Copy' });
+            canvas.add(cloned).setActiveObject(cloned);
+            saveState();
+        });
+    }
+
+    function deleteSelected() {
+        var obj = canvas.getActiveObject();
+        if (obj) { canvas.remove(obj); saveState(); }
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // GRID & SNAP
+    // ═══════════════════════════════════════════════════════════════
+    var gridLines = [];
+    function toggleGrid() {
+        gridVisible = !gridVisible;
+        document.getElementById('btnGrid').classList.toggle('active', gridVisible);
+        if (gridVisible) {
+            var gridSize = 50;
+            for (var i = 0; i <= CANVAS_WIDTH; i += gridSize) {
+                var vLine = new fabric.Line([i, 0, i, CANVAS_HEIGHT], { stroke: '#E2E8F0', strokeWidth: 0.5, selectable: false, evented: false, _isGrid: true });
+                canvas.add(vLine); canvas.sendToBack(vLine); gridLines.push(vLine);
+            }
+            for (var j = 0; j <= CANVAS_HEIGHT; j += gridSize) {
+                var hLine = new fabric.Line([0, j, CANVAS_WIDTH, j], { stroke: '#E2E8F0', strokeWidth: 0.5, selectable: false, evented: false, _isGrid: true });
+                canvas.add(hLine); canvas.sendToBack(hLine); gridLines.push(hLine);
+            }
+        } else {
+            gridLines.forEach(function (l) { canvas.remove(l); });
+            gridLines = [];
+        }
+        canvas.renderAll();
+    }
+
+    function toggleSnap() {
+        snapEnabled = !snapEnabled;
+        document.getElementById('btnSnap').classList.toggle('active', snapEnabled);
+    }
+
+    function snapToGrid(e) {
+        if (!snapEnabled) return;
+        var gridSize = 10;
+        e.target.set({
+            left: Math.round(e.target.left / gridSize) * gridSize,
+            top: Math.round(e.target.top / gridSize) * gridSize
+        });
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // ZOOM
+    // ═══════════════════════════════════════════════════════════════
+    var currentZoom = 1;
+    function zoomIn() { setZoom(currentZoom + 0.1); }
+    function zoomOut() { setZoom(currentZoom - 0.1); }
+    function zoomFit() { setZoom(1); }
+    function setZoom(z) {
+        currentZoom = Math.max(0.3, Math.min(3, z));
+        canvas.setZoom(currentZoom);
+        canvas.setWidth(CANVAS_WIDTH * currentZoom);
+        canvas.setHeight(CANVAS_HEIGHT * currentZoom);
+        document.getElementById('zoomLevel').textContent = Math.round(currentZoom * 100) + '%';
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // SAVE TEMPLATE
+    // ═══════════════════════════════════════════════════════════════
+    function saveTemplate() {
+        if (saving) return;
+        saving = true;
+        var indicator = document.getElementById('saveIndicator');
+        indicator.innerHTML = '<span class="material-icons" style="font-size:12px;">sync</span> Saving...';
+        indicator.className = 'save-status saving';
+        document.getElementById('btnSave').disabled = true;
+
+        // Collect JSON — exclude grid lines
+        var tempGrid = [];
+        canvas.getObjects().forEach(function (o) { if (o._isGrid) tempGrid.push(o); });
+        tempGrid.forEach(function (o) { canvas.remove(o); });
+        var json = JSON.stringify(canvas.toJSON(['name', 'selectable', 'isToken']));
+        tempGrid.forEach(function (o) { canvas.add(o); canvas.sendToBack(o); });
+
+        var token = $('input[name="__RequestVerificationToken"]').val();
+
+        var data = {
+            __RequestVerificationToken: token,
+            Id: templateId,
+            Name: document.getElementById('templateNameInput').value,
+            Type: document.getElementById('templateType').value,
+            Orientation: document.getElementById('pageLayout').value,
+            PageSize: 'A4',
+            FabricJson: json
+        };
+
+        $.ajax({
+            url: '@Url.Action("SaveTemplate", "Admin", new { area = "Certificate" })',
+            type: 'POST',
+            data: data,
+            success: function (resp) {
+                if (resp.success) {
+                    if (resp.id) templateId = resp.id;
+                    indicator.innerHTML = '<span class="material-icons" style="font-size:12px;">check_circle</span> Saved';
+                    indicator.className = 'save-status saved';
+                    setTimeout(function () {
+                        indicator.innerHTML = '<span class="material-icons" style="font-size:12px;">check_circle</span> Ready';
+                        indicator.className = 'save-status ready';
+                    }, 2500);
+                } else {
+                    indicator.innerHTML = '<span class="material-icons" style="font-size:12px;">error</span> Error';
+                    indicator.className = 'save-status error';
+                    alert('Save failed: ' + (resp.message || 'Unknown error'));
+                }
+                saving = false;
+                document.getElementById('btnSave').disabled = false;
+            },
+            error: function (xhr) {
+                indicator.innerHTML = '<span class="material-icons" style="font-size:12px;">error</span> Error';
+                indicator.className = 'save-status error';
+                console.error('Save error:', xhr.status, xhr.responseText);
+                alert('Could not save template. Please try again.');
+                saving = false;
+                document.getElementById('btnSave').disabled = false;
+            }
+        });
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // PREVIEW
+    // ═══════════════════════════════════════════════════════════════
+    function previewCert() {
+        var tempGrid = [];
+        canvas.getObjects().forEach(function (o) { if (o._isGrid) tempGrid.push(o); });
+        tempGrid.forEach(function (o) { canvas.remove(o); });
+
+        var dataUrl = canvas.toDataURL({ format: 'png', multiplier: 2 });
+        document.getElementById('previewImage').src = dataUrl;
+        new bootstrap.Modal(document.getElementById('previewModal')).show();
+
+        tempGrid.forEach(function (o) { canvas.add(o); canvas.sendToBack(o); });
+        canvas.renderAll();
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // ASSETS
+    // ═══════════════════════════════════════════════════════════════
+    function loadAssets() {
+        $.get('@Url.Action("GetAssets", "Admin", new { area = "Certificate" })', function (data) {
+            var container = document.getElementById('assetList');
+            container.innerHTML = '';
+            if (!data || data.length === 0) {
+                container.innerHTML = '<div style="font-size:11px; color:var(--cb-muted);">' +
+                    '<span class="material-icons" style="font-size:14px; vertical-align:middle;">info</span> ' +
+                    'No assets uploaded. <a href="@Url.Action("Assets", "Admin", new { area = "Certificate" })" style="color:var(--cb-primary);">Upload assets</a></div>';
+                return;
+            }
+            data.forEach(function (asset) {
+                var src = asset.FilePath || asset.Url || '';
+                if (src && !src.startsWith('http') && !src.startsWith('/')) src = '/' + src;
+                var img = document.createElement('img');
+                img.className = 'asset-thumb';
+                img.src = src;
+                img.title = asset.Name || 'Asset';
+                img.alt = asset.Name || 'Asset';
+                img.onerror = function () { this.style.display = 'none'; };
+                img.onclick = function () { addAssetToCanvas(src, asset.Name); };
+                container.appendChild(img);
+            });
+        }).fail(function () {
+            document.getElementById('assetList').innerHTML =
+                '<div style="font-size:11px; color:#DC2626;"><span class="material-icons" style="font-size:14px; vertical-align:middle;">warning</span> Could not load assets.</div>';
+        });
+    }
+</script>
+@Html.AntiForgeryToken()
+}

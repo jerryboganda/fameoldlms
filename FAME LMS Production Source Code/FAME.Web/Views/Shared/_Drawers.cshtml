@@ -1,0 +1,167 @@
+    <!--begin::Drawers-->
+    <!--begin::Activities drawer-->
+    @{
+        var user = ViewBag.User;
+        Html.RenderAction("Notifications", "Student", new { area = "", side = "ST" });
+    }
+    <!--end::Activities drawer-->
+    <!--begin::Chat drawer-->
+    <div id="kt_drawer_chat" class="bg-body" data-kt-drawer="true" data-kt-drawer-name="chat" data-kt-drawer-activate="true" data-kt-drawer-overlay="true" data-kt-drawer-width="{default:'300px', 'md': '500px'}" data-kt-drawer-direction="end" data-kt-drawer-toggle="#kt_drawer_chat_toggle" data-kt-drawer-close="#kt_drawer_chat_close">
+        <!--begin::Messenger-->
+
+        <div class="card w-100 rounded-0 border-0" id="kt_drawer_chat_messenger">
+            <!--begin::Card header-->
+            <div class="card-header pe-5" id="kt_drawer_chat_messenger_header">
+                <!--begin::Title-->
+                <div class="card-title">
+                    <!--begin::User-->
+                    <div class="d-flex justify-content-center flex-column me-3">
+                        <a href="#" id="ConversationName" class="fs-4 fw-bold text-gray-900 text-hover-primary me-1 mb-2 lh-1">No Conversation</a>
+                        <!--begin::Info-->
+                        <div class="mb-0 lh-1">
+                            @*<span class="badge badge-success badge-circle w-10px h-10px me-1"></span>*@
+                            @*<span class="fs-7 fw-semibold text-muted">Active</span>*@
+                        </div>
+                        <!--end::Info-->
+                    </div>
+                    <!--end::User-->
+                </div>
+                <!--end::Title-->
+                <!--begin::Card toolbar-->
+                <div class="card-toolbar">
+                    <!--begin::Menu-->
+                    <div class="me-2">
+                        <button class="btn btn-sm btn-icon btn-active-light-primary" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+                            <i class="bi bi-three-dots fs-3"></i>
+                        </button>
+                        <!--begin::Menu 3-->
+                        <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-200px py-3" data-kt-menu="true">
+                            <div class="menu-item px-3">
+                                <a href="#" class="menu-link flex-stack px-3" data-bs-toggle="modal" data-bs-target="#kt_modal_invite_friends">
+                                    Invite Contacts
+                                    <i class="fas fa-exclamation-circle ms-2 fs-7" data-bs-toggle="tooltip" title="Specify a contact email to send an invitation"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <!--end::Menu 3-->
+                    </div>
+                    <!--end::Menu-->
+                    <!--begin::Close-->
+                    <div class="btn btn-sm btn-icon btn-active-light-primary" id="kt_drawer_chat_close">
+                        <!--begin::Svg Icon | path: icons/duotune/arrows/arr061.svg-->
+                        <span class="svg-icon svg-icon-2">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect opacity="0.5" x="6" y="17.3137" width="16" height="2" rx="1" transform="rotate(-45 6 17.3137)" fill="currentColor" />
+                                <rect x="7.41422" y="6" width="16" height="2" rx="1" transform="rotate(45 7.41422 6)" fill="currentColor" />
+                            </svg>
+                        </span>
+                        <!--end::Svg Icon-->
+                    </div>
+                    <!--end::Close-->
+                </div>
+                <!--end::Card toolbar-->
+            </div>
+            <!--end::Card header-->
+            <!--begin::Card body-->
+            <div class="card-body" id="kt_drawer_chat_messenger_body">
+                <!--begin::Messages-->
+
+                <div class="scroll-y me-n5 pe-5" data-kt-element="messages" data-kt-scroll="true" data-kt-scroll-activate="true" data-kt-scroll-height="auto" data-kt-scroll-dependencies="#kt_drawer_chat_messenger_header, #kt_drawer_chat_messenger_footer" data-kt-scroll-wrappers="#kt_drawer_chat_messenger_body" data-kt-scroll-offset="0px">
+                    <div id="msgcontainer" data-kt-element="msgcontainer">
+
+                    </div>
+                    <!--begin::Message(template for out)-->
+                    <div class="d-flex justify-content-end mb-10 d-none" data-kt-element="template-out">
+                        <!--begin::Wrapper-->
+                        <div class="d-flex flex-column align-items-end">
+                            <!--begin::User-->
+                            <div class="d-flex align-items-center mb-2">
+                                <!--begin::Details-->
+                                <div class="me-3">
+                                    <span class="text-muted fs-7 mb-1">Just now</span>
+                                    <a href="#" class="fs-5 fw-bold text-gray-900 text-hover-primary ms-1">You</a>
+                                </div>
+                                <!--end::Details-->
+                                <!--begin::Avatar-->
+                                <div class="symbol symbol-35px symbol-circle">
+                                    <img alt="Pic" src="@Url.Content("~/Images/" + (user?.User_Pic ?? "userLogo.jpg"))" />
+                                </div>
+                                <!--end::Avatar-->
+                            </div>
+                            <!--end::User-->
+                            <!--begin::Text-->
+                            <div class="p-5 rounded bg-light-primary text-dark fw-semibold mw-lg-400px text-end" data-kt-element="message-text"></div>
+                            <!--end::Text-->
+                        </div>
+                        <!--end::Wrapper-->
+                    </div>
+                    <!--end::Message(template for out)-->
+                    <!--begin::Message(template for in)-->
+                    <div class="d-flex justify-content-start mb-10 d-none" data-kt-element="template-in">
+                        <!--begin::Wrapper-->
+                        <div class="d-flex flex-column align-items-start">
+                            <!--begin::User-->
+                            <div class="d-flex align-items-center mb-2">
+                                <!--begin::Avatar-->
+                                <div class="symbol symbol-35px symbol-circle">
+                                    <img alt="Pic" data-kt-element="pic-src" src="" />
+                                </div>
+                                <!--end::Avatar-->
+                                <!--begin::Details-->
+                                <div class="ms-3">
+                                    <a href="#" data-kt-element="sender-name" class="fs-5 fw-bold text-gray-900 text-hover-primary me-1"></a>
+                                    <span class="text-muted fs-7 mb-1">Just now</span>
+                                </div>
+                                <!--end::Details-->
+                            </div>
+                            <!--end::User-->
+                            <!--begin::Text-->
+                            <div class="p-5 rounded bg-light-info text-dark fw-semibold mw-lg-400px text-start" data-kt-element="message-text">Right before vacation season we have the next Big Deal for you.</div>
+                            <!--end::Text-->
+                        </div>
+                        <!--end::Wrapper-->
+                    </div>
+                    <!--end::Message(template for in)-->
+                </div>
+                <!--end::Messages-->
+            </div>
+            <!--end::Card body-->
+            <!--begin::Card footer-->
+            <div class="card-footer pt-4" id="kt_drawer_chat_messenger_footer">
+                <a style="display:none" href="" id="urlFile" target="_blank"><i class="bi bi-paperclip fs-3"></i> <b id="nameFile"></b></a>
+                <textarea class="form-control form-control-flush mb-3" id="ConversationID" data-convid="" rows="1" data-kt-element="input" placeholder="Type a message"></textarea>
+                <div class="d-flex flex-stack">
+                    <div class="d-flex align-items-center me-2 upload-btn-wrapper">
+                        <button id="btnUpload" class="btn btnUpload btn-sm btn-icon btn-active-light-primary me-1"> <i class="bi bi-paperclip fs-3"></i> </button>
+                        <input type="file" id="File" name="File" />
+                    </div>
+                    <button class="btn btn-primary" type="button" data-kt-element="send">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end::Chat drawer-->
+    <div id="kt_engage_demos" class="bg-body" data-kt-drawer="true" data-kt-drawer-name="explore" data-kt-drawer-activate="true" data-kt-drawer-overlay="true" data-kt-drawer-width="{default:'350px', 'lg': '475px'}" data-kt-drawer-direction="end" data-kt-drawer-toggle="#kt_engage_demos_toggle" data-kt-drawer-close="#kt_engage_demos_close">
+        <!--begin::Card-->
+        <div class="card shadow-none rounded-0 w-100">
+            <!--begin::Header-->
+            <div class="card-header" id="kt_engage_demos_header">
+                <h3 class="card-title fw-bold text-gray-700">Demos</h3>
+                <div class="card-toolbar">
+                    <button type="button" class="btn btn-sm btn-icon btn-active-color-primary h-40px w-40px me-n6" id="kt_engage_demos_close">
+                        <!--begin::Svg Icon | path: icons/duotune/arrows/arr061.svg-->
+                        <span class="svg-icon svg-icon-2">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect opacity="0.5" x="6" y="17.3137" width="16" height="2" rx="1" transform="rotate(-45 6 17.3137)" fill="currentColor" />
+                                <rect x="7.41422" y="6" width="16" height="2" rx="1" transform="rotate(45 7.41422 6)" fill="currentColor" />
+                            </svg>
+                        </span>
+                        <!--end::Svg Icon-->
+                    </button>
+                </div>
+            </div>
+            <!--end::Header-->
+        </div>
+        <!--end::Card-->
+    </div>
+    <!--end::Drawers-->

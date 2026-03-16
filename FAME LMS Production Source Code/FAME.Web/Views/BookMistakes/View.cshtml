@@ -1,0 +1,76 @@
+﻿@using First_Aid_Made_Easy.BLL
+@model First_Aid_Made_Easy.DAL.tbl_BookMistakes
+
+@{
+	Layout = "~/Views/Shared/_LayoutTeacher.cshtml";
+	ViewBag.Title = "Admin Dashboard";
+
+}
+
+@{ int Sr = 0; }
+<div class="pt-32pt">
+	<div class="page__container d-flex flex-column flex-md-row align-items-center text-center text-sm-left">
+		<div class="flex d-flex flex-column flex-sm-row align-items-center mb-24pt mb-md-0">
+
+			<div class="mb-24pt mb-sm-0 mr-sm-24pt">
+                <h2 class="mb-0">Book Mistakes Detail</h2>
+				<ol class="breadcrumb p-0 m-0">
+                    <li class="breadcrumb-item active">
+                        Book Mistakes Detail
+                    </li>
+				</ol>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+<div id="div-Detail" class="page__container">
+
+	<div class="row">
+		<div class="col-sm-12 text-center">
+			<br /><h2><b>@Model.Name</b></h2>
+			<br /><h4><b>@Model.Phone</b></h4>
+			<br /><h4><b>@Model.Email</b></h4>
+		</div>
+		<div class="col-sm-12">
+
+            <table class="table">
+                <tr>
+                    <th>Book Name:</th>
+                    <td>@Model.BookName </td>
+                </tr>
+                <tr>
+                    <th>Book Edition :</th>
+                    <td>@Model.BookEdition</td>
+                </tr>
+                <tr>
+                    <th>PageNo:</th>
+                    <td>@Model.PageNo</td>
+                </tr>
+                <tr>
+                    <th>Question:</th>
+                    <td>@Model.QuestionNo</td>
+                </tr>
+                <tr>
+                    <th>Detail:</th>
+                    <td>@Model.Detail</td>
+                </tr>
+                <tr>
+                    <th>Correction:</th>
+                    <td>@Model.Correction</td>
+                </tr>
+                <tr>
+                    <td colspan="2"><img style="width:100%;height:auto" src="~/Images/@Model.PicPath" /></td>
+                </tr>
+            </table>
+		</div>
+	</div>
+</div>
+
+@section scripts {
+	<script src="~/Scripts/js/UploadFile.js"></script>
+	@Scripts.Render("~/bundles/jqueryval")
+
+}

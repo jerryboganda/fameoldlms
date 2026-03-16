@@ -1,0 +1,36 @@
+﻿@model List<First_Aid_Made_Easy.DAL.tbl_BookMistakes>
+@{
+	int Sr = 0;
+	var list = Model;
+}
+<table id="DTable" class="table  table-bordered">
+	<thead>
+		<tr style="background-color: #364e9c">
+			<th>Sr.</th>
+			<th>Date</th>
+			<th>Book</th>
+			<th>Student</th>
+			<th>Page</th>
+			<th>Question</th>
+			<th></th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var i in list)
+		{
+			Sr++;
+			<tr>
+				<td>@Sr</td>
+				<td>@string.Format("{0:dd/MM/yyy hh:mm tt}", i.CreatedDT)</td>
+				<td>@i.BookName <br /> @i.BookEdition </td>
+				<td>@i.Name <br /> @i.Phone </td>
+				<td>@i.PageNo</td>
+				<td>@i.QuestionNo</td>
+                <td>
+                    <a href="/BookMistakes/View/@i.Id" class="text-info"><i class="fa fa-book Font20"></i></a>
+                    <a href="javascript:;" id="btnRowDelete" data-url="/BookMistakes/Delete/@i.Id" data-name=" Mistake " class="text-danger"><i class="fa fa-trash Font20"></i></a>
+                </td>
+			</tr>
+		}
+	</tbody>
+</table>

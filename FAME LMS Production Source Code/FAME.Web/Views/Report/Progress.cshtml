@@ -1,0 +1,120 @@
+﻿@model First_Aid_Made_Easy.Models.StudentVM
+@{
+    ViewBag.Title = "Admin";
+    Layout = "~/Views/Shared/_LayoutTeacher.cshtml";
+}
+<!-- Select2 -->
+<link type="text/css" href="~/Content/assets/css/select2.css" rel="stylesheet">
+<link type="text/css" href="~/Content/assets/vendor/select2/select2.min.css" rel="stylesheet">
+
+<!-- DateRangePicker -->
+<link type="text/css" href="~/Content/assets/vendor/daterangepicker.css" rel="stylesheet">
+
+<div class="pt-32pt">
+    <div class="container-fluid page__container d-flex flex-column flex-md-row align-items-center text-center text-sm-left">
+        <div class="flex d-flex flex-column flex-sm-row align-items-center">
+            <div class="mb-24pt mb-sm-0 mr-sm-24pt">
+                <h2 class="mb-0">Progress Report </h2>
+            </div>
+        </div>
+    </div>
+    <div class="page-section border-bottom-2">
+        <div style="margin: 0; max-width: 100%" class="container-fluid page__container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="page-separator">
+                        <div class="page-separator__text">Search Filters</div>
+                    </div>
+                    <div class="row" style="margin-bottom:20px !important">
+                        <div class="col-md-12 mb-10" style="margin-bottom:20px">
+                            <div class="text-muted">Select a university then Students will be loaded for that university in Students dropdown . You can select multiple students if you want report for all students do not select any student</div>
+                            <div class="text-muted">If you select a Question paper and liner then it will be Paper wise report</div>
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <label class="form-label">University</label>
+                            @Html.DropDownList("UniversityID", new SelectList(First_Aid_Made_Easy.BLL.Common.Universities.Where(x => x.Value > 0 && x.IsActive), "Value", "Text"), "Please Select", new { @class = "form-control select2", @required = "required", @data_toggle = "select" })
+                        </div>
+                        <div class="col-md-4">
+                            <label>Question Paper</label>&emsp;
+                            @Html.DropDownList("PaperID", new SelectList(ViewBag.Papers, "Value", "Text"), "Please Select", new { @class = "form-control select2", @data_toggle = "select" })
+                        </div>
+                        <div class="col-md-4" style="padding-top:30px">
+                            <label><input type="radio" value="LN" name="rptType" checked /> Linear</label>&emsp;
+                            <label><input type="radio" value="GR" name="rptType" /> Group Wise</label> &emsp;
+                            <label><input type="radio" value="OW" name="rptType" /> Only Watch Hours</label> &emsp;
+                        </div>
+                        <div class="col-md-12">
+                            <label>Section</label>&emsp;
+                            @Html.DropDownList("SectionID", new SelectList(ViewBag.Sections, "Value", "Text"), "Please Select", new { @multiple = true, @class = "form-control select2", @data_toggle = "select" })
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label">Students</label>
+                            <select id="StudentID" multiple class="select2 form-control"></select>
+                        </div>
+                        <div style="margin-top:25px" class="text-right col-md-12">
+                            <button id="btnShow" class="btn btn-outline-primary" onclick="ShowReport(false)">Preview Report</button>
+                            <button id="btnShow" class="btn btn-outline-primary" onclick="ShowReport(true)">Export To PDF</button>
+                            <button id="btnShow" class="btn btn-outline-primary" onclick="ShowReport(false , true)">Export To Excel</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12 card" style="min-height: 400px; padding: 30px;" id="divReport">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section scripts {
+    @if (TempData["Success"] != null)
+    {
+        <script>
+            toastr.success("Data Saved Successfully");
+        </script>
+    }
+
+    <script>
+        $("#UniversityID").change(function () {
+            if ($(this).val() > 0) {
+                $.ajax({
+                    url: "/Report/GetStudent?T=" + $(this).val(),
+                    success: function (data) {
+                        $("#StudentID").html($(data).selectListToHtml());
+                    }
+                })
+            } else
+                $("#StudentID").html("");
+        })
+
+        function ShowReport(IsPDF, IsExcel) {
+            var PaperID = $("#PaperID").val() || 0;
+            var UniversityID = $('#UniversityID').val() || 0;
+            var SectionID = ($("#SectionID").val() ?? []).join(",");
+            if (UniversityID > 0 || PaperID > 0) {
+                var SID = ($("#StudentID").val() ?? []).join(",");
+                var rptType = $("input[name=rptType]:checked").val();
+                var SectionName = $("#SectionID option:selected").toArray().map(function (o) { return o.text; }).join(' @@ ');
+                var url = `/Report/GetProgress?UniversityID=${UniversityID}&StudentID=${SID}&rptType=${rptType}&PaperID=${PaperID}&SectionID=${SectionID}&IsPDF=${IsPDF}&IsExcel=${IsExcel}&SectionName=${SectionName}`
+                if (IsPDF || IsExcel)
+                    window.open(url, "_blank");
+                else {
+                    $(".divLoader").show();
+                    $.ajax({
+                        url: url,
+                        success: function (html) {
+                            $("#DTable").DataTable().destroy();
+                            $("#divReport").html(html);
+                            $("#DTable").DataTable();
+                            $(".divLoader").hide();
+                        }
+                    })
+                }
+            }
+        }
+    </script>
+
+}
+

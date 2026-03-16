@@ -1,0 +1,208 @@
+﻿@using First_Aid_Made_Easy.BLL;
+@using Microsoft.AspNet.Identity;
+@using First_Aid_Made_Easy.Models;
+@model QuestionPaperVM
+@{
+    ViewBag.Title = "Review Questions";
+    ViewBag.BreadCrumb = new String[] { "Solve", "Review Questions" };
+    if (Request.IsAuthenticated)
+    {
+        Layout = "~/Views/Shared/_LayoutNew.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_LayoutFree.cshtml";
+    }
+    var MCQs = Model.QuestionList?.Where(x => x.Type == (int)QuestionType.Mcq).ToList();
+
+    var Result = (First_Aid_Made_Easy.Models.ResultVM)ViewBag.Result ?? new First_Aid_Made_Easy.Models.ResultVM();
+
+    var user = Common.GetUserNameByASpUserID(User.Identity.GetUserId());
+
+    bool IsComplete = Result.ObtainedMarks > 0;
+
+    if (Result?.Detail != null)
+    {
+        var Ids = Result.Detail.Where(x => x.IsTrue != null).Select(x => x.QuestionID).ToList();
+        MCQs.Where(x => Ids.Contains(x.Question_Id)).ToList().ForEach(x => x.IsSolved = true);
+    }
+    int Sr = 0;
+}
+
+
+@section styles {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput-typeahead.css" integrity="sha512-wu4jn1tktzX0SHl5qNLDtx1uRPSj+pm9dDgqsrYUS16AqwzfdEmh1JR8IQL7h+phL/EAHpbBkISl5HXiZqxBlQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput.css" integrity="sha512-xmGTNt20S0t62wHLmQec2DauG9T+owP9e6VU8GigI0anN7OXLip9i7IwEhelasml2osdxX71XcYm6BQunTQeQg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        .label-info {
+            background-color: #2e3e49;
+            padding: 4px;
+            margin: 2px;
+            border-radius: 2px;
+            margin-bottom: 4px;
+        }
+
+        .bootstrap-tagsinput {
+            min-width: 100% !important;
+        }
+
+        .btnActive {
+            background-color: #ed7c7c
+        }
+    </style>
+    <style>
+
+        .questionbar {
+            overflow: hidden;
+            background-color: #caeefb;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            box-shadow: 0px 10px 5px #b6b6b6, 0px -5px 5px #b6b6b6;
+        }
+
+        #kt_scrolltop {
+            display: none !important;
+        }
+
+        .fa-flag {
+            color: red !important;
+        }
+
+        .bullet-dot {
+            color: black !important
+        }
+
+        .bg-apna {
+            background-color: #f9fafb !important;
+        }
+    </style>
+    <style>
+        td > .fa-check, td > .fa-xmark {
+            font-size: 20px;
+            color: white;
+            display: none;
+        }
+
+        .rightAns {
+            background-color: #50cd89;
+        }
+
+        .wrongAns {
+            background-color: #ed7c7c;
+        }
+
+        .ommitted.rightAns {
+            background-color: #edbe7c;
+        }
+
+        .rightAns .fa-check {
+            display: contents;
+        }
+
+		.wrongAns .fa-xmark {
+			display: contents;
+		}
+
+        .freeScroll {
+            height: 50px !important;
+            overflow: scroll;
+        }
+    </style>
+}
+<div class="container-xxl bg-apna" id="kt_content_container">
+    <div class="col-sm-12 mb-8" style="text-align:right">
+
+        <button class="btn btn-primary btn-outline " id="btnPrev">
+            <i class="fa fa-backward"></i> Previous
+        </button>
+        <button class="btn  btn-primary btn-outline" id="btnNext">
+            <i class="fa fa-forward"></i> Next
+        </button>
+        <a href="@(Request.IsAuthenticated ? "/QuestionPaper/StudentList" :"/" )" class="btn btn-secondary"><i class="fa fa-backward"></i>  Exit</a>
+    </div>
+    <div class="row mcqContaner">
+        @if (MCQs != null)
+        {
+            Sr = 0;
+            foreach (First_Aid_Made_Easy.Models.QuestionVM m in MCQs)
+            {
+                Sr++;
+                <div class="col-sm-12 singlemcq" style="display:none" id="singlemcq-@Sr">
+                    <div class="card">
+                        <!--begin::Card head-->
+                        <div class="card-header card-header-stretch">
+                            <!--begin::Title-->
+                            <div class="card-title d-flex align-items-center">
+
+                                <h3 class="fw-bold m-0 text-gray-800"><span class="text-primary fs-2"><i class="fa text-primary fs-2 fa-calendar-alt"></i> @Sr - </span> @m.Question</h3>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="tab-content mcq-Content">
+                                <div id="mcq" style="" data-isfav="true" data-no="@Sr" data-id="@m.Question_Id" class="card-body p-0 tab-pane fade show active allmcq">
+
+                                    <div class="timeline">
+                                        <div class="timeline-item">
+                                            <div class="timeline-line w-40px"></div>
+                                            <div class="timeline-content mt-n1">
+                                                <table class="w3-table w3-bordered">
+
+                                                    @{
+                                                        ResultDetailVM r = Result.Detail?.FirstOrDefault(x => x.QuestionID == m.Question_Id) ?? new ResultDetailVM();
+                                                        foreach (First_Aid_Made_Easy.Models.OptionVM o in m.Options)
+                                                        {
+                                                            bool IsChecked = o.OptionText?.Trim() == r.Answer?.Trim();
+
+                                                            <tr class="@(o.IsCorrect ? "rightAns" : IsChecked ? "wrongAns": "") @( (r.Answer == null) ? "ommitted" : "" )">
+                                                                <td style="width: 60px">
+                                                                    <input class="option" name="option@(m.Question_Id)" value="@o.OptionText" @(IsChecked ? "checked" : "") data-istrue="@o.IsCorrect" type="radio" />
+                                                                </td>
+                                                                <td>@o.OptionText   </td>
+																<td class="text-end"><i class="fa fa-check"></i><i class="fa fa-xmark"></i> <b style="color:black" >@string.Format(o.CheckedByStudentsPerc < 1 ? "{0:n1}" : "{0:n0}", o.CheckedByStudentsPerc)%</b> </td>
+                                                            </tr>
+                                                        }
+                                                    }
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row ans-explanation ">
+                                <div class="col-sm-12"><h1>Explanation</h1> </div>
+                                <div class="col-sm-12 data"> @Html.Raw(m.AnsExplain) </div>
+                                <div class="col-sm-12"><hr /> </div>
+                            </div>
+                        </div>
+                        <!--end::Card body-->
+                    </div>
+                </div>
+
+            }
+        }
+    </div>
+</div>
+
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            $("#singlemcq-1").show();
+        })
+        $("#btnNext").click(function () {
+            var c = $(".singlemcq:visible");
+            c.next().show();
+            if (c.next().is(":visible")) c.hide();
+        })
+        $("#btnPrev").click(function () {
+            var c = $(".singlemcq:visible");
+            c.prev().show();
+            if (c.prev().is(":visible")) c.hide();
+        });
+    </script>
+}
+

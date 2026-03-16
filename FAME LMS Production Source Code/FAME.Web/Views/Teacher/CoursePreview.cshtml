@@ -1,0 +1,355 @@
+﻿@model First_Aid_Made_Easy.Models.SectionVM
+@using Microsoft.AspNet.Identity
+@using First_Aid_Made_Easy.BLL
+@{
+    ViewBag.Title = "Take Course";
+    int i = 0;
+}
+<style>
+    .video-container {
+        position: relative;
+    }
+
+    .video {
+        width: 100%;
+        height: 100%;
+    }
+
+    /*.watermark {
+        position: absolute;
+        left: 3%;
+        top: 3%;
+        color: white;
+        animation: 15s moving-watermark infinite;
+    }*/
+    .WaterMark {
+        position: absolute;
+        color: red;
+        font-size: smaller;
+    }
+
+    .MidPosition {
+        left: 50%;
+        top: 50%;
+    }
+
+    .LTPosition {
+        left: 25%;
+        top: 25%;
+    }
+
+    .RBPosition {
+        left: 75%;
+        top: 75%;
+    }
+
+    .RTPosition {
+        left: 75%;
+        top: 25%;
+    }
+
+    .LBPosition {
+        left: 25%;
+        top: 75%;
+    }
+
+    video::-webkit-media-controls-fullscreen-button {
+        display: none !important;
+    }
+
+    .fullscreen-button {
+        position: absolute;
+        top: 2%;
+        left: 94%;
+        z-index: 10;
+    }
+
+    /*@@keyframes moving-watermark {
+        0% {
+            left: 50%;
+            top: 50%;
+        }
+
+        25% {
+            left: 50%;
+            top: 50%;
+        }
+
+        50% {
+            left: 50%;
+            top: 50%;
+        }
+
+        75% {
+            left: 50%;
+            top: 50%;
+        }
+
+        100% {
+            left: 50%;
+            top: 50%;
+        }
+    }*/
+
+</style>
+
+<div class="page-section bg-alt border-bottom-2">
+    <div class="container page__container">
+
+        <div class="d-flex flex-column flex-lg-row align-items-center">
+            <div class="d-flex flex-column flex-md-row align-items-center flex mb-16pt mb-lg-0 text-center text-md-left">
+                <div class="flex">
+                    <h1 class="h2 m-0">@Model.Section_Name</h1>
+                </div>
+            </div>
+            <div class="ml-lg-16pt">
+                <a href="/Student/MyCourses" class="btn btn-light">Library</a>
+            </div>
+        </div>
+
+    </div>
+</div>
+<div class="page-section border-bottom-2">
+    <div class="container page__container">
+        <div class="row">
+            <div class="col-lg-10">
+                <div class="js-player card bg-primary embed-responsive embed-responsive-16by9 mb-24pt">
+                    <div class="player embed-responsive-item">
+                        <div class="player__content">
+                            <div class="player__image" style="--player-image: url(@Url.Content(Server.MapPath("~/Images/"+Model.Course_Name)))"></div>
+                            <a href="" class="player__play bg-primary">
+                                <span class="material-icons">play_arrow</span>
+                            </a>
+                        </div>
+                        <div id="vid-cont" class="player__embed d-none">
+                            <iframe src="#"
+                                    id="Iframe"
+                                    class="embed-responsive-item"
+                                    loading="lazy"
+                                    style="border: none;
+                                    position: absolute; top: 0; height: 100%; width: 100%;"
+                                    allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;">
+                            </iframe>
+                            <span id="EmailWM" class="WaterMark">@User.Identity.GetUserName()</span>
+                            <span id="PhoneWM" class="WaterMark">@ViewBag.PhoneNo</span>
+                            <span id="NameWM" class="WaterMark">@ViewBag.Name</span>
+                            <button class="fullscreen-button" onclick="toggleFullscreen()">
+                                <i class="material-icons">fullscreen</i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <p id="videoName" style="font-weight:bolder" class="lead measure-lead text-70 mb-24pt"></p>
+                <div class="mb-24pt">
+                    <span class="chip chip-outline-secondary d-inline-flex align-items-center">
+                        <i class="material-icons icon--left">schedule</i><span id="VideoLenght"></span>
+                    </span>
+                    <span class="chip chip-outline-secondary d-inline-flex align-items-center">
+                        <i class="material-icons icon--left">assessment</i>
+                        Beginner
+                    </span>
+                </div>
+            </div>
+            <div class="col-lg-8">
+                <div class="page-separator">
+                    <div class="page-separator__text">Table of contents</div>
+                </div>
+                <div class="accordion js-accordion accordion--boxed " id="parent">
+                    <div class="accordion__menu collapse show" id="course-toc-@i">
+                        @foreach (var v in Model.VideoList)
+                        {
+
+                            <div class="accordion__menu-link">
+                                @if (v.IsWatched)
+                                {
+                                    <input name="progress" value="@v.Video_Id" class="form-check-label progress" checked type="checkbox" />
+                                }
+                                else
+                                {
+                                    <input name="progress" value="@v.Video_Id" class="form-check-label progress" type="checkbox" />
+                                }
+                                <a href="#" class="flex btnplayVideo" data-id="@v.Video_Id"><strong>&nbsp;&nbsp;@v.Video_Name</strong></a>
+                                <span class="text-muted">
+                                    <span class="material-icons icon-16pt text-black-50 mr-4pt">access_time</span>@v.Video_Length min
+                                </span>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-body py-16pt text-center">
+                        <span class="icon-holder icon-holder--outline-secondary rounded-circle d-inline-flex mb-8pt">
+                            <i class="material-icons">timer</i>
+                        </span>
+                        <h4 class="card-title"><strong>Unlock Section</strong></h4>
+                        <p class="card-subtitle text-70 mb-24pt">Get access to all videos in This Section</p>
+                        <button type="button" class="btn btn-accent mb-8pt" data-id="@Model.Section_ID" id="btnUnlockSec">Unlock - Only Rs.@Model.Section_Price/mo</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="page-section bg-alt">
+    <div class="container page__container">
+
+
+        <div class="page-separator">
+            <div class="page-separator__text">Feedback</div>
+        </div>
+
+        <div class="row">
+
+            <div class="col-sm-6 col-md-4">
+
+                <div class="card card-feedback card-body">
+                    <blockquote class="blockquote mb-0">
+                        <p class="text-70 small mb-0">A wonderful course on how to start. Eddie beautifully conveys all essentials of a becoming a good Angular developer. Very glad to have taken this course. Thank you Eddie Bryan.</p>
+                    </blockquote>
+                </div>
+                <div class="media ml-12pt">
+                    <div class="media-left mr-12pt">
+                        <a href="student-profile.html" class="avatar avatar-sm">
+                            <!-- <img src="~/Content/assets/images/people/110/guy-.jpg" width="40" alt="avatar" class="rounded-circle"> -->
+                            <span class="avatar-title rounded-circle">UK</span>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-sm-6 col-md-4">
+
+                <div class="card card-feedback card-body">
+                    <blockquote class="blockquote mb-0">
+                        <p class="text-70 small mb-0">A wonderful course on how to start. Eddie beautifully conveys all essentials of a becoming a good Angular developer. Very glad to have taken this course. Thank you Eddie Bryan.</p>
+                    </blockquote>
+                </div>
+                <div class="media ml-12pt">
+                    <div class="media-left mr-12pt">
+                        <a href="student-profile.html" class="avatar avatar-sm">
+                            <!-- <img src="~/Content/assets/images/people/110/guy-.jpg" width="40" alt="avatar" class="rounded-circle"> -->
+                            <span class="avatar-title rounded-circle">UK</span>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="col-sm-6 col-md-4">
+
+                <div class="card card-feedback card-body">
+                    <blockquote class="blockquote mb-0">
+                        <p class="text-70 small mb-0">A wonderful course on how to start. Eddie beautifully conveys all essentials of a becoming a good Angular developer. Very glad to have taken this course. Thank you Eddie Bryan.</p>
+                    </blockquote>
+                </div>
+                <div class="media ml-12pt">
+                    <div class="media-left mr-12pt">
+                        <a href="student-profile.html" class="avatar avatar-sm">
+                            <!-- <img src="~/Content/assets/images/people/110/guy-.jpg" width="40" alt="avatar" class="rounded-circle"> -->
+                            <span class="avatar-title rounded-circle">UK</span>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            $(".preloader").hide();
+            $(".WaterMark").hide();
+            $(".accordion__toggle").trigger("click");
+            loadVideo(0);
+            showWaterMark();
+        })
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.getElementById('vid-cont').requestFullscreen();
+            } else if (document.exitFullscreen) {
+                document.exitFullscreen();
+            }
+        }
+
+        $(".progress").change(function () {
+            var el = $(this);
+            videoid = el.val();
+            isWatched(videoid);
+        })
+
+        $(".btnplayVideo").click(function () {
+            var videoID = $(this).data().id;
+            loadVideo(videoID);
+        })
+        function loadVideo(videoID) {
+            $.ajax({
+                url: "/Student/GetVideoPath",
+                dataType: 'json',
+                type: "GET",
+                data: { VideoID: videoID },
+                success: function (result) {
+                    $("#Iframe").attr("src", result.Video_Path);
+                    $("#videoName").html("<strong>" + result.Video_Name + "</strong>");
+                    $("#VideoLenght").html(result.Video_Length + "m");
+                    showWaterMark();
+                    var frame = $('#myIFrame')[0];
+                    //frame.contentWindow.location.replace("/Student/MyCourses");
+                }
+            });
+        }
+        function isWatched(videoID) {
+
+            $.ajax({
+                url: "/Student/IsWatched",
+                dataType: 'json',
+                type: "GET",
+                data: { VideoID: videoID },
+                success: function (result) {
+                    return;
+                }
+            });
+        }
+        function isNotWatched(videoID) {
+
+            $.ajax({
+                url: "/Student/IsNotWatched",
+                dataType: 'json',
+                type: "GET",
+                data: { VideoID: videoID },
+                success: function (result) {
+                    return;
+                }
+            });
+        }
+    </script>
+
+    <script>
+
+
+
+
+        Position = ["MidPosition", "MidPosition", "LTPosition", "RBPosition", "RTPosition", "LBPosition"]
+        PositionIndex = 0;
+        function showWaterMark() {
+            setTimeout(function () {
+                PositionIndex = Math.floor((Math.random() * 5) + 1);
+                $("EmailWM , #PhoneWM,#NameWM").show();
+                $("#EmailWM").addClass(Position[PositionIndex]);
+                $("#PhoneWM").addClass(Position[PositionIndex + 1]);
+                $("#NameWM").addClass(Position[PositionIndex + 2]);
+            }, 20000);
+            setTimeout(function () {
+                $("#EmailWM , #PhoneWM,#NameWM").hide();
+                $("#EmailWM , #PhoneWM,#NameWM").attr("class", "WaterMark");
+            }, 5000);
+            setTimeout(function () { showWaterMark(); }, 20000);
+        }
+
+    </script>
+}

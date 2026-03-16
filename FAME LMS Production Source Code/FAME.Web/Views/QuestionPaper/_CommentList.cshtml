@@ -1,0 +1,48 @@
+﻿@model List<First_Aid_Made_Easy.DAL.sp_lstApproveComments_Result>
+@{
+    int Sr = 0;
+}
+<table style="width:100% !important" id="DTable" class="table table-bordered">
+    <thead>
+        <tr style="background-color: #364e9c">
+            <th>Pic</th>
+            <th>Student</th>
+            <th>Comment</th>
+            <th>Course/ Section/ Video</th>
+            <th>Approve By</th>
+            <th style="min-width:80px">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var i in Model.Where(x=>x.Video_Fid > 0))
+        {
+            Sr++;
+            <tr>
+                <td><img style="width:50px;height:50px" src="@Url.Content(i.User_Pic)" /></td>
+                <td>@i.User_Name</td>
+                <td><div title="@i.Comment_Body" class="limit-text mw-350px">@i.Comment_Body</div> @string.Format("{0:dd/MM/yyy hh:mm tt}", i.Comment_Date)</td>
+                <td>
+                    <div title="@i.Course_Name" class="limit-text mw-350px">@i.Course_Name</div> 
+                    <div title="@i.Section_Name" class="limit-text mw-350px">@i.Section_Name</div> 
+                    <div title="@i.Video_Name" class="limit-text mw-350px">@i.Video_Name</div> 
+                </td>
+                <td>@i.ApprovedByName <br /> @string.Format("{0:dd/MM/yyy hh:mm tt}", i.ApprovedDT)</td>
+                <td>
+                    @if (i.IsApproved == true)
+                    {
+                        <a href="#" data-id="@i.ID" id="btnAccept" data-isapprove="false" vlaue="" class="text-danger"><i class="fa fa-trash Font20"></i></a>
+                    }
+                    else if (i.IsApproved == false)
+                    {
+                        <a href="#" data-id="@i.ID" id="btnAccept" data-isapprove="true" vlaue="" class="text-success"><i class="fa fa-check-circle Font20"></i></a>
+                    }
+                    else
+                    {
+                        <a href="#" data-id="@i.ID" id="btnAccept" data-isapprove="true" vlaue="" class="text-danger"><i class="fa fa-trash Font20"></i></a>
+                        <a href="#" data-id="@i.ID" id="btnAccept" data-isapprove="false" vlaue="" class="text-success"><i class="fa fa-check-circle Font20"></i></a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

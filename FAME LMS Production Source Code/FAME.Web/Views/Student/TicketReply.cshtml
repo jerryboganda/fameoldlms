@@ -1,0 +1,99 @@
+@model First_Aid_Made_Easy.Models.TicketVM
+@{
+    ViewBag.Title = "Ticket Details";
+    Layout = "~/Views/Shared/_LayoutStudent2026.cshtml";
+}
+
+<div class="anim-enter delay-100">
+    <!-- Header -->
+    <div class="d-flex align-items-center mb-4">
+        <a href="@Url.Action("TicketList", "Student")" class="btn btn-sm btn-light btn-icon me-3">
+            <i data-feather="arrow-left"></i>
+        </a>
+        <div class="flex-grow-1">
+            <div class="d-flex align-items-center gap-3">
+                <h2 class="mb-0">@Model.Subject</h2>
+                <span class="badge bg-light text-dark border">#@Model.Ticket_ID</span>
+            </div>
+            <div class="d-flex align-items-center gap-2 text-muted small mt-1">
+                <span>@Model.Category</span>
+                <span>•</span>
+                <span>@(Model.CreatedDT?.ToString("MMM dd, yyyy") ?? "-")</span>
+                <span>•</span>
+                 @if (Model.Status == "Open")
+                 {
+                     <span class="text-success fw-bold">Open</span>
+                 }
+                 else
+                 {
+                     <span class="text-secondary fw-bold">@Model.Status</span>
+                 }
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 justify-content-center">
+        <div class="col-lg-10">
+            <!-- Original Message -->
+            <div class="fame-card mb-4 bg-light border-0">
+                <div class="d-flex gap-3">
+                    <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center text-white flex-shrink-0" style="width: 40px; height: 40px;">
+                        <i data-feather="user"></i>
+                    </div>
+                    <div>
+                        <div class="fw-bold text-dark mb-1">You</div>
+                        <div class="text-dark opacity-75">@Model.Body</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Thread -->
+            <div class="d-flex flex-column gap-3 mb-5">
+                @if (Model.Reply != null)
+                {
+                    foreach (var reply in Model.Reply.OrderBy(x => x.SendDT))
+                    {
+                        var isMe = reply.IsMine; // Assuming IsMine is populated correctly or verify by sender logic
+                        <div class="d-flex @(isMe ? "justify-content-end" : "justify-content-start")">
+                             <div class="fame-card p-3 @(isMe ? "bg-primary text-white" : "bg-white border")" style="max-width: 80%; border-radius: 15px; @(isMe ? "border-bottom-right-radius: 2px;" : "border-bottom-left-radius: 2px;")">
+                                 <div class="fw-bold mb-1 small @(isMe ? "text-white-50" : "text-muted")">
+                                     @(isMe ? "You" : reply.SendBy ?? "Support") 
+                                     <span class="fw-normal ms-2 opacity-50">@reply.SendDT.Value.ToString("hh:mm tt")</span>
+                                 </div>
+                                 <div class="@(isMe ? "text-white" : "text-dark")">@reply.ReplyBody</div>
+                             </div>
+                        </div>
+                    }
+                }
+            </div>
+
+            <!-- Reply Form -->
+            @if (Model.Status != "Closed")
+            {
+                <div class="fame-card p-4 sticky-bottom shadow-sm">
+                    <form action="@Url.Action("SaveReply", "Student")" method="post" enctype="multipart/form-data">
+                        @Html.HiddenFor(m => m.Ticket_ID)
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Add Reply</label>
+                            <textarea name="ReplyBody" class="form-control" rows="3" placeholder="Type your reply here..." required></textarea>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="small text-muted">Usually responds within 24 hours</div>
+                            <button type="submit" class="fame-btn fame-btn-primary px-4">
+                                <i data-feather="send" style="width: 16px; margin-right: 6px;"></i> Send Reply
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-secondary text-center">
+                    This ticket is closed. Please open a new ticket for further assistance.
+                </div>
+            }
+        </div>
+    </div>
+</div>

@@ -1,0 +1,134 @@
+@model First_Aid_Made_Easy.Models.Certificate.CertificateTemplateListPageVM
+@{
+    ViewBag.Title = "Certificate Templates";
+    Layout = "~/Views/Shared/_LayoutTeacher.cshtml";
+}
+
+<div class="container-fluid px-4 py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-bold mb-1"><i class="bi bi-collection me-2"></i>Templates</h3>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0 small">
+                    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Admin", new { area = "Certificate" })">Certificate Manager</a></li>
+                    <li class="breadcrumb-item active">Templates</li>
+                </ol>
+            </nav>
+        </div>
+        <a href="@Url.Action("Builder", "Admin", new { area = "Certificate" })" class="btn btn-primary">
+            <i class="bi bi-plus-lg me-1"></i> New Template
+        </a>
+    </div>
+
+    <!-- Filters -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body py-2">
+            <form method="get" class="row g-2 align-items-center">
+                <div class="col-auto">
+                    <select name="status" class="form-select form-select-sm">
+                        <option value="">All Statuses</option>
+                        <option value="Draft" @(ViewBag.StatusFilter == "Draft" ? "selected" : "")>Draft</option>
+                        <option value="Active" @(ViewBag.StatusFilter == "Active" ? "selected" : "")>Active</option>
+                        <option value="Archived" @(ViewBag.StatusFilter == "Archived" ? "selected" : "")>Archived</option>
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <select name="type" class="form-select form-select-sm">
+                        <option value="">All Types</option>
+                        <option value="Completion" @(ViewBag.TypeFilter == "Completion" ? "selected" : "")>Completion</option>
+                        <option value="Achievement" @(ViewBag.TypeFilter == "Achievement" ? "selected" : "")>Achievement</option>
+                        <option value="CPD" @(ViewBag.TypeFilter == "CPD" ? "selected" : "")>CPD</option>
+                        <option value="Participation" @(ViewBag.TypeFilter == "Participation" ? "selected" : "")>Participation</option>
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-sm btn-outline-primary">Filter</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Template Grid -->
+    <div class="row g-3">
+        @foreach (var t in Model.Templates)
+        {
+            <div class="col-lg-4 col-md-6">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h6 class="fw-semibold mb-0">@t.Name</h6>
+                            @if (t.Status == "Active")
+                            {
+                                <span class="badge bg-success">Active</span>
+                            }
+                            else if (t.Status == "Draft")
+                            {
+                                <span class="badge bg-warning text-dark">Draft</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">@t.Status</span>
+                            }
+                        </div>
+                        <div class="text-muted small mb-3">
+                            <span class="me-3"><i class="bi bi-tag me-1"></i>@t.Type</span>
+                            <span class="me-3"><i class="bi bi-arrow-repeat me-1"></i>v@(t.Version)</span>
+                            <span><i class="bi bi-clock me-1"></i>@t.UpdatedAt.ToString("MMM dd, yyyy")</span>
+                        </div>
+                        @if (!string.IsNullOrEmpty(t.ThumbnailUrl))
+                        {
+                            <div class="mb-3 text-center bg-light rounded p-2">
+                                <img src="@t.ThumbnailUrl" alt="@t.Name" class="img-fluid" style="max-height: 140px;" />
+                            </div>
+                        }
+                        <div class="d-flex gap-2">
+                            <a href="@Url.Action("Builder", "Admin", new { area = "Certificate", id = t.Id })" class="btn btn-sm btn-outline-primary flex-fill">
+                                <i class="bi bi-pencil me-1"></i>Edit
+                            </a>
+                            @if (t.Status == "Draft")
+                            {
+                                <form method="post" action="@Url.Action("ActivateTemplate", "Admin", new { area = "Certificate" })" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@t.Id" />
+                                    <button type="submit" class="btn btn-sm btn-success"><i class="bi bi-check-lg"></i> Activate</button>
+                                </form>
+                            }
+                            @if (t.Status == "Active")
+                            {
+                                <form method="post" action="@Url.Action("ArchiveTemplate", "Admin", new { area = "Certificate" })" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@t.Id" />
+                                    <button type="submit" class="btn btn-sm btn-outline-secondary"><i class="bi bi-archive"></i></button>
+                                </form>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        @if (!Model.Templates.Any())
+        {
+            <div class="col-12">
+                <div class="text-center text-muted py-5">
+                    <i class="bi bi-file-earmark-richtext" style="font-size: 48px; opacity: 0.3;"></i>
+                    <p class="mt-3">No templates found. <a href="@Url.Action("Builder", "Admin", new { area = "Certificate" })">Create your first template</a>.</p>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Pagination -->
+    @if (Model.TotalPages > 1)
+    {
+        <nav class="mt-4">
+            <ul class="pagination pagination-sm justify-content-center">
+                @for (int p = 1; p <= Model.TotalPages; p++)
+                {
+                    <li class="page-item @(p == Model.CurrentPage ? "active" : "")">
+                        <a class="page-link" href="@Url.Action("Templates", "Admin", new { area = "Certificate", page = p, status = ViewBag.StatusFilter, type = ViewBag.TypeFilter })">@p</a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    }
+</div>

@@ -1,0 +1,218 @@
+﻿@using First_Aid_Made_Easy.Models
+@{
+    ViewBag.Title = "Request Received";
+    Layout = "";
+
+    bool IsUni = ViewBag.College == "ASIAN MEDICAL INSTISTUTE";
+}
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Verify Code</title>
+
+    <!-- Prevent the demo from appearing in search engines -->
+    <meta name="robots" content="noindex">
+
+    <link href="https://fonts.googleapis.com/css?family=Lato:400,700%7CRoboto:400,500%7CExo+2:600&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome Icons -->
+    <link type="text/css" href="~/Content/assets/css/fontawesome.css" rel="stylesheet">
+
+    <!-- Material Design Icons -->
+    <link type="text/css" href="~/Content/assets/css/material-icons.css" rel="stylesheet">
+
+
+
+    <!-- App CSS -->
+    <link type="text/css" href="~/Content/assets/css/app.css" rel="stylesheet">
+    @Html.Partial("_TrackingPixels")
+</head>
+<body class="layout-default layout-login-centered-boxed">
+    <div class="layout-login-centered-boxed__form card">
+        @if (!IsUni)
+        {
+
+            <div class="d-flex flex-column justify-content-center align-items-center mt-2 navbar-light">
+                <div>
+                    <img style="width:70px;" src="~/Images/FIRST AID LOGO.png" alt="logo" class="img-fluid" />
+                </div>
+                <h4 class="m-0 text-center"> First Aid Made Easy </h4>
+                <p>Your Request Has Been Received</p>
+            </div>
+        }
+        else
+        {
+            <div class="d-flex flex-column justify-content-center align-items-center mt-2 mb-5 navbar-light">
+                <div>
+                    <img style="width: 70px;display:inline-block;margin-left:2rem" src="~/Images/AMIlogo.jfif" alt="logo" />
+                    <img style="width: 70px; display: inline-block; margin-left: 2rem" src="~/Images/FIRST AID LOGO.png" alt="logo" />
+                </div>
+                <h4 class="m-0 text-center">
+                    Online E-Library collaboration between <br /> <b>ASIAN MEDICAL INSTITUTE</b> <br /> & <b>FIRST AID MADE EASY PLATFORM</b>
+                </h4>
+            </div>
+        }
+        @if (ViewBag.Email != null)
+        {
+
+
+
+            <section class="text-center" id="divMessage">
+                <div>
+                    <hr />
+                    <h2>Code Verified Successfully</h2>
+                    @if (Request.IsAuthenticated)
+                    { <a class="btn btn-primary" href="/Student/Index"> Go To Student Dashboard</a> }
+                    else
+                    { <a class="btn btn-primary" href="/Account/Login"> Login</a>  }
+                </div>
+            </section>
+
+            <section id="divVerification">
+
+
+                <div class="form-group">
+                    <div class="alert alert-soft-success d-flex" role="alert">
+                        <i class="material-icons mr-12pt">check_circle</i>
+                        <div class="text-body">An email has been sent to your email address,<br /> Please Check Your Email To Verify.<br /> "@ViewBag.Email"</div>
+                    </div>
+
+                    <label class="text-label" for="email_2">Verification Code:</label>
+                    <div class="input-group ">
+                        <input type="hidden" name="Email" id="Email" value="@ViewBag.Email" />
+                        @Html.TextBox("Code", "", new { @class = "form-control", @placeholder = "Enter Your Code" })
+                    </div>
+                    <div id="CodeVal" class="text-danger validate"></div>
+                    <div id="CodeValS" class="text-success validate"></div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-12 text-center">
+                        <button id="btnVerify" class="btn btn-outline-success">Verfiy Code</button>
+                        @* ========= Display None ========*@
+                        <br /><br /><a style="display:none;color:blue" class="text-underline" id="btnSendAgain" href="javascript:;">Didn't get Email? Send Again</a>
+                        <p class=" mt-4" id="Note"><b>Note:</b> Your Verfication code will expire after <span class="text-danger" id="counter"></span> </p>
+
+                    </div>
+                </div>
+
+            </section>
+        }
+        else
+        {
+            <section class="text-center">
+                <div>
+                    <hr />
+                    <h2 class="text-danger">Invalid Request</h2>
+                </div>
+            </section>
+        }
+
+    </div>
+    <!-- jQuery -->
+    <script src="~/Content/assets/vendor/jquery.min.js"></script>
+
+    <!-- Bootstrap -->
+    <script src="~/Content/assets/vendor/popper.min.js"></script>
+    <script src="~/Content/assets/vendor/bootstrap.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        $(document).ready(function () {
+            $("#divMessage").hide();
+        })
+        $(document).on("click", "#btnVerify", function () {
+            var email = '@ViewBag.Email';
+            $.ajax({
+                url: "/Auth/ConfirmEmail",
+                data: {
+                    Email: email,
+                    Code:$("#Code").val(),
+                },
+                method: "GET",
+                beforeSend: function () {
+                    swal.fire({
+                        html: '<h5>Verifying Code...</h5>',
+                        showConfirmButton: false,
+                        onRender: function () { $('.swal2-content').prepend(sweet_loader); }
+                    });
+                },
+                success: function (result) {
+                    $(".validate").hide();
+                    if (result.success) {
+                        $("#divMessage").show();
+                        $("#divVerification").hide();
+                    } else {
+                        $("#CodeVal").text(result.message).show();
+                    }
+                    swal.close()
+                }, error: function (err) {
+                    alert("Error" + err);
+                    swal.close()
+                }
+            })
+
+
+        })
+
+        $(document).on("click", "#btnSendAgain", function () {
+            $.ajax({
+                url: "/Auth/SendEmailAgain",
+                data: {
+                    Email: $("#Email").val(),
+                    Type: $("input[name=Type]:checked").val()
+                },
+                method: "POST",
+                beforeSend: function () {
+                    swal.fire({
+                        html: '<h5>Sending Verification Code...</h5>',
+                        showConfirmButton: false,
+                        onRender: function () { $('.swal2-content').prepend(sweet_loader); }
+                    });
+                },
+                success: function (result) {
+                    $(".validate").hide();
+                    if (result.success) {
+                        $("#CodeValS").text(result.message).show();
+                    } else {
+                        $("#CodeVal").text(result.message).show();
+                    }
+                    swal.close()
+                }, error: function (err) {
+                    alert("Error" + err);
+                    swal.close()
+                }
+            })
+
+
+        })
+    </script>
+
+    <script>
+        var date = new Date();
+        date.setTime(new Date().getTime() + (@(TempData["RemMinutes"] ?? "30" ) * 60000));
+        var countDownDate = date.getTime();
+        var x = setInterval(function () {
+            var now = new Date().getTime();
+            var distance = countDownDate - now;
+            var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            $("#counter").text(minutes + "m " + seconds + "s ");
+            if (distance < 25 * 60000)
+                $("#btnSendAgain").show();
+            if (distance < 0) {
+                clearInterval(x);
+                $("#Note").html("EXPIRED");
+            }
+            console.log();
+        }, 1000);
+    </script>
+</body>
+
+</html>
+
+
+

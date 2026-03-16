@@ -1,0 +1,39 @@
+﻿@model First_Aid_Made_Easy.Models.TicketVM
+@using First_Aid_Made_Easy.BLL
+@{
+    int Sr = 0;
+}
+<table style="width:100% !important" id="DTable" class="table table-bordered">
+    <thead>
+        <tr style="background-color: #364e9c">
+            <th>Sr.</th>
+            <th>Student</th>
+            <th>Subject</th>
+            <th>Status</th>
+            <th>Last Reply</th>
+            <th>New Msgs</th>
+            <th style="min-width:80px">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var i in Model.List)
+        {
+            Sr++;
+            <tr>
+                <td>@Sr</td>
+                <td>@i.TicketFrom <br /> @i.Email <br /> @i.User_Mobile </td>
+                <td>@i.Subject</td>
+                <td>@i.Status</td>
+                <td>@string.Format("{0:dd/MM/yyyy}", i.LastReply)</td>
+                <td>@i.NewMasgs</td>
+                <td>
+                    <a href="/Ticket/Reply/@i.Ticket_ID" vlaue="" class="btn btn-warning">View</a>
+                    @if (i.Status == Status.Open.ToString())
+                    {
+                        <a href="javascript:;" id="btnClose" data-id="@i.Ticket_ID" class="btn btn-danger">Close</a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

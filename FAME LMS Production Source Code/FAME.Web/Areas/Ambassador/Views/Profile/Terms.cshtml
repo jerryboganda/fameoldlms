@@ -1,0 +1,75 @@
+@{
+    ViewBag.Title = "Ambassador Terms & Conditions";
+    Layout = "~/Views/Shared/_LayoutAmbassador.cshtml";
+}
+
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h5 class="m-0 font-weight-bold text-primary">
+                        <i class="material-icons align-middle mr-2">gavel</i>
+                        Ambassador Program Terms & Conditions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <h6 class="font-weight-bold">1. Program Overview</h6>
+                    <p>The First Aid Made Easy Ambassador Program allows approved members to earn commissions by referring new students to the platform. By joining the program, you agree to these terms and conditions.</p>
+
+                    <h6 class="font-weight-bold mt-4">2. Eligibility</h6>
+                    <ul>
+                        <li>You must be 18 years or older to participate.</li>
+                        <li>You must have a valid account on First Aid Made Easy.</li>
+                        <li>Applications are subject to review and approval.</li>
+                    </ul>
+
+                    <h6 class="font-weight-bold mt-4">3. Referral Process</h6>
+                    <ul>
+                        <li>Each ambassador receives a unique referral link and code.</li>
+                        <li>A referral is counted when someone signs up using your referral link/code.</li>
+                        <li>A conversion is recorded when the referred user makes a qualifying purchase.</li>
+                    </ul>
+
+                    <h6 class="font-weight-bold mt-4">4. Commission Structure</h6>
+                    <ul>
+                        <li>Commission rates are determined by your tier level and active commission rules.</li>
+                        <li>Commissions are subject to a hold period before becoming available for withdrawal.</li>
+                        <li>Commission rates may change at the discretion of First Aid Made Easy.</li>
+                    </ul>
+
+                    <h6 class="font-weight-bold mt-4">5. Payouts</h6>
+                    <ul>
+                        <li>Minimum payout thresholds apply.</li>
+                        <li>Payouts are processed manually and may take several business days.</li>
+                        <li>You must provide valid payment method details for receiving payouts.</li>
+                    </ul>
+
+                    <h6 class="font-weight-bold mt-4">6. Prohibited Activities</h6>
+                    <ul>
+                        <li>Self-referrals are not allowed.</li>
+                        <li>Spam or unsolicited messaging to promote referral links is prohibited.</li>
+                        <li>Misrepresenting the program or First Aid Made Easy is forbidden.</li>
+                        <li>Using paid advertising without prior approval is not permitted.</li>
+                    </ul>
+
+                    <h6 class="font-weight-bold mt-4">7. Program Changes</h6>
+                    <p>First Aid Made Easy reserves the right to modify, suspend, or terminate the ambassador program at any time. Ambassadors will be notified of significant changes.</p>
+
+                    <h6 class="font-weight-bold mt-4">8. Termination</h6>
+                    <p>Violation of these terms may result in suspension or removal from the program, forfeiture of pending commissions, and account restrictions.</p>
+
+                    <hr>
+                    <p class="text-muted small mb-0">Last updated: February 2026. For questions, contact support.</p>
+                </div>
+            </div>
+
+            <div class="text-center mt-3">
+                <a href="@Url.Action("Apply", "Profile")" class="btn btn-primary">
+                    <i class="material-icons align-middle mr-1">arrow_back</i>
+                    Back to Application
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

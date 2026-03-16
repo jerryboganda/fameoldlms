@@ -1,0 +1,88 @@
+@model First_Aid_Made_Easy.Models.DailyReportVM
+@{
+    ViewBag.Title = Model.ID > 0 ? "Edit Daily Report" : "Create Daily Report";
+}
+
+
+<div class="pt-32pt">
+    <div class="container-fluid page__container d-flex flex-column flex-md-row align-items-center text-center text-sm-left">
+        <div class="flex d-flex flex-column flex-sm-row align-items-center">
+            <div class="mb-24pt mb-sm-0 mr-sm-24pt">
+                <h2 class="mb-0">Describe Daily Report</h2>
+                <ol class="breadcrumb p-0 m-0">
+                    <li class="breadcrumb-item"><a href="/Teacher/Index">Home</a></li>
+                    <li class="breadcrumb-item active">
+                        Describe Daily Report
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </div>
+    <div class="page-section border-bottom-2">
+        <div class="container-fluid page__container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="page-separator">
+                        <div class="page-separator__text">Basic information</div>
+                    </div>
+
+
+                    @using (Html.BeginForm("Index", "DailyReport", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <div class="card-body">
+                            @Html.HiddenFor(m => m.ID)
+                            @Html.HiddenFor(m => m.DateDT)
+                            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.Date)
+                                @Html.EditorFor(m => m.Date, new { htmlAttributes = new { @class = "form-control", type = "date" } })
+                                @Html.ValidationMessageFor(m => m.Date, "", new { @class = "text-danger" })
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.Body)
+                                @Html.TextAreaFor(m => m.Body, new { @class = "form-control", rows = "5" })
+                                @Html.ValidationMessageFor(m => m.Body, "", new { @class = "text-danger" })
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.AttachmentFile, "Attachment")
+                                <input type="file" name="AttachmentFile" class="form-control" />
+                            </div>
+
+                            @if (!string.IsNullOrEmpty(Model.FilePath))
+                            {
+                                <div class="form-group">
+                                    <label>Current Attachment</label>
+                                    <div>
+                                        <a href="@Url.Content(Model.FilePath)" target="_blank">View Current Attachment</a>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                        <div class="card-footer">
+                            <button type="submit" class="btn btn-primary">Save</button>
+                            @Html.ActionLink("Back to List", "List", null, new { @class = "btn btn-default" })
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+        $(document).on("change click focus input blur", "#Date", function () {
+            const date = moment($("#Date").val()).format("MM/DD/YYYY")
+            $("#DateDT").val(date)
+        });
+
+        $(document).ready(function () {
+            $("#Date").change();
+        })
+    </script>
+}

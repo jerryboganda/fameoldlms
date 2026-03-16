@@ -1,0 +1,31 @@
+﻿@model IEnumerable<First_Aid_Made_Easy.DAL.sp_GetNotifications_Result>
+@{
+    var DateTime = System.DateTime.UtcNow.AddHours(5);
+    int count = Model?.Count() ?? 0;
+}
+
+<!-- // END Notifications dropdown -->
+<div class="nav-item ml-16pt dropdown dropdown-notifications dropdown-xs-down-full" data-toggle="tooltip" data-title="Messages" data-placement="bottom" data-boundary="window">
+    <button class="nav-link btn-flush dropdown-toggle" type="button" data-toggle="dropdown" data-caret="false">
+        <i class="material-icons">mail_outline</i>
+        @if (count > 0)
+        {
+            <span class="badge badge-notifications badge-accent"></span>
+        }
+    </button>
+    <div class="dropdown-menu dropdown-menu-right">
+        <div data-perfect-scrollbar class="position-relative">
+            <div class="dropdown-header"><strong>Notifications</strong></div>
+            <div class="list-group list-group-flush mb-0">
+                @if (Model != null)
+                {
+                    foreach (var a in Model)
+                    {
+                        
+                    }
+                }
+
+            </div>
+        </div>
+    </div>
+</div>

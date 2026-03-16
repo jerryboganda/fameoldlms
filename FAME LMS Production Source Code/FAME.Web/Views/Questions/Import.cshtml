@@ -1,0 +1,134 @@
+﻿@model List<First_Aid_Made_Easy.Models.QuestionVM>
+@using First_Aid_Made_Easy.BLL
+@{
+    Layout = "~/Views/Shared/_LayoutTeacher.cshtml";
+    ViewBag.Title = " Import Questions";
+    int Sr = 0;
+}
+<style>
+    .divValidate {
+        display: none;
+        color: red;
+    }
+</style>
+<div class="pt-32pt">
+    <div class="container-fluid page__container d-flex flex-column flex-md-row align-items-center text-center text-sm-left">
+        <div class="flex d-flex flex-column flex-sm-row align-items-center">
+            <div class="mb-24pt mb-sm-0 mr-sm-24pt">
+                <h2 class="mb-0">Import Questions</h2>
+                <ol class="breadcrumb p-0 m-0">
+                    <li class="breadcrumb-item"><a href="/Admin/Index">Home</a></li>
+                    <li class="breadcrumb-item active">
+                        Import Questions
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="page-section border-bottom-2">
+        <div class="container-fluid page__container">
+
+            <div class="row">
+                <div class="col-md-12">
+                    <form method="post" enctype="multipart/form-data" action="/Questions/Import" onsubmit="return Confirm()">
+
+                        <div class="page-separator">
+                            <div class="page-separator__text">Basic information</div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="col-12 col-md-8 mb-3">
+                                <label class="form-label">File</label>
+                                @Html.TextBox("File", "", new { @class = "form-control form-control-lg", @type = "file", @accept = ".txt", @required = true })
+                                <small class="form-text text-muted">You can only upload text files</small>
+                            </div>
+                            <div class="col-12 col-md-4 mb-3">
+                                <label class="form-label">No Of Questions</label>
+                                @Html.TextBox("NoOfQuestions", "", new { @class = "form-control form-control-lg", @type = "number", @required = true })
+                            </div>
+
+                            <div class="col-12 col-md-6 mb-3">
+                                <label class="form-label">System</label>
+                                @Html.DropDownList("SystemID", new SelectList(ViewBag.Systems, "ID", "Name"),"Please Select", new { @class = "form-control select2", @required = true })
+                            </div>
+                            <div class="col-12 col-md-6 mb-3">
+								<label class="form-label">Partition</label>
+                                @Html.DropDownList("PartitionID", new SelectList(ViewBag.Partitions, "ID", "Name"),"Please Select", new { @class = "form-control select2", @required = true })
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header text-center">
+                                <input type="submit" name="Type" value="Import & Preview" class="btn btn-outline-primary" />
+                                <input type="submit" name="Type" value="Import & Save" class="btn btn-outline-success" />
+                                <a href="@Url.Action("List","Questions",new { Type= 1 })" class="btn btn-outline-accent-dodger-blue"><i class="fa fa-backward"></i>&nbsp;  Back To List</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            @if (Model != null)
+            {
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <h3>Total Questions : @Model.Count() &emsp; <span class="text-danger">@(ViewBag.IsValid)</span></h3>
+                        <div class="page-separator">
+                            <div class="page-separator__text">Questions List</div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        @foreach (var q in Model)
+                        {
+                            Sr++;
+
+                            <div>
+                                <h4>@q.Question</h4>
+                                <table class="table table-bordered">
+                                    @foreach (var o in q.Options)
+                                    {
+                                        <tr class="@(o.IsCorrect ? "text-success" : "" )"><td>  @o.OptionText</td></tr>
+                                    }
+                                </table>
+                            </div>
+                            <p>@q.AnsExplain</p>
+                            <div class="page-separator">
+                                <div class="page-separator__text"></div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+@section scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    @if (ViewBag.IsSaved != null)
+    {
+        <script>
+            Swal.fire({
+                position: 'top-end',
+                icon: 'success',
+                title: 'Data saved successfully',
+                showConfirmButton: false,
+                timer: 1500
+            })
+        </script>
+    }
+    <script>
+        $(document).ready(function () {
+        })
+        function Confirm() {
+
+            if ($("input[name=Type]").val() == "Import & Save") {
+                return confirm('Do you really want to save Questions?');
+            }
+        }
+    </script>
+
+}
+

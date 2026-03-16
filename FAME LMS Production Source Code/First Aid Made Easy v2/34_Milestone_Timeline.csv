@@ -1,0 +1,14 @@
+Phase,Sprint,Week Start,Week End,Duration Weeks,Milestone,Key Deliverables,Exit Criteria,Features Delivered
+Phase 0: Foundation,—,Week 1,Week 4,4,Development Environment Ready,"Monorepo; Docker Compose; CI/CD; DB schema; Design system; Observability",All 6 exit criteria from file 17 met,0
+Phase 1: MVP,Sprint 1,Week 5,Week 6,2,Auth + Catalog,"Registration; Login; JWT; Password reset; Course listing; Course detail; Search; Admin course CRUD","Users can register and login; Courses browsable; Search works",10
+Phase 1: MVP,Sprint 2,Week 7,Week 8,2,Payment + Subscriptions,"Pricing page; JazzCash checkout; Easypaisa checkout; Stripe checkout; Webhook processing; Subscription management; Coupons","All 3 payment gateways work end-to-end; Subscriptions activate on payment",9
+Phase 1: MVP,Sprint 3,Week 9,Week 10,2,Learning Experience,"Enrollment; My Courses; Chapter view; Video player; Progress tracking; Bookmarks","Students access content after payment; Progress tracked; Videos play",8
+Phase 1: MVP,Sprint 4,Week 11,Week 12,2,Admin Panel,"User management; Role assignment; Manual subscriptions; Revenue dashboard; Audit log","Admin can manage users; courses; and view revenue",6
+Phase 1: MVP,Sprint 5,Week 13,Week 14,2,Migration + Launch,"Data migration (users; courses; MCQs; subscriptions); URL redirects; Production deploy; Monitoring","All V1 data migrated; V2 live; Error rate < 0.5%",7 (migration tasks)
+Phase 2: Growth,Sprint 6,Week 15,Week 17,3,Exam Engine,"Exam listing; Start exam; MCQ display; Navigation; Submission; Review; History; Question bank; Exam builder; Tutor mode","Students take and review exams; Admin manages question bank",10
+Phase 2: Growth,Sprint 7,Week 18,Week 19,2,Communication,"Notification center; Real-time notifications; Email notifications; Announcements; Notification preferences; Chat","Real-time notifications work; Chat functional",7
+Phase 2: Growth,Sprint 8,Week 20,Week 22,3,Analytics + Spaced Repetition,"Daily review queue; Flashcard UI; Review stats; Admin analytics; Student reports; CSV export","SM-2 algorithm working; Admin has analytics dashboard",6
+Phase 3: Maturity,Sprint 9,Week 23,Week 25,3,Certificates,"Auto-generate certificates; Templates; Download; Verification; Gallery","Students download certificates; Public verification works",5
+Phase 3: Maturity,Sprint 10,Week 26,Week 28,3,Ambassador Program,"Ambassador registration; Referral links; Tracking; Commission; Dashboard; Admin management","Ambassador portal functional; Commissions calculated",6
+Phase 3: Maturity,—,Week 29,Week 30,2,Polish + Hardening,"Performance optimization; Security audit; Load testing; Documentation; Bug fixes","All P1 features stable; Performance targets met",0
+Phase 4: Scale,—,Week 31+,Ongoing,—,Advanced Features,"Forums; Blog; Mobile app; Gamification; Multi-language; Email marketing","Continuous delivery of growth features",5+

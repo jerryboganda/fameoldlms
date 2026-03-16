@@ -1,0 +1,217 @@
+﻿<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title | Daily Report System</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+        .navbar-brand {
+            font-weight: bold;
+            color: #2c3e50 !important;
+        }
+        .sidebar {
+            min-height: calc(100vh - 56px);
+            background-color: #343a40;
+            padding-top: 20px;
+            transition: all 0.3s ease;
+        }
+        @@media (max-width: 991.98px) {
+            .sidebar {
+                position: fixed;
+                top: 56px;
+                left: -250px;
+                width: 250px;
+                z-index: 1000;
+                height: calc(100vh - 56px);
+            }
+            .sidebar.show {
+                left: 0;
+            }
+            .main-content {
+                margin-left: 0 !important;
+            }
+        }
+        .sidebar a {
+            color: #adb5bd;
+            text-decoration: none;
+            padding: 10px 15px;
+            display: block;
+            border-radius: 5px;
+            margin: 5px 10px;
+        }
+        .sidebar a:hover, .sidebar a.active {
+            background-color: #495057;
+            color: #fff;
+        }
+        .main-content {
+            padding: 20px;
+        }
+        .card {
+            border: none;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+        .user-info {
+            color: #fff;
+            padding: 15px;
+            background-color: #495057;
+            margin: 10px;
+            border-radius: 5px;
+        }
+    </style>
+    @Html.Partial("_TrackingPixels")
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <button class="navbar-toggler me-2" type="button" id="sidebarToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <a class="navbar-brand" href="@Url.Action("Index", "Dashboard", new { area = "DailyReport" })">
+                <i class="fas fa-clipboard-list me-2"></i>Daily Report System
+            </a>
+            
+            @if (Session["DR_UserId"] != null)
+            {
+                <div class="navbar-nav ms-auto">
+                    <div class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user me-1"></i>@Session["DR_FullName"]
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="@Url.Action("Index", "Dashboard", new { area = "DailyReport" })"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="@Url.Action("Logout", "Auth", new { area = "DailyReport" })"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                        </ul>
+                    </div>
+                </div>
+            }
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            @if (Session["DR_UserId"] != null)
+            {
+                <!-- Sidebar -->
+                <div class="col-md-2 px-0">
+                    <div class="sidebar">
+                        <div class="user-info">
+                            <div><strong>@Session["DR_FullName"]</strong></div>
+                            <small>@Session["DR_Role"]</small>
+                        </div>
+                        
+                        <a href="@Url.Action("Index", "Dashboard", new { area = "DailyReport" })" class="@(ViewContext.RouteData.Values["controller"].ToString() == "Dashboard" ? "active" : "")">
+                            <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                        </a>
+                        
+                        <a href="@Url.Action("Index", "DailyReport", new { area = "DailyReport" })" class="@(ViewContext.RouteData.Values["controller"].ToString() == "DailyReport" && ViewContext.RouteData.Values["action"].ToString() == "Index" ? "active" : "")">
+                            <i class="fas fa-plus me-2"></i>Create Report
+                        </a>
+                        
+                        <a href="@Url.Action("List", "DailyReport", new { area = "DailyReport" })" class="@(ViewContext.RouteData.Values["controller"].ToString() == "DailyReport" && ViewContext.RouteData.Values["action"].ToString() == "List" ? "active" : "")">
+                            <i class="fas fa-list me-2"></i>My Reports
+                        </a>
+                        
+                        @if (Session["DR_Role"] != null && Session["DR_Role"].ToString() == "Admin")
+                        {
+                            <hr style="border-color: #495057;">
+                            <div style="color: #6c757d; padding: 10px 15px; font-size: 12px; text-transform: uppercase;">Admin</div>
+                            
+                            <a href="@Url.Action("AllReports", "Dashboard", new { area = "DailyReport" })" class="@(ViewContext.RouteData.Values["action"].ToString() == "AllReports" ? "active" : "")">
+                                <i class="fas fa-file-alt me-2"></i>All Reports
+                            </a>
+                            
+                            <a href="@Url.Action("Users", "Dashboard", new { area = "DailyReport" })" class="@(ViewContext.RouteData.Values["action"].ToString() == "Users" ? "active" : "")">
+                                <i class="fas fa-users me-2"></i>Manage Users
+                            </a>
+                        }
+                    </div>
+                </div>
+                
+                <!-- Main Content -->
+                <div class="col-md-10">
+                    <div class="main-content">
+                        <!-- Display Success/Error Messages -->
+                        @if (TempData["Success"] != null)
+                        {
+                            <div class="alert alert-success alert-dismissible fade show">
+                                <i class="fas fa-check-circle me-2"></i>@TempData["Success"]
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        }
+                        
+                        @if (TempData["Error"] != null)
+                        {
+                            <div class="alert alert-danger alert-dismissible fade show">
+                                <i class="fas fa-exclamation-circle me-2"></i>@TempData["Error"]
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        }
+                        
+                        @RenderBody()
+                    </div>
+                </div>
+            }
+            else
+            {
+                <!-- Full width for login/register pages -->
+                <div class="col-12">
+                    <div class="main-content">
+                        @RenderBody()
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <script>
+        document.getElementById('sidebarToggle').addEventListener('click', function() {
+            document.querySelector('.sidebar').classList.toggle('show');
+        });
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', function(event) {
+            const sidebar = document.querySelector('.sidebar');
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            
+            if (window.innerWidth < 992 && 
+                !sidebar.contains(event.target) && 
+                !sidebarToggle.contains(event.target) &&
+                sidebar.classList.contains('show')) {
+                sidebar.classList.remove('show');
+            }
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            if (window.innerWidth >= 992) {
+                document.querySelector('.sidebar').classList.remove('show');
+            }
+        });
+    </script>
+    
+    @RenderSection("scripts", false)
+</body>
+</html>

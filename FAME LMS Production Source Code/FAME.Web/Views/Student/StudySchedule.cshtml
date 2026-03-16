@@ -1,0 +1,154 @@
+@model First_Aid_Made_Easy.Models.StudyScheduleVM
+@{
+    ViewBag.Title = "Study Schedule";
+    Layout = "~/Views/Shared/_LayoutStudent2026.cshtml";
+}
+
+<div class="page-section bg-alt">
+    <div class="container">
+        <div class="page-headline text-center">
+            <h2>Study Schedule</h2>
+            <p class="lead text-muted">Your personalized study schedule based on your selected exam attempt</p>
+        </div>
+
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success">@TempData["Success"]</div>
+        }
+
+        @if (ViewBag.ErrorMessage != null)
+        {
+            <div class="alert alert-danger">@ViewBag.ErrorMessage</div>
+        }
+
+        @if (Model.List != null && Model.List.Count > 0)
+        {
+            var grouped = ViewBag.GroupedSchedules as IEnumerable<IGrouping<dynamic, First_Aid_Made_Easy.Models.StudyScheduleVM>>;
+            foreach (var group in grouped)
+            {
+                <div class="card mb-4">
+                    <div class="card-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                        <h4 class="mb-0">
+                            <i class="fa fa-book"></i> @group.Key.PackageName - @group.Key.AttemptName
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>Week</th>
+                                        <th>Topic</th>
+                                        <th>Type</th>
+                                        <th>Date</th>
+                                        <th>Details</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in group.OrderBy(x => x.SortOrder))
+                                    {
+                                        <tr>
+                                            <td>@(item.WeekNumber.HasValue ? "Week " + item.WeekNumber : "-")</td>
+                                            <td><strong>@item.TopicTitle</strong></td>
+                                            <td>
+                                                @switch (item.ScheduleType)
+                                                {
+                                                    case 1:
+                                                        <span class="badge badge-primary">Weekly</span>
+                                                        break;
+                                                    case 2:
+                                                        <span class="badge badge-info">Content</span>
+                                                        break;
+                                                    case 3:
+                                                        <span class="badge badge-warning">File</span>
+                                                        break;
+                                                    case 4:
+                                                        <span class="badge badge-success">Calendar</span>
+                                                        break;
+                                                }
+                                            </td>
+                                            <td>@(item.ScheduleDate.HasValue ? item.ScheduleDate.Value.ToString("MMM dd, yyyy") : "-")</td>
+                                            <td>
+                                                @if (item.ScheduleType == 2 && !string.IsNullOrEmpty(item.TopicDescription))
+                                                {
+                                                    <button type="button" class="btn btn-sm btn-outline-primary" 
+                                                            data-toggle="modal" data-target="#modal-@item.StudyScheduleID">
+                                                        <i class="fa fa-eye"></i> View
+                                                    </button>
+                                                }
+                                                else if (item.ScheduleType == 3 && !string.IsNullOrEmpty(item.FilePath))
+                                                {
+                                                    <a href="@Url.Content(item.FilePath)" target="_blank" class="btn btn-sm btn-outline-info">
+                                                        <i class="fa fa-download"></i> Download
+                                                    </a>
+                                                }
+                                                else if (!string.IsNullOrEmpty(item.TopicDescription))
+                                                {
+                                                    <button type="button" class="btn btn-sm btn-outline-secondary" 
+                                                            data-toggle="modal" data-target="#modal-@item.StudyScheduleID">
+                                                        <i class="fa fa-info-circle"></i> Details
+                                                    </button>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                @* Modals for content display *@
+                @foreach (var item in group.Where(x => !string.IsNullOrEmpty(x.TopicDescription)))
+                {
+                    <div class="modal fade" id="modal-@item.StudyScheduleID" tabindex="-1" role="dialog">
+                        <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">@item.TopicTitle</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    @Html.Raw(item.TopicDescription)
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        }
+        else
+        {
+            <div class="alert alert-info text-center">
+                <i class="fa fa-info-circle fa-3x mb-3"></i>
+                <h4>No Study Schedule Available</h4>
+                <p>You don't have a study schedule yet. This could be because:</p>
+                <ul class="list-unstyled">
+                    <li>• No exam attempt was selected during registration</li>
+                    <li>• The admin hasn't added study schedules for your selected attempt</li>
+                </ul>
+                <p>Please contact the administrator if you need assistance.</p>
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    .card-header h4 {
+        font-weight: 600;
+    }
+    .table th {
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+    }
+    .badge {
+        font-weight: 500;
+        padding: 0.4em 0.8em;
+    }
+</style>

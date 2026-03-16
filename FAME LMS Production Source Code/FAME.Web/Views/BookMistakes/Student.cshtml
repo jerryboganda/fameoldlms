@@ -1,0 +1,223 @@
+﻿@{
+    ViewBag.Title = "Book Mistakes";
+    Layout = "~/Areas/Landing/Views/Shared/_Layout.cshtml";
+}
+
+
+<div class="edu-breadcrumb-area">
+    <div class="container">
+        <div class="breadcrumb-inner">
+            <div class="page-title">
+                <h1 class="title">Book Mistakes</h1>
+            </div>
+            <ul class="edu-breadcrumb">
+                <li class="breadcrumb-item"><a href="index-one.html">Home</a></li>
+                <li class="separator"><i class="icon-angle-right"></i></li>
+                <li class="breadcrumb-item"><a href="#">Pages</a></li>
+                <li class="separator"><i class="icon-angle-right"></i></li>
+                <li class="breadcrumb-item active" aria-current="page">Book Mistakes</li>
+            </ul>
+        </div>
+    </div>
+    <ul class="shape-group">
+        <li class="shape-1">
+            <span></span>
+        </li>
+        <li class="shape-2 scene"><img data-depth="2" src="~/Areas/Landing/assets/images/about/shape-13.png" alt="shape"></li>
+        <li class="shape-3 scene"><img data-depth="-2" src="~/Areas/Landing/assets/images/about/shape-15.png" alt="shape"></li>
+        <li class="shape-4">
+            <span></span>
+        </li>
+        <li class="shape-5 scene"><img data-depth="2" src="~/Areas/Landing/assets/images/about/shape-07.png" alt="shape"></li>
+    </ul>
+</div>
+
+<section class="why-choose-area-3 edu-section-gap" style="padding-bottom:0px">
+    <div class="container">
+        <div class="row row--45">
+            <div class="section-title-flex section-title" data-sal-delay="150" data-sal="slide-up" data-sal-duration="800">
+                <p>
+                    <span class="color-secondary">Did you spot any mistakes while reading our books?</span> Help us improve the quality of our collection by reporting any errors you've come across. Your input is invaluable in ensuring the accuracy and reliability of our resources.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+<!--=====================================-->
+<!--=       Contact Me Area Start       =-->
+<!--=====================================-->
+
+<section class="contact-us-area">
+    <div class="container">
+        <form id="frm" method="post">
+            <input type="hidden" id="PicPath" name="PicPath" />
+            <div class="row g-5" style="margin-bottom:130px">
+
+                <div class="col-lg-6">
+                    <div class="contact-form form-style-2">
+                        <div class="section-title">
+                            <h4 class="title">Contact Info</h4>
+                            <p>Tell us about you.</p>
+                        </div>
+                        <div class="row row--10">
+                            <div class="form-group col-12">
+                                <input type="text" name="Name" id="Name" required placeholder="Your name">
+                            </div>
+                            <div class="form-group col-12">
+                                <input type="email" name="Email" id="Email" required placeholder="Enter your email">
+                            </div>
+                            <div class="form-group col-12">
+                                <input type="tel" name="Phone" id="Phone" required placeholder="Phone number">
+                            </div>
+                        </div>
+                        <ul class="shape-group">
+                            <li class="shape-1 scene"><img data-depth="1" src="~/Areas/Landing/assets/images/about/shape-13.png" alt="Shape"></li>
+                            <li class="shape-2 scene"><img data-depth="-1" src="~/Areas/Landing/assets/images/counterup/shape-02.png" alt="Shape"></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="contact-form form-style-2">
+                        <div class="section-title">
+                            <h4 class="title">Mistake Details</h4>
+                            <p>Detail about spotted mistake.</p>
+                        </div>
+                        <div class="row row--10">
+                            <div class="form-group col-12">
+                                <input type="text" name="BookName" id="BookName" required placeholder="Book name">
+                            </div>
+                            <div class="form-group col-12">
+                                <input type="text" name="BookEdition" id="BookEdition" required placeholder="Book Edition">
+                            </div>
+                            <div class="form-group col-12">
+                                <input type="text" name="PageNo" id="PageNo" required placeholder="Page No">
+                            </div>
+                            <div class="form-group col-12">
+                                <input type="text" name="QuestionNo" id="QuestionNo" required placeholder="Question No">
+                            </div>
+                            <div class="form-group col-12">
+                                <textarea name="Detail" id="Detail" required cols="30" rows="4" placeholder="What mistake did you notice ?"></textarea>
+                            </div>
+                            <div class="form-group col-12">
+                                <textarea name="Correction" id="Correction" required cols="30" rows="4" placeholder="What is the correction ?"></textarea>
+                            </div>
+
+                            <div class="form-group" style="margin-top:25px">
+                                <label>Upload picture of explanation</label>
+                                <input id="fileInput" style="padding:0px;border-bottom:none" type="file" accept="image/*" />
+                            </div>
+
+                            <div class="form-group col-12">
+                                <button class="rn-btn edu-btn btn-medium submit-btn" id="btnSend" type="submit">Submit Mistake <i class="icon-4"></i></button>
+                            </div>
+                        </div>
+                        <ul class="shape-group">
+                            <li class="shape-1 scene"><img data-depth="1" src="~/Areas/Landing/assets/images/about/shape-13.png" alt="Shape"></li>
+                            <li class="shape-2 scene"><img data-depth="-1" src="~/Areas/Landing/assets/images/counterup/shape-02.png" alt="Shape"></li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </form>
+    </div>
+</section>
+
+@section scripts {
+
+    <!--begin::Custom Javascript(used by this page)-->
+    @*<script src="~/Content/assetsn/js/custom/apps/support-center/mistakes/create.js?v=1"></script>*@
+    <script>
+        var btn = $("#btnSend");
+
+        $("#frm").on("submit", async function (e) {
+            e.preventDefault();
+            Swal.fire({
+                title: 'Submitting...',
+                allowOutsideClick: false,
+                showConfirmButton: false
+            });
+            btn.attr("disabled", true);
+            var path = await UploadFile();
+            var formDataArray = $("#frm").serializeArray();
+            var data = { PicPath: path };
+            $.each(formDataArray, function (index, field) {
+                data[field.name] = field.value;
+            });
+            $.ajax({
+                url: '/BookMistakes/SaveMistake',
+                method: 'POST',
+                data: JSON.stringify(data),
+                dataType: 'Json',
+                contentType: 'application/json',
+                success: function (response) {
+                    if (response) {
+                        SaveLocalStorage();
+                        ResetForm();
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Submitted Successfully',
+                            text: 'Thanks for your contribution',
+                        })
+                        btn.attr("disabled", false);
+                    }
+                },
+                error: function (err) {
+                    btn.attr("disabled", false);
+                }
+
+            });
+        })
+
+        function ResetForm() {
+            $("#frm").trigger('reset');
+            FillFromLocalStorage();
+        }
+
+        function SaveLocalStorage() {
+            const formData = {
+                name: document.getElementById('Name').value,
+                email: document.getElementById('Email').value,
+                phone: document.getElementById('Phone').value
+            };
+            localStorage.setItem('formData', JSON.stringify(formData));
+        }
+
+        function FillFromLocalStorage() {
+            const savedFormData = localStorage.getItem('formData');
+            if (savedFormData) {
+                const formData = JSON.parse(savedFormData);
+                document.getElementById('Name').value = formData.name || "";
+                document.getElementById('Email').value = formData.email || "";
+                document.getElementById('Phone').value = formData.phone || "";
+            }
+        }
+        ResetForm();
+
+        function UploadFile() {
+            return new Promise(function (resolve, reject) {
+                var fileInput = document.getElementById('fileInput');
+                var file = fileInput.files[0];
+                if (!file) resolve("");
+
+                var formData = new FormData();
+                formData.append('File', file);
+                $.ajax({
+                    url: '/General/UploadFS',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        resolve(response.Path);
+                        $("#PicPath").val(response.Path);
+                    },
+                    error: function (xhr, status, error) {
+                        resolve("");
+                    }
+                });
+            });
+        }
+
+    </script>
+}

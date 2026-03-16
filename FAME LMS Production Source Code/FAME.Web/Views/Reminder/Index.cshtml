@@ -1,0 +1,318 @@
+﻿@model List<First_Aid_Made_Easy.Models.ReminderVM>
+@{
+    ViewBag.Title = "Task Reminder";
+    if (User.IsInRole("Student"))
+    {
+        Layout = "~/Views/Shared/_LayoutNew.cshtml";
+    }
+    else if (User.IsInRole("SuppAgent"))
+    {
+        Layout = "~/Views/Shared/_LayoutAgent.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_LayoutTeacher.cshtml";
+    }
+
+}
+
+<style>
+    .fc-h-event {
+        background-color: #3788d8 !important;
+    }
+</style>
+
+<!-- Flatpickr -->
+<link type="text/css" href="~/Content/assets/css/flatpickr.css" rel="stylesheet">
+<link type="text/css" href="~/Content/assets/css/flatpickr-airbnb.css" rel="stylesheet">
+
+<meta charset='utf-8' />
+
+<link href="~/Content/assets/Calendar/main.css" rel="stylesheet" />
+<script src="~/Content/assets/Calendar/main.js"></script>
+
+<script>
+    var calendarlist;
+    document.addEventListener('DOMContentLoaded', function () {
+        var calendarEl = document.getElementById('calendarlist');
+
+        calendarlist = new FullCalendar.Calendar(calendarEl, {
+
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'listDay,listWeek'
+            },
+
+            // customize the button names,
+            // otherwise they'd all just say "list"
+            views: {
+                listDay: { buttonText: 'list day' },
+                listWeek: { buttonText: 'list week' }
+            },
+
+            initialView: 'listWeek',
+            initialDate: '@string.Format("{0:yyyy-MM-dd}",DateTime.Now)',
+            navLinks: true, // can click day/week names to navigate views
+            editable: true,
+            dayMaxEvents: true, // allow "more" link when too many events
+            events: @Html.Raw( Json.Encode(Model))
+        });
+
+        calendarlist.render();
+    });
+
+</script>
+
+
+<script>
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var calendarEl = document.getElementById('calendar');
+
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            },
+            initialDate: '@string.Format("{0:yyyy-MM-dd}",DateTime.Now)',
+            navLinks: true, // can click day/week names to navigate views
+            selectable: true,
+            selectMirror: false,
+            select: function (arg) {
+                AddEvent(arg);
+                calendar.unselect()
+            },
+            eventClick: function (arg) {
+                Swal.fire({
+                    text: arg.event.title,
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Delete'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: "/Reminder/Delete/" + arg.event.groupId,
+                            success: function (id) {
+                                arg.event.remove();
+                            }
+                        })
+                    }
+                })
+            },
+            editable: true,
+            dayMaxEvents: true, // allow "more" link when too many events
+            events: @Html.Raw( Json.Encode(Model)),
+        });
+
+        calendar.render();
+
+        function AddEvent(arg) {
+
+            $(window).scrollTop(0);
+            @(User.IsInRole("Student") ? Html.Raw("$(\"#videoModal\").modal(\'show\');") : Html.Raw("$(\'#videoModal\').show();") )
+            var f = flatpickr("#DateTime", {
+                enableTime: true,
+                dateFormat: "Y-m-d H:i",
+                defaultDate: arg.start,
+                //minDate: "@string.Format("{0:yyyy-MM-dd HH:mm}",DateTime.UtcNow.AddHours(6))",
+            })
+        }
+        $(document).on('click', '#btnSave', function () { Save(); })
+        function Save() {
+                var title = $("#Title").val();
+                var Date = $("#DateTime").val();
+            $.ajax({
+                url: "/Reminder/Save?Reminder=" + title + "&Date=" + Date,
+                method: "POST",
+                success: function (data) {
+                        if (data.id > 0) {
+                            var data = {
+                            groupId: data.id,
+                            title: title,
+                            start: data.Date
+                            };
+                        calendar.addEvent(data);
+                        calendarlist.addEvent(data);
+                        @(User.IsInRole("Student") ? Html.Raw("$(\"#videoModal\").modal(\'hide\');") : Html.Raw("$(\'#videoModal\').hide();" ))
+                        $("#Title").val("");
+                    }
+                }
+            })
+        }
+    });
+</script>
+<style>
+
+    body {
+        margin: 40px 10px;
+        padding: 0;
+        font-family: Arial, Helvetica Neue, Helvetica, sans-serif;
+        font-size: 14px;
+    }
+
+    #calendar {
+        max-width: 1100px;
+        margin: 0 auto;
+    }
+</style>
+@if (User.IsInRole("Student"))
+{
+
+
+    <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
+        <!--begin::Container-->
+        <div class="container-xxl" id="kt_content_container">
+            <!--begin::Card-->
+            <div class="card-body">
+                <div id='calendar'></div>
+            </div>
+            <div class="card-body">
+                <div id='calendarlist'></div>
+            </div>
+            <!--begin::Modal - New Product-->
+            <div class="modal fade" id="videoModal" tabindex="-1" aria-hidden="true">
+                <!--begin::Modal dialog-->
+                <div class="modal-dialog modal-dialog-centered mw-650px">
+                    <!--begin::Modal content-->
+                    <div class="modal-content">
+                        <!--begin::Modal header-->
+                        <div class="modal-header border-0 justify-content-end">
+                            <!--begin::Close-->
+                            <div class="btn btn-icon btn-sm btn-color-gray-500 btn-active-icon-primary" data-bs-toggle="tooltip" title="Hide Event" data-bs-dismiss="modal">
+                                <!--begin::Svg Icon | path: icons/duotune/arrows/arr061.svg-->
+                                <span class="svg-icon svg-icon-1">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <rect opacity="0.5" x="6" y="17.3137" width="16" height="2" rx="1" transform="rotate(-45 6 17.3137)" fill="currentColor" />
+                                        <rect x="7.41422" y="6" width="16" height="2" rx="1" transform="rotate(45 7.41422 6)" fill="currentColor" />
+                                    </svg>
+                                </span>
+                                <!--end::Svg Icon-->
+                            </div>
+                            <!--end::Close-->
+                        </div>
+                        <!--end::Modal header-->
+                        <!--begin::Modal body-->
+                        <div class="modal-body pt-0 pb-20 px-lg-17">
+                            <div id="videoForm" class="form-row">
+                                    <div class="col-12 col-md-12 mb-3">
+                                        <label class="form-label">Task Title</label>
+                                        @Html.TextBox("Title", "", new { @class = "form-control", @placeholder = "Short Tile", })
+                                    </div>
+                                    <div class="col-12 col-md-12 mb-3">
+                                        <label class="form-label">Date Time</label>
+                                        <input id="DateTime" type="text" class="form-control"
+                                               placeholder="Task Start Time" data-toggle="flatpickr"
+                                               data-flatpickr-enable-time="true" data-flatpickr-alt-format="F j, Y at H:i"
+                                               data-flatpickr-date-format="Y-m-d H:i"
+                                               value="@string.Format("{0:yyyy-MM-dd HH:mm}",DateTime.UtcNow.AddHours(6))">
+                                    </div>
+                            </div>
+                            <div class="d-flex">
+                                <button id="btnSave" class="btn btn-success">Save</button>
+                            </div>
+                        </div>
+                        <!--end::Modal body-->
+                    </div>
+                </div>
+            </div>
+            <!--end::Modal - New Product-->
+            <!--end::Modals-->
+            <div class="w3-container">
+                <div id="videoModal" class="w3-modal">
+                    <div class="w3-modal-content w3-card-4 w3-animate-zoom" style="max-width:600px">
+
+                        <div class="w3-center">
+                            <span onclick="document.getElementById('videoModal').style.display='none'" class="w3-button w3-xlarge w3-hover-red w3-display-topright" title="Close Modal">&times;</span>
+                        </div>
+
+                        <div id="videoForm" class="w3-container">
+                            <div class="w3-section">
+                                <div class="form-row">
+                                    <div class="col-12 col-md-12 mb-3">
+                                        <label class="form-label">Task Title</label>
+                                        @Html.TextBox("Title", "", new { @class = "form-control", @placeholder = "Short Tile", })
+                                    </div>
+                                    <div class="col-12 col-md-12 mb-3">
+                                        <label class="form-label">Date Time</label>
+                                        <input id="DateTime" type="text" class="form-control"
+                                               placeholder="Task Start Time" data-toggle="flatpickr"
+                                               data-flatpickr-enable-time="true" data-flatpickr-alt-format="F j, Y at H:i"
+                                               data-flatpickr-date-format="Y-m-d H:i"
+                                               value="">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="w3-container w3-border-top w3-padding-16 w3-light-grey">
+                            <button onclick="document.getElementById('videoModal').style.display='none'" type="button" class="w3-button w3-red">Cancel</button>
+                            <button id="btnSave" class="btn btn-outline-success">Save</button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--end::Container-->
+    </div>
+}
+else
+{
+    <div class="pt-32pt">
+        <div class="page-section border-bottom-2">
+            <div style="padding:0rem !important" class="container-fluid page__container">
+                <div id='calendar'></div>
+            </div>
+            <div style="padding:0rem !important;margin-top:1.5rem" class="container-fluid page__container">
+                <div id='calendarlist'></div>
+            </div>
+        </div>
+    </div>
+    <div class="w3-container">
+        <div id="videoModal" class="w3-modal">
+            <div class="w3-modal-content w3-card-4 w3-animate-zoom" style="max-width:600px">
+
+                <div class="w3-center">
+                    <span onclick="document.getElementById('videoModal').style.display='none'" class="w3-button w3-xlarge w3-hover-red w3-display-topright" title="Close Modal">&times;</span>
+                </div>
+
+                <div id="videoForm" class="w3-container">
+                    <div class="w3-section">
+                        <div class="form-row">
+                            <div class="col-12 col-md-12 mb-3">
+                                <label class="form-label">Task Title</label>
+                                @Html.TextBox("Title", "", new { @class = "form-control", @placeholder = "Short Tile", })
+                            </div>
+                            <div class="col-12 col-md-12 mb-3">
+                                <label class="form-label">Date Time</label>
+                                <input id="DateTime" type="text" class="form-control"
+                                       placeholder="Task Start Time" data-toggle="flatpickr"
+                                       data-flatpickr-enable-time="true" data-flatpickr-alt-format="F j, Y at H:i"
+                                       data-flatpickr-date-format="Y-m-d H:i"
+                                       value="">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="w3-container w3-border-top w3-padding-16 w3-light-grey">
+                    <button onclick="document.getElementById('videoModal').style.display='none'" type="button" class="w3-button w3-red">Cancel</button>
+                    <button id="btnSave" class="btn btn-outline-success">Save</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+}
+
+
+
+@section scripts{
+
+    <!-- Flatpickr -->
+    <script src="~/Content/assets/vendor/flatpickr/flatpickr.min.js"></script>
+    <script src="~/Content/assets/js/flatpickr.js"></script>
+}

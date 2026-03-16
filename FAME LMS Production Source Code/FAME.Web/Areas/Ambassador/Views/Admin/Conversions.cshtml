@@ -1,0 +1,172 @@
+@{
+    ViewBag.Title = "Conversions";
+    Layout = "~/Views/Shared/_LayoutAmbassador.cshtml";
+}
+
+<div class="container-fluid py-4">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h4 class="mb-1">Conversions</h4>
+            <p class="text-muted mb-0">Track referral conversions across all ambassadors</p>
+        </div>
+        <div>
+            <a href="@Url.Action("Index")" class="btn btn-outline-secondary">
+                <i class="material-icons align-middle mr-1">arrow_back</i>
+                Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    <div class="card shadow">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">
+                <i class="material-icons align-middle mr-1">swap_horiz</i>
+                All Conversions
+            </h6>
+            <form class="form-inline" method="get">
+                <select name="status" class="form-control form-control-sm mr-2">
+                    <option value="">All Statuses</option>
+                    <option value="Pending" @(ViewBag.Filter?.Status == "Pending" ? "selected" : "")>Pending</option>
+                    <option value="Approved" @(ViewBag.Filter?.Status == "Approved" ? "selected" : "")>Approved</option>
+                    <option value="Revoked" @(ViewBag.Filter?.Status == "Revoked" ? "selected" : "")>Revoked</option>
+                </select>
+                <button type="submit" class="btn btn-sm btn-primary">Filter</button>
+            </form>
+        </div>
+        <div class="card-body p-0">
+            @if (Model != null && Model.Items != null && Model.Items.Count > 0)
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th>Referral</th>
+                                <th>Ambassador</th>
+                                <th class="text-center">Status</th>
+                                <th class="text-right">Commission</th>
+                                <th class="text-center">Date</th>
+                                <th class="text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var conversion in Model.Items)
+                            {
+                                <tr>
+                                    <td>
+                                        <strong>@conversion.ReferredUserName</strong>
+                                        <br><small class="text-muted">@conversion.ReferredUserEmail</small>
+                                    </td>
+                                    <td>@conversion.AmbassadorName</td>
+                                    <td class="text-center">
+                                        <span class="badge badge-@(conversion.Status == "Approved" ? "success" : conversion.Status == "Pending" ? "warning" : "danger")">
+                                            @conversion.Status
+                                        </span>
+                                    </td>
+                                    <td class="text-right">
+                                        <strong>@conversion.Currency @conversion.CommissionAmount.ToString("N0")</strong>
+                                    </td>
+                                    <td class="text-center">
+                                        @conversion.ConvertedAt.ToString("MMM dd, yyyy")
+                                    </td>
+                                    <td class="text-right">
+                                        @if (conversion.Status == "Pending")
+                                        {
+                                            <button class="btn btn-sm btn-success" onclick="approveConversion(@conversion.Id)">
+                                                <i class="material-icons align-middle" style="font-size:1rem;">check</i>
+                                            </button>
+                                            <button class="btn btn-sm btn-danger" onclick="revokeConversion(@conversion.Id)">
+                                                <i class="material-icons align-middle" style="font-size:1rem;">close</i>
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <i class="material-icons text-muted" style="font-size: 4rem;">swap_horiz</i>
+                    <h5 class="mt-3">No conversions found</h5>
+                    <p class="text-muted">Conversions will appear here when referrals convert.</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Revoke Modal -->
+<div class="modal fade" id="revokeModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Revoke Conversion</h5>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <form id="revokeForm">
+                @Html.AntiForgeryToken()
+                <input type="hidden" id="revokeConversionId">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Reason for revoking</label>
+                        <textarea id="revokeReason" class="form-control" rows="3" required placeholder="Enter reason..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger">Revoke</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function approveConversion(id) {
+            if (!confirm('Approve this conversion?')) return;
+            $.post('@Url.Action("ApproveConversion")', {
+                id: id,
+                __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+            }, function(response) {
+                if (response.success) {
+                    toastr.success('Conversion approved.');
+                    location.reload();
+                } else {
+                    toastr.error(response.message || 'Failed to approve.');
+                }
+            });
+        }
+
+        function revokeConversion(id) {
+            $('#revokeConversionId').val(id);
+            $('#revokeModal').modal('show');
+        }
+
+        $('#revokeForm').on('submit', function(e) {
+            e.preventDefault();
+            var id = $('#revokeConversionId').val();
+            var reason = $('#revokeReason').val();
+            if (!reason) { toastr.error('Please provide a reason.'); return; }
+            $.post('@Url.Action("RevokeConversion")', {
+                id: id,
+                reason: reason,
+                __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+            }, function(response) {
+                if (response.success) {
+                    toastr.success('Conversion revoked.');
+                    location.reload();
+                } else {
+                    toastr.error(response.message || 'Failed to revoke.');
+                }
+            });
+        });
+    </script>
+}

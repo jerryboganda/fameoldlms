@@ -1,0 +1,316 @@
+
+--- PAGE 1 ---
+MCQ 1:
+A 40-year-old woman presents to the Emergency Department with vomiting and generalized
+abdominal pain. She has noticed a slight yellow tinged in her vision recently. On examination,
+her blood pressure is 90/50 mmHg, heart rate 60/min, respiratory rate 16/min, and
+temperature 37°C. What is the most likely diagnosis?
+A. Anterolateral MI
+B. Digoxin toxicity
+C. Hypokalaemia
+D. Hypothermia
+Explanation:
+The patient’s symptoms of vomiting, abdominal pain, and yellow-tinged vision, along with her
+vital signs, are highly suggestive of digoxin toxicity. Digoxin toxicity can cause nausea, vomiting,
+abdominal pain, bradycardia, and visual disturbances (such as yellow vision). It is a common
+complication in patients on digoxin therapy, particularly with renal impairment or electrolyte
+disturbances.
+Digoxin Toxicity
+Definition: Digoxin toxicity occurs due to excessive levels of digoxin in the bloodstream,
+resulting in toxic effects on the heart and other organs.
+Key Clinical Presentation: Nausea, vomiting, abdominal pain, visual disturbances (yellow vision),
+bradycardia, arrhythmias.
+Investigations:
+Best initial: Serum digoxin level, ECG
+Confirmatory: Serum electrolytes (especially potassium), renal function tests.
+Treatment Outline:
+First-line: Discontinuation of digoxin, correcting electrolyte imbalances (especially potassium),
+and using digoxin-specific antibody (Digibind) in severe cases.
+Second-line: Use of antiarrhythmic drugs (e.g., lidocaine or phenytoin) for arrhythmias.
+Definitive: Digoxin-specific antibody (Digibind) for life-threatening toxicity.
+Correct Answer: B. Digoxin toxicity
+2. A 70-year-old man with a history of congestive heart failure presents to the clinic for follow-
+--- PAGE 2 ---
+up. He is currently on medical therapy but is concerned about improving his long-term survival.
+Which of the following agents has been shown to reduce mortality in patients with congestive
+heart failure?
+A. Digitalis
+B. Enalapril
+C. Furosemide
+D. Procainamide
+Explanation:
+Enalapril, an angiotensin-converting enzyme (ACE) inhibitor, has been shown to reduce
+mortality in patients with congestive heart failure. ACE inhibitors help by improving cardiac
+output, reducing afterload, and preventing harmful cardiac remodeling. They are considered a
+cornerstone of heart failure management.
+Congestive Heart Failure (CHF)
+Definition: A clinical syndrome where the heart is unable to pump blood effectively, leading to
+symptoms such as fluid retention, shortness of breath, and fatigue.
+Key Clinical Presentation: Dyspnea, fatigue, edema, orthopnea, paroxysmal nocturnal dyspnea.
+Investigations:
+Best initial: Chest X-ray, echocardiogram, and serum B-type natriuretic peptide (BNP) levels.
+Confirmatory: Echocardiogram showing reduced ejection fraction or diastolic dysfunction.
+Treatment Outline:
+First-line: ACE inhibitors (e.g., enalapril), beta-blockers (e.g., metoprolol), diuretics (e.g.,
+furosemide).
+Second-line: Aldosterone antagonists (e.g., spironolactone), angiotensin receptor blockers
+(ARBs), digoxin in selected patients.
+Definitive: Heart transplantation or device implantation (e.g., ICD) for severe cases.
+Correct Answer: B. Enalapril
+3. 72-year-old man with congestive heart failure has been prescribed furosemide to manage
+fluid retention. During follow-up, he develops symptoms of muscle weakness and fatigue.
+Which of the following is a recognized side effect of furosemide in congestive heart failure?
+A. Hypokalaemia
+B. Bronchospasm
+--- PAGE 3 ---
+C. Hypoglycaemia
+D. Haemolytic anaemia
+Explanation:
+Hypokalaemia is a common side effect of furosemide, a loop diuretic, especially in patients with
+congestive heart failure. Furosemide increases the excretion of sodium, chloride, and potassium
+in the urine, which can lead to electrolyte imbalances, including low potassium levels. This is
+particularly concerning as hypokalaemia can lead to muscle weakness, fatigue, and arrhythmias.
+Furosemide in Congestive Heart Failure
+Definition: Furosemide is a loop diuretic used in the management of congestive heart failure to
+reduce fluid overload by promoting diuresis.
+Key Clinical Presentation: Edema, pulmonary congestion, weight gain due to fluid retention.
+Investigations:
+Best initial: Electrolyte levels (especially potassium), renal function tests.
+Confirmatory: None specific; diagnosis based on clinical presentation and patient history.
+Treatment Outline:
+First-line: Furosemide for fluid management, ACE inhibitors (e.g., enalapril), beta-blockers,
+aldosterone antagonists.
+Second-line: Combination therapy with other diuretics (e.g., thiazides) in resistant cases.
+Definitive: Heart transplantation for severe cases, or implantation of devices like an ICD.
+Correct Answer: A. Hypokalaemia
+4. A 60-year-old patient with a history of ischaemic stroke presents with a regular narrow
+complex tachycardia. The patient is hemodynamically stable, and a decision is made to
+administer intravenous adenosine. In the presence of which of the following should the dose of
+adenosine be reduced?
+A. Theophylline
+B. Dipyridamole
+C. Chronic renal impairment
+D. Significant mitral regurgitation
+Explanation:
+In the presence of chronic renal impairment, the dose of adenosine should be reduced. This is
+because renal dysfunction can lead to delayed clearance of adenosine, increasing the risk of
+--- PAGE 4 ---
+excessive effects, such as severe bradycardia or hypotension. In contrast, dipyridamole
+enhances the effects of adenosine, and the dose should be increased, not reduced.
+Adenosine Administration in Tachycardia
+Definition: Adenosine is an antiarrhythmic used to treat certain types of supraventricular
+tachycardia by temporarily blocking the AV node and restoring normal rhythm.
+Key Clinical Presentation: Regular narrow complex tachycardia, hemodynamically stable.
+Investigations:
+Best initial: Electrocardiogram (ECG) to confirm the rhythm.
+Confirmatory: Diagnosis is typically clinical based on ECG findings and the response to
+adenosine.
+Treatment Outline:
+First-line: IV adenosine for narrow complex tachycardias.
+Second-line: Additional antiarrhythmic agents or cardioversion if adenosine is ineffective.
+Definitive: Treatment of underlying causes (e.g., catheter ablation for re-entrant arrhythmias).
+Correct Answer: C. Chronic renal impairment
+5. A 65-year-old patient with chronic heart failure presents to the clinic for follow-up. The
+physician is considering medications to improve the patient's long-term survival. Which of the
+following drugs used in the treatment of chronic heart failure has been shown to increase
+survival?
+A. Digoxin
+B. Enalapril
+C. Furosemide
+D. Hydralazine
+Explanation:
+Enalapril, an angiotensin-converting enzyme (ACE) inhibitor, has been shown to increase
+survival in patients with chronic heart failure. ACE inhibitors improve heart function by reducing
+afterload, preventing harmful cardiac remodeling, and improving blood flow, which ultimately
+leads to improved survival rates in heart failure patients.
+Chronic Heart Failure (CHF)
+--- PAGE 5 ---
+Definition: A condition where the heart is unable to pump sufficient blood to meet the body's
+needs, leading to symptoms such as fatigue, shortness of breath, and fluid retention.
+Key Clinical Presentation: Dyspnea, orthopnea, fatigue, edema, paroxysmal nocturnal dyspnea.
+Investigations:
+Best initial: Chest X-ray, echocardiogram, and serum BNP levels.
+Confirmatory: Echocardiogram showing reduced ejection fraction or diastolic dysfunction.
+Treatment Outline:
+First-line: ACE inhibitors (e.g., enalapril), beta-blockers (e.g., metoprolol), diuretics (e.g.,
+furosemide).
+Second-line: Aldosterone antagonists (e.g., spironolactone), angiotensin receptor blockers
+(ARBs), digoxin in selected cases.
+Definitive: Heart transplantation or device implantation (e.g., ICD) for severe cases.
+Correct Answer: B. Enalapril
+6. A 39-year-old man presents to the clinic with unexplained fever 19 days after an attack of
+acute rheumatic fever. Several of his teeth were extracted prior to his hospital admission.
+Clinical examination reveals a systolic murmur and splenomegaly. Laboratory results show
+elevated WBC (14.0 x 10^9/L), neutrophils at 72%, and urinalysis showing 25 erythrocytes per
+HPF. What is the most likely diagnosis?
+A. Floppy mitral valve
+B. Bacterial endocarditis
+C. Acute myocardial infarction
+D. Recurrent rheumatic heart disease
+Explanation:
+The patient’s presentation of fever, systolic murmur, splenomegaly, and elevated WBC count
+following a recent attack of acute rheumatic fever is most consistent with bacterial
+endocarditis. The recent dental extractions increase the risk of bacteremia, which can lead to
+endocarditis, especially in patients with preexisting valvular heart disease from rheumatic fever.
+Bacterial Endocarditis
+Definition: Infection of the endocardial surface of the heart, often affecting the heart valves.
+Key Clinical Presentation: Fever, heart murmur, splenomegaly, positive blood cultures, possible
+embolic phenomena.
+--- PAGE 6 ---
+Investigations:
+• Best initial: Blood cultures
+• Confirmatory: Echocardiography (to identify vegetations on heart valves)
+Treatment Outline:
+• First-line: IV antibiotics (e.g., ceftriaxone, gentamicin) based on blood culture sensitivity.
+• Second-line: Surgery may be required for valve replacement in severe cases.
+Correct Answer: B. Bacterial endocarditis
+7 . A 62-year-old man presents with recurrent retrosternal chest pain, which has become
+much worse over the last 3 weeks. He describes the pain as lasting longer than before and
+occurring even while sitting in a chair or lying in bed at night. Which of the following is the most
+likely type of angina?
+A. Unstable
+B. Heberden
+C. Exertional
+D. Prinzmetal
+Explanation:
+The patient’s description of chest pain that occurs at rest, lasts longer, and is more frequent is
+characteristic of unstable angina. This form of angina occurs unpredictably and is associated
+with a higher risk of myocardial infarction (MI). It requires urgent evaluation and management.
+Unstable Angina
+Definition: A type of angina pectoris that occurs at rest or with minimal exertion and is more
+intense and prolonged than stable angina.
+Key Clinical Presentation: Chest pain at rest, increasing frequency and duration, may be
+associated with diaphoresis or nausea.
+Investigations:
+• Best initial: ECG (may show ST-segment depression or T-wave inversion)
+• Confirmatory: Cardiac biomarkers (e.g., troponins)
+Treatment Outline:
+• First-line: Antiplatelet therapy (e.g., aspirin), nitrates, beta-blockers
+--- PAGE 7 ---
+• Second-line: Coronary angiography, revascularization if indicated
+Correct Answer: A. Unstable
+8.
+MCQ:
+A 52-year-old man with a 5-year history of hypertension is being treated with
+hydrochlorothiazide 25 mg/day. His current blood pressure is 155/101 mmHg, and his lab
+results show: sodium 141 mmol/L, potassium 4.1 mmol/L, creatinine 105 µmol/L, and fasting
+glucose 7.3 mmol/L. What is the most appropriate management modification?
+A. Add a beta blocker
+B. Add a calcium channel blocker
+C. Double the hydrochlorothiazide dose
+D. Add an angiotensin-converting enzyme inhibitor
+Explanation:
+The patient's blood pressure remains poorly controlled despite being on hydrochlorothiazide,
+and his fasting glucose is elevated, suggesting potential early signs of diabetes. Adding an ACE
+inhibitor is appropriate because ACE inhibitors not only lower blood pressure but also provide
+renal protection, which is beneficial in hypertensive patients, particularly those with early signs
+of diabetes.
+Hypertension
+Definition: A condition where the force of the blood against the artery walls is too high,
+potentially leading to complications like stroke, heart failure, or kidney damage.
+Key Clinical Presentation: Elevated blood pressure readings, often asymptomatic until
+complications develop.
+Investigations:
+• Best initial: Blood pressure measurement
+• Confirmatory: Ambulatory blood pressure monitoring (ABPM)
+Treatment Outline:
+• First-line: Lifestyle modifications (diet, exercise), ACE inhibitors (e.g., enalapril), calcium
+channel blockers.
+• Second-line: Diuretics, beta-blockers, or ARBs if needed.
+Correct Answer: D. Add an angiotensin-converting enzyme inhibitor
+--- PAGE 8 ---
+9.
+MCQ:
+A 30-year-old intravenous drug user presents with fever, night sweats, chest pain, and
+arthralgia. On examination, painless erythematous lesions are noted on the palms of the hands,
+along with round erythematous lesions and central clearing noted in the retina and splinter
+hemorrhages under the fingernails. What is the most likely diagnosis?
+A. Syphilis
+B. HIV infection
+C. Infectious hepatitis
+D. Bacterial endocarditis
+Explanation:
+The combination of fever, night sweats, chest pain, splenomegaly, and erythematous lesions on
+the palms with retinal lesions and splinter hemorrhages under the fingernails is most consistent
+with bacterial endocarditis, specifically infective endocarditis. These findings, including retinal
+lesions (Roth spots) and splinter hemorrhages, are characteristic of this condition, especially in a
+patient with intravenous drug use, which is a significant risk factor for endocarditis.
+Bacterial Endocarditis
+Definition: Infection of the endocardial surface of the heart, most often involving heart valves,
+caused by bacteria entering the bloodstream.
+Key Clinical Presentation: Fever, night sweats, heart murmur, splenomegaly, Roth spots, splinter
+hemorrhages, and positive blood cultures.
+Investigations:
+• Best initial: Blood cultures, echocardiogram
+• Confirmatory: Transesophageal echocardiography for vegetations
+Treatment Outline:
+• First-line: IV antibiotics (e.g., vancomycin, ceftriaxone)
+• Second-line: Surgery in severe cases, such as for valve replacement
+Correct Answer: D. Bacterial endocarditis
+10.
+MCQ:
+--- PAGE 9 ---
+A 77-year-old woman with poorly controlled long-standing type 2 diabetes and hypertension
+presents with dizziness upon standing rapidly. Current medications include aspirin, atenolol,
+insulin, metformin, and multivitamins. Sitting blood pressure is 140/85 mmHg, and standing
+blood pressure is 115/80 mmHg. What is the most likely explanation for this finding?
+A. Hypoglycemia
+B. Medication side effect
+C. Autonomic neuropathy
+D. Left ventricular dysfunction
+Explanation:
+The patient's dizziness upon standing, along with the drop in blood pressure from sitting to
+standing, is most likely due to autonomic neuropathy, a common complication of diabetes. This
+condition impairs the body’s ability to regulate blood pressure upon standing, leading to
+orthostatic hypotension.
+Autonomic Neuropathy
+Definition: A form of diabetic neuropathy affecting the autonomic nervous system, leading to
+dysfunction in regulating blood pressure, heart rate, and other autonomic functions.
+Key Clinical Presentation: Orthostatic hypotension, dizziness, syncope, and gastrointestinal
+symptoms.
+Investigations:
+• Best initial: Blood pressure measurements (sitting and standing)
+• Confirmatory: Heart rate variability tests, tilt-table testing
+Treatment Outline:
+• First-line: Volume expansion (e.g., increased salt intake, fluid intake), compression
+stockings
+• Second-line: Medications like fludrocortisone or midodrine
+Correct Answer: C. Autonomic neuropathy
+11.
+MCQ:
+A 67-year-old man is brought to the Emergency Department by his family with confusion and a
+decreased level of consciousness. He has fever, diarrhea, and poor oral intake for the past 2
+days. On examination, the JVP is not visible, heart sounds are normal, and the lungs are clear
+with no rhonchi or crepitations. The patient's extremities are cold, and peripheral pulses are
+--- PAGE 10 ---
+feeble. His blood pressure is 83/45 mmHg, heart rate 120/min, and respiratory rate 20/min.
+Which of the following is the most appropriate next step in management?
+A. IV boluses of normal saline
+B. Intravenous beta blockers
+C. Nasogastric tube feeding
+D. Dopamine infusion
+Explanation:
+The patient’s presentation of confusion, hypotension, tachycardia, and cold extremities is most
+consistent with hypovolemic shock due to dehydration from diarrhea and poor oral intake. The
+most appropriate next step is to administer IV boluses of normal saline to restore circulating
+volume and stabilize blood pressure.
+Hypovolemic Shock
+Definition: A condition where the body does not have enough blood volume to maintain
+adequate tissue perfusion, often due to fluid loss or bleeding.
+Key Clinical Presentation: Hypotension, tachycardia, cold extremities, altered mental status, low
+urine output.
+Investigations:
+• Best initial: Blood pressure measurement, blood tests for electrolytes, and renal function
+• Confirmatory: Hemodynamic monitoring or central venous pressure measurement in
+severe cases
+Treatment Outline:
+• First-line: Fluid resuscitation with normal saline or Ringer’s lactate
+• Second-line: Vasopressors if fluid resuscitation fails to normalize blood pressure
+Correct Answer: A. IV boluses of normal saline
+12.
+MCQ:
+A 40-year-old man is brought to the Emergency Department with progressive difficulty in
+breathing. He is being treated for bronchogenic carcinoma. On examination, the JVP is elevated,
+lungs are clear, and heart sounds are very quiet. His blood pressure is 88/50 mmHg, heart rate is
+125/min, and respiratory rate is 24/min. Which of the following is the most appropriate test to
+confirm the diagnosis?

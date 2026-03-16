@@ -1,0 +1,58 @@
+﻿@model First_Aid_Made_Easy.Models.RequestVM
+@{
+	int Sr = 0;
+	var list = Model.List;
+	var t = Request.QueryString["Type"];
+}
+<table id="DTable" class="table  table-bordered">
+	<thead>
+		<tr style="background-color: #364e9c">
+			<th>Date</th>
+			<th>Name/Email</th>
+			<th>Ph. No.</th>
+			@if (t == "7" || t == "8")
+			{
+				<th>Exam</th>
+			}
+			<th style="min-width:150px">Package</th>
+			<th title="Duration">Dur</th>
+			<th>Price</th>
+			<th>Payment</th>
+			<th></th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var i in list)
+		{
+			Sr++;
+			<tr>
+				<td>@string.Format("{0:dd/MM/yyy}", i.RequestDate)</td>
+				<td><a target="_blank" href="/Admin/StudentDetail/@i.User_Id">@(i.StudentName)</a> <br /> @i.StudentEmail </td>
+				<td>@i.Student_Mobile</td>
+				@if (t == "7" || t == "8")
+				{
+					<td>@i.ExamType</td>
+				}
+				<td>@i.PackageName</td>
+				<td>@(new First_Aid_Made_Easy.BLL.PackageRepository().getText(i.Duration).Replace("--- Rs.", ""))</td>
+				<td>@string.Format("{0:n0}", i.Price)</td>
+				<td>@i.Payment</td>
+				<td>
+					@if (i.IsAccepted == true)
+					{
+						<a href="#" class="text-success"><i class="fa fa-check-circle Font20"></i></a>
+					}
+					else
+					{
+						<a href="#" data-id="@i.RequestID" id="btnAccept" vlaue="" class="text-warning"><i class="fa fa-check-circle Font20"></i></a>
+						@*<a href="#" data-id="@i.StudentID" id="btnDelete" vlaue="" class="text-danger"><i class="fa fa-trash Font20"></i></a>*@
+					}
+					@*@if (i.HasInstall)
+						{
+							<a href="#" data-id="@i.RequestID" id="btnAccept" vlaue="" class="text-warning"><i class="fa fa-check-circle Font20"></i> Inst</a>
+						}*@
+				</td>
+			</tr>
+		}
+	</tbody>
+</table>

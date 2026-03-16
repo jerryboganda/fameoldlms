@@ -1,0 +1,158 @@
+@model First_Aid_Made_Easy.Models.UnsubscribeReportVM
+@{
+    ViewBag.Title = "Unsubscribes Report";
+    Layout = "~/Views/Shared/_LayoutTeacher.cshtml";
+}
+
+<div class="pt-32pt">
+    <div class="container-fluid page__container">
+        <div class="d-flex align-items-center mb-24pt">
+            <div class="flex">
+                <h2 class="mb-0">Unsubscribes Report</h2>
+                <ol class="breadcrumb p-0 m-0">
+                    <li class="breadcrumb-item"><a href="/Communication/Index">Email Marketing</a></li>
+                    <li class="breadcrumb-item active">Unsubscribes</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="page-section">
+    <div class="container-fluid page__container">
+        <!-- Summary Stats -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card text-center">
+                    <div class="card-body py-3">
+                        <h3 class="mb-0">@Model.TotalUnsubscribes.ToString("N0")</h3>
+                        <small class="text-muted">Total Unsubscribes</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center">
+                    <div class="card-body py-3">
+                        <h3 class="mb-0">@Model.ThisMonthCount.ToString("N0")</h3>
+                        <small class="text-muted">This Month</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center">
+                    <div class="card-body py-3">
+                        <h3 class="mb-0">@Model.UnsubscribeRate.ToString("0.0")%</h3>
+                        <small class="text-muted">Unsubscribe Rate</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center">
+                    <div class="card-body py-3">
+                        <h3 class="mb-0">@Model.TopReason</h3>
+                        <small class="text-muted">Top Reason</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reasons Breakdown -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header"><h4 class="card-title mb-0">Reasons Breakdown</h4></div>
+                    <div class="card-body">
+                        @if (Model.ReasonBreakdown != null && Model.ReasonBreakdown.Any())
+                        {
+                            foreach (var item in Model.ReasonBreakdown)
+                            {
+                                var pct = Model.TotalUnsubscribes > 0 ? (item.Value * 100.0 / Model.TotalUnsubscribes) : 0;
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span>@(string.IsNullOrEmpty(item.Key) ? "No reason given" : item.Key)</span>
+                                        <span><strong>@item.Value</strong> (@pct.ToString("0.0")%)</span>
+                                    </div>
+                                    <div class="progress" style="height:6px;">
+                                        <div class="progress-bar bg-warning" style="width:@pct%"></div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <p class="text-muted text-center">No data</p>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header"><h4 class="card-title mb-0">Monthly Trend</h4></div>
+                    <div class="card-body">
+                        <canvas id="trendChart" height="220"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Unsubscribe Records -->
+        <div class="card">
+            <div class="card-header"><h4 class="card-title mb-0">All Unsubscribes</h4></div>
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Email</th>
+                            <th>Campaign</th>
+                            <th>Reason</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var r in Model.Records)
+                        {
+                            <tr>
+                                <td>@r.Email</td>
+                                <td>@(r.CampaignName ?? "-")</td>
+                                <td>@(string.IsNullOrEmpty(r.Reason) ? "<span class='text-muted'>-</span>" : r.Reason)</td>
+                                <td>@r.UnsubscribedAt.ToString("MMM dd, yyyy HH:mm")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            @if (Model.TotalPages > 1)
+            {
+                <div class="card-footer text-center">
+                    @for (int p = 1; p <= Math.Min(Model.TotalPages, 10); p++)
+                    {
+                        <a href="/Communication/Unsubscribes?page=@p" class="btn btn-sm @(p == Model.CurrentPage ? "btn-primary" : "btn-outline-primary") mr-1">@p</a>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <script>
+        var trendData = @Html.Raw(Model.MonthlyTrendJson ?? "[]");
+        if (trendData.length > 0) {
+            new Chart(document.getElementById('trendChart'), {
+                type: 'bar',
+                data: {
+                    labels: trendData.map(function (d) { return d.Month; }),
+                    datasets: [{
+                        label: 'Unsubscribes',
+                        data: trendData.map(function (d) { return d.Count; }),
+                        backgroundColor: 'rgba(255, 152, 0, 0.6)',
+                        borderColor: '#ff9800',
+                        borderWidth: 1
+                    }]
+                },
+                options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+            });
+        }
+    </script>
+}

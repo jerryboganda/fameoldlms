@@ -1,0 +1,652 @@
+@model First_Aid_Made_Easy.Models.CourseVM
+@{
+    ViewBag.Title = Model.Course_Name;
+    Layout = "~/Views/Shared/_LayoutStudent2026.cshtml";
+    var firstVideo = Model.SectionList?.FirstOrDefault()?.VideoList?.FirstOrDefault() 
+                  ?? Model.SectionList?.FirstOrDefault()?.SectionSubList?.FirstOrDefault()?.VideoList?.FirstOrDefault();
+}
+
+<style>
+/* TakeCourse Mobile Fixes */
+@@media (max-width: 991px) {
+    .col-lg-8, .col-lg-4 {
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+        width: 100% !important;
+    }
+    
+    #sidebarContent {
+        max-height: none !important;
+        overflow: visible !important;
+        margin-top: 16px;
+    }
+    
+    .fame-card {
+        min-height: auto !important;
+    }
+}
+
+@@media (max-width: 767px) {
+    /* Video player full width */
+    .ratio-16x9 {
+        --bs-aspect-ratio: 56.25%;
+    }
+    
+    .fame-card.bg-black {
+        min-height: auto !important;
+        max-height: none !important;
+        height: auto !important;
+        display: block !important; /* Remove flex centering which clips */
+    }
+    
+    /* Ensure ratio container works on mobile */
+    .ratio {
+        position: relative;
+        width: 100%;
+    }
+    .ratio::before {
+        display: block;
+        padding-top: var(--bs-aspect-ratio);
+        content: "";
+    }
+    .ratio > * {
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+    }
+    
+    /* Course title */
+    h4.text-truncate {
+        max-width: 100% !important;
+        font-size: 1rem !important;
+        white-space: normal !important;
+        word-break: break-word;
+    }
+    
+    /* Breadcrumb fix */
+    .breadcrumb {
+        flex-wrap: wrap;
+        font-size: 0.75rem !important;
+    }
+    
+    /* Hide focus mode on mobile */
+    .d-md-block {
+        display: none !important;
+    }
+    
+    /* Tabs smaller on mobile */
+    .nav-tabs .nav-link {
+        padding: 8px 12px;
+        font-size: 0.8125rem;
+    }
+    
+    /* Video items tap-friendly */
+    .video-item {
+        min-height: 52px;
+        padding: 12px !important;
+    }
+    
+    /* Accordion headers */
+    .accordion-button {
+        padding: 14px 16px !important;
+        font-size: 0.9375rem !important;
+    }
+    
+    /* Lesson nav buttons responsive */
+    .lesson-nav-btns {
+        width: 100%;
+        justify-content: space-between !important;
+    }
+    .lesson-nav-btns .btn {
+        flex: 1;
+        padding: 10px 12px !important;
+        font-size: 0.8rem !important;
+    }
+    
+    /* Top header row */
+    .d-flex.align-items-center.justify-content-between {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 8px;
+    }
+}
+</style>
+
+<div class="anim-enter delay-100 h-100 d-flex flex-column">
+    <!-- Breadcrumb & Title -->
+    <div class="d-flex align-items-center justify-content-between mb-3 px-2">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-1 small">
+                    <li class="breadcrumb-item"><a href="@Url.Action("MyCourses", "Student")">My Courses</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">@Model.Course_Name</li>
+                </ol>
+            </nav>
+            <h4 class="mb-0 text-truncate" style="max-width: 600px;">@Model.Course_Name</h4>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <button class="btn btn-light-teal btn-sm d-none d-md-block" onclick="toggleCinemaMode()">
+                <i class="bi bi-fullscreen me-1"></i> Focus Mode
+            </button>
+            <div class="badge badge-teal-light">@Model.Progress% Complete</div>
+        </div>
+    </div>
+
+    <div class="row g-4 h-100">
+        <!-- Main Content (Video Player) -->
+        <div class="col-lg-8 d-flex flex-column" id="mainContent">
+            <div id="vid-cont" class="fame-card p-0 overflow-hidden bg-black d-flex flex-column position-relative shadow-sm" style="border-radius: 12px;">
+                <!-- Video Container -->
+                <div class="ratio ratio-16x9">
+                    <iframe id="videoPlayer" src="" allowfullscreen webkitallowfullscreen mozallowfullscreen title="Course Video" allow="autoplay; fullscreen; picture-in-picture; encrypted-media"></iframe>
+                </div>
+                <!-- Secure Canvas Watermark will be injected here by watermark-secure.js -->
+                
+                <!-- Overlay Loading Spinner (Hidden by default) -->
+                <div id="videoLoader" class="position-absolute top-0 start-0 w-100 h-100 d-none flex-column align-items-center justify-content-center bg-black bg-opacity-75 text-white" style="z-index: 10;">
+                     <div class="spinner-border text-teal mb-3" role="status"></div>
+                     <div class="fw-bold">Loading Lesson...</div>
+                </div>
+            </div>
+
+            <div class="fame-card mt-3 flex-grow-1 shadow-sm" style="border-radius: 12px;">
+                <div class="d-flex align-items-start justify-content-between mb-3 border-bottom pb-4 flex-wrap gap-2">
+                    <div class="flex-grow-1 min-width-0">
+                        <h3 class="mb-1 text-dark fw-bolder" id="videoTitle">Select a lesson to start</h3>
+                        <p class="text-muted small mb-0 fw-medium" id="videoDesc">Introduction</p>
+                    </div>
+                    <div class="d-flex gap-2 align-items-center flex-shrink-0 lesson-nav-btns">
+                        <button type="button" class="btn btn-nav-prev btn-sm rounded-pill px-3" id="btnPrevVideo" title="Previous Lesson">
+                            <i class="bi bi-skip-backward-fill me-1"></i><span class="nav-btn-text">Previous</span>
+                        </button>
+                        <button type="button" class="btn btn-teal btn-sm rounded-pill px-4" onclick="markCompleted()">
+                            <i class="bi bi-check-circle-fill me-1"></i> Mark Complete
+                        </button>
+                        <button type="button" class="btn btn-nav-next btn-sm rounded-pill px-3" id="btnNextVideo" title="Next Lesson">
+                            <span class="nav-btn-text">Next</span><i class="bi bi-skip-forward-fill ms-1"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tabs -->
+                <ul class="nav nav-tabs nav-fill mb-4 border-0 bg-light-soft rounded-pill p-1" id="courseTabs" role="tablist">
+                    <li class="nav-item">
+                        <button class="nav-link active rounded-pill border-0" data-bs-toggle="tab" data-bs-target="#overview" type="button">Overview</button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link rounded-pill border-0" data-bs-toggle="tab" data-bs-target="#resources" type="button">Resources</button>
+                    </li>
+                     <li class="nav-item">
+                        <button class="nav-link rounded-pill border-0" data-bs-toggle="tab" data-bs-target="#discussion" type="button">Discussion</button>
+                    </li>
+                </ul>
+                <div class="tab-content text-muted small">
+                    <div class="tab-pane fade show active" id="overview">
+                        <p>No additional details provided for this lesson.</p>
+                    </div>
+                     <div class="tab-pane fade" id="resources">
+                        <p>No resources attached.</p>
+                    </div>
+                     <div class="tab-pane fade" id="discussion">
+                        <div class="text-center py-4">
+                            <i data-feather="message-circle" class="mb-2"></i>
+                            <p>Discussion forum coming soon.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar (Playlist) -->
+        <div class="col-lg-4 d-flex flex-column h-100" id="sidebarContent" style="max-height: calc(100vh - 150px); overflow-y: auto;">
+            <div class="fame-card p-0 flex-grow-1 overflow-hidden d-flex flex-column">
+                <div class="p-3 bg-light border-bottom">
+                    <div class="fw-bold text-dark mb-1">Course Content</div>
+                    <div class="d-flex align-items-center gap-3 text-muted" style="font-size:0.8rem;">
+                        <span><i class="bi bi-play-circle me-1"></i>@Model.Lessons Lectures</span>
+                        <span><i class="bi bi-clock me-1"></i>@{ var totalH = (int)Math.Floor((double)Model.DurationInMin / 60); var totalM = (int)((double)Model.DurationInMin % 60); }@(totalH)h @(totalM)m</span>
+                    </div>
+                </div>
+                
+                <div class="accordion accordion-flush flex-grow-1 overflow-auto custom-scrollbar" id="playlistAccordion">
+                    @if (Model.SectionList != null)
+                    {
+                        foreach (var courseSec in Model.SectionList.OrderBy(x => x.SortID))
+                        {
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="heading-sec-@courseSec.Section_ID">
+                                    <button class="accordion-button collapsed py-3 text-dark fw-bold bg-white" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-sec-@courseSec.Section_ID">
+                                        <div class="d-flex flex-column w-100 pe-2">
+                                            <span>@courseSec.Section_Name</span>
+                                            <span class="fw-normal text-muted" style="font-size:0.75rem;margin-top:2px;">@courseSec.Lessons lectures &bull; @{ var secH = (int)Math.Floor((double)courseSec.DurationInMin / 60); var secM = (int)((double)courseSec.DurationInMin % 60); }@(secH > 0 ? secH + "h " : "")@(secM)m</span>
+                                        </div>
+                                    </button>
+                                </h2>
+                                <div id="collapse-sec-@courseSec.Section_ID" class="accordion-collapse collapse" data-bs-parent="#playlistAccordion">
+                                    <div class="accordion-body p-0">
+                                        <!-- Direct Videos -->
+                                        @if (courseSec.VideoList != null)
+                                        {
+                                            var vidCount = 1;
+                                            foreach (var vid in courseSec.VideoList.OrderBy(x => x.SortID))
+                                            {
+                                                <a href="javascript:void(0)" onclick="loadVideo(@vid.Video_Id, @courseSec.Section_ID, this)" data-title="@vid.Video_Name" data-desc="@vid.Video_ShortDescription" class="d-flex align-items-start p-4 border-bottom text-decoration-none video-item transition-all" id="vid-@vid.Video_Id">
+                                                    <!-- Simplified Icon Column -->
+                                                    <div class="me-4 mt-1 flex-shrink-0">
+                                                        <div class="lesson-indicator rounded-circle d-flex align-items-center justify-content-center border" style="width: 24px; height: 24px;">
+                                                            @if (vid.IsWatched)
+                                                            {
+                                                                <i class="bi bi-check-lg text-success fs-8"></i>
+                                                            }
+                                                            else
+                                                            {
+                                                                <i class="bi bi-play-fill text-muted fs-8"></i>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <!-- Content Area -->
+                                                    <div class="flex-grow-1 min-width-0">
+                                                        <div class="text-dark fw-bold fs-7 mb-1 lh-sm lesson-title-text">@vid.Video_Name</div>
+                                                        <div class="d-flex align-items-center text-muted" style="font-size: 0.75rem;">
+                                                            <i class="bi bi-play-btn me-2"></i>
+                                                            <span>@vid.Video_Length min</span>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <!-- Action Area -->
+                                                    <div class="ms-3 flex-shrink-0">
+                                                        <i class="bi bi-lock-fill text-gray-200 fs-7 d-none"></i> <!-- Could show lock if not subscribed -->
+                                                    </div>
+                                                </a>
+                                                vidCount++;
+                                            }
+                                        }
+
+                                        <!-- Sub Sections -->
+                                        @if (courseSec.SectionSubList != null)
+                                        {
+                                            foreach (var sub in courseSec.SectionSubList.OrderBy(x => x.SortID))
+                                            {
+                                                <div class="bg-gray-100 p-3 ps-5 text-uppercase fw-bold text-muted border-bottom d-flex justify-content-between align-items-center" style="font-size: 0.7rem; letter-spacing: 0.5px;">
+                                                    <span><i class="bi bi-folder2-open me-2"></i>@sub.SectionSub_Name</span>
+                                                    <span class="text-lowercase fw-normal" style="font-size:0.7rem;">@sub.Lessons lectures &bull; @{ var subH = (int)Math.Floor((double)sub.DurationInMin / 60); var subM = (int)((double)sub.DurationInMin % 60); }@(subH > 0 ? subH + "h " : "")@(subM)m</span>
+                                                </div>
+                                                if(sub.VideoList != null)
+                                                {
+                                                     foreach (var vid in sub.VideoList.OrderBy(x => x.SortID))
+                                                    {
+                                                        <a href="javascript:void(0)" onclick="loadVideo(@vid.Video_Id, @courseSec.Section_ID, this)" data-title="@vid.Video_Name" data-desc="@vid.Video_ShortDescription" class="d-flex align-items-start p-4 ps-5 border-bottom text-decoration-none video-item transition-all" id="vid-@vid.Video_Id">
+                                                            <div class="me-4 mt-1 flex-shrink-0">
+                                                                <div class="lesson-indicator rounded-circle d-flex align-items-center justify-content-center border" style="width: 24px; height: 24px;">
+                                                                    @if (vid.IsWatched)
+                                                                    {
+                                                                        <i class="bi bi-check-lg text-success fs-8"></i>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <i class="bi bi-play-fill text-muted fs-8"></i>
+                                                                    }
+                                                                </div>
+                                                            </div>
+                                                            <div class="flex-grow-1 min-width-0">
+                                                                <div class="text-dark fw-bold fs-7 mb-1 lh-sm lesson-title-text">@vid.Video_Name</div>
+                                                                <div class="d-flex align-items-center text-muted" style="font-size: 0.75rem;">
+                                                                    <i class="bi bi-play-btn me-2"></i>
+                                                                    <span>@vid.Video_Length min</span>
+                                                                </div>
+                                                            </div>
+                                                        </a>
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var currentVideoId = 0;
+
+    // ===== NEXT / PREVIOUS VIDEO NAVIGATION =====
+    // Uses DOM traversal - no pre-built array needed, can never go stale
+    (function() {
+        function getAllVideoItems() {
+            return document.querySelectorAll('.video-item');
+        }
+
+        function getActiveIndex() {
+            var items = getAllVideoItems();
+            for (var i = 0; i < items.length; i++) {
+                if (items[i].classList.contains('active-lesson')) return i;
+            }
+            return -1;
+        }
+
+        function parseVideoItemClick(el) {
+            var onclick = el.getAttribute('onclick') || '';
+            var m = onclick.match(/loadVideo\((\d+),\s*(\d+)/);
+            if (m) return { vidId: parseInt(m[1]), secId: parseInt(m[2]), el: el };
+            return null;
+        }
+
+        function refreshNavState() {
+            var items = getAllVideoItems();
+            var idx = getActiveIndex();
+            var $prev = document.getElementById('btnPrevVideo');
+            var $next = document.getElementById('btnNextVideo');
+            if (!$prev || !$next) return;
+
+            var hasPrev = idx > 0;
+            var hasNext = idx >= 0 && idx < items.length - 1;
+
+            $prev.className = $prev.className.replace(/\bnav-off\b/g, '').trim();
+            $next.className = $next.className.replace(/\bnav-off\b/g, '').trim();
+            if (!hasPrev) $prev.className += ' nav-off';
+            if (!hasNext) $next.className += ' nav-off';
+        }
+
+        function doNavigate(direction) {
+            var items = getAllVideoItems();
+            var idx = getActiveIndex();
+            var newIdx = direction === 'next' ? idx + 1 : idx - 1;
+            if (newIdx < 0 || newIdx >= items.length) return;
+
+            var target = items[newIdx];
+            var info = parseVideoItemClick(target);
+            if (!info) return;
+
+            // Open accordion if needed
+            var collapse = target.closest('.accordion-collapse');
+            if (collapse && !collapse.classList.contains('show')) {
+                new bootstrap.Collapse(collapse, { toggle: true });
+            }
+            setTimeout(function() {
+                target.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 250);
+
+            // Call loadVideo (will work whether original or watermark-wrapped)
+            if (typeof loadVideo === 'function') {
+                loadVideo(info.vidId, info.secId, info.el);
+            }
+        }
+
+        // Attach click handlers via addEventListener (immune to attr/disabled issues)
+        document.addEventListener('DOMContentLoaded', function() {
+            var prevBtn = document.getElementById('btnPrevVideo');
+            var nextBtn = document.getElementById('btnNextVideo');
+            if (prevBtn) {
+                prevBtn.addEventListener('click', function(e) {
+                    e.preventDefault(); e.stopPropagation();
+                    doNavigate('prev');
+                });
+            }
+            if (nextBtn) {
+                nextBtn.addEventListener('click', function(e) {
+                    e.preventDefault(); e.stopPropagation();
+                    doNavigate('next');
+                });
+            }
+        });
+
+        // Expose refresh for loadVideo to call
+        window._fameNavRefresh = refreshNavState;
+    })();
+
+    // Auto-load first video if exists
+    $(document).ready(function() {
+        var first = $('.video-item').first();
+        if(first.length > 0) {
+            var onclickStr = first.attr('onclick') || '';
+            var match = onclickStr.match(/loadVideo\((\d+),\s*(\d+)/);
+            if (match) {
+                loadVideo(parseInt(match[1]), parseInt(match[2]), first[0]);
+            }
+            var collapseId = first.closest('.accordion-collapse').attr('id');
+            if (collapseId) {
+                new bootstrap.Collapse(document.getElementById(collapseId), { toggle: true });
+            }
+        }
+    });
+
+    function loadVideo(vidId, secId, el) {
+        currentVideoId = vidId;
+
+        // Scroll to the very top so header + video player are both visible
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        
+        var $el = $(el);
+        var title = $el.data('title') || "Video";
+        var desc = $el.data('desc') || "";
+
+        // UI Updates - Professional reset
+        $('.video-item').removeClass('active-lesson bg-teal-50');
+        $('.video-item .lesson-indicator').removeClass('bg-teal border-teal').addClass('border-gray-300');
+        $('.video-item .lesson-indicator i').removeClass('text-white fw-bold').addClass('text-muted');
+        $('.video-item .lesson-title-text').removeClass('text-teal').addClass('text-dark');
+        
+        var activeItem = $('#vid-' + vidId);
+        activeItem.addClass('active-lesson bg-teal-50');
+        activeItem.find('.lesson-indicator').removeClass('border-gray-300').addClass('bg-teal border-teal');
+        activeItem.find('.lesson-indicator i').removeClass('text-muted').addClass('text-white fw-bold');
+        activeItem.find('.lesson-title-text').removeClass('text-dark').addClass('text-teal');
+
+        $('#videoTitle').text(title);
+        $('#videoDesc').text(desc || 'No description available.');
+        
+        // Refresh nav button states after active-lesson class is set
+        setTimeout(function() { if (window._fameNavRefresh) window._fameNavRefresh(); }, 50);
+
+        $('#videoLoader').removeClass('d-none').addClass('d-flex');
+        
+        // Fetch Video Path
+        $.ajax({
+            url: '@Url.Action("GetVideoPath", "Student")',
+            data: { VideoID: vidId, SecID: secId },
+            success: function(res) {
+                if(res && res.Video && res.Video.Video_Path) {
+                    var path = res.Video.Video_Path;
+                    
+                    // Convert Vimeo links if needed
+                    if (path.indexOf('vimeo') > -1 && path.indexOf('player') === -1) {
+                         // Simple heuristic for vimeo ID
+                         var vId = path.split('/').pop();
+                         path = 'https://player.vimeo.com/video/' + vId;
+                    }
+
+                    $('#videoPlayer').attr('src', path);
+                } else {
+                    alert('Video not found or access denied.');
+                }
+                $('#videoLoader').removeClass('d-flex').addClass('d-none');
+            },
+            error: function() {
+                alert('Error loading video.');
+                $('#videoLoader').removeClass('d-flex').addClass('d-none');
+            }
+        });
+    }
+
+    function markCompleted() {
+        if(currentVideoId == 0) return;
+        
+        $.ajax({
+            url: '@Url.Action("isWatched", "Student")',
+            data: { VideoID: currentVideoId, IsCompleted: true },
+            success: function(res) {
+               // Update UI checkmark
+               var meta = $('#vid-' + currentVideoId).find('.text-muted');
+               if(meta.find('.text-success').length == 0) {
+                   meta.append(' <span class="ms-2 text-success fw-bold"><i class="bi bi-check2-circle"></i> Completed</span>');
+               }
+            }
+        });
+    }
+
+    function toggleCinemaMode() {
+        $('#sidebarContent').toggleClass('d-none');
+        $('#mainContent').toggleClass('col-lg-8 col-lg-12');
+        // Resize watermark canvas after layout change
+        setTimeout(function() {
+            if (window.FAMEWatermark && window.FAMEWatermark.refresh) {
+                window.FAMEWatermark.refresh();
+            }
+        }, 300);
+    }
+</script>
+
+<!-- Secure Watermark Module -->
+<script src="/Scripts/watermark-secure.js?v=20260303"></script>
+<script>
+    $(document).ready(function() {
+        if (window.FAMEWatermark) {
+            window.FAMEWatermark.init({ videoId: 0, videoName: '' });
+        }
+    });
+
+    // Update watermark context when video changes
+    var _origLoadVideo = loadVideo;
+    loadVideo = function(vidId, secId, el) {
+        _origLoadVideo(vidId, secId, el);
+        setTimeout(function() {
+            if (window.FAMEWatermark) {
+                var title = el ? $(el).data('title') : '';
+                window.FAMEWatermark.setVideoContext(vidId, title || '');
+            }
+        }, 500);
+    };
+</script>
+
+<style>
+    /* Professional Video Portal Styles */
+    :root {
+        --teal-primary: #0d9488;
+        --teal-light: #f0fdfa;
+        --teal-hover: #ccfbf1;
+    }
+
+    .bg-teal { background-color: var(--teal-primary) !important; }
+    .text-teal { color: var(--teal-primary) !important; }
+    .border-teal { border-color: var(--teal-primary) !important; }
+    .bg-teal-50 { background-color: var(--teal-light) !important; }
+
+    .video-item {
+        transition: all 0.2s ease;
+        border-bottom: 1px solid #f1f1f1;
+        outline: none;
+        cursor: pointer;
+    }
+    
+    .video-item:hover:not(.active-lesson) {
+        background-color: var(--teal-hover) !important;
+    }
+
+    .active-lesson {
+        border-left: 4px solid var(--teal-primary) !important;
+        background-color: var(--teal-light) !important;
+    }
+
+    .lesson-indicator {
+        transition: all 0.2s ease;
+        flex-shrink: 0;
+    }
+
+    .lesson-title-text {
+        font-size: 0.875rem !important;
+        line-height: 1.4;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+    
+    .btn-teal { background-color: #0d9488; color: white; border: none; }
+    .btn-teal:hover { background-color: #0f766e; color: white; }
+    
+    .btn-light-teal { background-color: #f0fdfa; color: #0d9488; border: none; }
+    .btn-light-teal:hover { background-color: #ccfbf1; color: #0d9488; }
+    
+    /* Next/Previous Video Nav Buttons */
+    .btn-nav-prev, .btn-nav-next {
+        background-color: #e6fffa !important;
+        color: #064e3b !important;
+        border: 2px solid #0d9488 !important;
+        font-weight: 700 !important;
+        cursor: pointer !important;
+        pointer-events: all !important;
+        opacity: 1 !important;
+        position: relative;
+        z-index: 5;
+        transition: background 0.2s, color 0.2s;
+        -webkit-tap-highlight-color: rgba(13,148,136,0.2);
+    }
+    .btn-nav-prev i, .btn-nav-next i {
+        color: #064e3b !important;
+        font-size: 1rem !important;
+    }
+    .btn-nav-prev:hover, .btn-nav-next:hover {
+        background-color: #0d9488 !important;
+        color: #fff !important;
+        border-color: #0d9488 !important;
+    }
+    .btn-nav-prev:hover i, .btn-nav-next:hover i {
+        color: #fff !important;
+    }
+    .btn-nav-prev:active, .btn-nav-next:active {
+        background-color: #0f766e !important;
+        transform: scale(0.96);
+    }
+    .btn-nav-prev.nav-off, .btn-nav-next.nav-off {
+        opacity: 0.38 !important;
+        border-color: #b0b8c4 !important;
+        color: #8896a6 !important;
+        background-color: #f1f5f9 !important;
+        cursor: default !important;
+    }
+    .btn-nav-prev.nav-off i, .btn-nav-next.nav-off i {
+        color: #8896a6 !important;
+    }
+    .btn-nav-prev.nav-off:hover, .btn-nav-next.nav-off:hover {
+        background-color: #f1f5f9 !important;
+        color: #8896a6 !important;
+        border-color: #b0b8c4 !important;
+    }
+    
+    .nav-tabs .nav-link.active {
+        background-color: white !important;
+        color: #0d9488 !important;
+        box-shadow: 0 4px 10px rgba(13, 148, 136, 0.15);
+    }
+    
+    .nav-tabs .nav-link {
+        color: #64748b;
+        font-weight: 600;
+        transition: all 0.2s;
+    }
+    
+    .badge-teal-light { background-color: #f0fdfa; color: #0d9488; font-weight: 700; border: 1px solid #ccfbf1; padding: 0.5rem 1rem; border-radius: 50px; }
+    
+    .accordion-button { font-size: 0.95rem !important; transition: all 0.3s; padding: 1.25rem 1.5rem !important; }
+    .accordion-button:not(.collapsed) {
+        background-color: #f0fdfa;
+        color: #0d9488;
+        font-weight: 800;
+    }
+    .accordion-button:focus {
+        border-color: #0d9488;
+        box-shadow: 0 0 0 0.25rem rgba(13, 148, 136, 0.25);
+    }
+</style>

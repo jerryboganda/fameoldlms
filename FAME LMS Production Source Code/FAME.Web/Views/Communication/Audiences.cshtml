@@ -1,0 +1,369 @@
+@model First_Aid_Made_Easy.Models.AudienceListVM
+@{
+    ViewBag.Title = "Audience Segments";
+    Layout = "~/Views/Shared/_LayoutTeacher.cshtml";
+}
+
+<div class="pt-32pt">
+    <div class="container-fluid page__container">
+        <div class="d-flex align-items-center mb-24pt">
+            <div class="flex">
+                <h2 class="mb-0">Audience Segments</h2>
+                <ol class="breadcrumb p-0 m-0">
+                    <li class="breadcrumb-item"><a href="/Communication/Index">Email Marketing</a></li>
+                    <li class="breadcrumb-item active">Audiences</li>
+                </ol>
+            </div>
+            <button class="btn btn-primary" id="btnNewAudience">
+                <i class="material-icons mr-1" style="vertical-align:middle;font-size:18px;">add</i> New Segment
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="page-section">
+    <div class="container-fluid page__container">
+        <!-- Segments List -->
+        <div class="row" id="audienceCards">
+            @foreach (var seg in Model.Segments)
+            {
+                <div class="col-md-4 col-lg-3 mb-4 seg-card" data-id="@seg.Id">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <div style="width:64px;height:64px;border-radius:50%;background:@(seg.IsSystem ? "#e3f2fd" : "#fff3e0");display:inline-flex;align-items:center;justify-content:center;margin-bottom:12px;">
+                                <i class="material-icons" style="font-size:28px;color:@(seg.IsSystem ? "#1a73e8" : "#ff9800");">@(seg.IsSystem ? "group" : "tune")</i>
+                            </div>
+                            <h5 class="mb-1">@seg.SegmentName</h5>
+                            <p class="text-muted small mb-2">@(seg.Description ?? "")</p>
+                            <h3 class="mb-0 text-primary">@seg.EstimatedCount.ToString("N0")</h3>
+                            <small class="text-muted">recipients</small>
+                            @if (seg.IsSystem)
+                            {
+                                <br /><span class="badge badge-light mt-2">System</span>
+                            }
+                        </div>
+                        <div class="card-footer text-center">
+                            <a href="/Communication/Create?audienceId=@seg.Id" class="btn btn-sm btn-primary mr-1" title="Use in Campaign">
+                                <i class="material-icons" style="vertical-align:middle;font-size:16px;">send</i>
+                            </a>
+                            @if (!seg.IsSystem)
+                            {
+                                <button class="btn btn-sm btn-outline-info mr-1 btn-edit-seg" data-id="@seg.Id" title="Edit">
+                                    <i class="material-icons" style="vertical-align:middle;font-size:16px;">edit</i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger btn-delete-seg" data-id="@seg.Id" title="Delete">
+                                    <i class="material-icons" style="vertical-align:middle;font-size:16px;">delete</i>
+                                </button>
+                            }
+                            <button class="btn btn-sm btn-outline-secondary btn-preview-seg" data-id="@seg.Id" title="Preview">
+                                <i class="material-icons" style="vertical-align:middle;font-size:16px;">visibility</i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Audience Builder Modal -->
+        <div class="modal fade" id="audienceModal" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="audienceModalTitle">New Audience Segment</h5>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label><strong>Segment Name *</strong></label>
+                            <input type="text" id="segName" class="form-control" placeholder="e.g. FCPS Active Students" />
+                        </div>
+                        <div class="form-group">
+                            <label>Description</label>
+                            <input type="text" id="segDesc" class="form-control" placeholder="Brief description" />
+                        </div>
+                        <hr />
+                        <h6>Filter Criteria</h6>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Role</label>
+                                    <select id="filterRole" class="form-control">
+                                        <option value="">Any</option>
+                                        <option value="Student">Student</option>
+                                        <option value="Teacher">Teacher</option>
+                                        <option value="Admin">Admin</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Exam Types (comma-separated)</label>
+                                    <input type="text" id="filterExams" class="form-control" placeholder="e.g. FCPS,NRE,JCAT" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Universities (comma-separated)</label>
+                                    <input type="text" id="filterUnis" class="form-control" placeholder="e.g. AKU,DOW" />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Enrollment Status</label>
+                                    <select id="filterEnrollment" class="form-control">
+                                        <option value="">Any</option>
+                                        <option value="Active">Active</option>
+                                        <option value="Expired">Expired</option>
+                                        <option value="Trial">Trial</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Email Confirmed</label>
+                                    <select id="filterEmailConfirmed" class="form-control">
+                                        <option value="">Any</option>
+                                        <option value="true">Yes</option>
+                                        <option value="false">No</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Is Active</label>
+                                    <select id="filterIsActive" class="form-control">
+                                        <option value="">Any</option>
+                                        <option value="true">Active</option>
+                                        <option value="false">Inactive</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Is Paid</label>
+                                    <select id="filterIsPaid" class="form-control">
+                                        <option value="">Any</option>
+                                        <option value="true">Paid</option>
+                                        <option value="false">Free/Trial</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Countries (comma-separated)</label>
+                                    <input type="text" id="filterCountries" class="form-control" placeholder="e.g. Pakistan,UAE" />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Cities (comma-separated)</label>
+                                    <input type="text" id="filterCities" class="form-control" placeholder="e.g. Karachi,Lahore" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Inactive Days (min)</label>
+                                    <input type="number" id="filterInactiveDaysMin" class="form-control" placeholder="0" />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Inactive Days (max)</label>
+                                    <input type="number" id="filterInactiveDaysMax" class="form-control" placeholder="365" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-check mb-3">
+                            <input type="checkbox" class="form-check-input" id="filterExcludeUnsub" checked>
+                            <label class="form-check-label">Exclude unsubscribed users</label>
+                        </div>
+
+                        <!-- Live Count Preview -->
+                        <div class="alert alert-info d-flex align-items-center" id="liveCount">
+                            <div class="flex">
+                                <strong>Estimated Recipients:</strong> <span id="estCount">-</span>
+                            </div>
+                            <button class="btn btn-sm btn-info" id="btnCalcCount">Calculate</button>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="hidden" id="segId" value="0" />
+                        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" id="btnSaveSegment">Save Segment</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Preview Modal -->
+        <div class="modal fade" id="previewModal" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Audience Preview</h5>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="alert alert-info"><strong id="prevTotal">0</strong> total recipients</div>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-bordered">
+                                <thead><tr><th>Name</th><th>Email</th><th>University</th><th>Exam</th><th>City</th></tr></thead>
+                                <tbody id="prevBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @Html.AntiForgeryToken()
+    </div>
+</div>
+
+@section scripts {
+    <style>
+        #audienceModal { z-index: 1060 !important; }
+        .modal-backdrop { z-index: 1050 !important; }
+    </style>
+    <script>
+        // Move the modal to body so it's not trapped inside mdk-drawer-layout stacking context
+        $(function () {
+            $("#audienceModal").appendTo("body");
+        });
+
+        // New audience
+        $("#btnNewAudience").on("click", function () {
+            resetAudienceForm();
+            $("#audienceModalTitle").text("New Audience Segment");
+            $("#audienceModal").modal("show");
+        });
+
+        // Edit audience
+        $(document).on("click", ".btn-edit-seg", function () {
+            var id = $(this).data("id");
+            $.getJSON('/Communication/GetAudience?id=' + id, function (seg) {
+                $("#segId").val(seg.Id);
+                $("#segName").val(seg.SegmentName);
+                $("#segDesc").val(seg.Description);
+                if (seg.FilterJson) {
+                    var f = JSON.parse(seg.FilterJson);
+                    $("#filterRole").val(f.Role || '');
+                    $("#filterExams").val((f.ExamTypes || []).join(','));
+                    $("#filterUnis").val((f.Universities || []).join(','));
+                    $("#filterEnrollment").val(f.EnrollmentStatus || '');
+                    $("#filterEmailConfirmed").val(f.EmailConfirmed != null ? f.EmailConfirmed.toString() : '');
+                    $("#filterIsActive").val(f.IsActive != null ? f.IsActive.toString() : '');
+                    $("#filterIsPaid").val(f.IsPaid != null ? f.IsPaid.toString() : '');
+                    $("#filterCountries").val((f.Countries || []).join(','));
+                    $("#filterCities").val((f.Cities || []).join(','));
+                    $("#filterInactiveDaysMin").val(f.InactiveDaysMin || '');
+                    $("#filterInactiveDaysMax").val(f.InactiveDaysMax || '');
+                    $("#filterExcludeUnsub").prop("checked", f.ExcludeUnsubscribed !== false);
+                }
+                $("#audienceModalTitle").text("Edit Audience Segment");
+                $("#audienceModal").modal("show");
+            });
+        });
+
+        // Delete
+        $(document).on("click", ".btn-delete-seg", function () {
+            var id = $(this).data("id");
+            var card = $(this).closest(".seg-card");
+            Swal.fire({
+                title: 'Delete Segment?', text: 'This cannot be undone.', icon: 'warning',
+                showCancelButton: true, confirmButtonColor: '#d33', confirmButtonText: 'Delete'
+            }).then(function (result) {
+                if (result.isConfirmed) {
+                    $.post('/Communication/DeleteAudience', { id: id }, function (res) {
+                        if (res.success) card.fadeOut(300, function () { card.remove(); });
+                        else Swal.fire('Error', 'Cannot delete: segment may be in use.', 'error');
+                    });
+                }
+            });
+        });
+
+        // Preview
+        $(document).on("click", ".btn-preview-seg", function () {
+            var id = $(this).data("id");
+            $.getJSON('/Communication/PreviewAudienceById?id=' + id, function (data) {
+                $("#prevTotal").text(data.TotalCount.toLocaleString());
+                var html = '';
+                $.each(data.SampleRecipients || [], function (i, r) {
+                    html += '<tr><td>' + (r.Name || '-') + '</td><td>' + r.Email + '</td><td>' + (r.University || '-') + '</td><td>' + (r.ExamType || '-') + '</td><td>' + (r.City || '-') + '</td></tr>';
+                });
+                $("#prevBody").html(html);
+                $("#previewModal").modal("show");
+            });
+        });
+
+        // Calculate count
+        $("#btnCalcCount").on("click", function () {
+            var filter = buildFilter();
+            $.ajax({
+                url: '/Communication/PreviewAudience',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(filter),
+                success: function (data) {
+                    $("#estCount").text(data.TotalCount.toLocaleString());
+                }
+            });
+        });
+
+        // Save segment
+        $("#btnSaveSegment").on("click", function () {
+            var name = $("#segName").val();
+            if (!name) { Swal.fire('Required', 'Segment name is required', 'warning'); return; }
+
+            var data = {
+                Id: parseInt($("#segId").val()) || 0,
+                SegmentName: name,
+                Description: $("#segDesc").val(),
+                FilterJson: JSON.stringify(buildFilter()),
+                __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+            };
+
+            $.post('/Communication/SaveAudience', data, function (res) {
+                if (res.success) {
+                    Swal.fire({ icon: 'success', title: 'Segment Saved!', timer: 1500, showConfirmButton: false })
+                        .then(function () { location.reload(); });
+                } else {
+                    Swal.fire('Error', res.message || 'Failed to save.', 'error');
+                }
+            });
+        });
+
+        function buildFilter() {
+            return {
+                Role: $("#filterRole").val() || null,
+                ExamTypes: $("#filterExams").val() ? $("#filterExams").val().split(',').map(function (s) { return s.trim(); }) : null,
+                Universities: $("#filterUnis").val() ? $("#filterUnis").val().split(',').map(function (s) { return s.trim(); }) : null,
+                EnrollmentStatus: $("#filterEnrollment").val() || null,
+                EmailConfirmed: $("#filterEmailConfirmed").val() ? ($("#filterEmailConfirmed").val() === 'true') : null,
+                IsActive: $("#filterIsActive").val() ? ($("#filterIsActive").val() === 'true') : null,
+                IsPaid: $("#filterIsPaid").val() ? ($("#filterIsPaid").val() === 'true') : null,
+                Countries: $("#filterCountries").val() ? $("#filterCountries").val().split(',').map(function (s) { return s.trim(); }) : null,
+                Cities: $("#filterCities").val() ? $("#filterCities").val().split(',').map(function (s) { return s.trim(); }) : null,
+                InactiveDaysMin: parseInt($("#filterInactiveDaysMin").val()) || null,
+                InactiveDaysMax: parseInt($("#filterInactiveDaysMax").val()) || null,
+                ExcludeUnsubscribed: $("#filterExcludeUnsub").is(":checked")
+            };
+        }
+
+        function resetAudienceForm() {
+            $("#segId").val(0);
+            $("#segName, #segDesc, #filterExams, #filterUnis, #filterCountries, #filterCities, #filterInactiveDaysMin, #filterInactiveDaysMax").val('');
+            $("#filterRole, #filterEnrollment, #filterEmailConfirmed, #filterIsActive, #filterIsPaid").val('');
+            $("#filterExcludeUnsub").prop("checked", true);
+            $("#estCount").text("-");
+        }
+    </script>
+}

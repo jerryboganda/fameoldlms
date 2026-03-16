@@ -1,0 +1,26 @@
+ID,Category,Risk,Likelihood,Impact,Rating,Mitigation,Contingency,Owner
+R-T01,Technical,V1 password hash format incompatible with dual-hash migration,Possible,High,High,Test with 100+ V1 user samples before migration,Force password reset for affected users,Developer
+R-T02,Technical,V1 database has undocumented schema changes,Likely,Medium,Medium,Full schema dump and comparison before migration,Skip unmapped tables; migrate manually later,Developer
+R-T03,Technical,Payment gateway sandbox differs from production,Possible,High,High,Test with small real transactions on staging,Fall back to bank transfers temporarily,Developer
+R-T04,Technical,PostgreSQL migration introduces data integrity issues,Possible,High,High,Comprehensive validation queries post-migration,Rollback to V1; fix migration script,Developer
+R-T05,Technical,Video streaming bandwidth exceeds capacity,Possible,Medium,Medium,Use CDN for video delivery; bandwidth monitoring,Throttle video quality; add CDN layer,Developer
+R-T06,Technical,SignalR connection limits under load,Unlikely,Medium,Medium,Load test WebSocket connections; Redis backplane,Fall back to polling for notifications,Developer
+R-T07,Technical,Meilisearch index corruption,Unlikely,Low,Low,Automated re-index job; separate from core,Disable search; fall back to DB queries,Developer
+R-T08,Technical,Docker container resource exhaustion,Possible,Medium,Medium,Resource limits in docker-compose; monitoring,Restart containers; scale up VPS,Developer
+R-P01,Project,Scope creep delays MVP launch,Very Likely,High,Critical,Strict MVP scope document; change request process,Cut P0 scope to minimum; launch with fewer tracks,Founder
+R-P02,Project,Single developer bottleneck (bus factor = 1),Likely,Critical,Critical,Document everything; automated testing; onboarding guide,Hire contract developer; leverage documentation,Founder
+R-P03,Project,Underestimated complexity in payment integrations,Likely,Medium,Medium,Start payment integration early; 50% time buffer,Launch with single gateway; add others post-MVP,Developer
+R-P04,Project,V1 still needed for features not in V2 MVP,Likely,Medium,Medium,Feature gap analysis before cutover; V1 read-only 30 days,Run V1 and V2 in parallel,Founder
+R-P05,Project,Stakeholder expectations exceed MVP scope,Likely,Medium,Medium,Clear MVP scope communication; regular demos,Show phase roadmap; confirm priorities,Founder
+R-P06,Project,Testing takes longer than planned,Possible,Medium,Medium,Automated test suite from Phase 0; CI enforcement,Reduce E2E scope; prioritize happy-path,Developer
+R-B01,Business,Students cannot login after migration,Possible,Critical,High,Dual-hash password strategy; test with 100+ users,Emergency password reset page; extend V1 access,Developer
+R-B02,Business,Revenue disruption during migration cutover,Possible,Critical,High,Weekend night migration; 2-hour window; instant fallback,Revert to V1 immediately; reconcile transactions,Founder
+R-B03,Business,Payment gateway credentials don't transfer,Unlikely,High,Medium,Verify credentials early; document account ownership,New gateway accounts; manual enrollment,Developer
+R-B04,Business,Student data lost during migration,Rare,Critical,Medium,Full V1 backup; validation queries; V1 kept 30 days,Restore from V1 backup,Developer
+R-B05,Business,SEO ranking drop after URL changes,Likely,Medium,Medium,301 redirects for all V1 URLs; XML sitemap,Monitor rankings weekly; adjust redirects,Developer
+R-B06,Business,Ambassador referral tracking breaks,Possible,Medium,Medium,Migrate referral data; verify commission calculations,Manual commission reconciliation,Founder
+R-S01,Security,Secrets accidentally committed to repository,Possible,Critical,High,Pre-commit hooks; .env in .gitignore; secret scanning,Rotate ALL credentials; audit git history,Developer
+R-S02,Security,Webhook endpoint abused (payment fraud),Possible,Critical,High,HMAC verification; IP allow-listing; rate limiting,Disable webhook; manual processing,Developer
+R-S03,Security,JWT signing key compromised,Rare,Critical,Medium,Key in env variable; rotation capability,Rotate key; force re-login,Developer
+R-S04,Security,DDoS attack during or after migration,Unlikely,High,Medium,Cloudflare proxy; rate limiting; auto-scaling prep,Enable under-attack mode,Developer
+R-S05,Security,Unauthorized access to admin endpoints,Unlikely,Critical,Medium,Defense in depth; audit logging; anomaly detection,Disable admin access; investigate,Developer

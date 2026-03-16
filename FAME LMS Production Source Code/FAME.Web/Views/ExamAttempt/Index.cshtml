@@ -1,0 +1,110 @@
+@model First_Aid_Made_Easy.Models.ExamAttemptVM
+@{
+    ViewBag.Title = "Exam Attempts Management";
+    Layout = "~/Views/Shared/_LayoutTeacher.cshtml";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Exam Attempts Management</h3>
+            </div>
+            <div class="panel-body">
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <select class="form-control" id="packageFilter" onchange="filterByPackage()">
+                            <option value="">All Packages</option>
+                            @foreach (SelectListItem pkg in ViewBag.Packages)
+                            {
+                                <option value="@pkg.Value" @(ViewBag.SelectedPackageId != null && ViewBag.SelectedPackageId.ToString() == pkg.Value ? "selected" : "")>@pkg.Text</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-8 text-right">
+                        <a href="@Url.Action("AssignToStudent")" class="btn btn-info">
+                            <i class="fa fa-user-plus"></i> Assign to Students
+                        </a>
+                        <a href="@Url.Action("Save")" class="btn btn-success">
+                            <i class="fa fa-plus"></i> Add Exam Attempt
+                        </a>
+                    </div>
+                </div>
+
+                @if (TempData["Success"] != null)
+                {
+                    <div class="alert alert-success">@TempData["Success"]</div>
+                }
+                @if (TempData["Error"] != null)
+                {
+                    <div class="alert alert-danger">@TempData["Error"]</div>
+                }
+
+                @if (Model.List != null && Model.List.Count > 0)
+                {
+                    <table class="table table-striped table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Package</th>
+                                <th>Attempt Name</th>
+                                <th>Sort Order</th>
+                                <th>Status</th>
+                                <th width="200">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var attempt in Model.List)
+                            {
+                                <tr>
+                                    <td>@attempt.PackageName</td>
+                                    <td>@attempt.AttemptName</td>
+                                    <td>@attempt.SortOrder</td>
+                                    <td>
+                                        @if (attempt.IsActive)
+                                        {
+                                            <span class="label label-success">Active</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="label label-default">Inactive</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <a href="@Url.Action("Index", "StudySchedule", new { attemptId = attempt.ExamAttemptID })" class="btn btn-sm btn-info">
+                                            <i class="fa fa-calendar"></i> Schedules
+                                        </a>
+                                        <a href="@Url.Action("Save", new { id = attempt.ExamAttemptID })" class="btn btn-sm btn-primary">
+                                            <i class="fa fa-edit"></i> Edit
+                                        </a>
+                                        <a href="@Url.Action("Delete", new { id = attempt.ExamAttemptID })" 
+                                           class="btn btn-sm btn-danger" 
+                                           onclick="return confirm('Are you sure you want to delete this exam attempt? All associated study schedules will also be deleted.')">
+                                            <i class="fa fa-trash"></i> Delete
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <div class="alert alert-info">
+                        <i class="fa fa-info-circle"></i> No exam attempts found. Click "Add Exam Attempt" to create one.
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function filterByPackage() {
+        var packageId = $('#packageFilter').val();
+        var url = '@Url.Action("Index")';
+        if (packageId) {
+            url += '?packageId=' + packageId;
+        }
+        window.location.href = url;
+    }
+</script>

@@ -1,0 +1,361 @@
+﻿@model  List<First_Aid_Made_Easy.DAL.sp_rptReultReport_Result>
+@using Microsoft.AspNet.Identity;
+@using First_Aid_Made_Easy.DAL;
+@using System.Linq;
+@using First_Aid_Made_Easy.BLL;
+@{
+	int Sr = 0;
+	int sdas = 0;
+	string rptType = Request.QueryString["rptType"];
+	Func<decimal?, string> HrsMin = First_Aid_Made_Easy.BLL.Common.HrsMins;
+	Func<int?, string> HrsMini = First_Aid_Made_Easy.BLL.Common.HrsMins;
+	var PassPer = Model.FirstOrDefault(x => x.QuestionPaperID > 0)?.PassPer ?? 50;
+	var tHours = Model.FirstOrDefault().TotalTime;
+}
+
+@if (rptType == "GR")
+{
+	foreach (var group in Model.GroupBy(z=>z.GroupTitle))
+	{
+
+		decimal? Total = group.Count();
+		decimal? Appeared = Convert.ToDecimal(group.Where(i => i.QuestionPaperID > 0).Count());
+		decimal? Passed = Convert.ToDecimal(group.Where(i => Math.Round((Convert.ToDecimal(i.Correct) / Convert.ToDecimal(i.Total == 0 ? 1 : i.Total)) * 100) >= PassPer).Count());
+		decimal? Failed = Total - Passed;
+
+		<div class="row">
+			<div class="col-xs-12">
+				<table id="DTable2" class="table tbl-data table-row-dashed table-bordered">
+					<thead style="background-color:#a3b0ba;color:white">
+						<tr><th colspan="99" class="fs-5 fw-semibold text-center">@group.Key</th></tr>
+						<tr>
+							<th></th>
+							<td class="fs-5 fw-semibold">Number</td>
+							<td class="fs-5 fw-semibold">Per</td>
+							<th></th>
+							<td class="fs-5 fw-semibold">Number</td>
+							<td class="fs-5 fw-semibold">Per</td>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<th>Total Students</th>
+							<td>@Total</td>
+							<td></td>
+							<th>Appeared Students</th>
+							<td>@Appeared</td>
+							<td>@string.Format("{0:n2}", (Appeared / Total) * 100)%</td>
+						</tr>
+						<tr>
+							<th>Passed Students</th>
+							<td>@Passed</td>
+							<td>@string.Format("{0:n2}", (Passed / Total) * 100)%</td>
+							<th>Failed Students</th>
+							<td>@Failed</td>
+							<td>@string.Format("{0:n2}", (Failed / Total) * 100)%</td>
+						</tr>
+						<tr>
+							<th>Total Watch Hours</th>
+							<td colspan="5">@HrsMin(tHours)</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-xs-12">
+				<div class="rptHeader">
+					<div style="font-size:large">Test Report</div>
+					<br />
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-xs-12">
+
+				<table id="DTable" class="table tbl-data table-row-dashed table-bordered">
+					<thead style="background-color:#a3b0ba">
+						<tr>
+							<th> <span class="fs-5 fw-semibold">Sr.</span> </th>
+							<th> <span class="fs-5 fw-semibold">Student</span> </th>
+							<th> <span class="fs-5 fw-semibold">Title</span> </th>
+							<th> <span class="fs-5 fw-semibold">Attempted On</span> </th>
+							<th> <span class="fs-5 fw-semibold">Total</span> </th>
+							<th> <span class="fs-5 fw-semibold">Omitted</span> </th>
+							<th> <span class="fs-5 fw-semibold">Correct</span> </th>
+							<th> <span class="fs-5 fw-semibold">Wrong</span> </th>
+							<th> <span class="fs-5 fw-semibold">Res Per %</span> </th>
+							<th> <span class="fs-5 fw-semibold">P/F</span> </th>
+							<th> <span class="fs-5 fw-semibold">Watched Hours</span> </th>
+							<th> <span class="fs-5 fw-semibold">%</span> </th>
+						</tr>
+					</thead>
+					@foreach (sp_rptReultReport_Result i in group)
+					{
+						Sr++;
+						var Per = Math.Round((Convert.ToDecimal(i.Correct) / Convert.ToDecimal(i.Total == 0 ? 1 : i.Total)) * 100);
+						var PerW = Math.Round(tHours == 0 ? 0 : ((Convert.ToDecimal(i.ScreenTime) / Convert.ToDecimal(tHours)) * 100));
+						<tr>
+							<td>@Sr</td>
+							<td>@i.User_Name</td>
+							<td>@(i.PaperTitle ?? i.Mode) </td>
+							<td>@string.Format("{0:dd/MM/yyyy hh:mm tt}", i.Datetime)</td>
+							<td> <span class="">@i.Total</span> </td>
+							<td> <span class="">@(i.Total - i.Solved)</span> </td>
+							<td> <span class="">@i.Correct</span> </td>
+							<td> <span class="">@(i.Solved - i.Correct)</span> </td>
+							<td> <span class="">@Per%</span> </td>
+							<td> <span class="">@( Per >= PassPer ? "P" : "F" )</span> </td>
+							<td> <span class="">@HrsMini(i.ScreenTime)</span> </td>
+							<td> <span class="">@(PerW)%</span> </td>
+						</tr>
+					}
+				</table>
+			</div>
+		</div>
+		<div style="page-break-after:always"></div>
+	}
+}
+else if (rptType == "LN")
+{
+	decimal? Total = (decimal)ViewBag.Total;
+	decimal? Appeared = Convert.ToDecimal(Model.Where(i => i.QuestionPaperID > 0).Count());
+	decimal? Passed = Convert.ToDecimal(Model.Where(i => Math.Round((Convert.ToDecimal(i.Correct) / Convert.ToDecimal(i.Total == 0 ? 1 : i.Total)) * 100) >= PassPer).Count());
+	decimal? Failed = Total - Passed;
+
+	<div class="row">
+		<div class="col-xs-12">
+			<table id="DTable2" class="table tbl-data table-row-dashed table-bordered">
+				<thead style="background-color:#a3b0ba;color:white">
+					<tr>
+						<th></th>
+						<td class="fs-5 fw-semibold">Number</td>
+						<td class="fs-5 fw-semibold">Per</td>
+						<th></th>
+						<td class="fs-5 fw-semibold">Number</td>
+						<td class="fs-5 fw-semibold">Per</td>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<th>Total Students</th>
+						<td>@Total</td>
+						<td></td>
+						<th>Appeared Students</th>
+						<td>@Appeared</td>
+						<td>@string.Format("{0:n2}", (Appeared / Total) * 100)%</td>
+					</tr>
+					<tr>
+						<th>Passed Students</th>
+						<td>@Passed</td>
+						<td>@string.Format("{0:n2}", (Passed / Total) * 100)%</td>
+						<th>Failed Students</th>
+						<td>@Failed</td>
+						<td>@string.Format("{0:n2}", (Failed / Total) * 100)%</td>
+					</tr>
+					<tr>
+						<th>Total Watch Hours</th>
+						<td colspan="5">@HrsMin(tHours)</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-xs-12">
+			<div class="rptHeader">
+				<div style="font-size:large">Test Report</div>
+				<br />
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-xs-12">
+
+			<table id="DTable" class="table tbl-data table-row-dashed table-bordered">
+				<thead style="background-color:#a3b0ba">
+					<tr>
+						<th> <span class="fs-5 fw-semibold">Sr.</span> </th>
+						<th> <span class="fs-5 fw-semibold">Student</span> </th>
+						<th> <span class="fs-5 fw-semibold">Title</span> </th>
+						<th> <span class="fs-5 fw-semibold">Attempted On</span> </th>
+						<th> <span class="fs-5 fw-semibold">Total</span> </th>
+						<th> <span class="fs-5 fw-semibold">Omitted</span> </th>
+						<th> <span class="fs-5 fw-semibold">Correct</span> </th>
+						<th> <span class="fs-5 fw-semibold">Wrong</span> </th>
+						<th> <span class="fs-5 fw-semibold">Res Per %</span> </th>
+						<th> <span class="fs-5 fw-semibold">P/F</span> </th>
+						<th> <span class="fs-5 fw-semibold">Watched Hours</span> </th>
+						<th> <span class="fs-5 fw-semibold">%</span> </th>
+					</tr>
+				</thead>
+				@foreach (sp_rptReultReport_Result i in Model)
+				{
+					Sr++;
+					var Per = Math.Round((Convert.ToDecimal(i.Correct) / Convert.ToDecimal(i.Total == 0 ? 1 : i.Total)) * 100);
+					var PerW = Math.Round(tHours == 0 ? 0 : ((Convert.ToDecimal(i.ScreenTime) / Convert.ToDecimal(tHours)) * 100));
+					<tr>
+						<td>@Sr</td>
+						<td>@i.User_Name</td>
+						<td>@(i.PaperTitle ?? i.Mode) </td>
+						<td>@string.Format("{0:dd/MM/yyyy hh:mm tt}", i.Datetime)</td>
+						<td> <span class="">@i.Total</span> </td>
+						<td> <span class="">@(i.Total - i.Solved)</span> </td>
+						<td> <span class="">@i.Correct</span> </td>
+						<td> <span class="">@(i.Solved - i.Correct)</span> </td>
+						<td> <span class="">@Per%</span> </td>
+						<td> <span class="">@( Per >= PassPer ? "P" : "F" )</span> </td>
+						<td> <span class="">@HrsMini(i.ScreenTime)</span> </td>
+						<td> <span class="">@(PerW)%</span> </td>
+					</tr>
+				}
+			</table>
+		</div>
+	</div>
+}
+else if (rptType == "OW")
+{
+	<div class="row">
+		<div class="col-xs-12">
+			<div class="rptHeader">
+				<div style="font-size:large">Watch Hours Report</div>
+				<br />
+			</div>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col-xs-12">
+			<table id="DTable2" class="table tbl-data table-row-dashed table-bordered">
+				<tbody>
+					@foreach (var s in Request.QueryString["SectionName"].Split('@'))
+					{
+						<tr>
+							@if (sdas == 0)
+							{
+								<th rowspan="99">Sections Selected</th>
+							}
+							<td>@s </td>
+						</tr>
+						sdas++;
+					}
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-xs-12">
+
+			<table id="DTable" class="table tbl-data table-row-dashed table-bordered">
+				<thead style="background-color:#a3b0ba">
+					<tr>
+						<th> <span class="fs-5 fw-semibold">Sr.</span> </th>
+						<th> <span class="fs-5 fw-semibold">Student</span> </th>
+						<th> <span class="fs-5 fw-semibold">Total Hours</span> </th>
+						<th> <span class="fs-5 fw-semibold">Watched Hours</span> </th>
+						<th> <span class="fs-5 fw-semibold">%</span> </th>
+					</tr>
+				</thead>
+				@foreach (var s in Model.GroupBy(y => y.StudentID))
+				{
+					sp_rptReultReport_Result i = s.FirstOrDefault();
+
+
+					Sr++;
+					var PerW = Math.Round(tHours == 0 ? 0 : ((Convert.ToDecimal(i.ScreenTime) / Convert.ToDecimal(tHours)) * 100));
+					<tr>
+						<td>@Sr</td>
+						<td>@i.User_Name</td>
+						<td> <span class="">@HrsMin(tHours)</span> </td>
+						<td> <span class="">@HrsMini(i.ScreenTime)</span> </td>
+						<td> <span class="">@(PerW)%</span> </td>
+					</tr>
+				}
+			</table>
+		</div>
+	</div>
+}
+
+@if (rptType == "student")
+{
+
+	foreach (var student in Model.GroupBy(x => x.StudentID).Take(150))
+	{
+		var prog = new DashBoardRepository().StudentProgress(student.Key);
+		var s = student.FirstOrDefault();
+		<div class="row">
+			@*<div class="col-xs-4 ">
+					<div class="rptHeader">
+						<img style="height:70px" src="@Server.MapPath("~/Images/"+s.User_Pic)" />
+					</div>
+				</div>*@
+			<div class="col-xs-12">
+				<div class="rptHeader">
+					<div style="font-size:large">@s.User_Name</div>
+					<br />
+					<div style="font-size:medium">@s.Email</div>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-xs-12">
+
+				<table id="DTable" class="table tbl-data table-row-dashed table-bordered">
+					<thead style="text-transform:uppercase;background-color:#a3b0ba">
+						<tr>
+							<th colspan="99"><h3 class="text-center"><b>Test Report</b></h3></th>
+						</tr>
+						<tr>
+							<th> <span class="fs-5 fw-semibold">Title</span> </th>
+							<th> <span class="fs-5 fw-semibold">Attempted On</span> </th>
+							<th> <span class="fs-5 fw-semibold">Total</span> </th>
+							<th> <span class="fs-5 fw-semibold">Omitted</span> </th>
+							<th> <span class="fs-5 fw-semibold">Correct</span> </th>
+							<th> <span class="fs-5 fw-semibold">Wrong</span> </th>
+							<th> <span class="fs-5 fw-semibold">Per %</span> </th>
+						</tr>
+					</thead>
+					@foreach (var i in student)
+					{
+						<tr>
+							<td>&emsp; @i.PaperTitle</td>
+							<td>@string.Format("{0:dd/MM/yyyy hh:mm tt}", i.Datetime)</td>
+							<td> <span class="fs-5 fw-semibold">@i.Total</span> </td>
+							<td> <span class="fs-5 fw-semibold">@(i.Total - i.Solved)</span> </td>
+							<td> <span class="fs-5 fw-semibold">@i.Correct</span> </td>
+							<td> <span class="fs-5 fw-semibold">@(i.Solved - i.Correct)</span> </td>
+							<td> <span class="fs-5 fw-semibold">@string.Format("{0:n0}%", (Convert.ToDecimal(i.Correct) / Convert.ToDecimal(i.Total == 0 ? 1 : i.Total)) * 100)</span> </td>
+						</tr>
+					}
+				</table>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-xs-12">
+
+				<table id="DTable" class="table tbl-data table-row-dashed table-bordered">
+					<thead style="text-transform:uppercase;background-color:#a3b0ba">
+						<tr>
+							<th colspan="99"><h3 class="text-center"><b>Watch Hours</b></h3></th>
+						</tr>
+						<tr>
+							<th> <span class="fs-5 fw-semibold">Section</span> </th>
+							<th> <span class="fs-5 fw-semibold">Total</span> </th>
+							<th> <span class="fs-5 fw-semibold">Watched</span> </th>
+						</tr>
+					</thead>
+					@foreach (IGrouping<int?, sp_lstVideos_Result> sec in prog.GroupBy(z => z.Section_ID))
+					{
+						sp_lstVideos_Result sc = sec.FirstOrDefault();
+						<tr>
+							<td>@sc.Course_Name => @sc.Section_Name</td>
+							<td>@HrsMin(sec.Sum(z => z.Video_Length))</td>
+							<td>@HrsMin(sec.Sum(z => z.ScreenTime > z.Video_Length ? z.Video_Length : z.ScreenTime))</td>
+						</tr>
+					}
+				</table>
+			</div>
+		</div>
+		<div class="breakHere"></div>
+	}
+}

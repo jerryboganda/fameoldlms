@@ -1,0 +1,570 @@
+@using Microsoft.AspNet.Identity
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>@ViewBag.Title - FAME Ambassador Portal</title>
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 4 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+
+    <!-- DataTables -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap4.min.css">
+
+    <!-- Toastr -->
+    <link rel="stylesheet" href="~/Content/assets/vendor/toastr.min.css">
+
+    <!-- SweetAlert2 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+    <style>
+        /* ═══════════════════════════════════════════════════
+           FAME AMBASSADOR PORTAL — PROFESSIONAL LAYOUT
+           ═══════════════════════════════════════════════════ */
+
+        :root {
+            --amb-primary: #0F766E;
+            --amb-primary-dark: #0d6460;
+            --amb-primary-light: #ccfbf1;
+            --amb-navy: #0f172a;
+            --amb-navy-mid: #1e293b;
+            --amb-navy-light: #334155;
+            --amb-bg: #f8fafc;
+            --amb-white: #ffffff;
+            --amb-border: #e2e8f0;
+            --amb-text: #0f172a;
+            --amb-text-secondary: #475569;
+            --amb-text-muted: #94a3b8;
+            --amb-sidebar-w: 260px;
+            --amb-topbar-h: 60px;
+            --amb-radius: 10px;
+            --amb-shadow: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+            --amb-shadow-md: 0 4px 6px -1px rgba(0,0,0,.07), 0 2px 4px -1px rgba(0,0,0,.04);
+        }
+
+        *, *::before, *::after { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--amb-bg);
+            color: var(--amb-text);
+            font-size: 0.875rem;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ═══════ SIDEBAR ═══════ */
+        .amb-sidebar {
+            position: fixed;
+            top: 0; left: 0; bottom: 0;
+            width: var(--amb-sidebar-w);
+            background: var(--amb-navy);
+            color: #94a3b8;
+            z-index: 1040;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.25s cubic-bezier(.4,0,.2,1);
+            border-right: 1px solid rgba(255,255,255,0.04);
+        }
+
+        .amb-sidebar-brand {
+            height: var(--amb-topbar-h);
+            padding: 0 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-shrink: 0;
+        }
+
+        .amb-sidebar-brand img {
+            width: 32px; height: 32px;
+            border-radius: 8px;
+        }
+
+        .brand-text {
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: #f1f5f9;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+        }
+
+        .brand-sub {
+            font-size: 0.6rem;
+            color: var(--amb-primary);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .amb-sidebar-nav {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px 0;
+        }
+
+        .amb-sidebar-nav::-webkit-scrollbar { width: 4px; }
+        .amb-sidebar-nav::-webkit-scrollbar-track { background: transparent; }
+        .amb-sidebar-nav::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+
+        .amb-nav-section {
+            padding: 20px 20px 6px;
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #475569;
+            font-weight: 700;
+        }
+
+        .amb-nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 9px 20px;
+            color: #94a3b8;
+            text-decoration: none !important;
+            font-size: 0.825rem;
+            font-weight: 500;
+            transition: all 0.15s;
+            border-left: 3px solid transparent;
+            margin: 1px 0;
+        }
+
+        .amb-nav-item:hover {
+            background: rgba(255,255,255,0.04);
+            color: #e2e8f0;
+        }
+
+        .amb-nav-item.active {
+            background: rgba(15,118,110,0.12);
+            color: #5eead4;
+            border-left-color: var(--amb-primary);
+            font-weight: 600;
+        }
+
+        .amb-nav-item .material-icons {
+            font-size: 20px;
+            opacity: 0.7;
+            width: 20px;
+            text-align: center;
+        }
+        .amb-nav-item.active .material-icons { opacity: 1; }
+
+        .amb-sidebar-footer {
+            padding: 14px 16px;
+            border-top: 1px solid rgba(255,255,255,0.06);
+            flex-shrink: 0;
+        }
+
+        .amb-user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .amb-user-avatar {
+            width: 34px; height: 34px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--amb-primary), #14b8a6);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.8rem;
+            flex-shrink: 0;
+        }
+
+        .amb-user-name {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: #e2e8f0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 150px;
+        }
+
+        .amb-user-role {
+            font-size: 0.6rem;
+            color: var(--amb-primary);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .amb-logout-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 12px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 6px;
+            color: #94a3b8;
+            font-size: 0.78rem;
+            font-weight: 500;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.15s;
+            text-decoration: none !important;
+        }
+
+        .amb-logout-btn:hover {
+            background: rgba(239,68,68,0.08);
+            color: #fca5a5;
+            border-color: rgba(239,68,68,0.15);
+        }
+
+        /* ═══════ TOPBAR ═══════ */
+        .amb-topbar {
+            position: fixed;
+            top: 0;
+            left: var(--amb-sidebar-w);
+            right: 0;
+            height: var(--amb-topbar-h);
+            background: var(--amb-white);
+            border-bottom: 1px solid var(--amb-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            z-index: 1030;
+        }
+
+        .amb-topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .amb-topbar-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--amb-navy);
+        }
+
+        .amb-mobile-toggle {
+            display: none;
+            background: none;
+            border: 1px solid var(--amb-border);
+            border-radius: 6px;
+            padding: 4px 6px;
+            cursor: pointer;
+            color: var(--amb-navy);
+        }
+
+        /* ═══════ MAIN CONTENT ═══════ */
+        .amb-main {
+            margin-left: var(--amb-sidebar-w);
+            padding-top: var(--amb-topbar-h);
+            min-height: 100vh;
+        }
+
+        .amb-content {
+            padding: 24px;
+            max-width: 1400px;
+        }
+
+        /* ═══════ BOOTSTRAP THEME ═══════ */
+        .card {
+            border: 1px solid var(--amb-border);
+            border-radius: var(--amb-radius);
+            box-shadow: var(--amb-shadow);
+            background: var(--amb-white);
+            transition: box-shadow 0.2s;
+        }
+        .card:hover { box-shadow: var(--amb-shadow-md); }
+        .card-header {
+            background: var(--amb-white);
+            border-bottom: 1px solid #f1f5f9;
+            font-weight: 600;
+            padding: 14px 20px;
+        }
+        .card-body { padding: 20px; }
+        .card-footer {
+            background: #fafbfc;
+            border-top: 1px solid #f1f5f9;
+            padding: 12px 20px;
+        }
+
+        .table { margin-bottom: 0; font-size: 0.825rem; }
+        .table thead th {
+            border-top: 0;
+            border-bottom: 2px solid #e2e8f0;
+            font-weight: 700;
+            color: var(--amb-text-secondary);
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            letter-spacing: 0.05em;
+            padding: 10px 16px;
+            white-space: nowrap;
+        }
+        .table td {
+            padding: 12px 16px;
+            vertical-align: middle;
+            border-top: 1px solid #f1f5f9;
+            color: var(--amb-text);
+        }
+        .table-hover tbody tr:hover { background: #f8fafc; }
+
+        .badge { font-weight: 600; font-size: 0.7rem; padding: 4px 10px; border-radius: 6px; letter-spacing: 0.02em; }
+        .badge-pill { border-radius: 50px; }
+        .badge-bronze { background: linear-gradient(135deg, #b45309, #d97706); color: #fff; }
+        .badge-silver { background: linear-gradient(135deg, #6b7280, #9ca3af); color: #fff; }
+        .badge-gold { background: linear-gradient(135deg, #b45309, #f59e0b); color: #fff; }
+
+        .btn { font-weight: 600; font-size: 0.825rem; border-radius: 6px; }
+        .btn-primary { background: var(--amb-primary); border-color: var(--amb-primary); }
+        .btn-primary:hover { background: var(--amb-primary-dark); border-color: var(--amb-primary-dark); }
+        .btn-outline-primary { color: var(--amb-primary); border-color: var(--amb-primary); }
+        .btn-outline-primary:hover { background: var(--amb-primary); border-color: var(--amb-primary); color: #fff; }
+        .btn-sm { padding: 4px 10px; font-size: 0.75rem; }
+
+        .form-control { border-radius: 6px; border: 1px solid var(--amb-border); font-size: 0.85rem; padding: 6px 12px; }
+        .form-control:focus { border-color: var(--amb-primary); box-shadow: 0 0 0 3px rgba(15,118,110,0.1); }
+        .custom-select { border-radius: 6px; border: 1px solid var(--amb-border); font-size: 0.85rem; }
+
+        .alert { border-radius: var(--amb-radius); font-size: 0.85rem; }
+
+        .modal-content { border: none; border-radius: var(--amb-radius); box-shadow: 0 20px 60px rgba(0,0,0,0.15); }
+        .modal-header { border-bottom: 1px solid #f1f5f9; padding: 16px 20px; }
+        .modal-body { padding: 20px; }
+        .modal-footer { border-top: 1px solid #f1f5f9; padding: 12px 20px; }
+
+        .page-link { color: var(--amb-primary); border-radius: 6px !important; margin: 0 2px; font-size: 0.8rem; border: 1px solid var(--amb-border); }
+        .page-item.active .page-link { background: var(--amb-primary); border-color: var(--amb-primary); }
+
+        .dropdown-menu { border: 1px solid var(--amb-border); border-radius: 8px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); padding: 6px; font-size: 0.825rem; }
+        .dropdown-item { border-radius: 4px; padding: 6px 12px; font-size: 0.8rem; }
+        .dropdown-item:hover { background: #f1f5f9; }
+
+        .border-left-primary { border-left: 4px solid var(--amb-primary) !important; }
+        .border-left-success { border-left: 4px solid #10b981 !important; }
+        .border-left-info { border-left: 4px solid #3b82f6 !important; }
+        .border-left-warning { border-left: 4px solid #f59e0b !important; }
+        .border-left-danger { border-left: 4px solid #ef4444 !important; }
+
+        .text-primary { color: var(--amb-primary) !important; }
+        .text-xs { font-size: 0.7rem; }
+        .font-weight-medium { font-weight: 500; }
+        .font-weight-bold { font-weight: 700 !important; }
+
+        .icon-circle { border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; }
+        .avatar-sm { width: 36px; height: 36px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.75rem; }
+        .avatar-circle { width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 700; }
+
+        #toast-container { top: 72px !important; }
+
+        .dataTables_wrapper .dataTables_length select,
+        .dataTables_wrapper .dataTables_filter input {
+            border: 1px solid var(--amb-border);
+            border-radius: 6px;
+            font-size: 0.825rem;
+        }
+
+        .amb-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.4);
+            z-index: 1035;
+            backdrop-filter: blur(2px);
+        }
+        .amb-overlay.active { display: block; }
+
+        @@media (max-width: 991px) {
+            .amb-sidebar { transform: translateX(-100%); }
+            .amb-sidebar.open { transform: translateX(0); }
+            .amb-topbar { left: 0; }
+            .amb-main { margin-left: 0; }
+            .amb-mobile-toggle { display: block; }
+            .amb-content { padding: 16px; }
+        }
+    </style>
+
+    @RenderSection("styles", required: false)
+</head>
+<body>
+    @{
+        var currentController = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+        var currentAction = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+        var userName = User.Identity.IsAuthenticated ? User.Identity.Name : "Ambassador";
+        var userInitials = "";
+        if (!string.IsNullOrEmpty(userName))
+        {
+            var parts = userName.Split(new[] { '@', '.' }, StringSplitOptions.RemoveEmptyEntries);
+            userInitials = parts.Length > 0 ? parts[0].Substring(0, Math.Min(2, parts[0].Length)).ToUpper() : "AB";
+        }
+    }
+
+    <div class="amb-overlay" id="ambOverlay" onclick="closeSidebar()"></div>
+
+    <!-- SIDEBAR -->
+    <aside class="amb-sidebar" id="ambSidebar">
+        <div class="amb-sidebar-brand">
+            <img src="~/Images/FAME_Logo_Final.png" alt="FAME" onerror="this.style.display='none'">
+            <div>
+                <div class="brand-text">FAME</div>
+                <div class="brand-sub">Ambassador Portal</div>
+            </div>
+        </div>
+
+        <nav class="amb-sidebar-nav">
+            <div class="amb-nav-section">Main</div>
+            <a href="@Url.Action("Index", "Dashboard", new { area = "Ambassador" })"
+               class="amb-nav-item @(currentController == "Dashboard" ? "active" : "")">
+                <i class="material-icons">dashboard</i> Dashboard
+            </a>
+            <a href="@Url.Action("Index", "Referrals", new { area = "Ambassador" })"
+               class="amb-nav-item @(currentController == "Referrals" ? "active" : "")">
+                <i class="material-icons">people</i> Referrals
+            </a>
+
+            <div class="amb-nav-section">Earnings</div>
+            <a href="@Url.Action("Index", "Earnings", new { area = "Ambassador" })"
+               class="amb-nav-item @(currentController == "Earnings" ? "active" : "")">
+                <i class="material-icons">account_balance_wallet</i> Earnings
+            </a>
+            <a href="@Url.Action("Index", "Payouts", new { area = "Ambassador" })"
+               class="amb-nav-item @(currentController == "Payouts" && currentAction == "Index" ? "active" : "")">
+                <i class="material-icons">payments</i> Payouts
+            </a>
+            <a href="@Url.Action("Methods", "Payouts", new { area = "Ambassador" })"
+               class="amb-nav-item @(currentController == "Payouts" && currentAction == "Methods" ? "active" : "")">
+                <i class="material-icons">credit_card</i> Payout Methods
+            </a>
+
+            <div class="amb-nav-section">Account</div>
+            <a href="@Url.Action("Index", "Profile", new { area = "Ambassador" })"
+               class="amb-nav-item @(currentController == "Profile" && currentAction == "Index" ? "active" : "")">
+                <i class="material-icons">person</i> My Profile
+            </a>
+            <a href="@Url.Action("Terms", "Profile", new { area = "Ambassador" })"
+               class="amb-nav-item @(currentController == "Profile" && currentAction == "Terms" ? "active" : "")">
+                <i class="material-icons">gavel</i> Terms & Conditions
+            </a>
+
+            @if (User.IsInRole("Admin"))
+            {
+                <div class="amb-nav-section">Administration</div>
+                <a href="@Url.Action("Index", "Admin", new { area = "Ambassador" })"
+                   class="amb-nav-item @(currentController == "Admin" && currentAction == "Index" ? "active" : "")">
+                    <i class="material-icons">admin_panel_settings</i> Admin Dashboard
+                </a>
+                <a href="@Url.Action("Applications", "Admin", new { area = "Ambassador" })"
+                   class="amb-nav-item @(currentController == "Admin" && currentAction == "Applications" ? "active" : "")">
+                    <i class="material-icons">pending_actions</i> Applications
+                </a>
+                <a href="@Url.Action("Ambassadors", "Admin", new { area = "Ambassador" })"
+                   class="amb-nav-item @(currentController == "Admin" && currentAction == "Ambassadors" ? "active" : "")">
+                    <i class="material-icons">groups</i> All Ambassadors
+                </a>
+                <a href="@Url.Action("Rules", "Admin", new { area = "Ambassador" })"
+                   class="amb-nav-item @(currentController == "Admin" && currentAction == "Rules" ? "active" : "")">
+                    <i class="material-icons">rule</i> Commission Rules
+                </a>
+                <a href="@Url.Action("Conversions", "Admin", new { area = "Ambassador" })"
+                   class="amb-nav-item @(currentController == "Admin" && currentAction == "Conversions" ? "active" : "")">
+                    <i class="material-icons">swap_horiz</i> Conversions
+                </a>
+                <a href="@Url.Action("Payouts", "Admin", new { area = "Ambassador" })"
+                   class="amb-nav-item @(currentController == "Admin" && currentAction == "Payouts" ? "active" : "")">
+                    <i class="material-icons">receipt_long</i> Manage Payouts
+                </a>
+            }
+        </nav>
+
+        <div class="amb-sidebar-footer">
+            <div class="amb-user-info">
+                <div class="amb-user-avatar">@userInitials</div>
+                <div style="overflow:hidden;">
+                    <div class="amb-user-name">@userName</div>
+                    <div class="amb-user-role">@(User.IsInRole("Admin") ? "Administrator" : "Ambassador")</div>
+                </div>
+            </div>
+            @using (Html.BeginForm("Logout", "AmbassadorAccount", new { area = "Ambassador" }, FormMethod.Post, new { id = "ambLogoutForm" }))
+            {
+                @Html.AntiForgeryToken()
+                <button type="submit" class="amb-logout-btn">
+                    <i class="material-icons" style="font-size:18px;">logout</i> Sign Out
+                </button>
+            }
+        </div>
+    </aside>
+
+    <!-- TOPBAR -->
+    <div class="amb-topbar">
+        <div class="amb-topbar-left">
+            <button class="amb-mobile-toggle" onclick="toggleSidebar()">
+                <i class="material-icons">menu</i>
+            </button>
+            <span class="amb-topbar-title">@ViewBag.Title</span>
+        </div>
+    </div>
+
+    <!-- MAIN -->
+    <div class="amb-main">
+        <div class="amb-content">
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show mb-3" role="alert">
+                    <i class="material-icons align-middle mr-1" style="font-size:18px;">check_circle</i>
+                    @TempData["Success"]
+                    <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
+                </div>
+            }
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show mb-3" role="alert">
+                    <i class="material-icons align-middle mr-1" style="font-size:18px;">error</i>
+                    @TempData["Error"]
+                    <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
+                </div>
+            }
+            @RenderBody()
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/Content/assets/vendor/toastr.min.js"></script>
+    <script src="~/Scripts/Sweetalert2.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap4.min.js"></script>
+
+    <script>
+        function toggleSidebar() {
+            document.getElementById('ambSidebar').classList.toggle('open');
+            document.getElementById('ambOverlay').classList.toggle('active');
+        }
+        function closeSidebar() {
+            document.getElementById('ambSidebar').classList.remove('open');
+            document.getElementById('ambOverlay').classList.remove('active');
+        }
+
+        toastr.options = { closeButton: true, progressBar: true, positionClass: 'toast-top-right', timeOut: 4000 };
+
+        @if (TempData["Success"] != null)
+        {
+            <text>toastr.success('@Html.Raw(TempData["Success"].ToString().Replace("'", "\\'"))');</text>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <text>toastr.error('@Html.Raw(TempData["Error"].ToString().Replace("'", "\\'"))');</text>
+        }
+    </script>
+
+    @RenderSection("modals", required: false)
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

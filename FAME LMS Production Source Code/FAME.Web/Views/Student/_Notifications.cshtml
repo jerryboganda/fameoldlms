@@ -1,0 +1,126 @@
+﻿@model IEnumerable<First_Aid_Made_Easy.DAL.sp_GetNotifications_Result>
+@{
+    var DateTime = System.DateTime.UtcNow.AddHours(5);
+    int count = Model?.Count() ?? 0;
+}
+@if (ViewBag.Side != "ST")
+{
+    <div class="nav-item ml-16pt dropdown dropdown-notifications dropdown-xs-down-full" data-toggle="tooltip" data-title="Notifications" data-placement="bottom" data-boundary="window">
+        <button class="nav-link btn-flush dropdown-toggle" type="button" data-toggle="dropdown" data-caret="false">
+            <i class="material-icons">notifications_none</i>
+            @if (count > 0)
+            {
+                <span class="badge badge-notifications badge-accent">@count</span>
+            }
+        </button>
+        <div class="dropdown-menu dropdown-menu-right">
+            <div data-perfect-scrollbar class="position-relative">
+                <div class="dropdown-header"><strong>Admin Messages</strong></div>
+                <div class="list-group list-group-flush mb-0">
+                    @if (Model != null)
+                    {
+                        foreach (var a in Model)
+                        {
+                            <a href="@a.Url" class="list-group-item list-group-item-action">
+                                <span class="d-flex align-items-center mb-1">
+                                    @if (a.CreatedDT != null)
+                                    {
+                                        int Days = (int)DateTime.Subtract(a.CreatedDT.Value).TotalDays;
+                                        int Hours = (int)DateTime.Subtract(a.CreatedDT.Value).TotalHours;
+                                        int Minuts = (int)DateTime.Subtract(a.CreatedDT.Value).TotalMinutes;
+                                        <small class="text-black-50">@(Days > 0 ? (Days + " days") : Hours > 0 ? (Hours + " hours") : (Minuts + " minutes") ) ago</small>
+                                    }
+                                </span>
+                                <span class="d-flex">
+                                    <span class="flex d-flex flex-column">
+                                        <span class="text-black-70">
+                                            <b>@( a.MessageTitle.Length > 40 ? a.MaessageBody.Substring(0, 35) + "...." : a.MessageTitle )</b><br />
+                                            @( a.MaessageBody.Length > 110 ? a.MaessageBody.Substring(0, 105) + "...." : a.MaessageBody )
+                                        </span>
+                                    </span>
+                                </span>
+                            </a>
+                        }
+                    }
+
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+
+    <div id="kt_activities" class="bg-body" data-kt-drawer="true" data-kt-drawer-name="activities" data-kt-drawer-activate="true" data-kt-drawer-overlay="true" data-kt-drawer-width="{default:'300px', 'lg': '900px'}" data-kt-drawer-direction="end" data-kt-drawer-toggle="#kt_activities_toggle" data-kt-drawer-close="#kt_activities_close">
+        <div class="card shadow-none border-0 rounded-0">
+            <!--begin::Header-->
+            <div class="card-header" id="kt_activities_header">
+                <h3 class="card-title fw-bold text-dark">Notifications</h3>
+                <div class="card-toolbar">
+                    <button type="button" class="btn btn-sm btn-icon btn-active-light-primary me-n5" id="kt_activities_close">
+                        <!--begin::Svg Icon | path: icons/duotune/arrows/arr061.svg-->
+                        <span class="svg-icon svg-icon-1">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect opacity="0.5" x="6" y="17.3137" width="16" height="2" rx="1" transform="rotate(-45 6 17.3137)" fill="currentColor" />
+                                <rect x="7.41422" y="6" width="16" height="2" rx="1" transform="rotate(45 7.41422 6)" fill="currentColor" />
+                            </svg>
+                        </span>
+                        <!--end::Svg Icon-->
+                    </button>
+                </div>
+            </div>
+            <!--end::Header-->
+            <!--begin::Body-->
+            <div class="card-body position-relative" id="kt_activities_body">
+                <!--begin::Content-->
+                <div id="kt_activities_scroll" class="position-relative scroll-y me-n5 pe-5" data-kt-scroll="true" data-kt-scroll-height="auto" data-kt-scroll-wrappers="#kt_activities_body" data-kt-scroll-dependencies="#kt_activities_header, #kt_activities_footer" data-kt-scroll-offset="5px">
+
+                    <div class="timeline">
+                        @if (Model != null)
+                        {
+                            foreach (var a in Model)
+                            {
+
+                                <div class="timeline-item">
+                                    <div class="timeline-line w-40px"></div>
+                                    <div class="timeline-icon symbol symbol-circle symbol-40px">
+                                        <div class="symbol-label bg-light">
+                                            <span class="svg-icon svg-icon-2 svg-icon-gray-500">
+                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M6 8.725C6 8.125 6.4 7.725 7 7.725H14L18 11.725V12.925L22 9.725L12.6 2.225C12.2 1.925 11.7 1.925 11.4 2.225L2 9.725L6 12.925V8.725Z" fill="currentColor" />
+                                                    <path opacity="0.3" d="M22 9.72498V20.725C22 21.325 21.6 21.725 21 21.725H3C2.4 21.725 2 21.325 2 20.725V9.72498L11.4 17.225C11.8 17.525 12.3 17.525 12.6 17.225L22 9.72498ZM15 11.725H18L14 7.72498V10.725C14 11.325 14.4 11.725 15 11.725Z" fill="currentColor" />
+                                                </svg>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="timeline-content mb-10 mt-n1">
+                                        <div class="pe-3 mb-5">
+                                            <div class="fs-5 fw-semibold mb-2">
+                                                <b>@( a.MessageTitle.Length > 80 ? a.MaessageBody.Substring(0, 70) + "...." : a.MessageTitle )</b><br />
+                                                @( a.MaessageBody.Length > 210 ? a.MaessageBody.Substring(0, 205) + "...." : a.MaessageBody )
+                                            </div>
+                                            <div class="overflow-auto pb-5">
+                                                <div class="d-flex align-items-center mt-1 fs-6">
+                                                    @*@if (a.CreatedDT != null)
+                                                    {
+                                                        int Days = (int)DateTime.Subtract(a.CreatedDT.Value).TotalDays;
+                                                        int Hours = (int)DateTime.Subtract(a.CreatedDT.Value).TotalHours;
+                                                        int Minuts = (int)DateTime.Subtract(a.CreatedDT.Value).TotalMinutes;
+                                                        <div class="text-muted me-2 fs-7">@(Days != 0 ? (Days + " days") : Hours != 0 ? (Hours + " hours") : (Minuts + " minutes") ) ago</div>
+                                                    }*@
+                                                    <a href="@a.Url" class="text-primary fw-bold me-1">Admin</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+                <!--end::Content-->
+            </div>
+        </div>
+    </div>
+
+}

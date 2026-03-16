@@ -1,0 +1,58 @@
+﻿@using First_Aid_Made_Easy.BLL;
+@using First_Aid_Made_Easy.DAL;
+@using First_Aid_Made_Easy.Models;
+@model List<First_Aid_Made_Easy.DAL.sp_lstFavourites_Result>
+@{
+    ViewBag.Title = "MCQs";
+    ViewBag.BreadCrumb = new String[] { "Favourites", "MCQs" };
+    Layout = "~/Views/Shared/_LayoutNew.cshtml";
+}
+
+
+
+<div class="container-xxl" id="kt_content_container">
+    <!--end::Hero card-->
+    @Html.Partial("_NavBar")
+    <!--begin::Row-->
+    <div class="row gy-0 mb-6 mb-xl-12">
+        <!--begin::Col-->
+        <div class="col-md-12">
+            <!--begin::Card-->
+            <div class="card card-md-stretch ms-xl-3">
+                <!--begin::Body-->
+                <div class="card-body p-10 p-lg-15">
+                    <!--begin::Header-->
+                    <div class="d-flex flex-stack mb-7">
+                        <!--begin::Title-->
+                        <h1 class="fw-bold text-dark">MCQs</h1>
+                    </div>
+                    @if (Model != null)
+                    {
+                        foreach (var f in Model.Where(x=>x.ObjectType == QuestionType.Mcq.ToString()))
+                        {
+
+                            <div class="m-0">
+                                <div class="d-flex align-items-center collapsible py-3 toggle mb-0" data-bs-toggle="collapse" data-bs-target="#kt_support_2_@f.Object_ID">
+                                    <div class="d-flex align-items-center flex-wrap">
+                                        <h3 class="text-gray-800 fw-semibold cursor-pointer me-3 mb-0">@f.Question</h3>
+                                    </div>
+                                    <span class="badge badge-light my-1 d-none">@f.ObjectType</span>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+                <!--end::Body-->
+            </div>
+            <!--end::Card-->
+        </div>
+        <!--end::Col-->
+    </div>
+    <!--end::Row-->
+    <!--begin::Row-->
+    <!--end::Row-->
+</div>
+
+@section scripts {
+
+}

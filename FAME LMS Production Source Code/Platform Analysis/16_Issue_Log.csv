@@ -1,0 +1,46 @@
+Issue_ID,Category,Severity,Title,Description,Location,Risk_ID,Phase,Effort,Status
+ISS-001,Security,Critical,Plaintext secrets in Web.config,"All database passwords, API keys, OAuth secrets, SMTP credentials stored in plaintext in Web.config",Web.config,R-01,Phase 2,M,Open
+ISS-002,Security,Critical,SA-level database access,"Production connection strings use SQL Server SA account with full admin privileges","Web.config connectionStrings",R-02,Phase 2,S,Open
+ISS-003,Security,Critical,CSRF disabled on registration,"@Html.AntiForgeryToken() is commented out on the registration form",Views/Account/Register.cshtml,R-03,Phase 1,XS,Open
+ISS-004,Security,Critical,Debug mode in production,"compilation debug=""true"" in production Web.config exposes detailed errors and disables optimizations",Web.config,R-04,Phase 1,XS,Open
+ISS-005,Security,Critical,Stack traces exposed to users,"Error.cshtml displays @Model.Exception.StackTrace directly to end users",Views/Shared/Error.cshtml,R-05,Phase 1,XS,Open
+ISS-006,Security,Critical,JazzCash credentials client-side,"Merchant ID (Merc0003), password (0123456789), and hash salt exposed in client-side JavaScript",Views/Enrollment/JazzCash.cshtml,R-06,Phase 1,S,Open
+ISS-007,Security,High,No security headers,"Missing X-Frame-Options, X-Content-Type-Options, CSP, HSTS, Referrer-Policy headers",Web.config / IIS,R-09,Phase 1,S,Open
+ISS-008,Security,High,No HTTPS enforcement,"Missing requireSSL on auth cookies and no HTTP-to-HTTPS redirect configuration",Web.config,R-10,Phase 1,XS,Open
+ISS-009,Security,High,Excessive session timeout,"Session timeout set to 6000 minutes (~4 days) — allows prolonged session hijacking window",Web.config,R-11,Phase 1,XS,Open
+ISS-010,Security,High,CORS allows all origins,"Access-Control-Allow-Origin set to * — allows any website to make authenticated requests",Web.config,R-12,Phase 1,XS,Open
+ISS-011,Security,Medium,No CSRF on login form,"Login form does not include AntiForgeryToken — vulnerable to login CSRF attacks",Views/Account/Login.cshtml,R-03,Phase 3,XS,Open
+ISS-012,Security,Medium,No rate limiting,"No visible rate limiting on login, registration, or API endpoints — vulnerable to brute force",Global,—,Phase 4,S,Open
+ISS-013,Security,Medium,X-Powered-By header exposed,"Server reveals ASP.NET technology stack in response headers",Web.config,R-09,Phase 1,XS,Open
+ISS-014,Brand,Critical,Social counters show 0K+,"Homepage social proof counters display 0K+ instead of actual values — contradicts 50K+ claim",Landing page JavaScript,R-13,Phase 1,S,Open
+ISS-015,Brand,High,INSTAGARM misspelling,"Instagram social link labeled INSTAGARM in footer",Footer partial view,R-14,Phase 1,XS,Open
+ISS-016,Brand,High,11+ spelling errors,"Cancle, Completation, cirtificates, Seperator, Pleaase, Remainning, recieved, Acheivements, etc.",Multiple views,R-14,Phase 2,S,Open
+ISS-017,Brand,Medium,Copyright year 2022,"Footer displays outdated copyright year — should be 2025",Footer partial view,R-19,Phase 1,XS,Open
+ISS-018,Brand,Medium,Encoding artifacts,"&#39; and &amp; appearing as raw text on multiple pages",Landing views and student portal,R-29,Phase 1,S,Open
+ISS-019,Brand,Low,PolytronX credit in footer,"Third-party developer credit in visible footer dilutes owner brand",Footer partial view,R-30,—,—,Open
+ISS-020,Revenue,Critical,Broken Pricing page,"USD pricing ($9/$19/$29) with links to non-existent learnly-signup.html pages",Views/Home/Pricing.cshtml,R-08,Phase 2,XS,Open
+ISS-021,Revenue,Critical,No self-service checkout,"Students cannot independently purchase and gain access — requires admin manual enrollment",Multiple,R-07,Phase 3,XL,Open
+ISS-022,Revenue,High,Admin-gated enrollment,"Every new enrollment requires admin intervention — creates bottleneck and delay",Enrollment/Index.cshtml,R-18,Phase 3,XL,Open
+ISS-023,Revenue,High,No automated renewal,"Expired subscriptions require manual re-enrollment — churn risk",Multiple,R-27,Phase 3,M,Open
+ISS-024,Revenue,Medium,Coupon system disabled,"Promotional pricing capability built but not active — missing marketing opportunity",Admin views,R-35,—,S,Open
+ISS-025,Revenue,Medium,No international payment,"AMC/USMLE students have no USD payment pathway despite USD pricing page existing",Payment system,R-07,Phase 3,L,Open
+ISS-026,UX,High,Multiple layout systems,"5+ layouts coexist: _Layout, _LayoutNew, _LayoutTeacher, Focus Mode, old layout — inconsistent experience",Views/Shared/,R-15,Phase 3,L,Open
+ISS-027,UX,High,7-step registration wizard,"Extensive form with CNIC requirement creates friction and potential abandonment",Views/Account/Register.cshtml,—,Phase 3,M,Open
+ISS-028,UX,Medium,Empty FAQ answers,"FAQ structure exists but most answers are empty or placeholder — self-service failure",Landing FAQ section,R-28,Phase 2,S,Open
+ISS-029,UX,Medium,Placeholder WhatsApp on Support page,"Support page shows placeholder number instead of real WhatsApp contact",Student Support view,—,Phase 2,XS,Open
+ISS-030,UX,Low,Non-functional pagination,"Old Packages page has hardcoded Prev/1/2/Next without actual pagination logic",Views/Home/Packages.cshtml,R-33,—,S,Open
+ISS-031,Performance,Medium,Cache-busting defeats caching,"DateTime.Now.Ticks appended to all CSS/JS URLs prevents browser caching entirely",Layout views,R-20,Phase 3,M,Open
+ISS-032,Performance,Medium,1000+ flat files in /Images/,"No subdirectory organization — file system scan overhead and management difficulty",/Images/ folder,R-21,Phase 4,M,Open
+ISS-033,Performance,Low,No CDN for static assets,"All static files served from origin server — no edge caching or geographic distribution",Infrastructure,—,Phase 4,M,Open
+ISS-034,SEO,Critical,No robots.txt,"Search engines have no crawl guidance — may index admin pages or miss important content",Web root,R-16,Phase 2,XS,Open
+ISS-035,SEO,High,Sitemap in wrong directory,"sitemap.xml located at /Content/sitemap.xml instead of web root — search engines cannot find it",Content/sitemap.xml,R-17,Phase 2,XS,Open
+ISS-036,SEO,Medium,No structured data,"No JSON-LD or schema.org markup — no rich snippets in search results",All pages,—,Phase 4,M,Open
+ISS-037,SEO,Medium,Partial meta descriptions,"Some pages have meta descriptions, many do not — poor search snippets",Multiple views,—,Phase 2,S,Open
+ISS-038,Legal,Medium,Privacy Policy harmful language,"States data is completely susceptible to loss — counterproductive to trust building",Privacy Policy page,R-26,Phase 2,S,Open
+ISS-039,Legal,Medium,Jurisdiction inconsistency,"Terms say Rawalpindi courts; references elsewhere suggest Lahore — legal confusion",T&C page,R-22,Phase 2,S,Open
+ISS-040,Legal,Medium,No refund policy,"No visible refund or cancellation policy — consumer protection risk",Missing page,R-23,Phase 3,S,Open
+ISS-041,Compliance,Medium,No cookie consent,"No GDPR/ePrivacy cookie consent mechanism despite using analytics and auth cookies",All pages,R-24,Phase 3,S,Open
+ISS-042,Compliance,Medium,No data retention policy,"No documented policy on how long student data is stored or when it is deleted",Missing documentation,R-25,Phase 4,S,Open
+ISS-043,Compliance,Medium,CNIC collection without framework,"Collecting national identity numbers without documented privacy impact assessment",Registration form,R-24,Phase 3,M,Open
+ISS-044,Technical,Medium,Three competing pricing pages,"Pricing, Packages, OurPackages — three different pages with conflicting information",Views/Home/ and Landing/,R-08,Phase 2,S,Open
+ISS-045,Technical,Low,Ambassador not publicly promoted,"Full ambassador/referral system built but not linked from public website",Ambassador Area,R-34,—,XS,Open

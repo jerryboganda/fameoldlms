@@ -1,0 +1,44 @@
+﻿@using Microsoft.AspNet.Identity
+@using First_Aid_Made_Easy.BLL
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+    @Html.Partial("_TeacherMetaTags")
+    @Html.Partial("_TeacherStyles")
+    @Html.Partial("_TeacherInlineStyles")
+    @Html.Partial("_TrackingPixels")
+</head>
+
+
+<body class="layout-boxed ">
+
+    <div class="preloader">
+        <div class="sk-double-bounce">
+            <div class="sk-child sk-double-bounce1"></div>
+            <div class="sk-child sk-double-bounce2"></div>
+        </div>
+    </div>
+
+    <div class="mdk-drawer-layout js-mdk-drawer-layout" data-push data-responsive-width="992px">
+
+        <div class="mdk-drawer-layout__content">
+            @Html.Partial("_TeacherHeader")
+
+            @RenderBody()
+
+            @Html.Partial("_TeacherFooter")
+        </div>
+        <!-- // END drawer-layout__content -->
+        @Html.Partial("_TeacherAside")
+
+    </div>
+
+    @Html.Partial("_TeacherModals")
+
+    @Html.Partial("_TeacherScripts")
+    @Html.Partial("_TeacherInlineScripts")
+
+</body>
+
+</html>

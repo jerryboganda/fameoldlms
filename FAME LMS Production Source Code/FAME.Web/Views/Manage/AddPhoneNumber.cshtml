@@ -1,0 +1,90 @@
+﻿@model First_Aid_Made_Easy.Models.AddPhoneNumberViewModel
+@{
+    ViewBag.Title = "Phone Number";
+    Layout = "";
+
+    bool IsUni = ViewBag.College == "ASIAN MEDICAL INSTISTUTE";
+}
+
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>@ViewBag.Title</title>
+
+    <!-- Prevent the demo from appearing in search engines -->
+    <meta name="robots" content="noindex">
+
+    <link href="https://fonts.googleapis.com/css?family=Lato:400,700%7CRoboto:400,500%7CExo+2:600&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome Icons -->
+    <link type="text/css" href="~/Content/assets/css/fontawesome.css" rel="stylesheet">
+
+    <!-- Material Design Icons -->
+    <link type="text/css" href="~/Content/assets/css/material-icons.css" rel="stylesheet">
+
+
+
+    <!-- App CSS -->
+    <link type="text/css" href="~/Content/assets/css/app.css" rel="stylesheet">
+    @Html.Partial("_TrackingPixels")
+</head>
+<body class="layout-default layout-login-centered-boxed">
+    <div class="layout-login-centered-boxed__form card">
+        @if (!IsUni)
+        {
+
+            <div class="d-flex flex-column justify-content-center align-items-center mt-2 navbar-light">
+                <div>
+                    <img style="width:70px;" src="~/Images/FIRST AID LOGO.png" alt="logo" class="img-fluid" />
+                </div>
+                <h4 class="m-0 text-center"> First Aid Made Easy </h4>
+                <p>Verify Your Phone Number</p>
+            </div>
+        }
+        else
+        {
+            <div class="d-flex flex-column justify-content-center align-items-center mt-2 mb-5 navbar-light">
+                <div>
+                    <img style="width: 70px;display:inline-block;margin-left:2rem" src="~/Images/AMIlogo.jfif" alt="logo" />
+                    <img style="width: 70px; display: inline-block; margin-left: 2rem" src="~/Images/FIRST AID LOGO.png" alt="logo" />
+                </div>
+                <h4 class="m-0 text-center">
+                    Online E-Library collaboration between <br /> <b>ASIAN MEDICAL INSTITUTE</b> <br /> & <b>FIRST AID MADE EASY PLATFORM</b>
+                </h4>
+            </div>
+        }
+
+
+        <section id="divVerification">
+            <hr />
+            <div class="alert alert-warning" role="alert">
+                <strong>Mobile OTP verification is disabled.</strong><br />
+                This LMS currently supports email verification only. Phone-number verification has been removed because no SMS/OTP delivery service is configured.
+            </div>
+            <a href="/Account/Login" class="btn btn-primary">Back to Login</a>
+        </section>
+
+    </div>
+    <!-- jQuery -->
+    <script src="~/Content/assets/vendor/jquery.min.js"></script>
+
+    <!-- Bootstrap -->
+    <script src="~/Content/assets/vendor/popper.min.js"></script>
+    <script src="~/Content/assets/vendor/bootstrap.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    @Scripts.Render("~/bundles/jqueryval")
+
+</body>
+
+</html>
+
+
+
+
+

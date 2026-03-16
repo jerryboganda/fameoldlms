@@ -1,0 +1,57 @@
+# Local git
+.git/
+
+# Local validation artifacts
+ambassador_admin_edge_sweep_*/
+ambassador_validation_evidence_*/
+ambassador_validation_ui_complete_*/
+ambassador_validation_run.py
+ambassador_validation_ui_complete.py
+ambassador_admin_edge_sweep.py
+debug_reg.png
+temp_packages/
+amc-1_cvs_mock_test_extracted.json
+**/App_Data/Logs/
+**/.specstory/
+**/.agent/
+**/.agents/
+**/.vscode/
+**/.github/skills/
+**/.tmp.driveupload/
+
+# Secrets and local config
+FAME LMS Production Source Code/FAME.Web/Web.config
+firstaidmadeeasy.com.pk/Web.config
+firstaidmadeeasy.com.pk/bin/First Aid Made Easy.dll.config
+**/*fame-ocr*.json
+**/*.dll.config
+
+# Database and backups
+*.bak
+*.mdf
+*.ldf
+FAME LMS Production Source Code/ops/backup/
+FAME LMS Production Source Code/ops/ssot/
+firstaidmadeeasy.com.pk/Backups/
+FAME LMS Production Source Code/Database/
+
+# Build outputs and packages
+**/bin/
+**/obj/
+**/packages/
+
+# Published/deployed copy and large file repositories
+firstaidmadeeasy.com.pk/
+**/File-Repository/
+**/Rotativa/*.exe
+
+# Editor/system noise
+*.user
+*.suo
+*.cache
+Thumbs.db
+.DS_Store
+
+# Docs with extracted secrets
+FAME LMS Production Source Code/PROJECT_SSOT.md
+FAME LMS Production Source Code/ops/

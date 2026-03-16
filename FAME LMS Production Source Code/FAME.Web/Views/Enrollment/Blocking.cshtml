@@ -1,0 +1,226 @@
+﻿@model First_Aid_Made_Easy.Models.EnrollmentMasterVM
+@{
+    var Action = Request.QueryString["Action"];
+    if (Action == "Block")
+    {
+        ViewBag.Title = "Block / Unblock Students";
+    }
+    else if (Action == "ResetDev")
+    {
+        ViewBag.Title = "Reset Devices";
+    }
+    else if (Action == "verify")
+    {
+        ViewBag.Title = "Verify Email";
+    }
+    else
+    {
+        ViewBag.Title = "Reset Password";
+    }
+    Layout = "~/Views/Shared/_LayoutTeacher.cshtml";
+}
+
+<!-- Select2 -->
+<link type="text/css" href="~/Content/assets/css/select2.css" rel="stylesheet">
+<link type="text/css" href="~/Content/assets/vendor/select2/select2.min.css" rel="stylesheet">
+
+<!-- DateRangePicker -->
+<link type="text/css" href="~/Content/assets/vendor/daterangepicker.css" rel="stylesheet">
+
+<div class="pt-32pt">
+    <div class="container-fluid page__container d-flex flex-column flex-md-row align-items-center text-center text-sm-left">
+        <div class="flex d-flex flex-column flex-sm-row align-items-center">
+            <div class="mb-24pt mb-sm-0 mr-sm-24pt">
+                <h2 class="mb-0">@ViewBag.Title</h2>
+                <ol class="breadcrumb p-0 m-0">
+                    <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                    <li class="breadcrumb-item active">
+                        @ViewBag.Title
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </div>
+    <div class="page-section border-bottom-2">
+        <div class="container-fluid page__container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="page-separator">
+                        <div class="page-separator__text">Basic information</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-8">
+                            @Html.HiddenFor(model => model.StudentFid)
+                            <label class="form-label">Student</label>
+                            <div class="form-group mb-24pt">
+                                @Html.TextBox("Email", "", new { @class = "form-control form-control-lg", @placeholder = "Enter Student's Email", @required = "required" })
+                                <div id="EamilVal" class="text-danger"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header text-center">
+                            @if (Action == "Block")
+                            {
+                                <a href="#" id="btnBlock" data-action="Block" class="btn btn1 btn-outline-danger">Block</a>
+                                <a href="#" id="btnUnblock" data-action="UnBlock" class="btn btn1 btn-outline-success">UnBlock</a>
+                            }
+                            else if (Action == "verify")
+                            {
+                                <a href="#" id="btnverifyEmail" data-action="Verify Email For" class="btn btn1 btn-outline-danger">Verify Email</a>
+                            }
+                            else if (Action == "ResetDev")
+                            {
+                                <a href="#" id="btnResetDevice" data-action="Reset Devices For" class="btn btn-outline-danger">Reset Devices</a>
+                            }
+                            else
+                            {
+                                <a href="#" id="btnReset" data-action="Reset Password For" class="btn btn1 btn-outline-warning">Reset Password</a>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <!-- Select2 -->
+    <script src="~/Content/assets/vendor/select2/select2.min.js"></script>
+    <script src="~/Content/assets/js/select2.js"></script>
+    <!-- DateRangePicker -->
+    <script src="~/Content/assets/vendor/moment.min.js"></script>
+    <script src="~/Content/assets/vendor/daterangepicker.js"></script>
+    <script src="~/Content/assets/js/daterangepicker.js"></script>
+    @if (TempData["Success"] != null)
+    {
+        <script>
+            Swal.fire({
+                position: 'top-end',
+                icon: 'success',
+                title: 'Data Saved Successfully',
+                showConfirmButton: false,
+                timer: 1500
+            })
+        </script>
+    }
+
+    <script>
+        $(document).on("focusout", "#Email", function () {
+            var email = $(this).val();
+            $("#EamilVal").hide();
+            $.ajax({
+                url: "/Enrollment/GetStudentID?email=" + email,
+                method: "GET",
+                success: function (result) {
+                    if (result == "" || result == null) {
+                        $("#EamilVal").text("Email Is Not Valid").show();
+                    } else {
+                        $("#StudentFid").val(result);
+                    }
+                },
+                error: function (err) {
+                    $("#EamilVal").text("Email Is Not Valid").show();
+                }
+            })
+        })
+
+        $(document).on("click", ".btn1", function () {
+            var btn = $(this);
+            var action = $(this).data("action");
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You Want To " + action + " This Student?",
+                icon: 'warning',
+                showCancelButton: false,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: "/Enrollment/Block",
+                        data: {
+                            Email: $("#Email").val(),
+                            Act: action
+                        },
+                        method: "POST",
+                        beforeSend: function () {
+                            swal.fire({
+                                html: '<h5>Loading...</h5>',
+                                showConfirmButton: false,
+                                onRender: function () {
+                                    // there will only ever be one sweet alert open.
+                                    $('.swal2-content').prepend(sweet_loader);
+                                }
+                            });
+                        },
+                        success: function (result) {
+                            if (result) {
+                                btn.hide();
+                                Swal.fire(
+                                    'GOOD JOB!',
+                                    'The Action Performed Successfully.',
+                                    'success'
+                                )
+                            }
+                        }, error: function (err) {
+                            alert("Error" + err);
+                        }
+                    })
+
+                }
+            })
+        })
+        $(document).on("click", "#btnResetDevice", function () {
+            var btn = $(this);
+            var action = $(this).data("action");
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You Want To " + action + " This Student?",
+                icon: 'warning',
+                showCancelButton: false,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: "/Device/ResetDevices",
+                        data: {
+                            ID: $("#StudentFid").val(),
+                        },
+                        method: "POST",
+                        beforeSend: function () {
+                            swal.fire({
+                                html: '<h5>Loading...</h5>',
+                                showConfirmButton: false,
+                                onRender: function () {
+                                    // there will only ever be one sweet alert open.
+                                    $('.swal2-content').prepend(sweet_loader);
+                                }
+                            });
+                        },
+                        success: function (result) {
+                            if (result) {
+                                btn.hide();
+                                Swal.fire(
+                                    'GOOD JOB!',
+                                    'The Action Performed Successfully.',
+                                    'success'
+                                )
+                            }
+                        }, error: function (err) {
+                            alert("Error" + err);
+                        }
+                    })
+
+                }
+            })
+        })
+    </script>
+
+}
+

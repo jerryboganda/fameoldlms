@@ -1,0 +1,145 @@
+﻿@model First_Aid_Made_Easy.BLL.JzTimer.SystemSettings
+@{
+    ViewBag.Title = "System Settings";
+    Layout = "~/Views/Shared/_LayoutTeacher.cshtml";
+}
+
+<div class="pt-32pt">
+    <div class="container-fluid page__container d-flex flex-column flex-md-row align-items-center text-center text-sm-left">
+        <div class="flex d-flex flex-column flex-sm-row align-items-center">
+            <div class="mb-24pt mb-sm-0 mr-sm-24pt">
+                <h2 class="mb-0">System Settings</h2>
+            </div>
+        </div>
+    </div>
+    <div class="page-section border-bottom-2">
+        <div class="container-fluid page__container">
+            <form id="frmSettings">
+                <div class="row">
+                    <div class="col-md-12 card p-3">
+                        <div class="page-separator">
+                            <div class="page-separator__text">Register Page settings</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 mb-4">
+                                <label class="form-label"> Allowed Portals is App </label>
+                                @Html.DropDownListFor(model => model.RegisterPageSettings.AllowedPortals, new SelectList(First_Aid_Made_Easy.BLL.Common.Universities.Where(x => x.Value > 0 && x.IsActive), "Value", "Text"), "Please Select", new { @class = "form-control select2", @multiple = true, @data_toggle = "select" })
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <label class="form-label"> Default Selected Portal </label>
+                                @Html.DropDownListFor(model => model.RegisterPageSettings.DefaultPortal, new SelectList(First_Aid_Made_Easy.BLL.Common.Universities.Where(x => x.Value > 0 && x.IsActive), "Value", "Text"), "Please Select", new { @class = "form-control select2", @data_toggle = "select" })
+                                <span class="text-muted">If one is selected then there will be no option to select package or portal.</span>
+                            </div>
+                            <div class="col-md-6 mb-6">
+                                <label class="mt-4 form-label"> @Html.CheckBoxFor(model => model.RegisterPageSettings.CanChangePortal) Can Change Portal </label><br />
+                                <span class="text-muted">It Only Enables when there is no default selected.</span>
+                            </div>
+                            <div class="col-md-12 mb-4">
+                                <label class="form-label"> TutorialLink </label>
+                                @Html.TextBoxFor(model => model.RegisterPageSettings.TutorialLink, new { @class = "form-control" })
+                            </div>
+                            <div class="col-md-12 mb-4">
+                                <label class="form-label"> Admin Contacts </label>
+                                @Html.TextAreaFor(model => model.RegisterPageSettings.AdminContacts, new { @class = "form-control tiny" })
+                            </div>
+                            <div class="col-md-12 mb-4">
+                                <label class="form-label"> Payment Information </label>
+                                @Html.TextAreaFor(model => model.RegisterPageSettings.PaymentInfo, new { @class = "form-control tiny" })
+                            </div>
+
+                            <div class="col-md-12 mb-2">
+                                <div class="card">
+                                    <div class="card-header text-center">
+                                        <button type="button" id="btnSave" class="btn btn-outline-success">&nbsp; Save</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+
+    <script src="~/Scripts/tinymce/tinymce.js"></script>
+    <script>
+        var model = @Html.Raw(Json.Encode(Model));
+        $(document).ready(function () {
+            var settings = {
+                selector: '#RegisterPageSettings_AdminContacts',
+                statusbar: true,
+                plugins: 'code,wordcount',
+                toolbar: "undo redo | styleselect | forecolor | bold italic | alignleft aligncenter alignright alignjustify | outdent indent | link image | removeformat",
+                force_br_newlines: true,
+                force_p_newlines: false,
+                forced_root_block: '', // Needed for 3.x
+                height: 200,
+                init_instance_callback: function (editor) {
+                    editor.on('keydown', function (e) {
+                        //KeyDownEvent(e, editor);
+                    });
+                    editor.on('paste', function (e) {
+                        //e.preventDefault();
+                        //Swal.fire('Sorry!', 'Cannot Paste Here. Please Type Manualy', 'warning');
+                    });
+                }
+            };
+            tinymce.init(settings);
+            settings.selector = "#RegisterPageSettings_PaymentInfo";
+            settings.height = 600;
+            tinymce.init(settings);
+        })
+		$(document).ready(function () {
+
+			$("#RegisterPageSettings_AllowedPortals").val(model.RegisterPageSettings.AllowedPortals.split('')).change();
+		})
+
+
+		$("#btnSave").click(function () {
+			var formData = {
+				RegisterPageSettings: {
+					AllowedPortals: $("#RegisterPageSettings_AllowedPortals").val().join(','),
+					DefaultPortal: $("#RegisterPageSettings_DefaultPortal").val(),
+					TutorialLink: $("#RegisterPageSettings_TutorialLink").val(),
+                    AdminContacts: tinyMCE.get("RegisterPageSettings_AdminContacts").getContent(),
+                    PaymentInfo: tinyMCE.get("RegisterPageSettings_PaymentInfo").getContent(),
+					CanChangePortal: $("#RegisterPageSettings_CanChangePortal").is(":checked")
+				}
+			}
+
+			$(".divLoader").show();
+
+			$.ajax({
+				url: "/Settings/SaveSettings",
+				method: "post",
+				data: formData,
+				success: function () {
+					$(".divLoader").hide();
+					Swal.fire({
+						position: 'top-end',
+						icon: 'success',
+						title: 'Data Saved Successfully',
+						showConfirmButton: false,
+						timer: 1500
+					})
+				},
+				error: function () {
+					$(".divLoader").hide();
+					Swal.fire({
+						position: 'top-end',
+						icon: 'error',
+						title: 'Something Went Wrong',
+						showConfirmButton: false,
+						timer: 1500
+					})
+				}
+			})
+		})
+
+    </script>
+
+}
+

@@ -1,0 +1,391 @@
+﻿@model First_Aid_Made_Easy.Models.EnrollmentMasterVM
+@{
+    ViewBag.Title = "ADD Subscription";
+    Layout = "~/Views/Shared/_LayoutTeacher.cshtml";
+}
+
+
+<!-- DateRangePicker -->
+<link type="text/css" href="~/Content/assets/vendor/daterangepicker.css" rel="stylesheet">
+
+
+<div class="pt-32pt">
+    <div class="container-fluid page__container d-flex flex-column flex-md-row align-items-center text-center text-sm-left">
+        <div class="flex d-flex flex-column flex-sm-row align-items-center">
+            <div class="mb-24pt mb-sm-0 mr-sm-24pt">
+                <h2 class="mb-0">Describe Enrollment</h2>
+                <ol class="breadcrumb p-0 m-0">
+                    <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                    <li class="breadcrumb-item active">
+                        Describe Enrollment
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </div>
+    <div class="page-section border-bottom-2">
+        <div class="container-fluid page__container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="page-separator">
+                        <div class="page-separator__text">Basic information</div>
+                    </div>
+                    @*<form action="/Coupon/Index" method="post">*@
+                    @Html.HiddenFor(model => model.Enrollment_Id)
+                    <div class="row">
+                        <div class="col-md-4 pt-32pt">
+                            <label class="form-label"><input type="radio" name="EnrollmentFor" class="EnrollmentFor" checked value="Course"> Course</label> &emsp;
+                            <label class="form-label"><input type="radio" name="EnrollmentFor" class="EnrollmentFor" value="Package"> Package</label>
+                        </div>
+                        <div class="col-md-4 pt-32pt">
+                            <label class="form-label"><input type="radio" name="students" class="students" checked value="Student"> Student</label> &emsp;
+                            <label class="form-label"><input type="radio" name="students" class="students" value="University"> University</label>
+                        </div>
+                        <div class="col-md-4 StudentDiv">
+                            @Html.HiddenFor(model => model.StudentFid)
+                            <label class="form-label">Student</label>
+                            <div class="form-group mb-24pt">
+                                @Html.TextBox("Email", "", new { @class = "form-control form-control-lg", @placeholder = "Enter Student's Email", @required = "required" })
+                                <div id="EamilVal" class="text-danger"></div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-4 UniversityDiv" style="display:none">
+                            <label class="form-label">University</label>
+                            @Html.DropDownList("UniversityID", new SelectList(First_Aid_Made_Easy.BLL.Common.Universities.Where(x => x.InDDL && x.IsActive), "Value", "Text"), "Please Select", new { @class = "form-control select2", @required = "required", @data_toggle = "select" })
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Expiry Date</label>
+                            <div class="form-group mb-24pt">
+                                @Html.TextBoxFor(model => model.Enrollment_EndDate, new { @class = "form-control form-control-lg", @data_toggle = "daterangepicker", @data_daterangepicker_locale_format = "DD/MM/YYYY", @data_daterangepicker_start_date = Model.EndDate, @data_daterangepicker_drops = "down", @data_daterangepicker_single_date_picker = "true" })
+                                @Html.ValidationMessageFor(model => model.Enrollment_EndDate, "", new { @class = "text-danger" })
+                                <small class="form-text text-muted"></small>
+                            </div>
+                        </div>
+                        <div class="col-md-1">
+                            <label class="form-label">Expire</label>
+                            <div class="form-group mb-24pt">
+                                @Html.CheckBox("Expire", new { @class = "form-control", @checked = "checked" })
+                            </div>
+                        </div>
+                        <div class="col-md-4 PackageDiv">
+                            <div class="form-group">
+                                <label class="text-label">Package</label>
+                                <div class="input-group input-group-merge">
+                                    @Html.DropDownList("PackageID", new SelectList(ViewBag.Packages, "Value", "Text"), "Select Package", new { @class = "form-control  select2", @required = "required", @data_toggle = "select" })
+                                    <div id="PackageVal" class="text-danger"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 PackageDiv">
+                            <div class="form-group">
+                                <label class="text-label">Duration</label>
+                                <div class="input-group input-group-merge">
+                                    @Html.DropDownList("Duration", new SelectList(ViewBag.Durations, "Value", "Text"), "Select Duration", new { @class = "form-control  select2", @required = "required", @data_toggle = "select" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 PackageDiv">
+                            <div id="Payment" class="form-group">
+                                <label class="text-label">Payment</label>
+                                <div class="input-group input-group-merge">
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" checked name="Payment" id="inlineRadio1" value="OneTime">
+                                        <label class="form-check-label" for="inlineRadio1">One Time</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="Payment" id="inlineRadio2" value="Installments">
+                                        <label class="form-check-label" for="inlineRadio2">Installments </label>
+                                        <span onclick="ShowInstallments()" style="font-size:larger !important" class="font-16 text-primary"> <i class="fa fa-question-circle"></i></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 CourseDiv">
+                            <label class="form-label">Course</label>
+
+                            <div class="form-group mb-24pt">
+                                @Html.DropDownList("CourseFid", new SelectList(ViewBag.Courses, "Value", "Text"), "Select Course", new { @class = "form-control select2", @multiple = "multiple" })
+                                <div class="text-accent-red" id="CourseVal"></div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 CourseDiv">
+                            <label class="form-label">Section</label>
+
+                            <div class="form-group mb-24pt">
+                                @Html.DropDownList("SectionFid", new SelectList(ViewBag.Section, "Value", "Text"), "Select Section", new { @class = "form-control select2", @multiple = "multiple" })
+                                <div class="text-accent-red" id="CourseVal"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header text-center">
+                            <a href="/Enrollment/Index" class="btn btn-outline-accent-electric-violet"><i class="fa fa-recycle"></i>&nbsp; New</a>
+                            <a href="#" id="btnSave" class="btn btn-outline-success">Save</a>
+                        </div>
+                    </div>
+                    @*</form>*@
+                    <div id="prevSubs" class="col-md-12">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <!-- DateRangePicker -->
+    <script src="~/Content/assets/vendor/moment.min.js"></script>
+    <script src="~/Content/assets/vendor/daterangepicker.js"></script>
+    <script src="~/Content/assets/js/daterangepicker.js"></script>
+    @if (TempData["Success"] != null)
+    {
+        <script>
+            Swal.fire({
+                position: 'top-end',
+                icon: 'success',
+                title: 'Data Saved Successfully',
+                showConfirmButton: false,
+                timer: 1500
+            })
+        </script>
+    }
+
+    <script>
+        $(document).ready(function () {
+            $("#Payment,.PackageDiv").hide();
+            $(".make-switch").attr("data-on-color", "success").attr("data-off-color", "danger").attr("data-on-text", "Yes").attr("data-off-text", "No");
+            @*if ($("#Id").val() > 0) {
+                if (parseFloat(@Model.RUses) < parseFloat(@Model.NoOfUses)) {
+                    $("select").attr("disabled", true);
+                    $("input[type=text]").attr("readonly", true);
+                }
+            }*@
+        })
+
+
+        $(document).on("focusout", "#Email", function () {
+            var email = $(this).val();
+            $("#EamilVal").hide();
+            $.ajax({
+                url: "/Enrollment/GetStudentID?email=" + email,
+                method: "GET",
+                success: function (result) {
+                    if (result == "" || result==null) {
+                        $("#EamilVal").text("Email Is Not Valid").show();
+                        $("#StudentFid").val('');
+                    } else {
+                        $("#StudentFid").val(result);
+                        Enrollments(result)
+                    }
+                },
+                error: function (err) {
+                    $("#EamilVal").text("Email Is Not Valid").show();
+                }
+            })
+        })
+
+        function Enrollments(ID) {
+            $.ajax({
+                url: "/Enrollment/GetSubscription/" + ID,
+                success: function (enm) {
+                    $("#prevSubs").html(enm);
+                }
+            })
+        }
+
+        $(document).on("click", "#btnDelete", function () {
+            Swal.fire({
+                position: 'top-end',
+                icon: 'error',
+                title: 'Not Available',
+                showConfirmButton: false,
+                timer: 1500
+            })
+        })
+        $(document).on("click", "#btnSave", function () {
+            if (validatePage()) {
+                var btn = $(this);
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You Want To Add This Subscription?",
+                    icon: 'warning',
+                    showCancelButton: false,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: "/Enrollment/SaveSubscription",
+                            data: {
+                                StudentFid: $("#StudentFid").val(),
+                                CourseFid: $("#CourseFid").val(),
+                                SectionFid: $("#SectionFid").val(),
+                                EndDate: $("#Enrollment_EndDate").val(),
+                                Price: $("#Price").val(),
+                                Expire: $("#Expire").is(":checked"),
+                                Payment: $("input[name=Payment]:checked").val(),
+                                EnrollmentFor: $("input[name=EnrollmentFor]:checked").val(),
+                                PackageID: $("#PackageID option:selected").val(),
+                                Duration: $("#Duration option:selected").val(),
+                                DurationID: $('#Duration option:selected').data('id'),
+                                UniversityID: $("#UniversityID").val() || 0
+                            },
+                            type: "POST",
+                            beforeSend: function () {
+                                swal.fire({
+                                    html: '<h5>Loading...</h5>',
+                                    showConfirmButton: false,
+                                    onRender: function () {
+                                        // there will only ever be one sweet alert open.
+                                        $('.swal2-content').prepend(sweet_loader);
+                                    }
+                                });
+                            },
+                            success: function (result) {
+                                if (result) {
+                                    btn.hide();
+                                    Swal.fire(
+                                        'Accepted!',
+                                        'The Subscription Has Been Added.',
+                                        'success'
+                                    )
+                                }
+                            }, error: function (err) {
+                                alert("Error" + err);
+                            }
+                        })
+                    }
+                })
+            }
+        })
+
+        function validatePage() {
+
+            $("#EamilVal,#PackageVal,#CourseVal").hide();
+            result = true;
+            var UniversityID= $("#UniversityID").val() || 0
+            var StudentID = $("#StudentFid").val();
+            var en = $("input[name = EnrollmentFor]:checked").val();
+            if (StudentID == "" && UniversityID == 0) {
+                $("#EamilVal").text("Email Is Not Valid").show();
+                result = false;
+            }
+            if (en == "Package" && ($("#PackageID option:selected").val() == "" ||$("#Duration option:selected").val() == "") ) {
+                result = false;
+                $("#PackageVal").text("Select PAckage And Duration").show();
+            }
+            if (en == "Course" && $("#CourseFid").val().length == 0 && $("#SectionFid").val().length == 0) {
+                result = false;
+                $("#CourseVal").text("At Least One Course Or Section").show();
+            }
+            return result;
+        }
+
+        //=========================================
+        //=========== Manage Packages =============
+        //=========================================
+
+        $(".EnrollmentFor").change(function () {
+            var en = $(this).val();
+            if (en == "Package") {
+                $(".PackageDiv").show();
+                $(".CourseDiv").hide();
+            } else {
+                $(".PackageDiv").hide();
+                $(".CourseDiv").show();
+            }
+        })
+        $(".students").change(function () {
+            var en = $(this).val();
+            if (en == "Student") {
+                $(".StudentDiv").show();
+                $(".UniversityDiv").hide();
+                $("#UniversityID").val("").change();
+            } else {
+                $(".StudentDiv").hide();
+                $(".UniversityDiv").show();
+                $("#StudentFid,#Email").val("");
+            }
+        })
+
+        $(document).on("change", "#PackageID", function () {
+            var PackID = $(this).val();
+            LoadDurations(PackID);
+        })
+
+        function LoadDurations(PackID) {
+
+            $.ajax({
+                url: "/Package/LoadDuration/" + PackID,
+                type: "GET",
+                success: function (result) {
+                    var option = '<option selected disabled value="">Please Select</option>';
+                    $.each(result, function (i, val) {
+                        option = option + `<option data-id="${val.ID}" value="${val.Value}">${val.Text}</option>`;
+                    })
+                    $("#Duration").html(option);
+                },
+                error: function (err) {
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'error',
+                        title: err,
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                }
+            })
+        }
+
+        $(document).on("change", "#Duration", function () {
+            var DurID = $(this).find(':selected').data('id');
+            CheckInstallments(DurID);
+        })
+
+        //=========================================
+        //=========== Manage Installments =========
+        //=========================================
+
+
+        function CheckInstallments(DurID) {
+
+            $.ajax({
+                url: "/Package/CheckInstallments/" + DurID,
+                type: "GET",
+                success: function (result) {
+                    if (result.List.length != 0) {
+                        Installments = result;
+                        $("#Payment").show();
+                    } else {
+                        $("#Payment").hide();
+                    }
+                },
+                error: function (err) {
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'error',
+                        title: err,
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                }
+            })
+        }
+
+        function ShowInstallments() {
+            var html = ``;
+            $.each(Installments.List, function (i, val) {
+                html = html + `<label>${val.DurationS}</label><br />`
+            })
+            Swal.fire({
+                title: '<strong>Insallment Details</strong>',
+                html: html,
+            })
+        }
+
+    </script>
+
+}
+

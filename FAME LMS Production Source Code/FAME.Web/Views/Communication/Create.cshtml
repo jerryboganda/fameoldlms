@@ -1,0 +1,728 @@
+@model First_Aid_Made_Easy.Models.CampaignCreateVM
+@{
+    ViewBag.Title = Model.Id > 0 ? "Edit Campaign" : "New Campaign";
+    Layout = "~/Views/Shared/_LayoutTeacher.cshtml";
+}
+
+<div class="pt-32pt">
+    <div class="container-fluid page__container">
+        <div class="d-flex align-items-center mb-24pt">
+            <div class="flex">
+                <h2 class="mb-0">@ViewBag.Title</h2>
+                <ol class="breadcrumb p-0 m-0">
+                    <li class="breadcrumb-item"><a href="/Communication/Index">Email Marketing</a></li>
+                    <li class="breadcrumb-item active">@ViewBag.Title</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="page-section">
+    <div class="container-fluid page__container">
+        <!-- Wizard Steps Indicator -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="step-indicator active" data-step="1">
+                        <span class="step-number">1</span>
+                        <span class="step-label">Setup</span>
+                    </div>
+                    <div class="step-line"></div>
+                    <div class="step-indicator" data-step="2">
+                        <span class="step-number">2</span>
+                        <span class="step-label">Audience</span>
+                    </div>
+                    <div class="step-line"></div>
+                    <div class="step-indicator" data-step="3">
+                        <span class="step-number">3</span>
+                        <span class="step-label">Content</span>
+                    </div>
+                    <div class="step-line"></div>
+                    <div class="step-indicator" data-step="4">
+                        <span class="step-number">4</span>
+                        <span class="step-label">Review & Send</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 1: Setup -->
+        <div class="wizard-step" id="step1">
+            <div class="card">
+                <div class="card-header"><h4 class="card-title mb-0">Campaign Setup</h4></div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label"><strong>Campaign Name *</strong></label>
+                                <input type="text" id="CampaignName" class="form-control" placeholder="e.g. February Newsletter" value="@Model.CampaignName" required />
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label"><strong>Send From *</strong></label>
+                                <select id="FromAccountId" class="form-control">
+                                    @foreach (var item in Model.SenderAccounts)
+                                    {
+                                        <option value="@item.Value" @(item.Selected ? "selected" : "")>@item.Text</option>
+                                    }
+                                </select>
+                                <small class="form-text text-muted">Select which email address to send from. <a href="/Communication/Senders">Manage Senders</a></small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="form-group">
+                                <label class="form-label"><strong>Subject Line *</strong></label>
+                                <input type="text" id="Subject" class="form-control" placeholder="e.g. New Course Available!" value="@Model.Subject" required />
+                                <small class="form-text text-muted">Merge tags: <code>{{FirstName}}</code>, <code>{{ExamType}}</code>, <code>{{University}}</code></small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="form-label">Preheader Text</label>
+                                <input type="text" id="PreheaderText" class="form-control" placeholder="Preview text shown in inbox" value="@Model.PreheaderText" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Tags</label>
+                        <input type="text" id="Tags" class="form-control" placeholder="e.g. newsletter, february, 2026" value="@Model.Tags" />
+                        <small class="form-text text-muted">Comma-separated tags for organization</small>
+                    </div>
+                </div>
+                <div class="card-footer text-right">
+                    <button class="btn btn-primary btn-next" data-next="2">Next: Audience <i class="material-icons ml-1" style="vertical-align:middle;">arrow_forward</i></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 2: Audience -->
+        <div class="wizard-step" id="step2" style="display:none;">
+            <div class="card">
+                <div class="card-header"><h4 class="card-title mb-0">Select Audience</h4></div>
+                <div class="card-body">
+
+                    <!-- Targeting Mode Tabs -->
+                    <ul class="nav nav-tabs mb-3" id="targetingTabs">
+                        <li class="nav-item">
+                            <a class="nav-link active" data-toggle="tab" href="#tabAudience" data-mode="audience">
+                                <i class="material-icons mr-1" style="vertical-align:middle;font-size:18px;">group</i> Audience Segment
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" href="#tabPackage" data-mode="package">
+                                <i class="material-icons mr-1" style="vertical-align:middle;font-size:18px;">inventory_2</i> By Package
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" href="#tabCourse" data-mode="course">
+                                <i class="material-icons mr-1" style="vertical-align:middle;font-size:18px;">school</i> By Course
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" href="#tabSingle" data-mode="single">
+                                <i class="material-icons mr-1" style="vertical-align:middle;font-size:18px;">person</i> Single Email
+                            </a>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content">
+                        <!-- Audience Segment Tab -->
+                        <div class="tab-pane fade show active" id="tabAudience">
+                            <div class="form-group">
+                                <label class="form-label"><strong>Audience Segment</strong></label>
+                                <select id="AudienceId" class="form-control">
+                                    @foreach (var item in Model.Audiences)
+                                    {
+                                        <option value="@item.Value" @(item.Selected ? "selected" : "")>@item.Text</option>
+                                    }
+                                </select>
+                                <small class="form-text text-muted">Select a predefined audience segment. <a href="/Communication/Audiences">Manage Segments</a></small>
+                            </div>
+                        </div>
+
+                        <!-- By Package Tab -->
+                        <div class="tab-pane fade" id="tabPackage">
+                            <div class="form-group">
+                                <label class="form-label"><strong>Select Package</strong></label>
+                                <select id="PackageId" class="form-control">
+                                    @{
+                                        var selectedPackageValue = (string.Equals(Model.TargetingMode, "package", StringComparison.OrdinalIgnoreCase) && (!Model.PackageId.HasValue || Model.PackageId.Value == 0))
+                                            ? "0"
+                                            : (Model.PackageId.HasValue ? Model.PackageId.Value.ToString() : "");
+                                    }
+                                    @foreach (var item in Model.PackagesList)
+                                    {
+                                        <option value="@item.Value" @(item.Value == selectedPackageValue ? "selected" : "")>@item.Text</option>
+                                    }
+                                </select>
+                                <small class="form-text text-muted">Send to all students enrolled in the selected package. Choose "All Packages" to target everyone with any package.</small>
+                            </div>
+                        </div>
+
+                        <!-- By Course Tab -->
+                        <div class="tab-pane fade" id="tabCourse">
+                            <div class="form-group">
+                                <label class="form-label"><strong>Select Course</strong></label>
+                                <select id="CourseId" class="form-control">
+                                    @{
+                                        var selectedCourseValue = (string.Equals(Model.TargetingMode, "course", StringComparison.OrdinalIgnoreCase) && (!Model.CourseId.HasValue || Model.CourseId.Value == 0))
+                                            ? "0"
+                                            : (Model.CourseId.HasValue ? Model.CourseId.Value.ToString() : "");
+                                    }
+                                    @foreach (var item in Model.CoursesList)
+                                    {
+                                        <option value="@item.Value" @(item.Value == selectedCourseValue ? "selected" : "")>@item.Text</option>
+                                    }
+                                </select>
+                                <small class="form-text text-muted">Send to all students enrolled in the selected course. Choose "All Courses" to target everyone.</small>
+                            </div>
+                        </div>
+
+                        <!-- Single Email Tab -->
+                        <div class="tab-pane fade" id="tabSingle">
+                            <div class="form-group">
+                                <label class="form-label"><strong>Recipient Email Address</strong></label>
+                                <input type="email" id="SingleEmail" class="form-control" placeholder="recipient@example.com" value="@Model.SingleEmail" />
+                                <small class="form-text text-muted">Send this campaign to a single email address.</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="enrollmentStatusWrap" class="mt-3" style="display:none;">
+                        <div class="form-group mb-0">
+                            <label class="form-label"><strong>Subscription Status</strong></label>
+                            <select id="EnrollmentStatus" class="form-control" style="max-width:320px;">
+                                <option value="All" @(string.Equals(Model.EnrollmentStatus, "All", StringComparison.OrdinalIgnoreCase) || string.IsNullOrWhiteSpace(Model.EnrollmentStatus) ? "selected" : "")>All (Active + Expired)</option>
+                                <option value="Active" @(string.Equals(Model.EnrollmentStatus, "Active", StringComparison.OrdinalIgnoreCase) ? "selected" : "")>Active Only</option>
+                                <option value="Expired" @(string.Equals(Model.EnrollmentStatus, "Expired", StringComparison.OrdinalIgnoreCase) ? "selected" : "")>Expired Only</option>
+                            </select>
+                            <small class="form-text text-muted">Applies to package/course targeting. Use this to include all subscriptions, active only, or expired only.</small>
+                        </div>
+                    </div>
+
+                    <!-- Preview area (shared across all tabs) -->
+                    <div id="audiencePreview" class="mt-3" style="display:none;">
+                        <div class="alert alert-info">
+                            <i class="material-icons mr-1" style="vertical-align:middle;">people</i>
+                            <strong><span id="previewCount">0</span> recipient(s)</strong> will receive this campaign.
+                        </div>
+                        <div id="previewSample" class="table-responsive" style="display:none;">
+                            <table class="table table-sm table-bordered">
+                                <thead><tr><th>Name</th><th>Email</th><th>University</th><th>Exam Type</th></tr></thead>
+                                <tbody id="previewBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer d-flex justify-content-between">
+                    <button class="btn btn-outline-secondary btn-prev" data-prev="1"><i class="material-icons mr-1" style="vertical-align:middle;">arrow_back</i> Back</button>
+                    <button class="btn btn-primary btn-next" data-next="3">Next: Content <i class="material-icons ml-1" style="vertical-align:middle;">arrow_forward</i></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 3: Content -->
+        <div class="wizard-step" id="step3" style="display:none;">
+            <div class="card">
+                <div class="card-header d-flex align-items-center">
+                    <h4 class="card-title flex mb-0">Email Content</h4>
+                    <div>
+                        <label class="mr-2">Template:</label>
+                        <select id="TemplateId" class="form-control form-control-sm" style="width:auto;display:inline-block;">
+                            @foreach (var item in Model.Templates)
+                            {
+                                <option value="@item.Value" @(item.Selected ? "selected" : "")>@item.Text</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <small class="text-muted">
+                            <strong>Available Merge Tags:</strong>
+                            <code>{{FirstName}}</code> <code>{{Email}}</code> <code>{{University}}</code> <code>{{ExamType}}</code> <code>{{City}}</code>
+                            <code>{{UnsubscribeLink}}</code> <code>{{LoginLink}}</code> <code>{{Year}}</code> <code>{{Month}}</code> <code>{{Date}}</code>
+                        </small>
+                    </div>
+                    <textarea id="emailBody" class="tinymce">@Model.HtmlBody</textarea>
+                </div>
+                <div class="card-footer d-flex justify-content-between">
+                    <button class="btn btn-outline-secondary btn-prev" data-prev="2"><i class="material-icons mr-1" style="vertical-align:middle;">arrow_back</i> Back</button>
+                    <button class="btn btn-primary btn-next" data-next="4">Next: Review <i class="material-icons ml-1" style="vertical-align:middle;">arrow_forward</i></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 4: Review & Send -->
+        <div class="wizard-step" id="step4" style="display:none;">
+            <div class="card">
+                <div class="card-header"><h4 class="card-title mb-0">Review & Send</h4></div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>Campaign Summary</h5>
+                            <table class="table table-sm">
+                                <tr><td class="text-muted">Campaign Name:</td><td id="reviewName"></td></tr>
+                                <tr><td class="text-muted">Subject:</td><td id="reviewSubject"></td></tr>
+                                <tr><td class="text-muted">From:</td><td id="reviewFrom"></td></tr>
+                                <tr><td class="text-muted">Audience:</td><td id="reviewAudience"></td></tr>
+                                <tr><td class="text-muted">Recipients:</td><td id="reviewCount"></td></tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Preview</h5>
+                            <div style="border:1px solid #ddd;border-radius:4px;overflow:hidden;">
+                                <div class="d-flex justify-content-center py-2 bg-light">
+                                    <button class="btn btn-sm btn-outline-primary active mr-1" id="previewDesktop">Desktop</button>
+                                    <button class="btn btn-sm btn-outline-primary" id="previewMobile">Mobile</button>
+                                </div>
+                                <iframe id="previewFrame" style="width:100%;height:400px;border:none;"></iframe>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Send Test Email -->
+                    <div class="mt-4 p-3 bg-light rounded">
+                        <div class="d-flex align-items-center">
+                            <div class="flex">
+                                <strong>Send Test Email</strong>
+                                <p class="mb-0 text-muted small">Send a test to yourself before sending to all recipients</p>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <input type="email" id="testEmail" class="form-control form-control-sm mr-2" placeholder="your@email.com" style="width:250px;" />
+                                <button class="btn btn-sm btn-outline-info" id="btnSendTest">Send Test</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Schedule Option -->
+                    <div class="mt-4 p-3 bg-light rounded">
+                        <div class="form-check mb-2">
+                            <input type="checkbox" class="form-check-input" id="enableSchedule">
+                            <label class="form-check-label"><strong>Schedule for later</strong></label>
+                        </div>
+                        <div id="scheduleOptions" style="display:none;" class="ml-4">
+                            <input type="datetime-local" id="ScheduledAt" class="form-control" style="max-width:300px;" />
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer d-flex justify-content-between">
+                    <button class="btn btn-outline-secondary btn-prev" data-prev="3"><i class="material-icons mr-1" style="vertical-align:middle;">arrow_back</i> Back</button>
+                    <div>
+                        <button class="btn btn-outline-primary mr-2" id="btnSaveDraft"><i class="material-icons mr-1" style="vertical-align:middle;font-size:18px;">save</i> Save Draft</button>
+                        <button class="btn btn-success btn-lg" id="btnSendCampaign"><i class="material-icons mr-1" style="vertical-align:middle;">send</i> Send Campaign</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <input type="hidden" id="CampaignId" value="@Model.Id" />
+        @Html.AntiForgeryToken()
+    </div>
+</div>
+
+<style>
+    .step-indicator { text-align: center; flex: 0 0 auto; cursor: pointer; }
+    .step-indicator .step-number { display: inline-flex; width: 36px; height: 36px; border-radius: 50%; background: #e9ecef; color: #666; align-items: center; justify-content: center; font-weight: 600; font-size: 16px; }
+    .step-indicator.active .step-number { background: #1a73e8; color: #fff; }
+    .step-indicator.completed .step-number { background: #28a745; color: #fff; }
+    .step-indicator .step-label { display: block; font-size: 12px; margin-top: 4px; color: #666; }
+    .step-indicator.active .step-label { color: #1a73e8; font-weight: 600; }
+    .step-line { flex: 1; height: 2px; background: #e9ecef; margin: 0 12px; align-self: center; }
+</style>
+
+@section scripts {
+    <script src="~/Scripts/tinymce/tinymce.js"></script>
+    <script>
+        var currentStep = 1;
+        var campaignId = parseInt($("#CampaignId").val()) || 0;
+        var targetingMode = '@(string.IsNullOrWhiteSpace(Model.TargetingMode) ? "audience" : Model.TargetingMode.Trim().ToLowerInvariant())';
+
+        function getEnrollmentStatus() {
+            var status = ($("#EnrollmentStatus").val() || "All").toLowerCase();
+            if (status === "active") return "Active";
+            if (status === "expired") return "Expired";
+            return "All";
+        }
+
+        function toggleEnrollmentStatusVisibility() {
+            var shouldShow = targetingMode === 'package' || targetingMode === 'course';
+            $("#enrollmentStatusWrap").toggle(shouldShow);
+        }
+
+        $(document).ready(function () {
+            initTinyMCE();
+
+            // Targeting mode tab change
+            $('#targetingTabs a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+                targetingMode = $(e.target).data('mode');
+                toggleEnrollmentStatusVisibility();
+                loadTargetingPreview();
+            });
+
+            // Audience preview on change
+            $("#AudienceId").on("change", loadTargetingPreview);
+
+            // Package/Course dropdown change
+            $("#PackageId").on("change", loadTargetingPreview);
+            $("#CourseId").on("change", loadTargetingPreview);
+            $("#EnrollmentStatus").on("change", function () {
+                if (targetingMode === 'package' || targetingMode === 'course') {
+                    loadTargetingPreview();
+                }
+            });
+
+            // Single email input change (debounced)
+            var singleTimer;
+            $("#SingleEmail").on("input", function () {
+                clearTimeout(singleTimer);
+                singleTimer = setTimeout(function () {
+                    loadTargetingPreview();
+                }, 300);
+            });
+
+            // Template change
+            $("#TemplateId").on("change", function () {
+                var tmplId = $(this).val();
+                if (!tmplId) return;
+                $.getJSON('/Communication/GetTemplateHtml?id=' + tmplId, function (res) {
+                    if (res.html && tinymce.get('emailBody')) {
+                        tinymce.get('emailBody').setContent(res.html);
+                    }
+                    if (res.subject && !$("#Subject").val()) {
+                        $("#Subject").val(res.subject);
+                    }
+                });
+            });
+
+            // Schedule toggle
+            $("#enableSchedule").on("change", function () {
+                $("#scheduleOptions").toggle(this.checked);
+                if (this.checked) {
+                    $("#btnSendCampaign").text(" Schedule Campaign").prepend('<i class="material-icons mr-1" style="vertical-align:middle;">schedule</i>');
+                } else {
+                    $("#btnSendCampaign").text(" Send Campaign").prepend('<i class="material-icons mr-1" style="vertical-align:middle;">send</i>');
+                }
+            });
+
+            // Preview toggles
+            $("#previewDesktop").on("click", function () {
+                $("#previewFrame").css("width", "100%");
+                $(this).addClass("active"); $("#previewMobile").removeClass("active");
+            });
+            $("#previewMobile").on("click", function () {
+                $("#previewFrame").css("width", "320px");
+                $(this).addClass("active"); $("#previewDesktop").removeClass("active");
+            });
+
+            // Respect saved mode while editing.
+            var initialTab = $('#targetingTabs a[data-mode="' + targetingMode + '"]');
+            if (initialTab.length) initialTab.tab('show');
+            else {
+                targetingMode = 'audience';
+                $('#targetingTabs a[data-mode="audience"]').tab('show');
+            }
+            toggleEnrollmentStatusVisibility();
+            loadTargetingPreview();
+        });
+
+        function initTinyMCE() {
+            tinymce.init({
+                selector: '#emailBody',
+                statusbar: true,
+                plugins: 'code,wordcount,link,image,lists,table,fullscreen',
+                toolbar: "undo redo | styleselect | forecolor backcolor | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist | outdent indent | link image table | code fullscreen | mergetags",
+                toolbar_mode: 'sliding',
+                height: 500,
+                content_style: 'body { font-family: Arial, sans-serif; font-size: 14px; max-width: 600px; margin: 0 auto; }',
+                setup: function (editor) {
+                    // Add merge tags dropdown
+                    editor.ui.registry.addMenuButton('mergetags', {
+                        text: 'Merge Tags',
+                        fetch: function (callback) {
+                            var items = [
+                                { type: 'menuitem', text: 'First Name', onAction: function () { editor.insertContent('{{FirstName}}'); } },
+                                { type: 'menuitem', text: 'Email', onAction: function () { editor.insertContent('{{Email}}'); } },
+                                { type: 'menuitem', text: 'University', onAction: function () { editor.insertContent('{{University}}'); } },
+                                { type: 'menuitem', text: 'Exam Type', onAction: function () { editor.insertContent('{{ExamType}}'); } },
+                                { type: 'menuitem', text: 'City', onAction: function () { editor.insertContent('{{City}}'); } },
+                                { type: 'menuitem', text: 'Login Link', onAction: function () { editor.insertContent('{{LoginLink}}'); } },
+                                { type: 'menuitem', text: 'Unsubscribe Link', onAction: function () { editor.insertContent('{{UnsubscribeLink}}'); } },
+                                { type: 'menuitem', text: 'Current Year', onAction: function () { editor.insertContent('{{Year}}'); } },
+                                { type: 'menuitem', text: 'Current Month', onAction: function () { editor.insertContent('{{Month}}'); } },
+                            ];
+                            callback(items);
+                        }
+                    });
+                }
+            });
+        }
+
+        // Navigation
+        $(document).on("click", ".btn-next", function () {
+            var next = parseInt($(this).data("next"));
+            if (next === 2 && !validateStep1()) return;
+            if (next === 3 && !validateStep2()) return;
+            if (next === 4) populateReview();
+            goToStep(next);
+        });
+        $(document).on("click", ".btn-prev", function () {
+            goToStep(parseInt($(this).data("prev")));
+        });
+        $(".step-indicator").on("click", function () {
+            var step = parseInt($(this).data("step"));
+            if (step <= currentStep) goToStep(step);
+        });
+
+        function goToStep(step) {
+            $(".wizard-step").hide();
+            $("#step" + step).show();
+            $(".step-indicator").removeClass("active completed");
+            for (var i = 1; i < step; i++) {
+                $(".step-indicator[data-step='" + i + "']").addClass("completed");
+            }
+            $(".step-indicator[data-step='" + step + "']").addClass("active");
+            currentStep = step;
+            window.scrollTo(0, 0);
+        }
+
+        function validateStep1() {
+            if (!$("#CampaignName").val()) { Swal.fire('Required', 'Campaign name is required', 'warning'); return false; }
+            if (!$("#Subject").val()) { Swal.fire('Required', 'Subject line is required', 'warning'); return false; }
+            if (!$("#FromAccountId").val()) { Swal.fire('Required', 'Please select a sender account', 'warning'); return false; }
+            return true;
+        }
+
+        function validateStep2() {
+            if (targetingMode === 'audience' && !$("#AudienceId").val()) {
+                Swal.fire('Required', 'Please select an audience segment', 'warning'); return false;
+            }
+            if (targetingMode === 'package' && $("#PackageId").val() === '') {
+                Swal.fire('Required', 'Please select a package', 'warning'); return false;
+            }
+            if (targetingMode === 'course' && $("#CourseId").val() === '') {
+                Swal.fire('Required', 'Please select a course', 'warning'); return false;
+            }
+            if (targetingMode === 'single' && !$("#SingleEmail").val()) {
+                Swal.fire('Required', 'Please enter a recipient email address', 'warning'); return false;
+            }
+            return true;
+        }
+
+        function loadTargetingPreview() {
+            if (targetingMode === 'audience') {
+                var id = $("#AudienceId").val();
+                if (!id) { $("#audiencePreview").hide(); return; }
+                $.getJSON('/Communication/PreviewAudienceById?id=' + id, function (data) {
+                    showPreview(data);
+                }).fail(function () {
+                    showPreview({ TotalCount: 0, SampleRecipients: [] });
+                });
+            } else if (targetingMode === 'package') {
+                var pkgId = $("#PackageId").val();
+                if (pkgId === '') { $("#audiencePreview").hide(); return; }
+                var pkgParam = pkgId === '0' ? '' : pkgId;
+                var pkgUrl = '/Communication/PreviewByPackage?enrollmentStatus=' + encodeURIComponent(getEnrollmentStatus());
+                if (pkgParam) pkgUrl += '&packageId=' + encodeURIComponent(pkgParam);
+                $.getJSON(pkgUrl, function (data) {
+                    showPreview(data);
+                }).fail(function () {
+                    showPreview({ TotalCount: 0, SampleRecipients: [] });
+                });
+            } else if (targetingMode === 'course') {
+                var crsId = $("#CourseId").val();
+                if (crsId === '') { $("#audiencePreview").hide(); return; }
+                var crsParam = crsId === '0' ? '' : crsId;
+                var crsUrl = '/Communication/PreviewByCourse?enrollmentStatus=' + encodeURIComponent(getEnrollmentStatus());
+                if (crsParam) crsUrl += '&courseId=' + encodeURIComponent(crsParam);
+                $.getJSON(crsUrl, function (data) {
+                    showPreview(data);
+                }).fail(function () {
+                    showPreview({ TotalCount: 0, SampleRecipients: [] });
+                });
+            } else if (targetingMode === 'single') {
+                var email = $("#SingleEmail").val();
+                if (!email) { $("#audiencePreview").hide(); return; }
+                $("#previewCount").text("1");
+                var html = '<tr><td>-</td><td>' + $('<span/>').text(email).html() + '</td><td>-</td><td>-</td></tr>';
+                $("#previewBody").html(html);
+                $("#previewSample").show();
+                $("#audiencePreview").show();
+            }
+        }
+
+        function showPreview(data) {
+            $("#previewCount").text(data.TotalCount ? data.TotalCount.toLocaleString() : '0');
+            var html = '';
+            if (data.SampleRecipients) {
+                $.each(data.SampleRecipients, function (i, r) {
+                    html += '<tr><td>' + (r.Name || '-') + '</td><td>' + r.Email + '</td><td>' + (r.University || '-') + '</td><td>' + (r.ExamType || '-') + '</td></tr>';
+                });
+            }
+            $("#previewBody").html(html);
+            $("#previewSample").toggle(html.length > 0);
+            $("#audiencePreview").show();
+        }
+
+        function populateReview() {
+            $("#reviewName").text($("#CampaignName").val());
+            $("#reviewSubject").text($("#Subject").val());
+            $("#reviewFrom").text($("#FromAccountId option:selected").text());
+
+            // Show audience info based on targeting mode
+            var audienceText = '';
+            if (targetingMode === 'audience') {
+                audienceText = $("#AudienceId option:selected").text() || 'No audience selected';
+            } else if (targetingMode === 'package') {
+                audienceText = 'Package: ' + ($("#PackageId option:selected").text() || 'None') + ' (Status: ' + getEnrollmentStatus() + ')';
+            } else if (targetingMode === 'course') {
+                audienceText = 'Course: ' + ($("#CourseId option:selected").text() || 'None') + ' (Status: ' + getEnrollmentStatus() + ')';
+            } else if (targetingMode === 'single') {
+                audienceText = 'Single Email: ' + ($("#SingleEmail").val() || 'None');
+            }
+            $("#reviewAudience").text(audienceText);
+            $("#reviewCount").text($("#previewCount").text() || '0');
+
+            // Update preview iframe
+            var content = tinymce.get('emailBody') ? tinymce.get('emailBody').getContent() : '';
+            var frame = document.getElementById('previewFrame');
+            frame.contentDocument.open();
+            frame.contentDocument.write(content);
+            frame.contentDocument.close();
+
+            // Test email is always enabled - uses QuickTestEmail if campaign not saved yet
+        }
+
+        // Save Draft
+        $("#btnSaveDraft").on("click", function () {
+            saveCampaign(false);
+        });
+
+        // Send Campaign
+        $("#btnSendCampaign").on("click", function () {
+            var isSchedule = $("#enableSchedule").is(":checked");
+            if (isSchedule && !$("#ScheduledAt").val()) {
+                Swal.fire('Required', 'Please select a schedule date/time', 'warning');
+                return;
+            }
+            var msg = isSchedule
+                ? 'Campaign will be scheduled for ' + $("#ScheduledAt").val()
+                : 'This will send the campaign to all recipients immediately.';
+
+            Swal.fire({
+                title: isSchedule ? 'Schedule Campaign?' : 'Send Campaign?',
+                text: msg,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#28a745',
+                confirmButtonText: isSchedule ? 'Schedule' : 'Send Now'
+            }).then(function (result) {
+                if (result.isConfirmed) {
+                    saveCampaign(true);
+                }
+            });
+        });
+
+        // Send Test
+        $("#btnSendTest").on("click", function () {
+            var email = $("#testEmail").val();
+            if (!email) { Swal.fire('Required', 'Enter a test email address', 'warning'); return; }
+            var btn = $(this);
+            btn.prop("disabled", true).text("Sending...");
+
+            if (campaignId > 0) {
+                // Campaign already saved - use campaign-based send
+                $.post('/Communication/SendTest', { id: campaignId, email: email }, function (res) {
+                    if (res.success) Swal.fire('Sent!', 'Test email sent to ' + email, 'success');
+                    else Swal.fire('Error', res.message || 'Failed to send test email', 'error');
+                    btn.prop("disabled", false).text("Send Test");
+                }).fail(function (xhr) {
+                    Swal.fire('Error', xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : 'Network error. Please try again.', 'error');
+                    btn.prop("disabled", false).text("Send Test");
+                });
+            } else {
+                // Campaign not saved yet - use quick test with current form data
+                var senderId = parseInt($("#FromAccountId").val()) || 0;
+                var subject = $("#Subject").val() || 'Test Email';
+                var htmlBody = tinymce.get('emailBody') ? tinymce.get('emailBody').getContent() : '';
+                $.post('/Communication/QuickTestEmail', { senderId: senderId, email: email, subject: subject, htmlBody: htmlBody }, function (res) {
+                    if (res.success) Swal.fire('Sent!', 'Test email sent to ' + email, 'success');
+                    else Swal.fire('Error', res.message || 'Failed to send test email', 'error');
+                    btn.prop("disabled", false).text("Send Test");
+                }).fail(function (xhr) {
+                    Swal.fire('Error', xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : 'Network error. Please try again.', 'error');
+                    btn.prop("disabled", false).text("Send Test");
+                });
+            }
+        });
+
+        function saveCampaign(sendAfterSave) {
+            var data = {
+                Id: campaignId,
+                CampaignName: $("#CampaignName").val(),
+                Subject: $("#Subject").val(),
+                PreheaderText: $("#PreheaderText").val(),
+                FromAccountId: parseInt($("#FromAccountId").val()),
+                TemplateId: $("#TemplateId").val() ? parseInt($("#TemplateId").val()) : null,
+                HtmlBody: tinymce.get('emailBody') ? tinymce.get('emailBody').getContent() : '',
+                TargetingMode: targetingMode,
+                AudienceId: targetingMode === 'audience' && $("#AudienceId").val() ? parseInt($("#AudienceId").val()) : null,
+                PackageId: targetingMode === 'package' && $("#PackageId").val() !== '' ? (parseInt($("#PackageId").val()) || null) : null,
+                CourseId: targetingMode === 'course' && $("#CourseId").val() !== '' ? (parseInt($("#CourseId").val()) || null) : null,
+                EnrollmentStatus: (targetingMode === 'package' || targetingMode === 'course') ? getEnrollmentStatus() : 'All',
+                SingleEmail: targetingMode === 'single' ? $("#SingleEmail").val() : null,
+                ScheduledAt: $("#enableSchedule").is(":checked") ? $("#ScheduledAt").val() : null,
+                Tags: $("#Tags").val(),
+                __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+            };
+
+            $.ajax({
+                url: '/Communication/Create',
+                method: 'POST',
+                data: data,
+                success: function (res) {
+                    if (res.success) {
+                        campaignId = res.id;
+                        $("#CampaignId").val(campaignId);
+                        $("#btnSendTest").prop("disabled", false);
+
+                        if (sendAfterSave) {
+                            if (data.ScheduledAt) {
+                                Swal.fire('Scheduled!', 'Campaign has been scheduled.', 'success')
+                                    .then(function () { window.location.href = '/Communication/Index'; });
+                            } else {
+                                Swal.fire({ title: 'Sending...', text: 'Campaign is being queued for delivery. This may take a moment.', allowOutsideClick: false, didOpen: function () { Swal.showLoading(); } });
+                                $("#btnSendCampaign").prop("disabled", true).html('<i class="material-icons mr-1 spin" style="vertical-align:middle;">sync</i> Sending...');
+                                $.post('/Communication/SendNow', { id: campaignId })
+                                    .done(function (sendRes) {
+                                        if (sendRes.success) {
+                                            Swal.fire('Sending!', 'Campaign is being sent to all recipients in the background.', 'success')
+                                                .then(function () { window.location.href = '/Communication/Index'; });
+                                        } else {
+                                            Swal.fire('Error', 'Failed to send campaign. Please try from the dashboard.', 'error');
+                                            $("#btnSendCampaign").prop("disabled", false).html('<i class="material-icons mr-1" style="vertical-align:middle;">send</i> Send Campaign');
+                                        }
+                                    })
+                                    .fail(function () {
+                                        Swal.fire('Error', 'Server error while sending. Campaign was saved as draft.', 'error');
+                                        $("#btnSendCampaign").prop("disabled", false).html('<i class="material-icons mr-1" style="vertical-align:middle;">send</i> Send Campaign');
+                                    });
+                            }
+                        } else {
+                            Swal.fire({ icon: 'success', title: 'Draft Saved', timer: 1500, showConfirmButton: false });
+                        }
+                    } else {
+                        Swal.fire('Error', res.message || 'Failed to save campaign.', 'error');
+                    }
+                },
+                error: function () {
+                    Swal.fire('Error', 'Server error. Please try again.', 'error');
+                }
+            });
+        }
+    </script>
+}

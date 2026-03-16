@@ -1,0 +1,364 @@
+@model First_Aid_Made_Easy.Models.AdminPayoutsVM
+@{
+    ViewBag.Title = "Manage Payouts";
+    Layout = "~/Views/Shared/_LayoutAmbassador.cshtml";
+}
+
+<div class="container-fluid py-4">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h4 class="mb-1">Payout Requests</h4>
+            <p class="text-muted mb-0">Review and process ambassador payout requests</p>
+        </div>
+        <a href="@Url.Action("Index")" class="btn btn-outline-secondary">
+            <i class="material-icons align-middle mr-1">arrow_back</i>
+            Back to Dashboard
+        </a>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            @TempData["Success"]
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+        </div>
+    }
+
+    <!-- Summary Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card border-left-warning h-100">
+                <div class="card-body">
+                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Pending</div>
+                    <div class="h5 mb-0 font-weight-bold">@Model.PendingCount</div>
+                    <small class="text-muted">@Model.Currency @Model.PendingAmount.ToString("N0")</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-left-info h-100">
+                <div class="card-body">
+                    <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Processing</div>
+                    <div class="h5 mb-0 font-weight-bold">@Model.ProcessingCount</div>
+                    <small class="text-muted">@Model.Currency @Model.ProcessingAmount.ToString("N0")</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-left-success h-100">
+                <div class="card-body">
+                    <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Paid (This Month)</div>
+                    <div class="h5 mb-0 font-weight-bold">@Model.PaidCount</div>
+                    <small class="text-muted">@Model.Currency @Model.PaidAmount.ToString("N0")</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-left-danger h-100">
+                <div class="card-body">
+                    <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Rejected</div>
+                    <div class="h5 mb-0 font-weight-bold">@Model.RejectedCount</div>
+                    <small class="text-muted">@Model.Currency @Model.RejectedAmount.ToString("N0")</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="card mb-4">
+        <div class="card-body py-2">
+            <form action="@Url.Action("Payouts")" method="get" class="row align-items-center">
+                <div class="col-md-3">
+                    <select name="status" class="form-control">
+                        <option value="">All Statuses</option>
+                        <option value="Requested" @(Model.StatusFilter == "Requested" ? "selected" : "")>Pending</option>
+                        <option value="Processing" @(Model.StatusFilter == "Processing" ? "selected" : "")>Processing</option>
+                        <option value="Paid" @(Model.StatusFilter == "Paid" ? "selected" : "")>Paid</option>
+                        <option value="Rejected" @(Model.StatusFilter == "Rejected" ? "selected" : "")>Rejected</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <input type="text" name="search" class="form-control" placeholder="Search ambassador..." value="@Model.SearchTerm">
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary btn-block">Filter</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Payout Requests Table -->
+    <div class="card">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">
+                <i class="material-icons align-middle mr-1">payments</i>
+                Payout Requests
+            </h6>
+        </div>
+        <div class="card-body p-0">
+            @if (Model.Requests != null && Model.Requests.Count > 0)
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th>Request ID</th>
+                                <th>Ambassador</th>
+                                <th>Method</th>
+                                <th class="text-right">Amount</th>
+                                <th>Requested</th>
+                                <th class="text-center">Status</th>
+                                <th class="text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var request in Model.Requests)
+                            {
+                                <tr>
+                                    <td>
+                                        <strong>#@request.Id</strong>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar-xs bg-primary text-white mr-2">@request.AmbassadorInitials</div>
+                                            <div>
+                                                <strong>@request.AmbassadorName</strong>
+                                                <br><small class="text-muted">@request.AmbassadorEmail</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <i class="material-icons align-middle mr-1 text-muted" style="font-size: 1rem;">@(request.PayoutMethod != null ? request.PayoutMethod.MethodIcon : "payment")</i>
+                                        @(request.PayoutMethod != null ? request.PayoutMethod.MethodTypeDisplay : "Unknown")
+                                        <br>
+                                        <small class="text-muted font-monospace">@(request.PayoutMethod != null ? request.PayoutMethod.MaskedAccountNumber : "Not available")</small>
+                                    </td>
+                                    <td class="text-right">
+                                        <strong class="text-success">@request.Currency @request.Amount.ToString("N0")</strong>
+                                    </td>
+                                    <td>
+                                        @request.RequestedAt.ToString("MMM dd, yyyy")
+                                        <br><small class="text-muted">@request.RequestedAt.ToString("hh:mm tt")</small>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge @request.StatusBadgeClass">@request.Status</span>
+                                        @if (!string.IsNullOrEmpty(request.TransactionRef))
+                                        {
+                                            <br><small class="text-muted">Ref: @request.TransactionRef</small>
+                                        }
+                                    </td>
+                                    <td class="text-right">
+                                        @if (request.Status == "Requested")
+                                        {
+                                            <button class="btn btn-sm btn-success mr-1" onclick="processRequest(@request.Id)" title="Mark as Processing">
+                                                <i class="material-icons align-middle" style="font-size: 1rem;">play_arrow</i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-danger" onclick="rejectRequest(@request.Id)" title="Reject">
+                                                <i class="material-icons align-middle" style="font-size: 1rem;">close</i>
+                                            </button>
+                                        }
+                                        @if (request.Status == "Processing")
+                                        {
+                                            <button class="btn btn-sm btn-success" onclick="markAsPaid(@request.Id)" title="Mark as Paid">
+                                                <i class="material-icons align-middle" style="font-size: 1rem;">check</i>
+                                                Paid
+                                            </button>
+                                        }
+                                        @if (request.Status == "Paid" || request.Status == "Rejected")
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                // Pagination
+                if (Model.TotalPages > 1)
+                {
+                    <div class="card-footer">
+                        <nav>
+                            <ul class="pagination justify-content-center mb-0">
+                                @if (Model.Page > 1)
+                                {
+                                    <li class="page-item">
+                                        <a class="page-link" href="@Url.Action("Payouts", new { page = Model.Page - 1, status = Model.StatusFilter, search = Model.SearchTerm })">
+                                            <i class="material-icons align-middle">chevron_left</i>
+                                        </a>
+                                    </li>
+                                }
+                                @for (int i = Math.Max(1, Model.Page - 2); i <= Math.Min(Model.TotalPages, Model.Page + 2); i++)
+                                {
+                                    <li class="page-item @(i == Model.Page ? "active" : "")">
+                                        <a class="page-link" href="@Url.Action("Payouts", new { page = i, status = Model.StatusFilter, search = Model.SearchTerm })">@i</a>
+                                    </li>
+                                }
+                                @if (Model.Page < Model.TotalPages)
+                                {
+                                    <li class="page-item">
+                                        <a class="page-link" href="@Url.Action("Payouts", new { page = Model.Page + 1, status = Model.StatusFilter, search = Model.SearchTerm })">
+                                            <i class="material-icons align-middle">chevron_right</i>
+                                        </a>
+                                    </li>
+                                }
+                            </ul>
+                        </nav>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <i class="material-icons text-muted" style="font-size: 4rem;">payments</i>
+                    <h5 class="mt-3">No payout requests found</h5>
+                    <p class="text-muted">Requests matching your criteria will appear here.</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Mark as Paid Modal -->
+<div class="modal fade" id="paidModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Mark as Paid</h5>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <form id="paidForm" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="Action" value="markpaid">
+                <input type="hidden" name="RequestId" id="paidRequestId">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="font-weight-medium">Transaction Reference</label>
+                        <input type="text" name="TransactionRef" class="form-control" required 
+                               placeholder="Bank ref, mobile money code, etc.">
+                    </div>
+                    <div class="form-group">
+                        <label class="font-weight-medium">Notes (Optional)</label>
+                        <textarea name="AdminNotes" class="form-control" rows="2" placeholder="Additional notes..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success">Confirm Payment</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Reject Modal -->
+<div class="modal fade" id="rejectModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Reject Payout Request</h5>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <form id="rejectPayoutForm" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="Action" value="reject">
+                <input type="hidden" name="RequestId" id="rejectRequestId">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="font-weight-medium">Reason for rejection</label>
+                        <textarea name="RejectionReason" class="form-control" rows="3" required 
+                                  placeholder="Please provide a reason..."></textarea>
+                    </div>
+                    <div class="alert alert-warning small mb-0">
+                        <i class="material-icons align-middle mr-1">warning</i>
+                        The balance will be returned to the ambassador's account.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger">Reject Request</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function processRequest(id) {
+            if (!confirm('Mark this request as Processing?')) return;
+            
+            $.post('@Url.Action("ProcessPayout")', {
+                Action: 'approve',
+                RequestId: id,
+                __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+            }, function (response) {
+                if (response.success) {
+                    toastr.success('Request marked as processing.');
+                    location.reload();
+                } else {
+                    toastr.error(response.message || 'Failed to update.');
+                }
+            });
+        }
+
+        function markAsPaid(id) {
+            $('#paidRequestId').val(id);
+            $('#paidModal').modal('show');
+        }
+
+        function rejectRequest(id) {
+            $('#rejectRequestId').val(id);
+            $('#rejectModal').modal('show');
+        }
+
+        // AJAX submit for Mark as Paid form
+        $('#paidForm').on('submit', function(e) {
+            e.preventDefault();
+            $.post('@Url.Action("ProcessPayout")', $(this).serialize(), function(response) {
+                if (response.success) {
+                    toastr.success('Payout marked as paid.');
+                    location.reload();
+                } else {
+                    toastr.error(response.message || 'Failed to process.');
+                }
+            }).fail(function() {
+                toastr.error('An error occurred.');
+            });
+        });
+
+        // AJAX submit for Reject Payout form
+        $('#rejectPayoutForm').on('submit', function(e) {
+            e.preventDefault();
+            $.post('@Url.Action("ProcessPayout")', $(this).serialize(), function(response) {
+                if (response.success) {
+                    toastr.success('Payout request rejected.');
+                    location.reload();
+                } else {
+                    toastr.error(response.message || 'Failed to reject.');
+                }
+            }).fail(function() {
+                toastr.error('An error occurred.');
+            });
+        });
+    </script>
+}
+
+<style>
+    .border-left-warning { border-left: 4px solid #f6c23e !important; }
+    .border-left-info { border-left: 4px solid #36b9cc !important; }
+    .border-left-success { border-left: 4px solid #1cc88a !important; }
+    .border-left-danger { border-left: 4px solid #e74a3b !important; }
+    .avatar-xs {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+        font-weight: bold;
+    }
+</style>

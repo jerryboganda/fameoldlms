@@ -1,0 +1,225 @@
+﻿@model List<First_Aid_Made_Easy.Models.MeetingVM>
+@using First_Aid_Made_Easy.BLL;
+@{
+    ViewBag.Title = "LIVE CLASSES";
+    Layout = "~/Views/Shared/_LayoutTeacher.cshtml";
+    int Sr = 0;
+}
+
+<div class="pt-32pt">
+    <div class="container-fluid page__container d-flex flex-column flex-md-row align-items-center text-center text-sm-left">
+        <div class="flex d-flex flex-column flex-sm-row align-items-center">
+            <div class="mb-24pt mb-sm-0 mr-sm-24pt">
+                <h2 class="mb-0">LIVE CLASS List</h2>
+                <ol class="breadcrumb p-0 m-0">
+                    <li class="breadcrumb-item"><a href="/Teacher/Index">Home</a></li>
+                    <li class="breadcrumb-item active">
+                        LIVE CLASS List
+                    </li>
+                </ol>
+            </div>
+        </div>
+        <div class="ml-lg-16pt">
+            <a href="/Zoom/CreateMeeting" class="btn btn-light"><i class="fa fa-plus Font20"></i>Create New </a>
+        </div>
+    </div>
+
+
+    <div class="page-section border-bottom-2">
+        <div style="margin: 0;max-width: 100%" class="container-fluid page__container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="page-separator">
+                        <div class="page-separator__text">Basic information</div>
+                    </div>
+                    <table id="DTable" class="table table-bordered">
+                        <thead>
+                            <tr style="background-color: #364e9c">
+                                <th>Sr.</th>
+                                <th>Topic</th>
+                                <th>Status</th>
+                                <th>Start Time</th>
+                                <th style="min-width:80px">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="meetbody">
+                            @foreach (var v in Model)
+                            {
+                                Sr++;
+                                <tr>
+                                    <td>@Sr</td>
+                                    <td>@v.Topic</td>
+                                    <td>
+                                        @if (v.Status == MeetStatus.UpComing.ToString())
+                                        {<span class="badge badge-primary ">@v.Status </span>}
+                                    else if (v.Status == MeetStatus.Completed.ToString())
+                                    { <span class="badge badge-warning">@v.Status </span>}
+                                else
+                                { <span class="badge badge-success">@v.Status </span>}
+                                    </td>
+                                    <td>@string.Format("{0:dd/MM/yyyy hh:mm tt}", v.StartTime)</td>
+                                    <td>
+                                        @if (v.Status == MeetStatus.Completed.ToString())
+                                        {
+                                            <a href="javascript:;" id="btnRowDelete" data-name="Live Class" data-url="/Zoom/Delete/@v.MeetingNo" class="text-danger"><i class="fa fa-trash Font20"></i></a>
+                                            <a href="/Zoom/StartMeeting/@v.MeetingNo" target="_blank" id="btnJoin" data-id="" class="btn btn-warning"> Start</a>
+                                            <a href="javascript:;" id="btnAddVideo" data-meetid="@v.ID" data-videoid="@v.VideoID" vlaue="" class="btn btn-dark"><i class="fa fa-plus"></i> &nbsp; Video</a>
+                                        }
+                                        else
+                                        {
+                                            <a href="javascript:;" id="btnRowDelete" data-name="Live Class" data-url="/Zoom/Delete/@v.MeetingNo" class="text-danger"><i class="fa fa-trash Font20"></i></a>
+                                            <a href="/Zoom/CreateMeeting/@v.MeetingNo" vlaue="" class="text-warning"><i class="fa fa-edit Font20"></i></a>
+                                            <a href="/Zoom/StartMeeting/@v.MeetingNo" target="_blank" id="btnJoin" data-id="" class="btn btn-primary">Start</a>
+                                        }
+
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="w3-container">
+    <div id="videoModal" class="w3-modal">
+        <div class="w3-modal-content w3-card-4 w3-animate-zoom" style="max-width:600px">
+
+            <div class="w3-center">
+                <span onclick="document.getElementById('videoModal').style.display='none'" class="w3-button w3-xlarge w3-hover-red w3-display-topright" title="Close Modal">&times;</span>
+            </div>
+
+
+            <div id="videoForm" class="w3-container">
+                <div class="w3-section">
+                    <div class="form-row">
+                        @Html.Hidden("MeetID")
+                        @Html.Hidden("Video_Id")
+                        <div class="col-12 col-md-12 mb-3">
+                            <label class="form-label">Title</label>
+                            @Html.TextBox("Video_Name", "", new { @class = "form-control", @placeholder = "Short Tile", })
+                        </div>
+                        <div class="col-12 col-md-12 mb-3">
+                            <label class="form-label">Discriptiopn</label>
+                            @Html.TextBox("Video_ShortDescription", "", new { @class = "form-control", @placeholder = "Short Description", })
+                        </div>
+                        <div class="col-12 col-md-12 mb-3">
+                            <label class="form-label">Tags</label>
+                            @Html.TextBox("Video_Tags", "", new { @class = "form-control form-control-lg tags", @placeholder = "Tags for Search", @required = "required" })
+                            <small class="form-text text-muted">Separate keywords with a comma, space bar, or enter key</small>
+                        </div>
+                        <div class="col-12 col-md-12 mb-3">
+                            <label class="form-label">Select Video</label>
+                            @Html.TextBox("File", "", new { @class = "form-control", @type = "file", @accept = "video/mkv,video/mp4,video/x-m4v,video/*" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="w3-container w3-border-top w3-padding-16 w3-light-grey">
+                <button onclick="document.getElementById('videoModal').style.display='none'" type="button" class="w3-button w3-red">Cancel</button>
+                <button onclick="Save()" id="btnSave" class="btn btn-outline-success">Save</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+@section scripts {
+    @Scripts.Render("~/Scripts/List")
+
+    @if (TempData["Success"] != null)
+    {
+        <script>
+            Swal.fire({
+                position: 'top-end',
+                icon: 'success',
+                title: 'Data Saved Successfully',
+                showConfirmButton: false,
+                timer: 1500
+            })
+        </script>
+    }
+
+    <script>
+        $(document).on("click", "#btnAddVideo", function () {
+            $("#videoModal").show();
+            var MeetID = $(this).data("meetid");
+            var Video_Id = $(this).data("videoid");
+            $("#MeetID").val(MeetID);
+            if (Video_Id > 0) {
+                $.ajax({
+                    url: "/Zoom/GetVideo/" + Video_Id,
+                    success: function (form) {
+                        $("#videoForm").html(form);
+                        $('.tags').tagsinput({
+                            trimValue: true,
+                            confirmKeys: [13, 44, 32],
+                            focusClass: 'my-focus-class'
+                        });
+                    }
+                })
+            }
+        })
+    </script>
+    <script>
+
+        function Save() {
+            $("#videoModal").hide();
+            $(".divLoader").show();
+            var data = {
+                MeetID: $("#MeetID").val(),
+                Video_Name: $("#Video_Name").val(),
+                Video_ShortDescription: $("#Video_ShortDescription").val(),
+                Video_Tags: $("#Video_Tags").val(),
+                Video_Id: $("#Video_Id").val(),
+            }
+
+            $.ajax({
+                url: '/Zoom/SaveVideo',
+                method: 'POST',
+                data: JSON.stringify(data),
+                dataType: 'Json',
+                contentType: 'application/json',
+                success: function (response) {
+                    if (response.Video_Id > 0) {
+                        UploadFiles(response.Video_Id);
+                    }
+                },
+                error: function (err) {
+                    $(".divLoader").hide();
+                    $("#videoModal").show();
+                }
+
+            });
+        }
+
+        function UploadFiles(PaperID) {
+            var formdata = new FormData();
+            var File = document.getElementById('File');
+            if (File.files.length > 0) {
+                var sfilename = File.files[0].name;
+                formdata.append(sfilename, File.files[0]);
+                $.ajax({
+                    url: '/Zoom/UploadImage/' + PaperID,
+                    type: "POST",
+                    contentType: false,
+                    processData: false,
+                    data: formdata,
+                    success: function (result) {
+                        $(".divLoader").hide();
+                        DataSaved();
+                    },
+                    error: function (err) {
+                        $("#videoModal").show();
+                        $(".divLoader").hide();
+                    }
+                });
+            }
+        }
+    </script>
+}
+

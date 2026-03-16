@@ -1,0 +1,160 @@
+﻿@model First_Aid_Made_Easy.Models.QuestionPaperVM
+@using First_Aid_Made_Easy.Models
+@using Microsoft.AspNet.Identity;
+@using First_Aid_Made_Easy.BLL
+@using First_Aid_Made_Easy.DAL
+@{
+	ViewBag.Title = "Question Bank";
+	ViewBag.BreadCrumb = new String[] { "Question Bank", "Tests" };
+	Layout = "~/Views/Shared/_LayoutNew.cshtml";
+	var isAccepted = Common.IsRequestAccepted(User.Identity.GetUserId());
+	var user = Common.GetUserNameByASpUserID(User.Identity.GetUserId());
+	UniversityVM uni = Common.Universities.FirstOrDefault(x => x.Value == user.Type);
+}
+<style>
+	.popover {
+		--bs-popover-max-width: 500px !important;
+	}
+</style>
+
+<div class="container-xxl" id="kt_content_container">
+
+	@if (Model.List != null && Model.List.Count() > 0 && isAccepted)
+	{
+		<div class="card mb-10">
+			<div class="card-body">
+
+				<!--begin::Tab Content-->
+				<div class="tab-content">
+					<div class="d-flex flex-wrap flex-stack mb-6">
+						<!--begin::Title-->
+						<h3 class="fw-bold my-2">
+							Tests Arranged For You
+							<span class="fs-6 fw-semibold ms-1">(@Model.List.Count())</span>
+						</h3>
+					</div>
+					<div class="card mb-5 mb-xxl-8">
+						<div class="card-body table-responsive p-0">
+							<table class="table table-bordered table2 fs-6 fw-bold gy-5">
+								<thead style="">
+									<tr>
+										<th>Action</th>
+										<th> <span class="fs-5 text-dark fw-semibold">Paper Title</span> </th>
+										<th> <span class="fs-5 text-dark fw-semibold">Expire At</span> </th>
+										<th> <span class="fs-5 text-dark fw-semibold">Time</span> </th>
+									</tr>
+								</thead>
+								@foreach (sp_lstQuestionPapers_Result i in Model.List)
+								{
+									<tr>
+										<td>
+											@if (i.ExpiryDT < Common.GetCurrentDate())
+											{
+												<span class="badge badge-danger badge-lg" href="#">Expired</span>
+											}
+											else if (i.StartDT > Common.GetCurrentDate())
+											{
+												<span class="badge badge-success badge-lg" href="#">Strat-At</span>
+												<span class="badge badge-lg badge-light text-muted">
+													@string.Format("{0:dd/MM/yyyy}", i.StartDT) &emsp;
+													@string.Format("{0:hh:mm tt}", i.StartDT)
+												</span>
+											}
+											else
+											{
+												<a class="btn btn-light-primary" href="/QuestionPaper/Solve/@i.PaperID?m=Exam">Solve Test</a>
+											}
+										</td>
+										<td>@i.PaperTitle</td>
+										<td>
+											@if (i.ExpiryDT != null)
+											{
+												<span class="badge badge-lg badge-light text-muted">
+													@string.Format("{0:dd/MM/yyyy}", i.ExpiryDT) &emsp;
+													@string.Format("{0:hh:mm tt}", i.ExpiryDT)
+												</span>
+											}
+										</td>
+										<td>@i.Time</td>
+									</tr>
+								}
+							</table>
+						</div>
+					</div>
+
+				</div>
+			</div>
+		</div>
+	}
+	else if (!isAccepted)
+	{
+		<div style="padding-top:3rem !important " id="NoMessage" class="mdk-box__content d-flex align-items-center justify-content-center container page__container text-center py-112pt">
+			<div class="card card--transparent mb-0">
+				<div class="card-body px-32pt py-24pt">
+					<h1>Your request is not approved yet! Kindly submit your fee then we will approve your account.</h1>
+				</div>
+			</div>
+		</div>
+	}
+	else 
+	{
+		<div style="padding-top:3rem !important " id="NoMessage" class="mdk-box__content d-flex align-items-center justify-content-center container page__container text-center py-112pt">
+			<div class="card card--transparent mb-0">
+				<div class="card-body px-32pt py-24pt">
+					<h1>Tests will be shown here.</h1>
+				</div>
+			</div>
+		</div>
+	}
+
+	<!--end::Timeline-->
+</div>
+
+@section scripts {
+
+	<script>
+		$(document).ready(function () {
+			$("#mcq").show();
+			$(".tbl-data").DataTable({ pageLength: 100, order: [2] })
+		})
+		$(document).on("click", "#btnSolve", function () {
+			var id = $(this).data("id");
+			Swal.fire({
+				title: 'Please choose a solving mode.',
+				icon: 'question',
+				showDenyButton: true,
+				showCancelButton: false,
+				confirmButtonText: 'Exam',
+				denyButtonText: `Tutor`,
+				confirmButtonColor: '#3085d6',
+				denyButtonColor: '#3085d6',
+			}).then((result) => {
+				if (result.isConfirmed) {
+					window.location.href = "/QuestionPaper/Solve/" + id + "?m=Exam";
+				} else if (result.isDenied) {
+					window.location.href = "/QuestionPaper/Solve/" + id + "?m=Self";
+				}
+			})
+
+		})
+		$("#btnPrev").click(function () {
+			var c = $(".allmcq:visible");
+			var prev = c.prev();
+			if (prev.data("id") > 0) {
+				prev.show();
+				c.hide();
+				$("#mcqNo").text(prev.data("no"));
+			}
+		})
+		$("#btnNext").click(function () {
+			var c = $(".allmcq:visible");
+			var next = c.next();
+			if (next.data("id") > 0) {
+				next.show();
+				c.hide();
+				$("#mcqNo").text(next.data("no"));
+			}
+		})
+	</script>
+}
+

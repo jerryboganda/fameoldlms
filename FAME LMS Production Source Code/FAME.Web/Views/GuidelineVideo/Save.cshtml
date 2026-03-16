@@ -1,0 +1,93 @@
+@model First_Aid_Made_Easy.Models.GuidelineVideoVM
+@{
+    ViewBag.Title = Model.GuidelineVideoID > 0 ? "Edit Guideline Video" : "Add Guideline Video";
+    Layout = "~/Views/Shared/_LayoutTeacher.cshtml";
+}
+
+<div class="row">
+    <div class="col-md-8 col-md-offset-2">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">@ViewBag.Title</h3>
+            </div>
+            <div class="panel-body">
+                @using (Html.BeginForm("Save", "GuidelineVideo", FormMethod.Post, new { @class = "form-horizontal" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.HiddenFor(m => m.GuidelineVideoID)
+
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.PackageID, "Package", new { @class = "col-sm-3 control-label" })
+                        <div class="col-sm-9">
+                            @Html.DropDownListFor(m => m.PackageID, 
+                                new SelectList(ViewBag.Packages, "PackageID", "PackageName", Model.PackageID),
+                                "-- Select Package --",
+                                new { @class = "form-control", required = "required" })
+                            @Html.ValidationMessageFor(m => m.PackageID, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.VideoTitle, new { @class = "col-sm-3 control-label" })
+                        <div class="col-sm-9">
+                            @Html.TextBoxFor(m => m.VideoTitle, new { @class = "form-control", placeholder = "Enter video title", required = "required", maxlength = "255" })
+                            @Html.ValidationMessageFor(m => m.VideoTitle, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.VideoDescription, new { @class = "col-sm-3 control-label" })
+                        <div class="col-sm-9">
+                            @Html.TextAreaFor(m => m.VideoDescription, new { @class = "form-control", rows = "3", placeholder = "Enter video description (optional)", maxlength = "500" })
+                            @Html.ValidationMessageFor(m => m.VideoDescription, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.VideoPath, "Video URL", new { @class = "col-sm-3 control-label" })
+                        <div class="col-sm-9">
+                            @Html.TextBoxFor(m => m.VideoPath, new { @class = "form-control", placeholder = "YouTube or Google Drive URL", required = "required", maxlength = "500", type = "url" })
+                            @Html.ValidationMessageFor(m => m.VideoPath, "", new { @class = "text-danger" })
+                            <small class="help-block">Enter YouTube or Google Drive video URL</small>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.SortOrder, new { @class = "col-sm-3 control-label" })
+                        <div class="col-sm-9">
+                            @Html.TextBoxFor(m => m.SortOrder, new { @class = "form-control", type = "number", Value = Model.SortOrder > 0 ? Model.SortOrder.ToString() : "0" })
+                            @Html.ValidationMessageFor(m => m.SortOrder, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.IsActive, new { @class = "col-sm-3 control-label" })
+                        <div class="col-sm-9">
+                            <div class="checkbox">
+                                <label>
+                                    @Html.CheckBoxFor(m => m.IsActive, new { @checked = Model.GuidelineVideoID == 0 || Model.IsActive })
+                                    Active
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-sm-offset-3 col-sm-9">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fa fa-save"></i> Save
+                            </button>
+                            <a href="@Url.Action("Index")" class="btn btn-default">
+                                <i class="fa fa-times"></i> Cancel
+                            </a>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

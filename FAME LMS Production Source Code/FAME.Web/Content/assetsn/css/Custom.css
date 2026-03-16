@@ -1,0 +1,254 @@
+﻿
+
+.course-review .heading-title {
+    margin-bottom: 5px;
+}
+
+.course-review .rating-box {
+    background: #FFFFFF;
+    box-shadow: 0px 0px 40px 0 rgba(0, 0, 0, 0.07);
+    border-radius: 5px;
+    text-align: center;
+    width: 170px;
+    height: 170px;
+    padding: 20px 10px;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-flex-direction: column;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    -webkit-justify-content: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+}
+
+@media only screen and (max-width: 575px) {
+    .course-review .rating-box {
+        margin: 0 auto;
+    }
+}
+
+.course-review .rating-box .rating {
+    color: #f8b81f;
+    margin-bottom: 5px;
+}
+
+.course-review .rating-box .rating-number {
+    font-weight: 700;
+    font-size: 28px;
+    line-height: 1;
+    font-family: var(--font-secondary);
+    color: var(--color-secondary);
+    margin-bottom: 10px;
+}
+
+.course-review .rating-box span {
+    font-size: 14px;
+    line-height: 26px;
+}
+
+.course-review .review-wrapper {
+    margin-top: -30px;
+}
+
+@media only screen and (max-width: 767px) {
+    .course-review .review-wrapper {
+        margin-left: 30px;
+    }
+}
+
+@media only screen and (max-width: 575px) {
+    .course-review .review-wrapper {
+        margin-top: 0;
+        margin-left: 0;
+    }
+}
+
+.course-review .review-wrapper .single-progress-bar {
+    position: relative;
+}
+
+.course-review .review-wrapper .rating-text {
+    display: inline-block;
+    position: relative;
+    top: 17px;
+    font-family: var(--font-secondary);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-heading);
+}
+
+    .course-review .review-wrapper .rating-text i {
+        color: #f8b81f;
+        padding-left: 12px;
+    }
+
+.course-review .review-wrapper .progress {
+    margin-right: 38px;
+    margin-left: 70px;
+    height: 6px;
+    background: #f2f2f2;
+}
+
+    .course-review .review-wrapper .progress .progress-bar {
+        background-color: #f8b81f;
+    }
+
+.course-review .review-wrapper span.rating-value {
+    font-family: var(--font-secondary);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-heading);
+    position: absolute;
+    right: 0;
+    top: 55%;
+}
+
+.course-review .comment-area {
+    margin-top: 70px;
+}
+
+.course-review .comment-list-wrapper .comment .comment-content .rating {
+    color: #f8b81f;
+    margin-bottom: 6px;
+}
+
+.course-review .comment-list-wrapper .comment + .comment {
+    margin-top: 5px;
+}
+
+.course-review .comment-form-area {
+    margin-top: 40px;
+}
+
+    .course-review .comment-form-area .heading-title {
+        margin-bottom: 25px;
+    }
+
+    .course-review .comment-form-area .rating-icon {
+        display: -webkit-box;
+        display: -webkit-flex;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-align: center;
+        -webkit-align-items: center;
+        -ms-flex-align: center;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+        .course-review .comment-form-area .rating-icon .title {
+            margin-bottom: 0;
+            margin-right: 22px;
+        }
+
+        .course-review .comment-form-area .rating-icon .rating i {
+            color: #e1e1e1;
+        }
+
+            .course-review .comment-form-area .rating-icon .rating i:hover {
+                color: #f8b81f;
+            }
+
+.course-review .border-box {
+    border: 1px solid var(--color-border);
+    padding-bottom: 10px;
+}
+
+    .course-review .border-box .rating-box {
+        margin: 30px 0 30px 30px;
+    }
+
+@media only screen and (max-width: 991px) {
+    .course-review .border-box .rating-box {
+        margin: 30px auto;
+    }
+}
+
+.course-review .border-box .review-wrapper {
+    margin-right: 30px;
+}
+
+@media only screen and (max-width: 1199px) {
+    .course-review .border-box .review-wrapper {
+        margin-left: 30px;
+    }
+}
+
+@media only screen and (max-width: 991px) {
+    .course-review .border-box .review-wrapper {
+        margin-bottom: 40px;
+    }
+}
+
+.course-review .border-box .comment-area {
+    border-top: 1px solid var(--color-border);
+    margin-top: 0;
+    padding-top: 30px;
+}
+
+.course-review .border-box .comment-list-wrapper .comment {
+    padding-left: 30px;
+    padding-right: 30px;
+}
+
+@media only screen and (max-width: 575px) {
+    .course-review .border-box .comment-list-wrapper .comment {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+}
+
+
+.rating {
+    unicode-bidi: bidi-override;
+    direction: rtl;
+    font-size: 30px
+}
+
+    .rating > span {
+        display: inline-block;
+        position: relative;
+        width: 1.1em;
+    }
+
+        .rating > span:hover:before,
+        .rating > span:hover ~ span:before,
+        .rating > .selected:before,
+        .rating > .selected ~ span:before {
+            content: "\2605";
+            position: absolute;
+            color: #f8b81f
+        }
+
+
+.table-bordered, .table-bordered > tbody > tr > td, .table-bordered > tbody > tr > th, .table-bordered > tfoot > tr > td, .table-bordered > tfoot > tr > th, .table-bordered > thead > tr > td, .table-bordered > thead > tr > th {
+    border: 1px solid #e0e5e9 !important;
+}
+
+    .table-bordered > thead {
+        background-color: #cad5e1
+    }
+
+.table2 > tbody > tr > td, .table2 > tbody > tr > th, .table2 > tfoot > tr > td, .table2 > tfoot > tr > th, .table2 > thead > tr > td, .table2 > thead > tr > th {
+    padding: 6px !important;
+}
+
+
+.table-bordered {
+    border: 1px solid #e0e5e9 !important;
+}
+
+.table-hborder  td {
+    border-bottom: 1px solid #e0e5e9 !important;
+    border-top: 1px solid #e0e5e9 !important;
+}

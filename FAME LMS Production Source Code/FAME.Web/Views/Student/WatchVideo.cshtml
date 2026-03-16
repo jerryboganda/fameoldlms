@@ -1,0 +1,153 @@
+﻿@model First_Aid_Made_Easy.Models.VideoVM
+@using Microsoft.AspNet.Identity
+@using First_Aid_Made_Easy.BLL
+@{
+	ViewBag.Title = "Take Course";
+	int i = 0;
+}
+<style>
+	.video-container {
+		position: relative;
+	}
+
+	.video {
+		width: 100%;
+		height: 100%;
+	}
+
+	.WaterMark {
+		position: absolute;
+		color: red !important;
+		font-size: 2vmin !important;
+	}
+
+	video::-webkit-media-controls-fullscreen-button {
+		display: none !important;
+	}
+
+	.fullscreen-button {
+		position: absolute;
+		top: 2%;
+		left: 90%;
+		z-index: 10;
+	}
+</style>
+
+<div class="page-section bg-alt border-bottom-2">
+	<div class="container page__container">
+
+		<div class="d-flex flex-column flex-lg-row align-items-center">
+			<div class="d-flex flex-column flex-md-row align-items-center flex mb-16pt mb-lg-0 text-center text-md-left">
+				<div class="flex">
+					<h1 class="h2 m-0">@Model.Video_Name</h1>
+				</div>
+			</div>
+			<div class="ml-lg-16pt">
+				<a href="/Student/MyMeetings" class="btn btn-light">Back</a>
+			</div>
+		</div>
+
+	</div>
+</div>
+<div class="page-section border-bottom-2">
+	<div class="container page__container">
+		<div class="row">
+
+			<div class="col-lg-10">
+				<div class="js-player card bg-primary embed-responsive embed-responsive-16by9 mb-24pt">
+					<div class="player embed-responsive-item">
+						<div class="player__content">
+							<div class="player__image" style="--player-image: url(@Url.Content(Server.MapPath("~/Images/groupLogo.jpg")))"></div>
+							<a href="" class="player__play bg-primary">
+								<span class="material-icons">play_arrow</span>
+							</a>
+						</div>
+						<div id="vid-cont" class="player__embed d-none" style="position: relative;">
+							<video src="@Url.Content("~/Images/Meet/"+Model.Video_Path)"
+								   id="MyIframe"
+								   class="embed-responsive-item"
+								   loading="lazy"
+								   style="border: none;
+                                    position: absolute; top: 0; height: 100%; width: 100%;"
+								   allow="accelerometer; gyroscope; autoplay; encrypted-media;">
+							</video>
+							<!-- Secure Canvas Watermark will be injected here by watermark-secure.js -->
+							<button class="fullscreen-button" id="fullscreenButton">
+								<i class="material-icons">fullscreen</i>
+							</button>
+						</div>
+					</div>
+				</div>
+				<p id="videoName" style="font-weight:bolder" class="lead measure-lead text-70 mb-24pt">@Model.Video_ShortDescription</p>
+			</div>
+		</div>
+
+	</div>
+</div>
+
+
+@section scripts {
+	<script>
+		let User;
+
+		$(document).ready(function () {
+			$(".WaterMark").hide();
+			$(".accordion__toggle").trigger("click");
+			$.ajax({
+				url: "/Student/LoadWaterMark",
+				method: "GET",
+				success: function (u) {
+					User = u;
+				},
+				error: function (err) {
+				},
+			})
+		})
+
+		function toggleFullscreen() {
+			if (!document.fullscreenElement) {
+				document.getElementById('vid-cont').requestFullscreen();
+			} else if (document.exitFullscreen) {
+				document.exitFullscreen();
+			}
+		}
+
+	</script>
+
+	<script>
+		const fullscreenButton = document.getElementById('fullscreenButton');
+		const contentContainer = document.getElementById('vid-cont');
+
+		fullscreenButton.addEventListener('click', () => {
+			if (!document.fullscreenElement) {
+				contentContainer.requestFullscreen().then(() => { }).catch((error) => {
+					alert('Error entering fullscreen:', JSON.stringify(error));
+				});
+			} else if (document.exitFullscreen) {
+				document.exitFullscreen();
+			}
+		});
+
+	</script>
+	<script>
+
+		function LoadWaterMark() {
+			// Legacy function - now handled by watermark-secure.js
+			return;
+		}
+		// Old intervals removed - secure watermark handles this
+	</script>
+    
+	<!-- Secure Watermark Module -->
+	<script src="~/Scripts/watermark-secure.js?v=20260111-4"></script>
+	<script>
+		$(document).ready(function() {
+			if (window.FAMEWatermark) {
+				window.FAMEWatermark.init({ 
+					videoId: @Model.MeetVideoID, 
+					videoName: '@Html.Raw(Model.Video_ShortDescription?.Replace("'", "\\'") ?? "")' 
+				});
+			}
+		});
+	</script>
+}

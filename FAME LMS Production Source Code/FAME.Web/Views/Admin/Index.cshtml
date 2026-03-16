@@ -1,0 +1,284 @@
+﻿@model First_Aid_Made_Easy.Models.DashBoardVM
+
+@{
+    Layout = "~/Views/Shared/_LayoutTeacher.cshtml";
+    ViewBag.Title = "Admin Dashboard";
+    var repo = new First_Aid_Made_Easy.BLL.PackageRepository();
+    var l = repo.GetNameList();
+}
+
+
+<div class="pt-32pt">
+    <div class="page__container d-flex flex-column flex-md-row align-items-center text-center text-sm-left">
+        <div class="flex d-flex flex-column flex-sm-row align-items-center mb-24pt mb-md-0">
+
+            <div class="mb-24pt mb-sm-0 mr-sm-24pt">
+                <h2 class="mb-0">Dashboard</h2>
+                <ol class="breadcrumb p-0 m-0">
+                    <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                    <li class="breadcrumb-item active">
+                        Dashboard
+                    </li>
+                </ol>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+
+<div class="page__container page-section border-bottom-2">
+    <div class="">
+
+        <div class="row">
+            @foreach (var a in Model.Counts)
+            {
+                <div class="col-lg-4">
+                    <div class="card border-1 border-left-3 border-left-accent text-center mb-lg-0">
+                        <div class="card-body">
+                            <h4 class="h2 mb-0">@string.Format("{0:n0}", a.Counts)</h4>
+                            <div>@a.Name</div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+    </div>
+</div>
+
+<!-- Ambassador Portal Section -->
+<div class="page__container page-section border-bottom-2">
+    <div class="">
+        <div class="page-separator">
+            <div class="page-separator__text">Ambassador Program Management</div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-3 col-md-6">
+                <div class="card border-1 border-left-3 border-left-success text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">Ambassador Dashboard</h5>
+                        <p class="card-text text-muted">View all ambassadors</p>
+                        <a href="/Ambassador/Admin" class="btn btn-sm btn-success">
+                            <i class="fa fa-tachometer"></i> Access Dashboard
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <div class="card border-1 border-left-3 border-left-info text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">Commission Rules</h5>
+                        <p class="card-text text-muted">Manage commission rules</p>
+                        <a href="/Ambassador/Admin/Rules" class="btn btn-sm btn-info">
+                            <i class="fa fa-cog"></i> Configure Rules
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <div class="card border-1 border-left-3 border-left-primary text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">Approve Ambassadors</h5>
+                        <p class="card-text text-muted">Review applications</p>
+                        <a href="/Ambassador/Admin/Applications" class="btn btn-sm btn-primary">
+                            <i class="fa fa-check-circle"></i> Review Apps
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <div class="card border-1 border-left-3 border-left-warning text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">Payout Management</h5>
+                        <p class="card-text text-muted">Process payouts</p>
+                        <a href="/Ambassador/Admin/Payouts" class="btn btn-sm btn-warning">
+                            <i class="fa fa-money"></i> Manage Payouts
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-16pt">
+            <div class="col-lg-12">
+                <div class="alert alert-info" role="alert">
+                    <strong>Quick Links:</strong>
+                    <ul class="mb-0 mt-8pt">
+                        <li><a href="/Ambassador">Ambassador Portal Home</a> - Main ambassador portal</li>
+                        <li><a href="/Ambassador/Referrals">Referrals Tracking</a> - Track referrals and conversions</li>
+                        <li><a href="/Ambassador/Earnings">Earnings Report</a> - View all commissions earned</li>
+                        <li><a href="/Ambassador/Payouts">Payout Requests</a> - Manage payout requests</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class=" page__container page-section">
+
+    <div class="row mb-8pt">
+
+        <div class="col-lg-12 table-responsive">
+            <div class="page-separator">
+                <div class="page-separator__text">Portals</div>
+            </div>
+
+            <table id="DTable" class="table  table-bordered">
+                <thead>
+                    <tr style="background-color: #364e9c">
+                        <th>Portal Name</th>
+                        <th>Can Create Test</th>
+                        <th>Auto Accept Req.</th>
+                        <th>Package_Name_For_Portal</th>
+                        <th>Duration</th>
+                        <th>Link</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var i in First_Aid_Made_Easy.BLL.Common.Universities.Where(y => y.Value > 0 && y.IsActive))
+                    {
+                        <tr>
+                            <td style="min-width:200px">@i.Text</td>
+                            <td>@i.CanCreateTest</td>
+                            <td>@i.AutoAccept</td>
+                            <td>@(l.FirstOrDefault(y => y.PackageID == i.PackageID)?.PackageName)</td>
+                            <td>@repo.getText(i.Duration).Replace("--- Rs.", "")</td>
+                            @if (i.UrlAction != null)
+                            {
+                                <td>  https://firstaidmadeeasy.com.pk/Account/@i.UrlAction  </td>
+                            }
+                            else
+                            {
+                                <td>App Only</td>
+                            }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="row mb-8pt">
+        <div class="col-lg-6">
+            <div class="page-separator">
+                <div class="page-separator__text">University Wise Student</div>
+            </div>
+
+            <table id="DTable" class="table  table-bordered">
+                <thead>
+                    <tr style="background-color: #364e9c">
+                        <th>Sr.</th>
+                        <th>University</th>
+                        <th>Count</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{ int Sr = 0; }
+                    @foreach (var i in Model.Students)
+                    {
+                        Sr++;
+                        <tr>
+                            <td>@Sr</td>
+                            <td>@i.Name</td>
+                            <td>@i.Count</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="col-lg-6">
+            <div class="page-separator">
+                <div class="page-separator__text">Package Enrollments</div>
+            </div>
+
+            <table id="DTable" class="table  table-bordered">
+                <thead>
+                    <tr style="background-color: #364e9c">
+                        <th>Sr.</th>
+                        <th>Package Name</th>
+                        <th>Count</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{ Sr = 0; }
+                    @foreach (var i in Model.PackageEnrollments)
+                    {
+                        Sr++;
+                        <tr>
+                            <td>@Sr</td>
+                            <td>@i.PackageName</td>
+                            <td>@i.Enrollments</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<div class="page__container page-section">
+    <div class="row mb-8pt">
+        <div class="col-lg-6">
+            <div class="page-separator">
+                <div class="page-separator__text">Course Enrollments</div>
+            </div>
+
+            <table id="DTable" class="table  table-bordered">
+                <thead>
+                    <tr style="background-color: #364e9c">
+                        <th>Sr.</th>
+                        <th>Course Name</th>
+                        <th>Count</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{ Sr = 0; }
+                    @foreach (var i in Model.CourseEnrollments)
+                    {
+                        Sr++;
+                        <tr>
+                            <td>@Sr</td>
+                            <td>@i.Name</td>
+                            <td>@i.Count</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="col-lg-6">
+            <div class="page-separator">
+                <div class="page-separator__text">Section Enrollments</div>
+            </div>
+
+            <table id="DTable" class="table  table-bordered">
+                <thead>
+                    <tr style="background-color: #364e9c">
+                        <th>Sr.</th>
+                        <th>Course Name</th>
+                        <th>Count</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{ Sr = 0; }
+                    @foreach (var i in Model.SectionEnrollments)
+                    {
+                        Sr++;
+                        <tr>
+                            <td>@Sr</td>
+                            <td>@i.Name</td>
+                            <td>@i.Count</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+

@@ -1,0 +1,126 @@
+﻿@model List<First_Aid_Made_Easy.Models.WebsitePackageVM>
+@{
+    ViewBag.Title = "Our Packages";
+}
+
+
+<div class="edu-breadcrumb-area">
+    <div class="container">
+        <div class="breadcrumb-inner">
+            <div class="page-title">
+                <h1 class="title">Our Packages</h1>
+            </div>
+            <ul class="edu-breadcrumb">
+            </ul>
+        </div>
+    </div>
+    <ul class="shape-group">
+        <li class="shape-1">
+            <span></span>
+        </li>
+        <li class="shape-2 scene"><img data-depth="2" src="~/Areas/Landing/assets/images/about/shape-13.png" alt="shape"></li>
+        <li class="shape-3 scene"><img data-depth="-2" src="~/Areas/Landing/assets/images/about/shape-15.png" alt="shape"></li>
+        <li class="shape-4">
+            <span></span>
+        </li>
+        <li class="shape-5 scene"><img data-depth="2" src="~/Areas/Landing/assets/images/about/shape-07.png" alt="shape"></li>
+    </ul>
+</div>
+
+
+<div class="edu-section-gap">
+    <div class="container">
+        <div class="row g-5">
+
+            @if (Model != null && Model.Count > 0)
+            {
+                foreach (var pkg in Model)
+                {
+                    <div class="col-lg-12" data-sal-delay="100" data-sal="slide-up" data-sal-duration="800">
+                        <div class="pricing-table">
+                            <div class="row">
+                                <div class="col-md-@pkg.LeftColumnWidth">
+                                    <div class="pricing-header">
+                                        <div class="price-wrap">
+                                            <span class="amount">@pkg.PlanName</span>
+                                            @if (!string.IsNullOrEmpty(pkg.Subtitle))
+                                            {
+                                                <strong style="font-weight:bolder" class="duration">@pkg.Subtitle</strong>
+                                            }
+                                        </div>
+                                        @if (!string.IsNullOrEmpty(pkg.Description))
+                                        {
+                                            <p>@pkg.Description</p>
+                                        }
+                                    </div>
+                                    <div class="pricing-body">
+                                        @if (pkg.Features != null && pkg.Features.Count > 0)
+                                        {
+                                            if (pkg.UseMultiColumnFeatures)
+                                            {
+                                                <ul class="list-item text-left" style="columns: 2; -webkit-columns: 2; -moz-columns: 2;">
+                                                    @foreach (var feature in pkg.Features)
+                                                    {
+                                                        <li><i class="icon-20"></i>@feature.FeatureText</li>
+                                                    }
+                                                </ul>
+                                            }
+                                            else
+                                            {
+                                                <ul class="list-item">
+                                                    @foreach (var feature in pkg.Features)
+                                                    {
+                                                        <li><i class="icon-20"></i>@feature.FeatureText</li>
+                                                    }
+                                                </ul>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                                <div class="col-md-@pkg.RightColumnWidth">
+                                    <div class="pricing-header">
+                                        <div class="price-wrap">
+                                            <span class="amount">Pricing</span>
+                                            <strong style="font-weight:bolder" class="duration">For @pkg.PlanName</strong>
+                                        </div>
+                                        <p>Following is the pricing table for @pkg.PlanName</p>
+                                    </div>
+                                    <div class="pricing-body">
+                                        @if (pkg.Pricing != null && pkg.Pricing.Count > 0)
+                                        {
+                                            <ul class="list-item">
+                                                @foreach (var price in pkg.Pricing)
+                                                {
+                                                    <li>
+                                                        <i class="icon-20"></i>@price.DurationText
+                                                        <b>&nbsp; @price.PricePKR</b>
+                                                        @if (!string.IsNullOrEmpty(price.PriceUSD))
+                                                        {
+                                                            <b>&nbsp; @price.PriceUSD</b>
+                                                        }
+                                                    </li>
+                                                }
+                                            </ul>
+                                        }
+                                        <div style="margin-top:2rem">
+                                            <a href="@pkg.BuyButtonUrl" class="edu-btn">@pkg.BuyButtonText</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="col-lg-12 text-center">
+                    <div class="pricing-table">
+                        <h3>Our packages are being updated. Please check back soon!</h3>
+                    </div>
+                </div>
+            }
+
+        </div>
+    </div>
+</div>

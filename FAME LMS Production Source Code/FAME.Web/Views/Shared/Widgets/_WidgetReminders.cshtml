@@ -1,0 +1,197 @@
+@using First_Aid_Made_Easy.BLL
+@{
+    var taskList = ViewBag.TaskList as IEnumerable<dynamic>;
+    var displayTasks = taskList?.Take(5) ?? Enumerable.Empty<dynamic>();
+}
+
+<div class="fame-widget-card">
+    <div class="fame-widget-header">
+        <div class="fame-widget-title">
+            <i data-feather="check-square" class="fame-widget-icon"></i>
+            <span>Reminders & Tasks</span>
+        </div>
+        <span class="fame-widget-count">@(taskList?.Count() ?? 0)</span>
+    </div>
+    
+    <div class="fame-widget-body" style="padding: 0;">
+        @if (displayTasks.Any())
+        {
+            <div class="fame-reminders-list">
+                @foreach (var task in displayTasks)
+                {
+                    DateTime? dueDate = task.DueDate ?? task.ReminderDate;
+                    string dueText = dueDate.HasValue ? dueDate.Value.ToString("MMM d") : "";
+                    bool isOverdue = dueDate.HasValue && dueDate.Value < DateTime.Now;
+                    bool isToday = dueDate.HasValue && dueDate.Value.Date == DateTime.Today;
+                    string priority = task.Priority ?? "normal";
+                    
+                    <div class="fame-reminder-item @(isOverdue ? "overdue" : "") @(isToday ? "today" : "")">
+                        <div class="fame-reminder-checkbox @(priority)">
+                            <i data-feather="@(task.IsCompleted == true ? "check" : "circle")" style="width: 18px; height: 18px;"></i>
+                        </div>
+                        <div class="fame-reminder-content">
+                            <div class="fame-reminder-title @(task.IsCompleted == true ? "completed" : "")">@task.Title</div>
+                            @if (!string.IsNullOrEmpty(task.Description))
+                            {
+                                <div class="fame-reminder-desc">@task.Description</div>
+                            }
+                        </div>
+                        @if (!string.IsNullOrEmpty(dueText))
+                        {
+                            <div class="fame-reminder-due @(isOverdue ? "overdue" : "") @(isToday ? "today" : "")">
+                                <i data-feather="@(isToday ? "clock" : "calendar")" style="width: 12px; height: 12px;"></i>
+                                @(isToday ? "Today" : dueText)
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="fame-widget-empty" style="padding: 32px;">
+                <i data-feather="check-circle" style="width: 40px; height: 40px; margin-bottom: 12px; opacity: 0.5; color: var(--fame-success);"></i>
+                <p style="margin: 0; color: var(--fame-text-tertiary);">All caught up! No pending tasks.</p>
+            </div>
+        }
+    </div>
+    
+    @if (taskList?.Count() > 5)
+    {
+        <div class="fame-widget-footer">
+            <a href="#" class="fame-widget-link">
+                View all @taskList.Count() tasks
+                <i data-feather="arrow-right" style="width: 16px; height: 16px;"></i>
+            </a>
+        </div>
+    }
+</div>
+
+<style>
+.fame-widget-count {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+    height: 24px;
+    padding: 0 8px;
+    background: var(--fame-bg-tertiary);
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--fame-text-secondary);
+}
+
+.fame-reminders-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.fame-reminder-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--fame-border);
+    transition: background 200ms;
+}
+
+.fame-reminder-item:last-child {
+    border-bottom: none;
+}
+
+.fame-reminder-item:hover {
+    background: var(--fame-bg-tertiary);
+}
+
+.fame-reminder-item.overdue {
+    background: rgba(239, 68, 68, 0.05);
+}
+
+.fame-reminder-item.today {
+    background: rgba(245, 158, 11, 0.05);
+}
+
+.fame-reminder-checkbox {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    cursor: pointer;
+    transition: all 200ms;
+}
+
+.fame-reminder-checkbox.normal {
+    background: var(--fame-bg-tertiary);
+    color: var(--fame-text-tertiary);
+}
+
+.fame-reminder-checkbox.high {
+    background: rgba(239, 68, 68, 0.15);
+    color: #EF4444;
+}
+
+.fame-reminder-checkbox.medium {
+    background: rgba(245, 158, 11, 0.15);
+    color: #F59E0B;
+}
+
+.fame-reminder-checkbox:hover {
+    transform: scale(1.1);
+}
+
+.fame-reminder-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.fame-reminder-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--fame-text-primary);
+    margin-bottom: 4px;
+}
+
+.fame-reminder-title.completed {
+    text-decoration: line-through;
+    color: var(--fame-text-tertiary);
+}
+
+.fame-reminder-desc {
+    font-size: 12px;
+    color: var(--fame-text-tertiary);
+}
+
+.fame-reminder-due {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 500;
+    flex-shrink: 0;
+    background: var(--fame-bg-tertiary);
+    color: var(--fame-text-tertiary);
+}
+
+.fame-reminder-due.today {
+    background: rgba(245, 158, 11, 0.15);
+    color: #F59E0B;
+}
+
+.fame-reminder-due.overdue {
+    background: rgba(239, 68, 68, 0.15);
+    color: #EF4444;
+}
+
+.fame-widget-footer {
+    display: flex;
+    justify-content: center;
+    padding: 16px;
+    border-top: 1px solid var(--fame-border);
+}
+</style>

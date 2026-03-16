@@ -1,0 +1,26 @@
+﻿CREATE TABLE [dbo].[tbl_QuestionPaper] (
+    [PaperID]         INT            IDENTITY (1, 1) NOT NULL,
+    [PaperTitle]      VARCHAR (200)  NULL,
+    [Marks]           INT            NULL,
+    [UniversityID]    VARCHAR (MAX)  NULL,
+    [PassPer]         INT            NULL,
+    [Time]            INT            NULL,
+    [Thumbnail]       VARCHAR (MAX)  NULL,
+    [TopicsCovered]   VARCHAR (MAX)  NULL,
+    [PackageIDs]      VARCHAR (MAX)  NULL,
+    [SectionIDs]      VARCHAR (MAX)  NULL,
+    [CourseIDs]       VARCHAR (MAX)  NULL,
+    [Notes]           VARCHAR (MAX)  NULL,
+    [Tags]            VARCHAR (MAX)  NULL,
+    [DifficultyLevel] INT            NULL,
+    [Description]     VARCHAR (MAX)  NULL,
+    [CreatedBy]       NVARCHAR (128) NULL,
+    [CreatedDT]       DATETIME       NULL,
+    [StartDT]         DATETIME       NULL,
+    [ExpiryDT]        DATETIME       NULL,
+    [AnswerDT]        DATETIME       NULL,
+    [MockTestType]    INT            NULL,
+    CONSTRAINT [PK_tbl_QuestionPaper] PRIMARY KEY CLUSTERED ([PaperID] ASC),
+    CONSTRAINT [FK_tbl_QuestionPaper_tbl_QuestionPaper] FOREIGN KEY ([PaperID]) REFERENCES [dbo].[tbl_QuestionPaper] ([PaperID])
+);
+

@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="e564dac757ec4c568d598658cfc1791c" Name="Diagram1" ZoomLevel="71">
+        <EntityTypeShape EntityType="FirstAidMadeEasyModel.C__MigrationHistory" Width="1.5" PointX="4.75" PointY="8.75" />
+        <EntityTypeShape EntityType="FirstAidMadeEasyModel.AspNetRoles" Width="1.5" PointX="0.75" PointY="45.625" />
+        <EntityTypeShape EntityType="FirstAidMadeEasyModel.AspNetUserClaims" Width="1.5" PointX="5.25" PointY="86" />
+        <EntityTypeShape EntityType="FirstAidMadeEasyModel.AspNetUserLogins" Width="1.5" PointX="5.25" PointY="28.125" />
+        <EntityTypeShape EntityType="FirstAidMadeEasyModel.AspNetUsers" Width="1.5" PointX="3" PointY="41.5" />
+        <EntityTypeShape EntityType="FirstAidMadeEasyModel.tbl_BlogPost" Width="1.5" PointX="6.75" PointY="9.75" />
+        <EntityTypeShape EntityType="FirstAidMadeEasyModel.tbl_BookCode" Width="1.5" PointX="5.25" PointY="82.5" />
+        <EntityTypeShape EntityType="FirstAidMadeEasyModel.tbl_BookMistakes" Width="1.5" PointX="9.75" PointY="0.75" />
+        <EntityTypeShape EntityType="FirstAidMadeEasyModel.tbl_Chapter" Width="1.5" PointX="7.5" PointY="71.375" />
+        <EntityTypeShape EntityType="FirstAidMadeEasyModel.tbl_Comment" Width="1.5" PointX="8.25" PointY="38.875" />
+        <EntityTypeShape EntityType="FirstAidMadeEasyModel.tbl_Conversation" Width="1.5" PointX="2.75" PointY="1" />
+        <EntityTypeShape EntityType="FirstAidMadeEasyModel.tbl_ConversationMedia" Width="1.5" PointX="7.25" PointY="1.5" />
+        <EntityTypeShape EntityType="FirstAidMadeEasyModel.tbl_ConversationReply" Width="1.5" PointX="5" PointY="1" />
+        <EntityTypeShape EntityType="FirstAidMadeEasyModel.tbl_Coupon" Width="1.5" PointX="12.75" PointY="61.75" />
+        <EntityTypeShape EntityType="FirstAidMadeEasyModel.tbl_CourseDetails" Width="1.5" PointX="7.5" PointY="60.625" />
+        <EntityTypeShape EntityType="FirstAidMadeEasyModel.tbl_Courses" Width="1.5" PointX="5.25" PointY="62.875" />
+        <EntityTypeShape EntityType="FirstAidMadeEasyModel.tbl_Document" Width="1.5" PointX="9.75" PointY="8.75" />
+        <EntityTypeShape EntityType="FirstAidMadeEasyModel.tbl_EmailLogs" Width="1.5" PointX="0.75" PointY="10.75" />
+        <EntityTypeShape EntityType="FirstAidMadeEasyModel.tbl_EnrollmentDetail" Width="1.5" PointX="17.25" PointY="66.625" />
+        <EntityTypeShape EntityType="FirstAidMadeEasyModel.tbl_EnrollmentMaster" Width="1.5" PointX="15" PointY="51.125" />
+        <EntityTypeShape EntityType="FirstAidMadeEasyModel.tbl_Exam" Width="1.5" PointX="0.75" PointY="1" />
+        <EntityTypeShape EntityType="FirstAidMadeEasyModel.tbl_ExamDetail" Width="1.5" PointX="11.25" PointY="18.25" />
+        <EntityTypeShape EntityType="FirstAidMadeEasyModel.tbl_FavouriteList" Width="1.5" PointX="5.25" PointY="88.625" />
+        <EntityTypeShape EntityType="FirstAidMadeEasyModel.tbl_FileItems" Width="1.5" PointX="12.75" PointY="40" />
+        <EntityTypeShape EntityType="FirstAidMadeEasyModel.tbl_FriendRequest" Width="1.5" PointX="11.75" PointY="0.75" />
+        <EntityTypeShape EntityType="FirstAidMadeEasyModel.tbl_Friends" Width="1.5" PointX="5.25" PointY="53.5" />
+        <EntityTypeShape EntityType="FirstAidMadeEasyModel.tbl_Installments" Width="1.5" PointX="15" PointY="48" />
+        <EntityTypeShape EntityType="FirstAidMadeEasyModel.tbl_Master" Width="1.5" PointX="3" PointY="37" />
+        <EntityTypeShape EntityType="FirstAidMadeEasyModel.tbl_Meeting" Width="1.5" PointX="7.75" PointY="5" />
+        <EntityTypeShape EntityType="FirstAidMadeEasyModel.tbl_MeetingVideo" Width="1.5" PointX="10" PointY="5.625" />
+        <EntityTypeShape EntityType="FirstAidMadeEasyModel.tbl_Notes" Width="1.5" PointX="2.75" PointY="11.75" />
+        <EntityTypeShape EntityType="FirstAidMadeEasyModel.tbl_Options" Width="1.5" PointX="12" PointY="78.875" />
+        <EntityTypeShape EntityType="FirstAidMadeEasyModel.tbl_Package" Width="1.5" PointX="10.5" PointY="51.875" />
+        <EntityTypeShape EntityType="FirstAidMadeEasyModel.tbl_PackageDetail" Width="1.5" PointX="7.5" PointY="64" />
+        <EntityTypeShape EntityType="FirstAidMadeEasyModel.tbl_PackageDuration" Width="1.5" PointX="12.75" PointY="52.75" />
+        <EntityTypeShape EntityType="FirstAidMadeEasyModel.tbl_Progress" Width="1.5" PointX="20.25" PointY="57.625" />
+        <EntityTypeShape EntityType="FirstAidMadeEasyModel.tbl_Question" Width="1.5" PointX="9.75" PointY="70.75" />
+        <EntityTypeShape EntityType="FirstAidMadeEasyModel.tbl_QuestionPaper" Width="1.5" PointX="9" PointY="31.5" />
+        <EntityTypeShape EntityType="FirstAidMadeEasyModel.tbl_QuestionPaperDetail" Width="1.5" PointX="15" PointY="72.625" />
+        <EntityTypeShape EntityType="FirstAidMadeEasyModel.tbl_QuestionPartition" Width="1.5" PointX="7.5" PointY="68.375" />
+        <EntityTypeShape EntityType="FirstAidMadeEasyModel.tbl_Ratings" Width="1.5" PointX="11.75" PointY="8.75" />
+        <EntityTypeShape EntityType="FirstAidMadeEasyModel.tbl_Reminder" Width="1.5" PointX="5.25" PointY="79.125" />
+        <EntityTypeShape EntityType="FirstAidMadeEasyModel.tbl_Request" Width="1.5" PointX="9.75" PointY="60.875" />
+        <EntityTypeShape EntityType="FirstAidMadeEasyModel.tbl_ResultDetail" Width="1.5" PointX="13.5" PointY="58.375" />
+        <EntityTypeShape EntityType="FirstAidMadeEasyModel.tbl_ResultMaster" Width="1.5" PointX="11.25" PointY="44.625" />
+        <EntityTypeShape EntityType="FirstAidMadeEasyModel.tbl_Section" Width="1.5" PointX="7.5" PointY="81" />
+        <EntityTypeShape EntityType="FirstAidMadeEasyModel.tbl_SectionSub" Width="1.5" PointX="12.75" PointY="72.375" />
+        <EntityTypeShape EntityType="FirstAidMadeEasyModel.tbl_SeenNotif" Width="1.5" PointX="5" PointY="6.125" />
+        <EntityTypeShape EntityType="FirstAidMadeEasyModel.tbl_Settings" Width="1.5" PointX="11.75" PointY="11.75" />
+        <EntityTypeShape EntityType="FirstAidMadeEasyModel.tbl_StudentGroup" Width="1.5" PointX="5.25" PointY="75.875" />
+        <EntityTypeShape EntityType="FirstAidMadeEasyModel.tbl_StudentGroupDetail" Width="1.5" PointX="7.5" PointY="56.875" />
+        <EntityTypeShape EntityType="FirstAidMadeEasyModel.tbl_StudentInstallments" Width="1.5" PointX="17.25" PointY="47.5" />
+        <EntityTypeShape EntityType="FirstAidMadeEasyModel.tbl_StudentNotif" Width="1.5" PointX="2.75" PointY="5" />
+        <EntityTypeShape EntityType="FirstAidMadeEasyModel.tbl_Ticket" Width="1.5" PointX="5.25" PointY="44.75" />
+        <EntityTypeShape EntityType="FirstAidMadeEasyModel.tbl_TicketReply" Width="1.5" PointX="10.5" PointY="39.875" />
+        <EntityTypeShape EntityType="FirstAidMadeEasyModel.tbl_Tutorial" Width="1.5" PointX="5.25" PointY="31.125" />
+        <EntityTypeShape EntityType="FirstAidMadeEasyModel.tbl_User" Width="1.5" PointX="8.25" PointY="42.875" />
+        <EntityTypeShape EntityType="FirstAidMadeEasyModel.tbl_UserDevices" Width="1.5" PointX="12.75" PointY="3.75" />
+        <EntityTypeShape EntityType="FirstAidMadeEasyModel.tbl_UserDevRemReq" Width="1.5" PointX="8.75" PointY="12.75" />
+        <EntityTypeShape EntityType="FirstAidMadeEasyModel.tbl_UserLockout" Width="1.5" PointX="5.25" PointY="38.375" />
+        <EntityTypeShape EntityType="FirstAidMadeEasyModel.tbl_UserLogins" Width="1.5" PointX="5.25" PointY="34.875" />
+        <EntityTypeShape EntityType="FirstAidMadeEasyModel.tbl_Video" Width="1.5" PointX="18" PointY="71.5" />
+        <EntityTypeShape EntityType="FirstAidMadeEasyModel.vw_Roles" Width="1.5" PointX="13.75" PointY="0.75" />
+        <EntityTypeShape EntityType="FirstAidMadeEasyModel.vw_StudetsList" Width="1.5" PointX="13.75" PointY="7.75" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_BookCode_AspNetUsers" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_Comment_AspNetUsers" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_Coupon_AspNetUsers" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_Courses_AspNetUsers" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_EnrollmentMaster_AspNetUsersAppr" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_EnrollmentMaster_AspNetUsersS" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_Friends_AspNetUsers" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_Friends_AspNetUsers1" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_Progress_AspNetUsers" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_Reminder_AspNetUsers" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_Request_AspNetUsers" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_ResultMaster_AspNetUsers" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_StudentGroup_AspNetUsers" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_StudentGroupDetail_tbl_User" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_StudentInstallments_AspNetUsers" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_Ticket_AspNetUsers" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_Ticket_AspNetUsers1" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_TicketReply_AspNetUsers" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_TicketReply_AspNetUsers1" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_User_AspNetUsers" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_UserLockout_AspNetUsers" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_UserLogins_AspNetUsers" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_Wishlist_AspNetUsers" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_Chapter_tbl_Courses" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_Comment_tbl_Video" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_ConversationReply_tbl_Conversation" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_ConversationMedia_tbl_ConversationReply" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_Coupon_tbl_Courses" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_Coupon_tbl_Section" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_Enrollment_tbl_Coupon" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_CourseDetails_tbl_Courses" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_EnrollmentDetail_tbl_Courses" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_PackageDetail_tbl_Courses" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_Question_tbl_Courses" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_Request_tbl_Courses" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_Section_tbl_Courses" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_SectionSub_tbl_Courses" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_Video_tbl_Courses" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_EnrollmentDetail_tbl_EnrollmentMaster" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_EnrollmentDetail_tbl_Section" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_Enrollment_tbl_PackageDetail" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_EnrollmentMaster_tbl_Package" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_StudentInstallments_tbl_Enrollment" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_ExamDetail_tbl_Exam" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_ExamDetail_tbl_QuestionPaper" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_dbo_FileItems_dbo_FileItems_FileId" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_FileItems_tbl_Package" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_Installments_tbl_PackageDuration" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_Question_tbl_Master" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_Ticket_tbl_Master" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_Tutorial_tbl_Master" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_User_tbl_Master" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_User_tbl_Master1" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_MeetingVideo_tbl_Meeting" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_Options_tbl_Question" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_PackageDetail_tbl_Package" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_PackageDuration_tbl_Package" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_Request_tbl_Package" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_StudentInstallments_tbl_Package" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_Progress_tbl_Video" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_Question_tbl_QuestionPartition" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_Question_tbl_Section" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_QuestionPaperDetail_tbl_Question" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_ResultDetail_tbl_Question" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_QuestionPaper_tbl_QuestionPaper" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_QuestionPaperDetail_tbl_QuestionPaper" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_ResultMaster_tbl_QuestionPaper" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_Request_tbl_Section" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_ResultDetail_tbl_ResultMaster" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_SectionSub_tbl_Section" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_Video_tbl_Section" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_Video_tbl_SectionSub" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_SeenNotif_tbl_StudentNotif" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_StudentGroupDetail_tbl_StudentGroup" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_TicketReply_tbl_Ticket1" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.AspNetUserRoles" />
+        <EntityTypeShape EntityType="FirstAidMadeEasyModel.tbl_DailyReport" Width="1.5" PointX="3" PointY="15" />
+        <EntityTypeShape EntityType="FirstAidMadeEasyModel.tbl_QuestionSystem" Width="1.5" PointX="14.375" PointY="10.875" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_tbl_Question_tbl_QuestionSystem" />
+        <EntityTypeShape EntityType="FirstAidMadeEasyModel.tbl_DailyReportUsers" Width="1.5" PointX="0.75" PointY="14.875" />
+        <AssociationConnector Association="FirstAidMadeEasyModel.FK_DailyReport_User" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

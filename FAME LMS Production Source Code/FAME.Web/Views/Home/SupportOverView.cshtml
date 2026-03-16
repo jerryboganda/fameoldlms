@@ -1,0 +1,334 @@
+﻿@using First_Aid_Made_Easy.DAL;
+@using First_Aid_Made_Easy.Models;
+@{
+    ViewBag.Title = "Support Center";
+    Layout = "~/Views/Shared/_LayoutStudent2026.cshtml";
+    var Tickets = (List<sp_lstTickets_Result>)ViewBag.TicketList;
+    var Faqs = (List<sp_lstQuestions_Result>)ViewBag.FaqList;
+    var Tutorials = (List<TutorialVM>)ViewBag.TutorialList;
+}
+
+<!-- Page Header -->
+<div class="mb-4">
+    <p class="text-muted small mb-0">How can we help you today?</p>
+</div>
+
+<div class="fame-container p-0">
+    <!--begin::Hero card-->
+    <div class="card mb-12">
+        <!--begin::Hero body-->
+        <div class="card-body flex-column p-5">
+            <!--begin::Hero content-->
+            <div class="d-flex align-items-center h-lg-300px p-5 p-lg-15">
+                <!--begin::Wrapper-->
+                <div class="d-flex flex-column align-items-start justift-content-center flex-equal me-5">
+                    <!--begin::Title-->
+                    <h1 class="fw-bold fs-4 fs-lg-1 text-gray-800 mb-5 mb-lg-10">How Can We Help You?</h1>
+                    <!--end::Title-->
+                    <!--begin::Input group-->
+                    <div class="position-relative w-100">
+                        <!--begin::Svg Icon | path: icons/duotune/general/gen021.svg-->
+                        <span class="svg-icon svg-icon-2 svg-icon-primary position-absolute top-50 translate-middle ms-8">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect opacity="0.5" x="17.0365" y="15.1223" width="8.15546" height="2" rx="1" transform="rotate(45 17.0365 15.1223)" fill="currentColor" />
+                                <path d="M11 19C6.55556 19 3 15.4444 3 11C3 6.55556 6.55556 3 11 3C15.4444 3 19 6.55556 19 11C19 15.4444 15.4444 19 11 19ZM11 5C7.53333 5 5 7.53333 5 11C5 14.4667 7.53333 17 11 17C14.4667 17 17 14.4667 17 11C17 7.53333 14.4667 5 11 5Z" fill="currentColor" />
+                            </svg>
+                        </span>
+                        <!--end::Svg Icon-->
+                        <input type="text" class="form-control fs-4 py-4 ps-14 text-gray-700 placeholder-gray-400 mw-500px" name="search" value="" placeholder="Ask a question" />
+                    </div>
+                    <!--end::Input group-->
+                </div>
+                <!--end::Wrapper-->
+                <!--begin::Wrapper-->
+                <div class="flex-equal d-flex justify-content-center align-items-end ms-5">
+                    <!--begin::Illustration-->
+                    <img src="~/Content/assetsn/media/illustrations/dozzy-1/20.png" alt="" class="mw-100 mh-125px mh-lg-275px mb-lg-n12" />
+                    <!--end::Illustration-->
+                </div>
+                <!--end::Wrapper-->
+            </div>
+            <!--end::Hero content-->
+            <!--begin::Hero nav-->
+            <div class="card-rounded bg-light d-flex flex-stack flex-wrap p-5">
+                @Html.Partial("_TicketNav")
+            </div>
+            <!--end::Hero nav-->
+        </div>
+        <!--end::Hero body-->
+    </div>
+    <!--end::Hero card-->
+    <!--begin::Row-->
+    <div class="row gy-0 mb-6 mb-xl-12">
+        <!--begin::Col-->
+        <div class="col-md-6">
+            <!--begin::Card-->
+            <div class="card card-md-stretch me-xl-3 mb-md-0 mb-6">
+                <!--begin::Body-->
+                <div class="card-body p-10 p-lg-15">
+                    <!--begin::Header-->
+                    <div class="d-flex flex-stack mb-7">
+                        <!--begin::Title-->
+                        <h1 class="fw-bold text-dark">Popular Tickets</h1>
+                        <!--end::Title-->
+                        <!--begin::Section-->
+                        <div class="d-flex align-items-center">
+                            <!--begin::Link-->
+                            <a href="/Student/TicketList" class="text-primary fw-bold me-1">Support</a>
+                            <!--begin::Link-->
+                            <!--begin::Arrow-->
+                            <!--begin::Svg Icon | path: icons/duotune/arrows/arr064.svg-->
+                            <span class="svg-icon svg-icon-2 svg-icon-primary">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <rect opacity="0.5" x="18" y="13" width="13" height="2" rx="1" transform="rotate(-180 18 13)" fill="currentColor" />
+                                    <path d="M15.4343 12.5657L11.25 16.75C10.8358 17.1642 10.8358 17.8358 11.25 18.25C11.6642 18.6642 12.3358 18.6642 12.75 18.25L18.2929 12.7071C18.6834 12.3166 18.6834 11.6834 18.2929 11.2929L12.75 5.75C12.3358 5.33579 11.6642 5.33579 11.25 5.75C10.8358 6.16421 10.8358 6.83579 11.25 7.25L15.4343 11.4343C15.7467 11.7467 15.7467 12.2533 15.4343 12.5657Z" fill="currentColor" />
+                                </svg>
+                            </span>
+                            <!--end::Svg Icon-->
+                            <!--end::Arrow-->
+                        </div>
+                        <!--end::Section-->
+                    </div>
+                    @if (Tickets != null)
+                    {
+                        foreach (var t in Tickets)
+                        {
+                            <div class="m-0">
+                                <!--begin::Heading-->
+                                <div class="d-flex align-items-center collapsible py-3 toggle mb-0" data-bs-toggle="collapse" data-bs-target="#kt_support_1_@t.Ticket_ID">
+                                    <!--begin::Icon-->
+                                    <div class="ms-n1 me-5">
+                                        <!--begin::Svg Icon | path: icons/duotune/arrows/arr072.svg-->
+                                        <span class="svg-icon toggle-on svg-icon-primary svg-icon-2">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M11.4343 12.7344L7.25 8.55005C6.83579 8.13583 6.16421 8.13584 5.75 8.55005C5.33579 8.96426 5.33579 9.63583 5.75 10.05L11.2929 15.5929C11.6834 15.9835 12.3166 15.9835 12.7071 15.5929L18.25 10.05C18.6642 9.63584 18.6642 8.96426 18.25 8.55005C17.8358 8.13584 17.1642 8.13584 16.75 8.55005L12.5657 12.7344C12.2533 13.0468 11.7467 13.0468 11.4343 12.7344Z" fill="currentColor" />
+                                            </svg>
+                                        </span>
+                                        <!--end::Svg Icon-->
+                                        <!--begin::Svg Icon | path: icons/duotune/arrows/arr071.svg-->
+                                        <span class="svg-icon toggle-off svg-icon-2">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M12.6343 12.5657L8.45001 16.75C8.0358 17.1642 8.0358 17.8358 8.45001 18.25C8.86423 18.6642 9.5358 18.6642 9.95001 18.25L15.4929 12.7071C15.8834 12.3166 15.8834 11.6834 15.4929 11.2929L9.95001 5.75C9.5358 5.33579 8.86423 5.33579 8.45001 5.75C8.0358 6.16421 8.0358 6.83579 8.45001 7.25L12.6343 11.4343C12.9467 11.7467 12.9467 12.2533 12.6343 12.5657Z" fill="currentColor" />
+                                            </svg>
+                                        </span>
+                                        <!--end::Svg Icon-->
+                                    </div>
+                                    <!--end::Icon-->
+                                    <!--begin::Section-->
+                                    <div class="d-flex align-items-center flex-wrap">
+                                        <!--begin::Title-->
+                                        <h3 class="text-gray-800 fw-semibold cursor-pointer me-3 mb-0">@t.Subject</h3>
+                                        <!--end::Title-->
+                                        <!--begin::Label-->
+                                        <span class="badge badge-light my-1 d-block">@t.Category</span>
+                                        <!--end::Label-->
+                                    </div>
+                                    <!--end::Section-->
+                                </div>
+                                <!--end::Heading-->
+                                <!--begin::Body-->
+                                <div id="kt_support_1_@t.Ticket_ID" class="collapse fs-6 ms-10">
+                                    <!--begin::Block-->
+                                    <div class="mb-4">
+                                        <!--begin::Text-->
+                                        <span class="text-muted fw-semibold fs-5">@t.Body</span>
+                                        <!--end::Text-->
+                                        <!--begin::Link-->
+                                        <a href="/Student/TicketReply/@t.Ticket_ID" class="fs-5 link-primary fw-semibold">Check Out</a>
+                                        <!--end::Link-->
+                                    </div>
+                                    <!--end::Block-->
+                                </div>
+                                <!--end::Content-->
+                            </div>
+                        }
+                    }
+                </div>
+                <!--end::Body-->
+            </div>
+            <!--end::Card-->
+        </div>
+        <!--end::Col-->
+        <!--begin::Col-->
+        <div class="col-md-6">
+            <!--begin::Card-->
+            <div class="card card-md-stretch ms-xl-3">
+                <!--begin::Body-->
+                <div class="card-body p-10 p-lg-15">
+                    <!--begin::Header-->
+                    <div class="d-flex flex-stack mb-7">
+                        <!--begin::Title-->
+                        <h1 class="fw-bold text-dark">FAQ</h1>
+                        <!--end::Title-->
+                        <!--begin::Section-->
+                        <div class="d-flex align-items-center">
+                            <!--begin::Link-->
+                            <a href="/Student/Faqs" class="text-primary fw-bold me-1">Full FAQ</a>
+                            <!--begin::Link-->
+                            <!--begin::Arrow-->
+                            <!--begin::Svg Icon | path: icons/duotune/arrows/arr064.svg-->
+                            <span class="svg-icon svg-icon-2 svg-icon-primary">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <rect opacity="0.5" x="18" y="13" width="13" height="2" rx="1" transform="rotate(-180 18 13)" fill="currentColor" />
+                                    <path d="M15.4343 12.5657L11.25 16.75C10.8358 17.1642 10.8358 17.8358 11.25 18.25C11.6642 18.6642 12.3358 18.6642 12.75 18.25L18.2929 12.7071C18.6834 12.3166 18.6834 11.6834 18.2929 11.2929L12.75 5.75C12.3358 5.33579 11.6642 5.33579 11.25 5.75C10.8358 6.16421 10.8358 6.83579 11.25 7.25L15.4343 11.4343C15.7467 11.7467 15.7467 12.2533 15.4343 12.5657Z" fill="currentColor" />
+                                </svg>
+                            </span>
+                            <!--end::Svg Icon-->
+                            <!--end::Arrow-->
+                        </div>
+                        <!--end::Section-->
+                    </div>
+                    @if (Faqs != null)
+                    {
+                        foreach (var f in Faqs)
+                        {
+
+                            <div class="m-0">
+                                <!--begin::Heading-->
+                                <div class="d-flex align-items-center collapsible py-3 toggle mb-0" data-bs-toggle="collapse" data-bs-target="#kt_support_2_@f.Question_Id">
+                                    <!--begin::Icon-->
+                                    <div class="ms-n1 me-5">
+                                        <!--begin::Svg Icon | path: icons/duotune/arrows/arr072.svg-->
+                                        <span class="svg-icon toggle-on svg-icon-primary svg-icon-2">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M11.4343 12.7344L7.25 8.55005C6.83579 8.13583 6.16421 8.13584 5.75 8.55005C5.33579 8.96426 5.33579 9.63583 5.75 10.05L11.2929 15.5929C11.6834 15.9835 12.3166 15.9835 12.7071 15.5929L18.25 10.05C18.6642 9.63584 18.6642 8.96426 18.25 8.55005C17.8358 8.13584 17.1642 8.13584 16.75 8.55005L12.5657 12.7344C12.2533 13.0468 11.7467 13.0468 11.4343 12.7344Z" fill="currentColor" />
+                                            </svg>
+                                        </span>
+                                        <!--end::Svg Icon-->
+                                        <!--begin::Svg Icon | path: icons/duotune/arrows/arr071.svg-->
+                                        <span class="svg-icon toggle-off svg-icon-2">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M12.6343 12.5657L8.45001 16.75C8.0358 17.1642 8.0358 17.8358 8.45001 18.25C8.86423 18.6642 9.5358 18.6642 9.95001 18.25L15.4929 12.7071C15.8834 12.3166 15.8834 11.6834 15.4929 11.2929L9.95001 5.75C9.5358 5.33579 8.86423 5.33579 8.45001 5.75C8.0358 6.16421 8.0358 6.83579 8.45001 7.25L12.6343 11.4343C12.9467 11.7467 12.9467 12.2533 12.6343 12.5657Z" fill="currentColor" />
+                                            </svg>
+                                        </span>
+                                        <!--end::Svg Icon-->
+                                    </div>
+                                    <!--end::Icon-->
+                                    <!--begin::Section-->
+                                    <div class="d-flex align-items-center flex-wrap">
+                                        <h3 class="text-gray-800 fw-semibold cursor-pointer me-3 mb-0">@f.Question</h3>
+                                    </div>
+                                    <span class="badge badge-light my-1 d-none">@f.Category</span>
+                                    <!--end::Section-->
+                                </div>
+                                <!--end::Heading-->
+                                <!--begin::Body-->
+                                <div id="kt_support_2_@f.Question_Id" class="collapse fs-6 ms-10">
+                                    <!--begin::Block-->
+                                    <div class="mb-4">
+                                        <!--begin::Text-->
+                                        <span class="text-muted fw-semibold fs-5">@f.Answer</span>
+                                        <!--end::Text-->
+                                        <!--begin::Link-->
+                                        <a href="#" class="d-none"></a>
+                                        <!--end::Link-->
+                                    </div>
+                                    <!--end::Block-->
+                                </div>
+                                <!--end::Content-->
+                            </div>
+                        }
+                    }
+                </div>
+                <!--end::Body-->
+            </div>
+            <!--end::Card-->
+        </div>
+        <!--end::Col-->
+    </div>
+    <!--end::Row-->
+    <!--begin::Row-->
+    <div class="row gy-0 mb-6 mb-xl-12">
+        <!--begin::Col-->
+        <div class="col-md-6">
+            <!--begin::Card-->
+            <div class="card card-md-stretch me-xl-3 mb-md-0 mb-6">
+                <!--begin::Body-->
+                <div class="card-body p-10 p-lg-15">
+                    <!--begin::Header-->
+                    <div class="d-flex flex-stack mb-7">
+                        <!--begin::Title-->
+                        <h1 class="fw-bold text-dark">Tutorials</h1>
+                        <!--end::Title-->
+                        <!--begin::Section-->
+                        <div class="d-flex align-items-center">
+                            <!--begin::Link-->
+                            <a href="/Home/Tutorials" class="text-primary fw-bold me-1">All Tutorials</a>
+                            <!--begin::Link-->
+                            <!--begin::Arrow-->
+                            <!--begin::Svg Icon | path: icons/duotune/arrows/arr064.svg-->
+                            <span class="svg-icon svg-icon-2 svg-icon-primary">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <rect opacity="0.5" x="18" y="13" width="13" height="2" rx="1" transform="rotate(-180 18 13)" fill="currentColor" />
+                                    <path d="M15.4343 12.5657L11.25 16.75C10.8358 17.1642 10.8358 17.8358 11.25 18.25C11.6642 18.6642 12.3358 18.6642 12.75 18.25L18.2929 12.7071C18.6834 12.3166 18.6834 11.6834 18.2929 11.2929L12.75 5.75C12.3358 5.33579 11.6642 5.33579 11.25 5.75C10.8358 6.16421 10.8358 6.83579 11.25 7.25L15.4343 11.4343C15.7467 11.7467 15.7467 12.2533 15.4343 12.5657Z" fill="currentColor" />
+                                </svg>
+                            </span>
+                            <!--end::Svg Icon-->
+                            <!--end::Arrow-->
+                        </div>
+                        <!--end::Section-->
+                    </div>
+
+                    @if (Tutorials != null)
+                    {
+                        foreach (var f in Tutorials)
+                        {
+                            <div class="m-0">
+                                <!--begin::Heading-->
+                                <div class="d-flex align-items-center collapsible py-3 toggle mb-0" data-bs-toggle="collapse" data-bs-target="#kt_support_3_@f.TutorialID">
+                                    <!--begin::Icon-->
+                                    <div class="ms-n1 me-5">
+                                        <!--begin::Svg Icon | path: icons/duotune/arrows/arr072.svg-->
+                                        <span class="svg-icon toggle-on svg-icon-primary svg-icon-2">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M11.4343 12.7344L7.25 8.55005C6.83579 8.13583 6.16421 8.13584 5.75 8.55005C5.33579 8.96426 5.33579 9.63583 5.75 10.05L11.2929 15.5929C11.6834 15.9835 12.3166 15.9835 12.7071 15.5929L18.25 10.05C18.6642 9.63584 18.6642 8.96426 18.25 8.55005C17.8358 8.13584 17.1642 8.13584 16.75 8.55005L12.5657 12.7344C12.2533 13.0468 11.7467 13.0468 11.4343 12.7344Z" fill="currentColor" />
+                                            </svg>
+                                        </span>
+                                        <!--end::Svg Icon-->
+                                        <!--begin::Svg Icon | path: icons/duotune/arrows/arr071.svg-->
+                                        <span class="svg-icon toggle-off svg-icon-2">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M12.6343 12.5657L8.45001 16.75C8.0358 17.1642 8.0358 17.8358 8.45001 18.25C8.86423 18.6642 9.5358 18.6642 9.95001 18.25L15.4929 12.7071C15.8834 12.3166 15.8834 11.6834 15.4929 11.2929L9.95001 5.75C9.5358 5.33579 8.86423 5.33579 8.45001 5.75C8.0358 6.16421 8.0358 6.83579 8.45001 7.25L12.6343 11.4343C12.9467 11.7467 12.9467 12.2533 12.6343 12.5657Z" fill="currentColor" />
+                                            </svg>
+                                        </span>
+                                        <!--end::Svg Icon-->
+                                    </div>
+                                    <!--end::Icon-->
+                                    <!--begin::Section-->
+                                    <div class="d-flex align-items-center flex-wrap">
+                                        <!--begin::Title-->
+                                        <h3 class="text-gray-800 fw-semibold cursor-pointer me-3 mb-0">@f.Title</h3>
+                                        <!--end::Title-->
+                                        <!--begin::Label-->
+                                        <span class="badge badge-light my-1 d-none">@f.Category</span>
+                                        <!--end::Label-->
+                                    </div>
+                                    <!--end::Section-->
+                                </div>
+                                <!--end::Heading-->
+                                <!--begin::Body-->
+                                <div id="kt_support_3_@f.TutorialID" class="collapse fs-6 ms-10">
+                                    <!--begin::Block-->
+                                    <div class="mb-4">
+                                        <!--begin::Text-->
+                                        <span class="text-muted fw-semibold fs-5">@f.Body</span>
+                                    </div>
+                                    <!--end::Block-->
+                                </div>
+                                <!--end::Content-->
+                            </div>
+                        }
+                    }
+                </div>
+                <!--end::Body-->
+            </div>
+            <!--end::Card-->
+        </div>
+        <!--end::Col-->
+    </div>
+    <!--end::Row-->
+</div>
+
+@section scripts {
+
+}

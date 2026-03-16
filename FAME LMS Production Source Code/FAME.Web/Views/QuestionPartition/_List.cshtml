@@ -1,0 +1,30 @@
+﻿@model  List<First_Aid_Made_Easy.Models.QuestionSystemVM>
+@using First_Aid_Made_Easy.BLL
+@{
+	int Sr = 0;
+}
+<table style="width:100% !important" id="DTable" class="table table-bordered">
+	<thead>
+		<tr style="background-color: #364e9c">
+			<th>Sr.</th>
+			<th>Name</th>
+			<th>IsActive</th>
+			<th style="min-width:80px">Action</th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var i in Model)
+		{
+			Sr++;
+			<tr>
+				<td>@Sr</td>
+				<td>@i.Name</td>
+				<td>@i.IsForStudent</td>
+				<td>
+					<a href="/QuestionPartition/Index/@i.ID" vlaue="" class="text-warning"><i class="fa fa-edit Font20"></i></a>
+					<a href="javascript:;" id="btnRowDelete" data-name="Tutorial" data-url="/QuestionPartition/Delete/@i.ID" class="text-danger"><i class="fa fa-trash Font20"></i></a>
+				</td>
+			</tr>
+		}
+	</tbody>
+</table>

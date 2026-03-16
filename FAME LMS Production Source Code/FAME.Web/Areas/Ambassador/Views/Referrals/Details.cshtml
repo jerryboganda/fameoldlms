@@ -1,0 +1,99 @@
+@using First_Aid_Made_Easy.BLL
+@model First_Aid_Made_Easy.DAL.tbl_Referral
+@{
+    ViewBag.Title = "Referral Details";
+    Layout = "~/Views/Shared/_LayoutAmbassador.cshtml";
+    var currency = Model?.tbl_ReferralConversion?.OrderByDescending(x => x.ConvertedAt).FirstOrDefault()?.Currency ?? AmbassadorSettingsHelper.GetDefaultCurrency();
+}
+
+<div class="container-fluid py-4">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h4 class="mb-1">Referral Details</h4>
+            <p class="text-muted mb-0">Detailed view of this referral</p>
+        </div>
+        <div>
+            <a href="@Url.Action("Index")" class="btn btn-outline-secondary">
+                <i class="material-icons align-middle mr-1">arrow_back</i>
+                Back to Referrals
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Referral Info -->
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="material-icons align-middle mr-1">person</i>
+                        Referral Information
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless mb-0">
+                        <tr>
+                            <td class="font-weight-bold text-muted" style="width:40%;">Name</td>
+                            <td>@Model.ReferredName</td>
+                        </tr>
+                        <tr>
+                            <td class="font-weight-bold text-muted">Email</td>
+                            <td>@Model.ReferredEmail</td>
+                        </tr>
+                        <tr>
+                            <td class="font-weight-bold text-muted">Status</td>
+                            <td>
+                                <span class="badge badge-@(Model.Status == "Converted" ? "success" : Model.Status == "Registered" ? "info" : Model.Status == "Clicked" ? "secondary" : "warning")">
+                                    @Model.Status
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="font-weight-bold text-muted">Source</td>
+                            <td>@(Model.Source ?? "Direct Link")</td>
+                        </tr>
+                        <tr>
+                            <td class="font-weight-bold text-muted">Referred On</td>
+                            <td>@Model.RegisteredAt.ToString("MMM dd, yyyy hh:mm tt")</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Conversion & Earnings Info -->
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-success">
+                        <i class="material-icons align-middle mr-1">monetization_on</i>
+                        Conversion & Earnings
+                    </h6>
+                </div>
+                <div class="card-body">
+                    @if (Model.Status == "Converted")
+                    {
+                        <table class="table table-borderless mb-0">
+                            <tr>
+                                <td class="font-weight-bold text-muted" style="width:40%;">Converted On</td>
+                                <td>@(Model.ConvertedAt != null ? Model.ConvertedAt.Value.ToString("MMM dd, yyyy") : "N/A")</td>
+                            </tr>
+                            <tr>
+                                <td class="font-weight-bold text-muted">Commission Earned</td>
+                                <td><strong class="text-success">@currency @Model.LifetimeValue.ToString("N0")</strong></td>
+                            </tr>
+                        </table>
+                    }
+                    else
+                    {
+                        <div class="text-center py-4">
+                            <i class="material-icons text-muted" style="font-size: 3rem;">hourglass_empty</i>
+                            <p class="text-muted mt-2 mb-0">This referral has not converted yet.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

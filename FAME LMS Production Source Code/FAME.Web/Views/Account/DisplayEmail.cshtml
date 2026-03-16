@@ -1,0 +1,353 @@
+﻿@using First_Aid_Made_Easy.Models
+@{
+	ViewBag.Title = "Request Received";
+	Layout = "";
+
+	bool IsUni = ViewBag.College == "ASIAN MEDICAL INSTISTUTE";
+}
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<title>Verify Code</title>
+
+	<!-- Prevent the demo from appearing in search engines -->
+	<meta name="robots" content="noindex">
+
+	<link href="https://fonts.googleapis.com/css?family=Lato:400,700%7CRoboto:400,500%7CExo+2:600&display=swap" rel="stylesheet">
+
+	<!-- Font Awesome Icons -->
+	<link type="text/css" href="~/Content/assets/css/fontawesome.css" rel="stylesheet">
+
+
+	<!-- Material Design Icons -->
+	<link type="text/css" href="~/Content/assets/css/material-icons.css" rel="stylesheet">
+
+	<!-- App CSS -->
+	<link type="text/css" href="~/Content/assets/css/app.css" rel="stylesheet">
+	<style>
+		#divMessage, #divVerification, #secPayDetail {
+			display: none;
+		}
+	</style>
+	@Html.Partial("_TrackingPixels")
+</head>
+<body class="layout-default layout-login-centered-boxed">
+	<div class="layout-login-centered-boxed__form card">
+		@if (!IsUni)
+		{
+
+			<div class="d-flex flex-column justify-content-center align-items-center mt-2 navbar-light">
+				<div>
+					<img style="width:70px;" src="~/Images/FIRST AID LOGO.png" alt="logo" class="img-fluid" />
+				</div>
+				<h4 class="m-0 text-center"> First Aid Made Easy </h4>
+				<p>Your Request Has Been Received</p>
+			</div>
+		}
+		else
+		{
+			<div class="d-flex flex-column justify-content-center align-items-center mt-2 mb-5 navbar-light">
+				<div>
+					<img style="width: 70px;display:inline-block;margin-left:2rem" src="~/Images/AMIlogo.jfif" alt="logo" />
+					<img style="width: 70px; display: inline-block; margin-left: 2rem" src="~/Images/FIRST AID LOGO.png" alt="logo" />
+				</div>
+				<h4 class="m-0 text-center">
+					Online E-Library collaboration between <br /> <b>ASIAN MEDICAL INSTITUTE</b> <br /> & <b>FIRST AID MADE EASY PLATFORM</b>
+				</h4>
+			</div>
+		}
+		<section class="text-center" id="divMessage">
+			<div>
+				<hr />
+				<h2>Code Verified Successfully</h2>
+			</div>
+		</section>
+		@if (ViewBag.Exception != null)
+		{
+			Exception ex = (Exception)ViewBag.Exception;
+			<section class="text-center" id="divMessage">
+				<div>
+					<hr />
+					<h5>Account Created But Request Is Not Submitted </h5>
+					<h6> <b>Message : </b> @ex.Message </h6>
+					<h6> <b>Inner Exception : </b> @ex.InnerException</h6>
+				</div>
+			</section>
+		}
+		@if (!(bool?)ViewBag.IsConfirmed == true)
+		{
+			<section id="divVerification">
+				<div class="form-group">
+					<div class="alert alert-soft-success d-flex" role="alert">
+						<i class="material-icons mr-12pt">check_circle</i>
+						<div class="text-body">An email has been sent to your email address, Please Check Your Email To Verify.</div>
+					</div>
+
+					<label class="text-label" for="email_2">Verification Code:</label>
+					<div class="input-group ">
+						<input type="hidden" name="Email" id="Email" value="@ViewBag.Email" />
+						@Html.TextBox("Code", "", new { @class = "form-control", @placeholder = "Enter Your Code" })
+					</div>
+					<div id="CodeVal" class="text-danger validate"></div>
+					<div id="CodeValS" class="text-success validate"></div>
+				</div>
+				<div class="form-group">
+					<div class="col-md-offset-2 col-md-10">
+						<button id="btnVerify" class="btn btn-outline-success">Verfiy Code</button>
+						@* ========= Display None ========*@
+						<a style="display:none" class="text-body text-underline" id="btnSendAgain" href="javascript:;">Didn't get Email? Send Again</a>
+						<p class="text-danger mt-4" id="Note"><b>Note:</b> Your Verfication code will expire after <span id="counter"></span> </p>
+					</div>
+				</div>
+
+			</section>
+		}
+
+		@if (ViewBag.Name != null)
+		{
+			<section class="text-center" id="secReqDetail">
+				<div>
+					<hr />
+					<h2>Request Detail</h2>
+					@*<h5> <b style="color:#5567ff !important">Profile ID : </b> @ViewBag.Name </h5>*@
+					<h5> <b style="color:#5567ff !important">Name : </b> @ViewBag.Name </h5>
+					<h5> <b style="color:#5567ff !important">Email : </b> @ViewBag.Email </h5>
+					<h5> <b style="color:#5567ff !important">College : </b> @ViewBag.College </h5>
+					@if (!IsUni)
+					{
+						<h5> <b style="color:#5567ff !important">City : </b> @ViewBag.City </h5>
+					}
+					<h5> <b style="color:#5567ff !important">Contact No : </b> @ViewBag.Mobile </h5>
+					<h5> <b style="color:#5567ff !important">Package : </b> @ViewBag.Package </h5>
+					<h5> <b style="color:#5567ff !important">Duration : </b> @ViewBag.Duration</h5>
+					<h5> <b style="color:#5567ff !important">Date of Reg. : </b> @string.Format("{0:dd/MM/yyyy}", DateTime.UtcNow.AddHours(5))</h5>
+					<h5> <b style="color:#5567ff !important">Type : </b> @(First_Aid_Made_Easy.BLL.Common.Universities.FirstOrDefault(x=> (int)ViewBag.UserType == x.Value)?.Text)</h5>
+				</div>
+				<hr />
+
+				@if (!IsUni)
+				{
+					if ((int)ViewBag.UserType != 7)
+					{
+						<h5> Please Send The Screen Shot Of This Page To our official whatsapp number only<br /> +92 (318) 0049-742 </h5>
+						<h5> You'll get response in next 3 hours.</h5>
+					}
+					else
+					{
+						<h5>Further guidelines will be shared in your whatsapp group.</h5>
+					}
+				}
+				else
+				{
+					<h5>
+						Please Send The Screen Shot Of This Page To<br />
+						Dr Faiz Ur Rasool +92 308 6176 842  <br />
+						Dr Sobia +92 301 7481 020  <br />
+						@*Dr Sorath Memon +92 (318) 0049-742    <br />
+							Dr. Husnain Razzaq +92 331 4485894 <br />
+							Dr Faisal Maqsood +92 321 4261 950  <br />*@
+					</h5>
+					<h5>Please contact any one admin and wait for 2 hours.<br /> If you don't receive response from one admin then contact the other admin after 2 hours for account approval.</h5>
+				}
+				@if (ViewBag.UserType != 1)
+				{
+					<a class="btn btn-primary" href="/Account/Login@( ViewBag.UserType == 2 ? "Uni" : "")"> Login</a>
+				}
+				else
+				{
+					<button class="btn btn-primary" id="btnNext">Next</button>
+				}
+			</section>
+		}
+		<section class="text-center" id="secPayDetail">
+			<div class="text-left">
+				<hr />
+				<div style="padding: 10px; background-color: #f6c55e">
+					<div class="add-book-code">
+						<h2 class="text-center">Book Code</h2>
+						<p class="text-center">
+							If You have purchase MCQ book please insert Book Code here to <br />
+							<b style=" font-size: 15px; color: #9f0000;">Get free 7 day subscription</b>
+						</p>
+						<div style="display:flex">
+							<input id="BookCode" type="text" placeholder="Add Book Code Here" class="form-control" />
+							<button class="btn btn-primary" id="btn-verify-book-code" type="button" style=" width: 150px; margin-left:10px">Verify Code</button>
+						</div>
+						<div id="bookCodeVal" class="text-danger"> </div>
+					</div>
+					<div class="success-message" style="display:none">
+						<h3 class="text-center">Code Verified Successfully</h3>
+					</div>
+				</div>
+				<hr />
+				<h2 class="text-center">Payment Detail</h2>
+				<p style="font-size:1rem">
+					Next step is to submit your fee in our following official account and share payment receipt with us for acess of courses.
+					<br />
+					<br />
+					<b>
+						1-Bank Details:<br />
+						Account Title: atif hussain sarwar<br />
+						Account Number:<br />
+						24787000100903<br />
+						IBAN:<br />
+						Pk69HABB0024787000100903<br />
+						Bank: Habib Bank Limited (HBL)<br />
+						2-EasyPaisa and jazz cash account no. 👇<br />
+						+923007131730<br />
+						ATIF HUSSAIN SARWAR<br />
+						Easy paesa👇<br />
+						Dr Husnain Razaq<br />
+						03174494654<br />
+					</b> <br />
+
+					You can transfer fees by visiting Bank, ATM, or online using your Banking app Including <b>Easypaissa</b> and <b>Jazzcash</b>.
+					<br />
+					<br />
+					Once paid, please send  payment receipt(screenshot of receipt or sms)  through whatsapp
+					03180049742 (dr sorath fame admin).we'll  approve your registration request and issue you access of your courses then.
+				</p>
+			</div>
+			<a class="btn btn-primary" href="/Account/Login@(ViewBag.UserType == 2 ? "Uni" : "")"> Login</a>
+		</section>
+	</div>
+	<!-- jQuery -->
+	<script src="~/Content/assets/vendor/jquery.min.js"></script>
+	<!-- Bootstrap -->
+	<script src="~/Content/assets/vendor/popper.min.js"></script>
+	<script src="~/Content/assets/vendor/bootstrap.min.js"></script>
+	<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+	<script>
+        $(document).ready(function () {
+
+        })
+        $(document).on("click", "#btnNext", function () {
+            $("#secPayDetail").show();
+            $("#secReqDetail").hide();
+        })
+        $(document).on("click", "#btnVerify", function () {
+            var email = '@ViewBag.Email';
+            $.ajax({
+                url: "/Auth/ConfirmEmail",
+                data: {
+                    Email: email,
+                    Code:$("#Code").val(),
+                },
+                method: "GET",
+                beforeSend: function () {
+                    swal.fire({
+                        html: '<h5>Verifying Code...</h5>',
+                        showConfirmButton: false,
+                        onRender: function () { $('.swal2-content').prepend(sweet_loader); }
+                    });
+                },
+                success: function (result) {
+                    $(".validate").hide();
+                    if (result.success) {
+                        $("#divMessage").show();
+                        $("#divVerification").hide();
+                    } else {
+                        $("#CodeVal").text(result.message).show();
+                    }
+                    swal.close()
+                }, error: function (err) {
+                    alert("Error" + err);
+                    swal.close()
+                }
+            })
+
+
+        })
+        $(document).on("click", "#btn-verify-book-code", function () {
+            $("#bookCodeVal").hide();
+            var ID = '@ViewBag.ID';
+            $.ajax({
+                url: "/Account/VerifyBookCode",
+                data: {
+                    ID: ID,
+                    BookCode:$("#BookCode").val(),
+                },
+                method: "GET",
+                beforeSend: function () {
+                    swal.fire({
+                        html: '<h5>Verifying Code...</h5>',
+                        showConfirmButton: false,
+                        onRender: function () { $('.swal2-content').prepend(sweet_loader); }
+                    });
+                },
+                success: function (result) {
+                    if (result) {
+                        $(".add-book-code,.success-message").toggle();
+                    } else {
+                        $("#bookCodeVal").show().text("Code not valid or already used.");
+                    }
+                    swal.close()
+                }, error: function (err) {
+                    alert("Error" + err);
+                    swal.close()
+                }
+            })
+
+
+        })
+
+        $(document).on("click", "#btnSendAgain", function () {
+            $.ajax({
+                url: "/Auth/SendEmailAgain",
+                data: {
+                    Email: $("#Email").val(),
+                    Type: $("input[name=Type]:checked").val()
+                },
+                method: "POST",
+                beforeSend: function () {
+                    swal.fire({
+                        html: '<h5>Sending Verification Code...</h5>',
+                        showConfirmButton: false,
+                        onRender: function () { $('.swal2-content').prepend(sweet_loader); }
+                    });
+                },
+                success: function (result) {
+                    $(".validate").hide();
+                    if (result.success) {
+                        $("#CodeValS").text(result.message).show();
+                    } else {
+                        $("#CodeVal").text(result.message).show();
+                    }
+                    swal.close()
+                }, error: function (err) {
+                    alert("Error" + err);
+                    swal.close()
+                }
+            })
+
+
+        })
+	</script>
+	<script>
+		var date = new Date();
+		date.setTime(new Date().getTime() + (30 * 60000));
+		var countDownDate = date.getTime();
+		var x = setInterval(function () {
+			var now = new Date().getTime();
+			var distance = countDownDate - now;
+			var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+			var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+			$("#counter").text(minutes + "m " + seconds + "s ");
+			if (distance < 0) {
+				clearInterval(x);
+				$("#Note").html("EXPIRED");
+			}
+		}, 1000);
+	</script>
+
+</body>
+
+</html>
+
+
+

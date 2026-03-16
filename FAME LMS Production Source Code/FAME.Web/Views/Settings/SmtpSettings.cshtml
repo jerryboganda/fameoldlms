@@ -1,0 +1,259 @@
+﻿@model First_Aid_Made_Easy.BLL.JzTimer.SmtpSettingsVM
+@{
+	ViewBag.Title = "SMTP Settings";
+	Layout = "~/Views/Shared/_LayoutTeacher.cshtml";
+}
+
+<div class="pt-32pt">
+	<div class="container-fluid page__container d-flex flex-column flex-md-row align-items-center text-center text-sm-left">
+		<div class="flex d-flex flex-column flex-sm-row align-items-center">
+			<div class="mb-24pt mb-sm-0 mr-sm-24pt">
+				<h2 class="mb-0">SMTP Settings</h2>
+			</div>
+		</div>
+	</div>
+	<div class="page-section border-bottom-2">
+		<div class="container-fluid page__container">
+			<form id="frmSettings">
+				<div class="row">
+					<div class="col-md-12 card p-3">
+
+						<div class="page-separator">
+							<div class="page-separator__text">SMTP Settings</div>
+						</div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label"> From Email </label>
+                                    @Html.TextBoxFor(model => model.FromEmail, new { @class = "form-control ", @type = "text" })
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label"> From Name </label>
+                                    @Html.TextBoxFor(model => model.FromName, new { @class = "form-control ", @type = "text" })
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label"> Username </label>
+                                    @Html.TextBoxFor(model => model.Username, new { @class = "form-control ", @type = "text" })
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label"> Password </label>
+                                    @Html.TextBoxFor(model => model.Password, new { @class = "form-control ", @type = "password" })
+
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="form-label"> Port </label>
+                                    @Html.TextBoxFor(model => model.Port, new { @class = "form-control ", @type = "text" })
+
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="form-label"> Host </label>
+                                    @Html.TextBoxFor(model => model.Host, new { @class = "form-control ", @type = "text" })
+                                </div>
+                            </div>
+
+                            <div class="col-md-4" style="margin-top:30px">
+                                <label class="form-label">
+                                    @Html.CheckBoxFor(model => model.SSL, new { })
+                                    SSL
+                                </label>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="form-group">
+                                    <label class="form-label"> Api Key </label>
+                                    @Html.TextBoxFor(model => model.ApiKey, new { @class = "form-control ", @type = "password" })
+
+                                </div>
+                            </div>
+                            <div class="col-md-4" style="margin-top:30px">
+                                <label class="form-label">
+                                    @Html.CheckBoxFor(model => model.UseApi, new { })
+                                    Use Api
+                                </label>
+                            </div>
+                        </div>
+
+						<div class="card" style="margin-top:20px">
+							<div class="card-header text-center">
+								<button type="button" id="btnSave" class="btn btn-outline-success">&nbsp; Save</button>
+								<button type="button" id="btnReset" class="btn btn-outline-danger">&nbsp; Reset</button>
+							</div>
+						</div>
+					</div>
+
+					<div class="col-md-12 card p-3">
+
+						<div class="page-separator">
+							<div class="page-separator__text">Test Email</div>
+						</div>
+						<div class="row">
+							<div class="col-md-6">
+
+								<label class="form-label"> To Mail </label>
+								@Html.TextBox("ToMail", "", new { @class = "form-control ", @type = "text" })
+
+							</div>
+							<div class="col-md-6" style="margin-top:25px">
+								<button type="button" id="btnSendTest" class="btn btn-outline-success">&nbsp; Send Test</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+
+@section scripts {
+
+	<script>
+
+		$.fn.getValue = function () {
+			var el = $("input[name=" + $(this)[0].name + "]");
+			if (el.hasClass("numeric") || el.hasClass("numericOnly")) {
+				return parseFloat(this[0].value.split(",").join("")) || 0;
+			} else {
+				return this[0].value;
+			}
+		};
+
+		$.fn.serializeObject = function () {
+			var o = {};
+			var a = this.serializeArray();
+			$.each(a, function () {
+				if (o[this.name]) {
+					if (!o[this.name].push) {
+						o[this.name] = [o[this.name]];
+					}
+					o[this.name].push($(this).getValue() || '');
+				} else {
+					o[this.name] = $(this).getValue() || '';
+				}
+			});
+			return o;
+		};
+
+		$("#btnReset").click(function () {
+
+			$.ajax({
+				url: "/Settings/SaveSMTPSettings",
+				method: "post",
+				data: {},
+				success: function () {
+					window.location.reload();
+				}
+			})
+
+		})
+		$("#btnSendTest").click(function () {
+			if (!$("#ToMail").val())
+				return;
+			$(".divLoader").show();
+			$.ajax({
+				url: "/Account/SendEmail",
+				method: "post",
+				data: {
+					Subject: "Test Email",
+					Body: `
+<style>html,body { padding: 0; margin:0; }</style>
+<div style="font-family:Arial,Helvetica,sans-serif; line-height: 1.5; font-weight: normal; font-size: 15px; color: #2F3044; min-height: 100%; margin:0; padding:0; width:100%; background-color:#edf2f7">
+			<table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse:collapse;margin:0 auto; padding:0; max-width:600px">
+				<tbody>
+					<tr>
+						<td align="center" valign="middle" style="text-align:center; padding: 40px">
+							<a href="https://firstaidmadeeasy.com.pk" rel="noopener" target="_blank"> </a>
+						</td>
+					</tr>
+					<tr>
+						<td align="left" valign="middle">
+							<div style="text-align:left; margin: 0 20px; padding: 40px; background-color:#ffffff; border-radius: 6px">
+								<div style="padding-bottom: 30px; font-size: 17px;">
+									<strong>Welcome to First Aid Made Easy!</strong>
+								</div>
+								<div style="padding-bottom: 30px">This is a test email from FAME . Please checkout our blogs. <a href="https://firstaidmadeeasy.com.pk/blogs" rel="noopener" target="_blank"> Blogs </a></div>
+
+								<div style="padding-bottom: 10px">
+									Kind regards,
+									<br>The FAME Team
+								</div>
+							</div>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+</div>
+
+							`,
+					Destination: $("#ToMail").val()
+				},
+				success: function () {
+					$(".divLoader").hide();
+
+					Swal.fire({
+						position: 'top-end',
+						icon: 'success',
+						title: 'Email Sent Successfully',
+						showConfirmButton: false,
+						timer: 1500
+					})
+				},
+				error: function () {
+					$(".divLoader").hide();
+					Swal.fire({
+						position: 'top-end',
+						icon: 'error',
+						title: 'Something Went Wrong',
+						showConfirmButton: false,
+						timer: 1500
+					})
+				}
+			})
+
+		})
+		$("#btnSave").click(function () {
+			var formData = $("#frmSettings").serializeObject();
+
+			$(".divLoader").show();
+
+			$.ajax({
+				url: "/Settings/SaveSMTPSettings",
+				method: "post",
+				data: formData,
+				success: function () {
+					$(".divLoader").hide();
+					Swal.fire({
+						position: 'top-end',
+						icon: 'success',
+						title: 'Data Saved Successfully',
+						showConfirmButton: false,
+						timer: 1500
+					})
+				},
+				error: function () {
+					$(".divLoader").hide();
+					Swal.fire({
+						position: 'top-end',
+						icon: 'error',
+						title: 'Something Went Wrong',
+						showConfirmButton: false,
+						timer: 1500
+					})
+				}
+			})
+		})
+
+	</script>
+
+}
+

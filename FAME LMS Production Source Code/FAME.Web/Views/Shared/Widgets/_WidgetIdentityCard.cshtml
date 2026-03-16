@@ -1,0 +1,74 @@
+@using First_Aid_Made_Easy.Models
+@using First_Aid_Made_Easy.BLL
+@model UserVM
+@{
+    var user = ViewBag.User; // fallback if needed
+    string role = "Student"; // Default
+    // Simple logic to determine a "Level" or Rank based on some criteria visually
+    string rank = "Scholar"; 
+    string rankColor = "text-accent-teal";
+}
+
+<div class="card bg-glass border-glass overflow-hidden position-relative">
+    <!-- Decorative Background Pattern -->
+    <div class="position-absolute w-100 h-100 top-0 start-0" style="background: radial-gradient(circle at 50% 0%, rgba(108, 92, 231, 0.2) 0%, transparent 70%); z-index: 0;"></div>
+
+    <div class="card-body p-5 position-relative text-center" style="z-index: 1;">
+        <!-- Avatar Ring -->
+        <div class="symbol symbol-100px symbol-circle mb-4 p-2 bg-light-primary bg-opacity-10 rounded-circle d-inline-block position-relative">
+            <div class="position-absolute top-0 start-0 w-100 h-100 rounded-circle border border-2 border-primary border-dashed" style="animation: spin 30s linear infinite;"></div>
+             @if (Model.User_Pic != null && Model.User_Pic != "")
+            {
+                <img src="@Url.Content("~/Images/" + Model.User_Pic)" class="rounded-circle" style="width: 100%; height: 100%; object-fit: cover;" alt="user" />
+            }
+            else
+            {
+                 <div class="symbol-label fs-1 fw-bold text-primary">@Model.User_Name.Substring(0,1)</div>
+            }
+            
+            <span class="position-absolute bottom-0 end-0 p-2 bg-success border border-white rounded-circle"></span>
+        </div>
+
+        <!-- Identity -->
+        <h2 class="fw-bold text-white mb-0">@Model.User_Name</h2>
+        <div class="badge badge-light-primary fw-bold fs-7 mb-2 mt-1">@rank</div>
+        
+        <div class="text-white-50 fs-7 mb-4">
+            <i class="fa fa-envelope me-1"></i> @Model.Mail <br/>
+            <i class="fa fa-phone me-1"></i> @Model.User_Mobile
+        </div>
+
+        <!-- Gamification Stats (Visual Only) -->
+        <div class="d-flex justify-content-center gap-4 mb-4">
+            <div class="text-center">
+                <div class="fw-bold text-white fs-4">12</div>
+                <div class="text-white-50 fs-9">Courses</div>
+            </div>
+             <div class="text-center">
+                <div class="fw-bold text-white fs-4">85%</div>
+                <div class="text-white-50 fs-9">Avg Score</div>
+            </div>
+             <div class="text-center">
+                <div class="fw-bold text-white fs-4">5</div>
+                <div class="text-white-50 fs-9">Certificates</div>
+            </div>
+        </div>
+        
+        <div class="separator separator-dashed border-white opacity-10 my-4"></div>
+        
+        <div class="text-start px-2">
+            <div class="d-flex justify-content-between text-white-50 fs-8 mb-1">
+                <span>Profile Completion</span>
+                <span>90%</span>
+            </div>
+            <div class="progress h-6px w-100 bg-black bg-opacity-20 rounded">
+                <div class="progress-bar bg-accent-teal" role="progressbar" style="width: 90%"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    @keyframes spin { 100% { transform: rotate(360deg); } }
+    .bg-accent-teal { background-color: var(--fame-accent-teal); }
+</style>

@@ -1,0 +1,159 @@
+﻿@model IEnumerable<First_Aid_Made_Easy.DAL.sp_GetUsersListByRole_Result>
+@{
+    ViewBag.Title = "Support Agent List";
+    Layout = "~/Views/Shared/_LayoutTeacher.cshtml";
+    int Sr = 0;
+}
+
+
+<div class="pt-32pt">
+    <div class="container-fluid page__container d-flex flex-column flex-md-row align-items-center Email-center Email-sm-left">
+        <div class="flex d-flex flex-column flex-sm-row align-items-center">
+            <div class="mb-24pt mb-sm-0 mr-sm-24pt">
+                <h2 class="mb-0">Support Agent  List</h2>
+                <ol class="breadcrumb p-0 m-0">
+                    <li class="breadcrumb-item"><a href="/Teacher/Index">Home</a></li>
+                    <li class="breadcrumb-item active">
+                        Support Agent  List
+                    </li>
+                </ol>
+            </div>
+        </div>
+        <div class="ml-lg-16pt">
+            <a href="/Account/RegisterSuppAgent" class="btn btn-light"><i class="fa fa-plus Font20"></i>Create New </a>
+        </div>
+    </div>
+    <div class="page-section border-bottom-2">
+        <div style="margin: 0; max-width: 100%" class="container-fluid page__container">
+            <div class="row">
+
+
+                <div class="col-md-12">
+                    <div class="page-separator">
+                        <div class="page-separator__Email">Search Filters</div>
+                    </div>
+                    <div style="margin-top:20px">
+                        <div class="row">
+                            <div class="col-md-2">
+                                <label>Category</label>
+                                @Html.DropDownList("CategoryID", new SelectList(ViewBag.Categories, "Master_ID", "Master_Value"), "Please Select", new { @class = "form-control select2", @required = "required", @data_toggle = "select" })
+                            </div>
+                            <div class="col-md-4">
+                                <label>Email</label>
+                                <input id="Email" type="Email" class="form-control" placeholder="Email">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-12">
+                    <div class="page-separator">
+                        <div class="page-separator__Email">Basic Information</div>
+                    </div>
+
+                    <div class="table-responsive" style="margin-top:20px" id="divPartial">
+                        @Html.Partial("_SuppAgentList")
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section scripts {
+    @Scripts.Render("~/Scripts/List")
+
+    @if (TempData["Success"] != null)
+    {
+        <script>
+            toastr.success("Data Saved Successfully");
+        </script>
+    }
+
+    <script>
+        $(document).ready(function () {
+            $("#DTable").DataTable({ "lengthMenu": [[-1, 25, 50, 100], ["All", 25, 50, 100]] });
+            //$(document).find("#DTable_wrapper").css("display", "");
+        })
+
+
+        $(document).on("change", "#CategoryID", function () {
+            FilterList("CategoryID")
+        })
+        $(document).on("keyup", "#Email", function (e) {
+            if (e.which == 13) {
+                FilterList("Tags")
+            }
+        })
+        function FilterList(Type) {
+
+            //if (Type == "CategoryID" && $("#CategoryID option:selected").val() > 0)
+            //if (Type == "Tags")
+
+            var CategoryID = $("#CategoryID option:selected").val() ||0;
+            var Email = $("#Email").val() || "";
+            $(".divLoader").show();
+            $.ajax({
+                url: "/Admin/FilterUsers?RoleID=@((int)First_Aid_Made_Easy.BLL.Roles.SuppAgent)&CategoryID=" + CategoryID + "&Email=" + Email,
+                method: "POST",
+                success: function (result) {
+                    if (result != null) {
+                        $("#DTable").DataTable().destroy();
+                        $("#divPartial").html(result);
+                        $("#DTable").DataTable();
+                        $(".divLoader").hide();
+                    }
+                }, error: function (err) {
+                    alert("Error" + err);
+                }
+            })
+        }
+
+
+    $(document).on("click", "#btnStatus", function () {
+        var tr = $(this).closest("tr");
+        var id = $(this).data("id");
+        var newstatus = $(this).data("newstatus");
+        var Action = $(this).text();
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You Want To " + Action +" the Agent?",
+            icon: 'warning',
+            showCancelButton: false,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: "/Admin/AgentStatus/" + id + "?Status=" + newstatus,
+                    method: "GET",
+                    beforeSend: function () {
+                        swal.fire({
+                            html: '<h5 Changing Status ...</h5>',
+                            showConfirmButton: false,
+                            onRender: function () { $('.swal2-content').prepend(sweet_loader); }
+                        });
+                    },
+                    success: function (result) {
+                        if (result) {
+                            Swal.fire(
+                                'Good Job!',
+                                'The Status Has Been Deleted.',
+                                'success'
+                            )
+                        }
+                    }, error: function (err) {
+                        alert("Error" + err);
+                    }
+                })
+
+            }
+        })
+    })
+
+    </script>
+
+}
+

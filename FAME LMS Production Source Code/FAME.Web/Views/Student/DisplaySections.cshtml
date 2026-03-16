@@ -1,0 +1,360 @@
+﻿@model First_Aid_Made_Easy.Models.CourseVM
+@{
+    ViewBag.Title = "Course Preview";
+    int i = 0;
+}
+<div class="page-section bg-alt border-bottom-2">
+    <div class="container page__container">
+
+        <div class="d-flex flex-column flex-lg-row align-items-center">
+            <div class="d-flex flex-column flex-md-row align-items-center flex mb-16pt mb-lg-0 text-center text-md-left">
+                <div class="avatar avatar mb-16pt mb-md-0 mr-md-16pt">
+                    <img src="@Url.Content("~/Images/"+Model.Course_Pic)" width="200" height="200" class="avatar-img rounded" alt="lesson">
+                </div>
+                <div class="flex">
+                    <h1 class="h2 m-0">@Model.Course_Name</h1>
+                </div>
+            </div>
+            <div class="ml-lg-16pt">
+                <a href="/Student/MyCourses" class="btn btn-light">Back</a>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="page-section border-bottom-2">
+    <div class="container page__container">
+
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="row mb-24pt">
+                    <div class="col-md-7">
+                        <div class="page-separator">
+                            <div class="page-separator__text">About this course</div>
+                        </div>
+                        <p class="text-70">@Model.Course_Description</p>
+                        <div class="mb-24pt">
+                            <span class="chip chip-outline-secondary d-inline-flex align-items-center">
+                                <i class="material-icons icon--left">schedule</i>
+                                @Math.Round(Model.DurationInMin / 60) hours
+                            </span>
+                            <span class="chip chip-outline-secondary d-inline-flex align-items-center">
+                                <i class="material-icons icon--left">assessment</i>
+                                Beginner
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="page-separator">
+                            <div class="page-separator__text ">What you’ll learn</div>
+                        </div>
+                        <ul class="list-unstyled">
+                            @if (Model.Details != null)
+                            {
+                                foreach (var d in Model.Details)
+                                {
+                                    <li class="d-flex align-items-center">
+                                        <span class="material-icons text-50 mr-8pt">check</span>
+                                        <span class="text-70">@d.CourseDetail_Body</span>
+                                    </li>
+                                }
+                            }
+                        </ul>
+                    </div>
+                </div>
+                <div class="page-separator">
+                    <div class="page-separator__text">Table of contents</div>
+                </div>
+                <div class="accordion js-accordion accordion--boxed " id="parent">
+                    @if (Model.SectionList.Count <= 0)
+                    {
+                        <div class="accordion__menu-link">
+                            <span class="text-accent-red">Sorry No Content Available For This Course</span>
+                        </div>
+                    }
+
+                    @foreach (var s in Model.SectionList)
+                    {
+                        i++;
+                        <div class="accordion__item open">
+                            <a href="/Student/TakeCourseNew/@s.Section_ID" class="accordion__toggle">
+                                <span class="flex">@s.Section_Name</span>
+                                <span>
+                                    @s.Lessons Lessons
+                                    <span class="material-icons icon-16pt text-black-50 mr-4pt">access_time</span>
+                                    @s.Duration min
+                                </span>
+                            </a>
+                        </div>
+                    }
+                </div>
+
+                <div class="modal fade" id="PaymentModal" tabindex="-1" role="dialog" aria-labelledby="PaymentModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="PaymentModalLabel">Choose Your Payment Method</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                @*"/Payment/PayByEasyPaisa"*@
+                                <a href="#" class="btn btn-light btn-block mb-24pt">
+                                    <span class="fab fa-exchange-alt icon--left"></span>
+                                    Continue with EasyPaisa
+                                </a>
+                                <a href="#" class="btn btn-light btn-block mb-24pt">
+                                    <span class="fab fa-java icon--left"></span>
+                                    Continue with JazzCash
+                                </a>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-lg-4">
+                @if (Model.isEnrolled)
+                {<div class="card">
+                        <div class="card-body py-16pt text-center">
+                            <span class="icon-holder icon-holder--outline-secondary rounded-circle d-inline-flex mb-8pt">
+                                <i class="material-icons">timer</i>
+                            </span>
+                            <p class="card-subtitle text-70 mb-24pt">Your Subscription will Expire on</p>
+                            <button type="button" class="btn btn-accent mb-8pt">@string.Format("{0:dd MMM yyyy}", Model.EndDate)</button>
+                        </div>
+                    </div>
+
+                    if (Model.NextInstallment != null)
+                    {
+                        <div class="card">
+                            <div class="card-body py-16pt text-center">
+                                <span class="icon-holder icon-holder--outline-secondary rounded-circle d-inline-flex mb-8pt">
+                                    <span class="material-icons">payment</span>
+                                </span>
+                                <p class="card-subtitle text-70 mb-24pt">Rs. @Model.InstallmentPrice</p>
+                                <p class="card-subtitle text-70 mb-24pt">Your Next Installment Date Is</p>
+                                <button type="button" class="btn btn-accent mb-8pt">@string.Format("{0:dd MMM yyyy}", Model.NextInstallment)</button>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="card">
+                        <div class="card-body py-16pt text-center">
+                            <span class="icon-holder icon-holder--outline-secondary rounded-circle d-inline-flex mb-8pt">
+                                <i class="material-icons">timer</i>
+                            </span>
+                            <h4 class="card-title"><strong>Unlock Course</strong></h4>
+                            <p class="card-subtitle text-70 mb-24pt">Get access to all videos in This Section</p>
+                            <button type="button" class="btn btn-accent mb-8pt" data-id="@Model.Course_Id" id="btnUnlockSec">Unlock - Only Rs.@Model.Course_Price/mo</button>
+                        </div>
+                    </div>
+                }
+                <div class="page-separator">
+                    <div class="page-separator__text">Author</div>
+                </div>
+                <div class="media align-items-center mb-16pt">
+                    <span class="media-left mr-16pt">
+                        <img src="@Url.Content("/Images/"+Model.Teacher_Pic)" width="40" alt="avatar" class="rounded-circle">
+                    </span>
+                    <div class="media-body">
+                        <a class="card-title m-0" href="/Home/Teacher_Preview/@Model.Teacher_Fid">@Model.Teacher_Name</a>
+                        <p class="text-50 lh-1 mb-0">Instructor</p>
+                    </div>
+                </div>
+                <p class="text-70">Fueled by my passion for understanding the nuances of cross-cultural advertising, I consider myself a forever student, eager to both build on my academic foundations in psychology and sociology and stay in tune with the latest digital marketing strategies through continued coursework.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section scripts{
+    <script>
+
+        $('#PaymentModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget) // Button that triggered the modal
+            var recipient = button.data('whatever') // Extract info from data-* attributes
+            // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+            //Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+            var modal = $(this)
+            modal.find('.modal-title').text('New message to ' + recipient)
+            modal.find('.modal-body input').val(recipient)
+        })
+
+        $(document).on("click", "#btnUnlockCo", function () {
+            var id = $(this).data("id");
+            Enroll("CR", id);
+        })
+        function Enroll(For, id) {
+            Swal.fire({
+                title: 'Enter Your Coupon Secret',
+                input: 'text',
+                inputAttributes: {
+                    autocapitalize: 'off'
+                },
+                showCancelButton: true,
+                confirmButtonText: 'Submit',
+                showLoaderOnConfirm: true,
+                preConfirm: (login) => {
+                    return fetch(`/Enrollment/Enroll/${id}?Method=CP&EnrollFor=${For}&Secret=${login}`, {
+                        method: 'POST',
+                    })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error(response.statusText)
+                            }
+                            return response.json()
+                        })
+                        .catch(error => {
+                            Swal.showValidationMessage(
+                                `Request failed: ${error}`
+                            )
+                        })
+                },
+                allowOutsideClick: () => !Swal.isLoading()
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    if (result.value == "Success") {
+                        Swal.fire({
+                            title: `Success`,
+                            text: 'Enrollment Succefull Please Visit "Our Courses" Page.Thank You',
+                        })
+                        window.location.href = "/Student/MyCourses";
+                    }
+                    if (result.value == "Error") {
+                        Swal.fire({
+                            title: `Error`,
+                            text: 'Sorry! Something Went Wrong',
+                        })
+                    }
+                    if (result.value > 0) {
+                        Swal.fire({
+                            title: `Success`,
+                            text: 'Your Amount IS Discounted by ' + result.value + "%",
+                        })
+                    }
+                }
+            })
+        }
+    </script>
+    <script>
+    @* function Enroll(For, id) {
+        const swalWithBootstrapButtons = Swal.mixin({
+            customClass: {
+                confirmButton: 'btn btn-success',
+                cancelButton: 'btn btn-danger'
+            },
+            buttonsStyling: false
+        })
+
+        swalWithBootstrapButtons.fire({
+            title: 'How You Want To Pay',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Pay By EasyPaisa',
+            cancelButtonText: 'Pay By JazzCash',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+
+                $.ajax({
+                    url: "/Enrollment/Enroll/",
+                    type: "GET",
+                    data: {
+                        id: id,
+                        Method: method,
+                        EnrollFor: For, //Course/Section
+                        Secret: "",
+                    },
+                    success: function (r) {
+                        switch (r) {
+                            case "Login":
+                                var urlpost = "@Url.Action("Login","Account",new {returnUrl = " / Home / Course_Preview / CourseID" })";
+                                window.location.href = urlpost.replace("CourseID", "@Model.Course_Id");
+                                break;
+                            case "Already":
+                                swalWithBootstrapButtons.fire(
+                                    'Accepted!',
+                                    'You Have Already Enrolled This Section.',
+                                    'warning'
+                                )
+                                break;
+                            case "success":
+                                swalWithBootstrapButtons.fire(
+                                    'Accepted!',
+                                    'Your request has been Transmitted.',
+                                    'success'
+                                )
+                                break;
+                            default:
+                                swalWithBootstrapButtons.fire(
+                                    'Sorry!',
+                                    'Something Went Wrong',
+                                    'error'
+                                )
+                        }
+                    },
+                    Error: function (err) {
+                        swalWithBootstrapButtons.fire(
+                            'Sorry!',
+                            err,
+                            'error'
+                        )
+                    }
+                })
+
+                /* Read more about handling dismissals below */
+            } else if (result.dismiss === Swal.DismissReason.cancel) {
+                $.ajax({
+                    url: "/Enrollment/JC" + Action + "/" + id,
+                    type: "GET",
+                    success: function (r) {
+                        switch (r) {
+                            case "Login":
+                                var urlpost = "@Url.Action("Login","Account",new {returnUrl = " / Home / Course_Preview / CourseID" })";
+                                window.location.href = urlpost.replace("CourseID", "@Model.Course_Id");
+                                break;
+                            case "Already":
+                                swalWithBootstrapButtons.fire(
+                                    'Accepted!',
+                                    'You Have Already Enrolled This Section.',
+                                    'warning'
+                                )
+                                break;
+                            case "success":
+                                swalWithBootstrapButtons.fire(
+                                    'Accepted!',
+                                    'Your request has been Transmitted.',
+                                    'success'
+                                )
+                                break;
+                            default:
+                                swalWithBootstrapButtons.fire(
+                                    'Sorry!',
+                                    'Something Went Wrong',
+                                    'error'
+                                )
+                        }
+                    },
+                    Error: function (err) {
+                        swalWithBootstrapButtons.fire(
+                            'Sorry!',
+                            err,
+                            'error'
+                        )
+                    }
+                })
+            }
+        })
+    } *@
+    </script>
+}

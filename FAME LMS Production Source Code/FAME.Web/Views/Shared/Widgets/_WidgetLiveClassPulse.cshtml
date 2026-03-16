@@ -1,0 +1,44 @@
+@using First_Aid_Made_Easy.Models
+@{
+    var liveClasses = ViewBag.LiveClasses as List<ZoomApiVM>;
+}
+
+<div class="fame-side-panel">
+    <!-- Live Classes Widget -->
+    <div class="fame-live-card">
+        <h3 class="fw-bold fs-5 mb-4 text-white"><i class="fa fa-broadcast me-2 text-danger"></i> Live Pulse</h3>
+        
+        @if (liveClasses != null && liveClasses.Any())
+        {
+            <div class="d-flex flex-column gap-3">
+                @foreach (var meeting in liveClasses.Take(3))
+                {
+                    <div class="bg-black bg-opacity-20 rounded p-3 border border-dark border-opacity-10">
+                        <div class="d-flex justify-content-between mb-1">
+                             <span class="badge badge-light-danger fs-8">Live Class</span>
+                             <span class="text-white-50 fs-8">@DateTime.Parse(meeting.start_time).ToString("MMM dd HH:mm")</span>
+                        </div>
+                        <h5 class="text-white fs-6 mb-2 limit-text">@meeting.topic</h5>
+                        <a href="@meeting.join_url" target="_blank" class="btn btn-sm btn-danger w-100 py-1 fs-8">Join Now</a>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="text-center text-white-50 py-3">
+                <i class="fa fa-calendar-check fs-2 mb-2 opacity-50"></i>
+                <p class="fs-7 m-0">No upcoming live classes.</p>
+            </div>
+        }
+    </div>
+
+    <!-- Support / Help Widget -->
+    <div class="card bg-glass border-0">
+        <div class="card-body p-4">
+            <h4 class="card-title fw-bold text-white fs-6 mb-3">Need Help?</h4>
+            <p class="text-secondary fs-7 mb-4">Having trouble with your course? Our support team is here.</p>
+            <a href="/Home/SupportOverView" class="btn btn-sm btn-light w-100">Contact Support</a>
+        </div>
+    </div>
+</div>

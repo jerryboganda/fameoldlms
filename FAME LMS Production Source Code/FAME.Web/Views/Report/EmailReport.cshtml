@@ -1,0 +1,86 @@
+﻿@model First_Aid_Made_Easy.Models.RequestVM
+@{
+	ViewBag.Title = "Email Report";
+	Layout = "~/Views/Shared/_LayoutTeacher.cshtml";
+
+	<!-- DateRangePicker -->
+	<link type="text/css" href="~/Content/assets/vendor/daterangepicker.css" rel="stylesheet">
+}
+
+<div class="pt-32pt">
+	<div class="container-fluid page__container d-flex flex-column flex-md-row align-items-center text-center text-sm-left">
+		<div class="flex d-flex flex-column flex-sm-row align-items-center">
+			<div class="mb-24pt mb-sm-0 mr-sm-24pt">
+				<h2 class="mb-0">@ViewBag.Title</h2>
+			</div>
+		</div>
+	</div>
+
+
+	<div class="page-section border-bottom-2">
+		<div style="margin: 0; max-width: 100%" class="container-fluid page__container">
+			<div class="row">
+				<div class="col-md-12">
+					<div class="page-separator">
+						<div class="page-separator__text">Basic information</div>
+					</div>
+				</div>
+				<div class="col-md-4">
+					<label>Date Range</label>
+					<input id="dateRange" type="text" class="form-control" data-daterangepicker-locale-format="MM/DD/YYYY" placeholder="Select A Date Range" data-toggle="daterangepicker" data-daterangepicker-ranges="true" data-daterangepicker-drops="down">
+				</div>
+				<div style="margin-top:10px" class="text-right col-md-8">
+					<button id="btnShow" class="btn btn-outline-primary" onclick="ShowReport(false)">Preview Report</button>
+					<button id="btnShow" class="btn btn-outline-primary" onclick="ShowReport(true)">Export To PDF</button>
+					<button id="btnShow" class="btn btn-outline-primary" onclick="ShowReport(false , true)">Export To Excel</button>
+				</div>
+				<div class="table-responsive" style="margin-top:20px" id="divReport"> </div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+@section scripts {
+	<!-- DateRangePicker -->
+	<script src="~/Content/assets/vendor/moment.min.js"></script>
+	<script src="~/Content/assets/vendor/daterangepicker.js"></script>
+	<script src="~/Content/assets/js/daterangepicker.js"></script>
+	@Scripts.Render("~/Scripts/List")
+
+	@if (TempData["Success"] != null)
+	{
+		<script>
+			toastr.success("Data Saved Successfully");
+		</script>
+	}
+
+	<script>
+
+		function ShowReport(IsPDF, IsExcel) {
+			var Dates = $("#dateRange").val().split(" to ");
+			var DateFrom = Dates[0];
+			var DateTo = Dates[1];
+
+			var url = `/Report/GetEmailReport?DateFrom=${DateFrom}&DateTo=${DateTo}&IsPDF=${IsPDF}&IsExcel=${IsExcel}`
+			if (IsPDF || IsExcel)
+				window.open(url, "_blank");
+			else {
+				$(".divLoader").show();
+				$.ajax({
+					url: url,
+					success: function (html) {
+						$("#DTable").DataTable().destroy();
+						$("#divReport").html(html);
+						$("#DTable").DataTable();
+						$(".divLoader").hide();
+					}
+				})
+			}
+		}
+
+	</script>
+
+}
+

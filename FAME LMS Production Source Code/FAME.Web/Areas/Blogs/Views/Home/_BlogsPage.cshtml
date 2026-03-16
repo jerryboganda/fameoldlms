@@ -1,0 +1,115 @@
+﻿
+@model First_Aid_Made_Easy.Models.BlogPostResult
+
+
+<style>
+	.blog-card {
+		background-color: white;
+		border-radius: 0.5rem;
+		box-shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+		overflow: hidden;
+		display: flex;
+		flex-direction: column;
+		max-width: 600px;
+		margin: auto;
+		min-height:470px
+	}
+
+	.blog-card-image-wrapper {
+		position: relative;
+	}
+
+	.blog-main-image {
+		width: 100%;
+		height: 250px;
+		object-fit: cover;
+		border-top-left-radius: 0.5rem;
+		border-top-right-radius: 0.5rem;
+	}
+
+	.blog-domain {
+		position: absolute;
+		bottom: 0.75rem;
+		left: 50%;
+		transform: translateX(-50%);
+		background-color: white;
+		color: black;
+		font-weight: bold;
+		font-size: 0.875rem;
+		padding: 0 0.5rem;
+		border-radius: 0.25rem;
+	}
+
+	.blog-content {
+		padding: 1.5rem;
+		display: flex;
+		flex-direction: column;
+		flex-grow: 1;
+	}
+
+	.blog-category {
+		color: #2563eb; /* blue-600 */
+		font-size: 1rem;
+		margin-bottom: 0.5rem;
+		display: inline-block;
+		text-decoration: none;
+	}
+
+	.blog-heading {
+		font-size: 1.75rem;
+		font-weight: 600;
+		margin-bottom: 0.5rem;
+	}
+
+	.blog-date {
+		color: #2563eb;
+		font-size: 1rem;
+		margin-bottom: 1rem;
+	}
+
+	.blog-description {
+		color: #374151; /* gray-700 */
+		flex-grow: 1;
+	}
+</style>
+
+<div class="row g-5" id="masonry-gallery">
+	@foreach (var item in Model.List)
+	{
+		<div class="col-lg-4 col-md-6 col-12 masonry-item sal-animate" data-sal-delay="100" data-sal="slide-up" data-sal-duration="800">
+			<article class="blog-card">
+				<a class="blog-card-image-wrapper" href="/blogs/home/details/@item.Slug">
+					<img src="~/Images/@item.FeaturedImage"
+						 alt="@item.Title"
+						 class="blog-main-image" />
+					<div class="blog-domain">
+						fame
+					</div>
+				</a>
+				<div class="blog-content">
+					<a href="/blogs/home/index?category=@item.Category" class="blog-category">@item.Category</a>
+					<a href="/blogs/home/details/@item.Slug"><h3 class="blog-heading">@item.Title</h3></a>
+					<p class="blog-date">Faizan / May 15, 2025</p>
+					<p class="blog-description">
+						@item.Description
+					</p>
+				</div>
+			</article>
+
+		</div>
+	}
+</div>
+
+@if (Model.TotalCount > Model.PageLength)
+{
+	<ul class="edu-pagination top-space-30">
+		<li><a href="#" class="pagination-link" data-page="@((Model.PageNo - 1) <= 0 ? 1 : Model.PageNo - 1)" aria-label="Previous"><i class="icon-west"></i></a></li>
+		@for (int i = 1; i <= Math.Ceiling((double)Model.TotalCount / Model.PageLength); i++)
+		{
+			<li class="@(i == Model.PageNo ? "active" : "")">
+				<a href="#" class="pagination-link" data-page="@i">@i</a>
+			</li>
+		}
+		<li><a href="#" class="pagination-link" data-page="@((Model.PageNo + 1) > Math.Ceiling((double)Model.TotalCount / Model.PageLength) ? Model.PageNo : Model.PageNo + 1)" aria-label="Next"><i class="icon-east"></i></a></li>
+	</ul>
+}

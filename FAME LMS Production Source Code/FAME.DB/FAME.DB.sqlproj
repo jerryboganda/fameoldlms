@@ -1,0 +1,191 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Name>FAME.DB</Name>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectVersion>4.1</ProjectVersion>
+    <ProjectGuid>{bcd52ba8-ef13-4e09-9752-db0253033d19}</ProjectGuid>
+    <DSP>Microsoft.Data.Tools.Schema.Sql.Sql160DatabaseSchemaProvider</DSP>
+    <OutputType>Database</OutputType>
+    <RootPath>
+    </RootPath>
+    <RootNamespace>FAME.DB</RootNamespace>
+    <AssemblyName>FAME.DB</AssemblyName>
+    <ModelCollation>1033, CI</ModelCollation>
+    <DefaultFileStructure>BySchemaAndSchemaType</DefaultFileStructure>
+    <DeployToDatabase>True</DeployToDatabase>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetLanguage>CS</TargetLanguage>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <SqlServerVerification>False</SqlServerVerification>
+    <IncludeCompositeObjects>True</IncludeCompositeObjects>
+    <TargetDatabaseSet>True</TargetDatabaseSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <DefineDebug>false</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">11.0</VisualStudioVersion>
+    <!-- Default to the v11.0 targets path if the targets file for the current VS version is not found -->
+    <SSDTExists Condition="Exists('$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets')">True</SSDTExists>
+    <VisualStudioVersion Condition="'$(SSDTExists)' == ''">11.0</VisualStudioVersion>
+  </PropertyGroup>
+  <Import Condition="'$(SQLDBExtensionsRefPath)' != ''" Project="$(SQLDBExtensionsRefPath)\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
+  <Import Condition="'$(SQLDBExtensionsRefPath)' == ''" Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
+  <ItemGroup>
+    <Folder Include="Properties" />
+    <Folder Include="dbo\" />
+    <Folder Include="dbo\Tables\" />
+    <Folder Include="dbo\Views\" />
+    <Folder Include="dbo\Functions\" />
+    <Folder Include="dbo\Stored Procedures\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Build Include="dbo\Tables\tbl_Video.sql" />
+    <Build Include="dbo\Tables\tbl_UserLogins.sql" />
+    <Build Include="dbo\Tables\tbl_UserLockout.sql" />
+    <Build Include="dbo\Tables\tbl_UserDevRemReq.sql" />
+    <Build Include="dbo\Tables\tbl_UserDevices.sql" />
+    <Build Include="dbo\Tables\tbl_User.sql" />
+    <Build Include="dbo\Tables\tbl_Tutorial.sql" />
+    <Build Include="dbo\Tables\tbl_TicketReply.sql" />
+    <Build Include="dbo\Tables\tbl_Ticket.sql" />
+    <Build Include="dbo\Tables\tbl_StudentNotif.sql" />
+    <Build Include="dbo\Tables\tbl_StudentInstallments.sql" />
+    <Build Include="dbo\Tables\tbl_StudentGroupDetail.sql" />
+    <Build Include="dbo\Tables\tbl_StudentGroup.sql" />
+    <Build Include="dbo\Tables\tbl_Settings.sql" />
+    <Build Include="dbo\Tables\tbl_SeenNotif.sql" />
+    <Build Include="dbo\Tables\tbl_SectionSub.sql" />
+    <Build Include="dbo\Tables\tbl_Section.sql" />
+    <Build Include="dbo\Tables\tbl_ResultMaster.sql" />
+    <Build Include="dbo\Tables\tbl_ResultDetail.sql" />
+    <Build Include="dbo\Tables\tbl_Request.sql" />
+    <Build Include="dbo\Tables\tbl_Reminder.sql" />
+    <Build Include="dbo\Tables\tbl_Ratings.sql" />
+    <Build Include="dbo\Tables\tbl_QuestionSystem.sql" />
+    <Build Include="dbo\Tables\tbl_QuestionPaperDetail.sql" />
+    <Build Include="dbo\Tables\tbl_QuestionPaper.sql" />
+    <Build Include="dbo\Tables\tbl_Question.sql" />
+    <Build Include="dbo\Tables\tbl_Progress.sql" />
+    <Build Include="dbo\Tables\tbl_PackageDuration.sql" />
+    <Build Include="dbo\Tables\tbl_PackageDetail.sql" />
+    <Build Include="dbo\Tables\tbl_Package.sql" />
+    <Build Include="dbo\Tables\tbl_Options.sql" />
+    <Build Include="dbo\Tables\tbl_Notes.sql" />
+    <Build Include="dbo\Tables\tbl_MeetingVideo.sql" />
+    <Build Include="dbo\Tables\tbl_Meeting.sql" />
+    <Build Include="dbo\Tables\tbl_Master.sql" />
+    <Build Include="dbo\Tables\tbl_Installments.sql" />
+    <Build Include="dbo\Tables\tbl_Friends.sql" />
+    <Build Include="dbo\Tables\tbl_FriendRequest.sql" />
+    <Build Include="dbo\Tables\tbl_FileItems.sql" />
+    <Build Include="dbo\Tables\tbl_FavouriteList.sql" />
+    <Build Include="dbo\Tables\tbl_ExamDetail.sql" />
+    <Build Include="dbo\Tables\tbl_Exam.sql" />
+    <Build Include="dbo\Tables\tbl_EnrollmentMaster.sql" />
+    <Build Include="dbo\Tables\tbl_EnrollmentDetail.sql" />
+    <Build Include="dbo\Tables\tbl_EmailLogs.sql" />
+    <Build Include="dbo\Tables\tbl_Document.sql" />
+    <Build Include="dbo\Tables\tbl_Courses.sql" />
+    <Build Include="dbo\Tables\tbl_CourseDetails.sql" />
+    <Build Include="dbo\Tables\tbl_Coupon.sql" />
+    <Build Include="dbo\Tables\tbl_ConversationReply.sql" />
+    <Build Include="dbo\Tables\tbl_ConversationMedia.sql" />
+    <Build Include="dbo\Tables\tbl_Conversation.sql" />
+    <Build Include="dbo\Tables\tbl_Comment.sql" />
+    <Build Include="dbo\Tables\tbl_Chapter.sql" />
+    <Build Include="dbo\Tables\tbl_BookMistakes.sql" />
+    <Build Include="dbo\Tables\tbl_BookCode.sql" />
+    <Build Include="dbo\Tables\AspNetUsers.sql" />
+    <Build Include="dbo\Tables\AspNetUserRoles.sql" />
+    <Build Include="dbo\Tables\AspNetUserLogins.sql" />
+    <Build Include="dbo\Tables\AspNetUserClaims.sql" />
+    <Build Include="dbo\Tables\AspNetRoles.sql" />
+    <Build Include="dbo\Tables\__MigrationHistory.sql" />
+    <Build Include="dbo\Views\vw_StudetsList.sql" />
+    <Build Include="dbo\Views\vw_Roles.sql" />
+    <Build Include="dbo\Views\vw_Content.sql" />
+    <Build Include="dbo\Functions\fn_GetCurrentPackageofStudent.sql" />
+    <Build Include="dbo\Functions\fn_GetCurrentEnrollmentofStudent.sql" />
+    <Build Include="dbo\Functions\splitstring.sql" />
+    <Build Include="dbo\Functions\fn_CurrentPackDetail.sql" />
+    <Build Include="dbo\Stored Procedures\sp_VideoForFirst.sql" />
+    <Build Include="dbo\Stored Procedures\sp_ValidateCoupon.sql" />
+    <Build Include="dbo\Stored Procedures\sp_Truncate.sql" />
+    <Build Include="dbo\Stored Procedures\sp_TestsPerformance.sql" />
+    <Build Include="dbo\Stored Procedures\sp_SearchContent.sql" />
+    <Build Include="dbo\Stored Procedures\sp_rptReultReport.sql" />
+    <Build Include="dbo\Stored Procedures\sp_rptQuestionStats.sql" />
+    <Build Include="dbo\Stored Procedures\sp_ResetPassword.sql" />
+    <Build Include="dbo\Stored Procedures\sp_QuestionCountByStudent.sql" />
+    <Build Include="dbo\Stored Procedures\sp_MySections.sql" />
+    <Build Include="dbo\Stored Procedures\sp_MyCourses.sql" />
+    <Build Include="dbo\Stored Procedures\sp_lstVideos.sql" />
+    <Build Include="dbo\Stored Procedures\sp_lstVideoFaqs.sql" />
+    <Build Include="dbo\Stored Procedures\sp_lstTickets.sql" />
+    <Build Include="dbo\Stored Procedures\sp_lstStudents.sql" />
+    <Build Include="dbo\Stored Procedures\sp_lstRequests.sql" />
+    <Build Include="dbo\Stored Procedures\sp_lstQuestions.sql" />
+    <Build Include="dbo\Stored Procedures\sp_lstQuestionPapers.sql" />
+    <Build Include="dbo\Stored Procedures\sp_lstFavourites.sql" />
+    <Build Include="dbo\Stored Procedures\sp_lstExams.sql" />
+    <Build Include="dbo\Stored Procedures\sp_lstEnrollStatus.sql" />
+    <Build Include="dbo\Stored Procedures\sp_lstDeleteDeviceReq.sql" />
+    <Build Include="dbo\Stored Procedures\sp_lstComments.sql" />
+    <Build Include="dbo\Stored Procedures\sp_lstApproveComments.sql" />
+    <Build Include="dbo\Stored Procedures\sp_ListEnrollments.sql" />
+    <Build Include="dbo\Stored Procedures\sp_IsThisDeviceValidNow.sql" />
+    <Build Include="dbo\Stored Procedures\sp_GetUsersListByRole.sql" />
+    <Build Include="dbo\Stored Procedures\sp_GetUserEmail.sql" />
+    <Build Include="dbo\Stored Procedures\sp_GetStudentsWithLastOnline.sql" />
+    <Build Include="dbo\Stored Procedures\sp_GetStudentProgress.sql" />
+    <Build Include="dbo\Stored Procedures\sp_GetReview.sql" />
+    <Build Include="dbo\Stored Procedures\sp_GetPendingNotifications.sql" />
+    <Build Include="dbo\Stored Procedures\sp_GetPendingInstallments.sql" />
+    <Build Include="dbo\Stored Procedures\sp_GetNotifications.sql" />
+    <Build Include="dbo\Stored Procedures\sp_GetMeetingsForStudent.sql" />
+    <Build Include="dbo\Stored Procedures\sp_GetFriendList.sql" />
+    <Build Include="dbo\Stored Procedures\sp_GetFreeSupportAgent.sql" />
+    <Build Include="dbo\Stored Procedures\sp_GetEnrollmentByCourse.sql" />
+    <Build Include="dbo\Stored Procedures\sp_GetDevicesNotification.sql" />
+    <Build Include="dbo\Stored Procedures\sp_GetCoursesByStudent.sql" />
+    <Build Include="dbo\Stored Procedures\sp_GetConversations.sql" />
+    <Build Include="dbo\Stored Procedures\sp_GetAssistantTeacherID.sql" />
+    <Build Include="dbo\Stored Procedures\sp_GetAllUsersForFriendList.sql" />
+    <Build Include="dbo\Stored Procedures\sp_DeleteUserRoles.sql" />
+    <Build Include="dbo\Stored Procedures\sp_DeleteUser.sql" />
+    <Build Include="dbo\Stored Procedures\sp_DashBoardCounts.sql" />
+    <Build Include="dbo\Stored Procedures\sp_CurrentPackDetail.sql" />
+    <Build Include="dbo\Stored Procedures\sp_AddUserRoles.sql" />
+    <Build Include="dbo\Stored Procedures\Enrollment.sql" />
+    <Build Include="dbo\Tables\tbl_BlogPost.sql" />
+    <Build Include="dbo\Tables\tbl_QuestionPartition.sql" />
+    <Build Include="dbo\Stored Procedures\sp_QuestionSystemCountByStudent.sql" />
+    <Build Include="dbo\Stored Procedures\sp_WatchStatistics.sql" />
+    <Build Include="dbo\Tables\tbl_DailyReport.sql" />
+    <Build Include="dbo\Tables\tbl_DailyReportUsers.sql" />
+  </ItemGroup>
+</Project>

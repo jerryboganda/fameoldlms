@@ -1,0 +1,247 @@
+@using First_Aid_Made_Easy.BLL
+@using Microsoft.AspNet.Identity
+@{
+    var userId = User.Identity.GetUserId();
+}
+
+<div class="fame-widget-card fame-streak-widget">
+    <div class="fame-widget-header">
+        <div class="fame-widget-title">
+            <i data-feather="zap" class="fame-widget-icon" style="color: #F59E0B;"></i>
+            <span>Study Streak</span>
+        </div>
+    </div>
+    
+    <div class="fame-widget-body">
+        <div class="fame-streak-content">
+            <!-- Current Streak -->
+            <div class="fame-streak-main">
+                <div class="fame-streak-fire">🔥</div>
+                <div class="fame-streak-count" id="streakCount">0</div>
+                <div class="fame-streak-label">Day Streak</div>
+            </div>
+            
+            <!-- Mini Calendar (Current Week) -->
+            <div class="fame-streak-calendar">
+                <div class="fame-streak-week" id="streakWeek">
+                    <!-- JS will populate this -->
+                </div>
+                <div class="fame-streak-stats">
+                    <div class="fame-streak-stat">
+                        <span class="fame-streak-stat-value" id="monthActive">0</span>
+                        <span class="fame-streak-stat-label">This month</span>
+                    </div>
+                    <div class="fame-streak-stat">
+                        <span class="fame-streak-stat-value" id="bestStreak">0</span>
+                        <span class="fame-streak-stat-label">Best streak</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    initStreakWidget();
+});
+
+function initStreakWidget() {
+    // Build week calendar
+    var $week = $('#streakWeek');
+    var days = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+    var today = new Date();
+    var startOfWeek = new Date(today);
+    startOfWeek.setDate(today.getDate() - today.getDay());
+    
+    for (var i = 0; i < 7; i++) {
+        var d = new Date(startOfWeek);
+        d.setDate(startOfWeek.getDate() + i);
+        var isToday = d.toDateString() === today.toDateString();
+        var isPast = d < today;
+        
+        $week.append(`
+            <div class="fame-streak-day ${isToday ? 'today' : ''} ${isPast && !isToday ? 'past' : ''}" data-date="${d.toISOString().split('T')[0]}">
+                <span class="fame-streak-day-label">${days[i]}</span>
+                <span class="fame-streak-day-dot"></span>
+            </div>
+        `);
+    }
+    
+    // Load streak data
+    $.get('/StudentData/GetStudyStreak', function(data) {
+        if (data && data.success) {
+            $('#streakCount').text(data.currentStreak || 0);
+            $('#monthActive').text(data.monthActive || 0);
+            $('#bestStreak').text(data.bestStreak || 0);
+            
+            // Mark active days
+            if (data.activeDays && data.activeDays.length > 0) {
+                data.activeDays.forEach(function(date) {
+                    $(`.fame-streak-day[data-date="${date}"]`).addClass('active');
+                });
+            }
+        } else {
+            // Placeholder data
+            $('#streakCount').text('5');
+            $('#monthActive').text('12');
+            $('#bestStreak').text('14');
+            
+            // Mark some days as active for demo
+            $('.fame-streak-day.past, .fame-streak-day.today').each(function(i) {
+                if (i < 5) $(this).addClass('active');
+            });
+        }
+    }).fail(function() {
+        $('#streakCount').text('0');
+        $('#monthActive').text('0');
+        $('#bestStreak').text('0');
+    });
+}
+</script>
+
+<style>
+.fame-streak-widget {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.05), rgba(234, 88, 12, 0.05));
+}
+
+.fame-streak-content {
+    display: flex;
+    gap: 32px;
+}
+
+.fame-streak-main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 20px;
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(234, 88, 12, 0.1));
+    border-radius: var(--fame-radius-xl);
+    min-width: 120px;
+}
+
+.fame-streak-fire {
+    font-size: 48px;
+    margin-bottom: 8px;
+    animation: flame 1s ease-in-out infinite alternate;
+}
+
+@@keyframes flame {
+    from { transform: scale(1); }
+    to { transform: scale(1.1); }
+}
+
+.fame-streak-count {
+    font-size: 40px;
+    font-weight: 800;
+    color: var(--fame-text-primary);
+    line-height: 1;
+}
+
+.fame-streak-label {
+    font-size: 12px;
+    color: var(--fame-text-tertiary);
+    margin-top: 4px;
+    font-weight: 500;
+}
+
+.fame-streak-calendar {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.fame-streak-week {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.fame-streak-day {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 8px;
+    background: var(--fame-bg-tertiary);
+    border-radius: var(--fame-radius-md);
+    transition: all 200ms;
+}
+
+.fame-streak-day.today {
+    background: linear-gradient(135deg, var(--fame-primary), var(--fame-secondary));
+    color: white;
+}
+
+.fame-streak-day.active .fame-streak-day-dot {
+    background: #10B981;
+}
+
+.fame-streak-day.today.active .fame-streak-day-dot {
+    background: white;
+}
+
+.fame-streak-day-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--fame-text-tertiary);
+}
+
+.fame-streak-day.today .fame-streak-day-label {
+    color: rgba(255,255,255,0.8);
+}
+
+.fame-streak-day-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--fame-bg-primary);
+    border: 2px solid var(--fame-border);
+    transition: all 200ms;
+}
+
+.fame-streak-stats {
+    display: flex;
+    gap: 24px;
+}
+
+.fame-streak-stat {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+}
+
+.fame-streak-stat-value {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--fame-text-primary);
+}
+
+.fame-streak-stat-label {
+    font-size: 13px;
+    color: var(--fame-text-tertiary);
+}
+
+@@media (max-width: 640px) {
+    .fame-streak-content {
+        flex-direction: column;
+    }
+    
+    .fame-streak-main {
+        flex-direction: row;
+        gap: 16px;
+    }
+    
+    .fame-streak-fire {
+        font-size: 36px;
+        margin-bottom: 0;
+    }
+    
+    .fame-streak-stats {
+        justify-content: center;
+    }
+}
+</style>

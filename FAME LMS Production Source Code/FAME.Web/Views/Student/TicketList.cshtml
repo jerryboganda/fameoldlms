@@ -1,0 +1,85 @@
+@model First_Aid_Made_Easy.Models.TicketVM
+@{
+    ViewBag.Title = "Support Tickets";
+    Layout = "~/Views/Shared/_LayoutStudent2026.cshtml";
+}
+
+<div class="anim-enter delay-100">
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div>
+            <h2 class="mb-1">Support Center</h2>
+            <p class="text-muted">Get help with your account or courses</p>
+        </div>
+        <a href="@Url.Action("Ticket", "Student")" class="fame-btn fame-btn-primary">
+            <i data-feather="plus"></i>
+            <span>Open New Ticket</span>
+        </a>
+    </div>
+
+    <div class="fame-card">
+        @if (Model.List != null && Model.List.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Ticket ID</th>
+                            <th>Subject</th>
+                            <th>Department</th>
+                            <th>Date Created</th>
+                            <th>Status</th>
+                            <th class="text-end">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var ticket in Model.List)
+                        {
+                            <tr>
+                                <td><span class="text-muted fw-bold">#@ticket.Ticket_ID</span></td>
+                                <td>
+                                    <a href="@Url.Action("TicketReply", "Student", new { id = ticket.Ticket_ID })" class="text-dark fw-bold text-decoration-none">
+                                        @ticket.Subject
+                                    </a>
+                                </td>
+                                <td>@ticket.Category</td>
+                                <td>@(ticket.CreatedDT?.ToString("MMM dd, yyyy") ?? "-")</td>
+                                <td>
+                                    @if (ticket.Status == "Open")
+                                    {
+                                        <span class="badge bg-success-subtle text-success">Open</span>
+                                    }
+                                    else if (ticket.Status == "Closed")
+                                    {
+                                        <span class="badge bg-secondary-subtle text-secondary">Closed</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning-subtle text-warning">@ticket.Status</span>
+                                    }
+                                </td>
+                                <td class="text-end">
+                                    <a href="@Url.Action("TicketReply", "Student", new { id = ticket.Ticket_ID })" class="btn btn-sm btn-light text-primary">
+                                        View Details
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <div class="mb-3">
+                    <i data-feather="life-buoy" class="text-muted" style="width: 48px; height: 48px;"></i>
+                </div>
+                <h5>No Tickets Found</h5>
+                <p class="text-muted">You haven't raised any support requests yet.</p>
+                <a href="@Url.Action("Ticket", "Student")" class="btn btn-outline-primary btn-sm mt-2">
+                    Create your first ticket
+                </a>
+            </div>
+        }
+    </div>
+</div>

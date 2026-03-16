@@ -1,0 +1,166 @@
+@model First_Aid_Made_Easy.Models.EmailTemplateVM
+@{
+    ViewBag.Title = Model.Id > 0 ? "Edit Template" : "New Template";
+    Layout = "~/Views/Shared/_LayoutTeacher.cshtml";
+}
+
+<div class="pt-32pt">
+    <div class="container-fluid page__container">
+        <div class="d-flex align-items-center mb-24pt">
+            <div class="flex">
+                <h2 class="mb-0">@ViewBag.Title</h2>
+                <ol class="breadcrumb p-0 m-0">
+                    <li class="breadcrumb-item"><a href="/Communication/Index">Email Marketing</a></li>
+                    <li class="breadcrumb-item"><a href="/Communication/Templates">Templates</a></li>
+                    <li class="breadcrumb-item active">@ViewBag.Title</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="page-section">
+    <div class="container-fluid page__container">
+        <div class="row">
+            <div class="col-md-9">
+                <div class="card">
+                    <div class="card-header d-flex align-items-center">
+                        <h4 class="card-title flex mb-0">Template Content</h4>
+                        <div>
+                            <small class="text-muted mr-2">Merge Tags:</small>
+                            <code class="mr-1" style="cursor:pointer;" onclick="insertTag('{{FirstName}}')">{{FirstName}}</code>
+                            <code class="mr-1" style="cursor:pointer;" onclick="insertTag('{{Email}}')">{{Email}}</code>
+                            <code class="mr-1" style="cursor:pointer;" onclick="insertTag('{{University}}')">{{University}}</code>
+                            <code class="mr-1" style="cursor:pointer;" onclick="insertTag('{{UnsubscribeLink}}')">{{UnsubscribeLink}}</code>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <textarea id="templateHtml" class="tinymce">@Model.HtmlBody</textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-header"><h4 class="card-title mb-0">Template Settings</h4></div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label class="form-label"><strong>Template Name *</strong></label>
+                            <input type="text" id="TemplateName" class="form-control" value="@Model.TemplateName" placeholder="e.g. Welcome Email" required />
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Category</label>
+                            <select id="Category" class="form-control">
+                                <option value="General" @(Model.Category == "General" ? "selected" : "")>General</option>
+                                <option value="Marketing" @(Model.Category == "Marketing" ? "selected" : "")>Marketing</option>
+                                <option value="Notification" @(Model.Category == "Notification" ? "selected" : "")>Notification</option>
+                                <option value="Onboarding" @(Model.Category == "Onboarding" ? "selected" : "")>Onboarding</option>
+                                <option value="Exam" @(Model.Category == "Exam" ? "selected" : "")>Exam</option>
+                                <option value="Newsletter" @(Model.Category == "Newsletter" ? "selected" : "")>Newsletter</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Subject Line</label>
+                            <input type="text" id="SubjectLine" class="form-control" value="@Model.SubjectLine" placeholder="Default subject when using this template" />
+                        </div>
+                        <hr />
+                        <button class="btn btn-primary btn-block" id="btnSave">
+                            <i class="material-icons mr-1" style="vertical-align:middle;font-size:18px;">save</i> Save Template
+                        </button>
+                        @if (Model.Id > 0)
+                        {
+                            <a href="/Communication/Create?templateId=@Model.Id" class="btn btn-outline-success btn-block mt-2">
+                                <i class="material-icons mr-1" style="vertical-align:middle;font-size:18px;">send</i> Use in Campaign
+                            </a>
+                        }
+                    </div>
+                </div>
+
+                <!-- Preview -->
+                <div class="card">
+                    <div class="card-header"><h4 class="card-title mb-0">Preview</h4></div>
+                    <div class="card-body p-0">
+                        <iframe id="previewFrame" style="width:100%;height:350px;border:none;"></iframe>
+                    </div>
+                    <div class="card-footer text-center">
+                        <button class="btn btn-sm btn-outline-info" id="btnRefreshPreview">
+                            <i class="material-icons" style="vertical-align:middle;font-size:16px;">refresh</i> Refresh Preview
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <input type="hidden" id="TemplateId" value="@Model.Id" />
+        @Html.AntiForgeryToken()
+    </div>
+</div>
+
+@section scripts {
+    <script src="~/Scripts/tinymce/tinymce.js"></script>
+    <script>
+        $(document).ready(function () {
+            tinymce.init({
+                selector: '#templateHtml',
+                statusbar: true,
+                plugins: 'code,wordcount,link,image,lists,table,fullscreen',
+                toolbar: "undo redo | styleselect | forecolor backcolor | bold italic underline | alignleft aligncenter alignright | bullist numlist | link image table | code fullscreen",
+                toolbar_mode: 'sliding',
+                height: 600,
+                content_style: 'body { font-family: Arial, sans-serif; font-size: 14px; max-width: 600px; margin: 0 auto; }',
+                init_instance_callback: function () { refreshPreview(); }
+            });
+        });
+
+        function insertTag(tag) {
+            var ed = tinymce.get('templateHtml');
+            if (ed) ed.insertContent(tag);
+        }
+
+        function refreshPreview() {
+            var content = tinymce.get('templateHtml') ? tinymce.get('templateHtml').getContent() : '';
+            // Replace merge tags with sample data
+            content = content.replace(/\{\{FirstName\}\}/g, 'Ahmed')
+                             .replace(/\{\{Email\}\}/g, 'ahmed@example.com')
+                             .replace(/\{\{University\}\}/g, 'Aga Khan University')
+                             .replace(/\{\{ExamType\}\}/g, 'FCPS')
+                             .replace(/\{\{City\}\}/g, 'Karachi')
+                             .replace(/\{\{Year\}\}/g, new Date().getFullYear())
+                             .replace(/\{\{Month\}\}/g, new Date().toLocaleString('default', { month: 'long' }));
+            var frame = document.getElementById('previewFrame');
+            frame.contentDocument.open();
+            frame.contentDocument.write(content);
+            frame.contentDocument.close();
+        }
+
+        $("#btnRefreshPreview").on("click", refreshPreview);
+
+        $("#btnSave").on("click", function () {
+            var name = $("#TemplateName").val();
+            if (!name) { Swal.fire('Required', 'Template name is required', 'warning'); return; }
+
+            var data = {
+                Id: parseInt($("#TemplateId").val()) || 0,
+                TemplateName: name,
+                Category: $("#Category").val(),
+                SubjectLine: $("#SubjectLine").val(),
+                HtmlBody: tinymce.get('templateHtml') ? tinymce.get('templateHtml').getContent() : '',
+                __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+            };
+
+            $.ajax({
+                url: '/Communication/SaveTemplate',
+                method: 'POST',
+                data: data,
+                success: function (res) {
+                    if (res.success) {
+                        $("#TemplateId").val(res.id);
+                        Swal.fire({ icon: 'success', title: 'Template Saved!', timer: 1500, showConfirmButton: false });
+                    } else {
+                        Swal.fire('Error', res.message || 'Failed to save.', 'error');
+                    }
+                },
+                error: function () { Swal.fire('Error', 'Server error.', 'error'); }
+            });
+        });
+    </script>
+}

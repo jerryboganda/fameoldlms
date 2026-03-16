@@ -1,0 +1,47 @@
+@{
+    ViewBag.Title = "Change Exam Attempt";
+    Layout = "~/Views/Shared/_LayoutStudent2026.cshtml";
+}
+
+<div class="page-section bg-alt">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                        <h4 class="mb-0"><i class="fa fa-edit"></i> Change Exam Attempt</h4>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted">Package: <strong>@ViewBag.PackageName</strong></p>
+                        
+                        @using (Html.BeginForm("ChangeExamAttempt", "Student", FormMethod.Post))
+                        {
+                            <input type="hidden" name="enrollmentId" value="@ViewBag.EnrollmentId" />
+                            
+                            <div class="form-group">
+                                <label for="examAttemptId">Select Expected Exam Attempt:</label>
+                                <select name="examAttemptId" id="examAttemptId" class="form-control" required>
+                                    @foreach (var attempt in ViewBag.Attempts as IEnumerable<First_Aid_Made_Easy.Models.ExamAttemptVM>)
+                                    {
+                                        <option value="@attempt.ExamAttemptID" @(attempt.ExamAttemptID == ViewBag.CurrentAttemptId ? "selected" : "")>
+                                            @attempt.AttemptName
+                                        </option>
+                                    }
+                                </select>
+                            </div>
+
+                            <div class="form-group mt-4">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fa fa-save"></i> Save Changes
+                                </button>
+                                <a href="@Url.Action("StudySchedule")" class="btn btn-secondary">
+                                    <i class="fa fa-times"></i> Cancel
+                                </a>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,585 @@
+@{
+    ViewBag.Title = "Ambassador Program | FAME";
+    ViewBag.MetaDescription = "Join the FAME Ambassador Program and earn commission by referring future healthcare professionals to our training platform.";
+    Layout = "~/Views/Shared/_LayoutFree.cshtml";
+}
+
+@section styles {
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+    :root {
+        --amb-bg: #f5f8fc;
+        --amb-surface: #ffffff;
+        --amb-surface-alt: #eaf2ff;
+        --amb-text: #14213d;
+        --amb-text-soft: #4f5d75;
+        --amb-border: #d8e2f0;
+        --amb-primary: #0f62fe;
+        --amb-primary-dark: #0b4bc2;
+        --amb-accent: #ff7a00;
+        --amb-success: #138a52;
+        --amb-shadow: 0 18px 48px rgba(20, 33, 61, 0.08);
+        --amb-radius: 24px;
+    }
+
+    body {
+        background: linear-gradient(180deg, #f7fbff 0%, #eef4fb 100%);
+        color: var(--amb-text);
+        font-family: 'Source Sans 3', sans-serif;
+    }
+
+    #kt_header,
+    #kt_footer {
+        display: none !important;
+    }
+
+    #kt_content {
+        padding-top: 0 !important;
+    }
+
+    .amb-page,
+    .amb-page * {
+        box-sizing: border-box;
+    }
+
+    .amb-page h1,
+    .amb-page h2,
+    .amb-page h3,
+    .amb-page h4 {
+        font-family: 'Manrope', sans-serif;
+        color: var(--amb-text);
+        letter-spacing: -0.03em;
+    }
+
+    .amb-page {
+        padding: 40px 0 80px;
+    }
+
+    .amb-shell {
+        width: min(1180px, calc(100% - 32px));
+        margin: 0 auto;
+    }
+
+    .amb-hero {
+        background: radial-gradient(circle at top left, rgba(15, 98, 254, 0.18), transparent 30%), linear-gradient(135deg, #ffffff 0%, #f5f9ff 100%);
+        border: 1px solid rgba(15, 98, 254, 0.12);
+        border-radius: 32px;
+        box-shadow: var(--amb-shadow);
+        overflow: hidden;
+        position: relative;
+    }
+
+    .amb-hero-grid {
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 40px;
+        padding: 56px;
+        align-items: center;
+    }
+
+    .amb-kicker {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 16px;
+        border-radius: 999px;
+        background: rgba(15, 98, 254, 0.08);
+        color: var(--amb-primary-dark);
+        font-weight: 700;
+        margin-bottom: 20px;
+    }
+
+    .amb-title {
+        font-size: clamp(2.5rem, 4vw, 4.4rem);
+        line-height: 1.02;
+        margin: 0 0 20px;
+    }
+
+    .amb-subtitle {
+        font-size: 1.2rem;
+        line-height: 1.7;
+        color: var(--amb-text-soft);
+        max-width: 660px;
+        margin-bottom: 28px;
+    }
+
+    .amb-cta-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+        margin-bottom: 28px;
+    }
+
+    .amb-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        border-radius: 16px;
+        padding: 14px 22px;
+        font-weight: 700;
+        text-decoration: none;
+        transition: transform .2s ease, box-shadow .2s ease, background-color .2s ease;
+        border: 1px solid transparent;
+    }
+
+    .amb-btn:hover,
+    .amb-btn:focus {
+        transform: translateY(-1px);
+        text-decoration: none;
+        outline: none;
+    }
+
+    .amb-btn-primary {
+        background: var(--amb-primary);
+        color: #fff;
+        box-shadow: 0 14px 28px rgba(15, 98, 254, 0.22);
+    }
+
+    .amb-btn-primary:hover,
+    .amb-btn-primary:focus {
+        background: var(--amb-primary-dark);
+        color: #fff;
+    }
+
+    .amb-btn-secondary {
+        background: #fff;
+        color: var(--amb-text);
+        border-color: var(--amb-border);
+    }
+
+    .amb-btn-secondary:hover,
+    .amb-btn-secondary:focus {
+        background: #f8fbff;
+        color: var(--amb-text);
+        box-shadow: 0 8px 20px rgba(20, 33, 61, 0.08);
+    }
+
+    .amb-metrics {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+    }
+
+    .amb-metric {
+        background: rgba(255, 255, 255, 0.86);
+        border: 1px solid rgba(20, 33, 61, 0.08);
+        border-radius: 20px;
+        padding: 18px;
+        backdrop-filter: blur(10px);
+    }
+
+    .amb-metric strong {
+        display: block;
+        font-family: 'Manrope', sans-serif;
+        font-size: 1.8rem;
+        color: var(--amb-text);
+    }
+
+    .amb-metric span {
+        color: var(--amb-text-soft);
+        font-size: 0.98rem;
+    }
+
+    .amb-panel {
+        background: linear-gradient(180deg, #13203a 0%, #1d3057 100%);
+        color: #fff;
+        border-radius: 28px;
+        padding: 30px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .amb-panel::after {
+        content: "";
+        position: absolute;
+        inset: auto -40px -40px auto;
+        width: 180px;
+        height: 180px;
+        background: radial-gradient(circle, rgba(255,122,0,0.35), transparent 65%);
+    }
+
+    .amb-panel h3,
+    .amb-panel p,
+    .amb-panel li,
+    .amb-panel strong {
+        color: #fff;
+    }
+
+    .amb-panel ul {
+        margin: 22px 0 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    .amb-panel li {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        margin-bottom: 14px;
+    }
+
+    .amb-section {
+        margin-top: 34px;
+        background: var(--amb-surface);
+        border: 1px solid var(--amb-border);
+        border-radius: 28px;
+        box-shadow: 0 14px 34px rgba(20, 33, 61, 0.05);
+        padding: 34px;
+    }
+
+    .amb-section-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+        align-items: flex-end;
+        margin-bottom: 24px;
+    }
+
+    .amb-section-head p {
+        margin: 0;
+        color: var(--amb-text-soft);
+        max-width: 620px;
+        font-size: 1.05rem;
+    }
+
+    .amb-card-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 18px;
+    }
+
+    .amb-card {
+        border: 1px solid var(--amb-border);
+        border-radius: 22px;
+        padding: 24px;
+        background: linear-gradient(180deg, #fff 0%, #fbfdff 100%);
+    }
+
+    .amb-card-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 16px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 18px;
+        background: var(--amb-surface-alt);
+        color: var(--amb-primary-dark);
+    }
+
+    .amb-card p,
+    .amb-table-note,
+    .amb-faq p {
+        color: var(--amb-text-soft);
+        margin-bottom: 0;
+    }
+
+    .amb-table-wrap {
+        overflow-x: auto;
+        border: 1px solid var(--amb-border);
+        border-radius: 22px;
+    }
+
+    .amb-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 700px;
+    }
+
+    .amb-table th,
+    .amb-table td {
+        padding: 18px 20px;
+        border-bottom: 1px solid var(--amb-border);
+        text-align: left;
+        vertical-align: top;
+    }
+
+    .amb-table th {
+        background: #f8fbff;
+        color: var(--amb-text);
+        font-family: 'Manrope', sans-serif;
+        font-size: 0.95rem;
+    }
+
+    .amb-table tr:last-child td {
+        border-bottom: 0;
+    }
+
+    .amb-pill {
+        display: inline-flex;
+        align-items: center;
+        border-radius: 999px;
+        padding: 6px 12px;
+        font-size: 0.9rem;
+        font-weight: 700;
+        background: rgba(19, 138, 82, 0.1);
+        color: var(--amb-success);
+    }
+
+    .amb-faq-item {
+        border: 1px solid var(--amb-border);
+        border-radius: 18px;
+        overflow: hidden;
+        margin-bottom: 14px;
+    }
+
+    .amb-faq-button {
+        width: 100%;
+        border: 0;
+        background: #fff;
+        color: var(--amb-text);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 18px 20px;
+        font-family: 'Manrope', sans-serif;
+        font-size: 1rem;
+        font-weight: 700;
+        text-align: left;
+    }
+
+    .amb-faq-button:focus {
+        outline: 3px solid rgba(15, 98, 254, 0.2);
+        outline-offset: -3px;
+    }
+
+    .amb-faq-content {
+        padding: 0 20px 18px;
+        color: var(--amb-text-soft);
+    }
+
+    .amb-footer-cta {
+        text-align: center;
+        padding: 36px;
+        background: linear-gradient(135deg, #0f62fe 0%, #1b7fff 100%);
+        border-radius: 28px;
+        color: #fff;
+    }
+
+    .amb-footer-cta h2,
+    .amb-footer-cta p {
+        color: #fff;
+    }
+
+    .amb-footer-cta p {
+        max-width: 700px;
+        margin: 12px auto 24px;
+        opacity: 0.95;
+    }
+
+    @@media (max-width: 991px) {
+        .amb-hero-grid,
+        .amb-card-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .amb-hero-grid {
+            padding: 32px 24px;
+        }
+
+        .amb-panel {
+            order: -1;
+        }
+    }
+
+    @@media (max-width: 767px) {
+        .amb-page {
+            padding: 20px 0 56px;
+        }
+
+        .amb-shell {
+            width: min(100% - 20px, 1000px);
+        }
+
+        .amb-section,
+        .amb-footer-cta {
+            padding: 24px 18px;
+        }
+
+        .amb-section-head {
+            display: block;
+        }
+
+        .amb-metrics {
+            grid-template-columns: 1fr;
+        }
+
+        .amb-cta-row {
+            flex-direction: column;
+        }
+
+        .amb-btn {
+            width: 100%;
+        }
+    }
+</style>
+}
+
+<main class="amb-page">
+    <div class="amb-shell">
+        <section class="amb-hero">
+            <div class="amb-hero-grid">
+                <div>
+                    <div class="amb-kicker">FAME Ambassador Program</div>
+                    <h1 class="amb-title">Grow your impact and earn by referring future healthcare professionals.</h1>
+                    <p class="amb-subtitle">Join a structured referral program built for trust, visibility, and trackable performance. Share FAME with your network, monitor conversions, and manage your payouts from one dashboard.</p>
+                    <div class="amb-cta-row">
+                        <a href="@Url.Action("Apply", "Profile", new { area = "Ambassador" })" class="amb-btn amb-btn-primary">Apply Now</a>
+                        <a href="@Url.Action("Login", "AmbassadorAccount", new { area = "Ambassador" })" class="amb-btn amb-btn-secondary">Ambassador Login</a>
+                    </div>
+                    <div class="amb-metrics">
+                        <div class="amb-metric">
+                            <strong>20%</strong>
+                            <span>Maximum commission on qualified referrals</span>
+                        </div>
+                        <div class="amb-metric">
+                            <strong>Live</strong>
+                            <span>Referral tracking with dashboard visibility</span>
+                        </div>
+                        <div class="amb-metric">
+                            <strong>Flexible</strong>
+                            <span>Designed for student leaders and professionals</span>
+                        </div>
+                    </div>
+                </div>
+                <aside class="amb-panel">
+                    <h3>What ambassadors get</h3>
+                    <p>Everything you need to promote confidently and keep track of your performance.</p>
+                    <ul>
+                        <li><span>•</span><span>Dedicated Ambassador dashboard for referrals, payouts, and account status</span></li>
+                        <li><span>•</span><span>Unique referral link and referral code for every approved ambassador</span></li>
+                        <li><span>•</span><span>Transparent tracking from click to signup to conversion</span></li>
+                        <li><span>•</span><span>Professional program positioning aligned with the FAME brand</span></li>
+                    </ul>
+                </aside>
+            </div>
+        </section>
+
+        <section class="amb-section">
+            <div class="amb-section-head">
+                <div>
+                    <h2>How it works</h2>
+                    <p>The journey is simple: apply, get approved, share your referral assets, and monitor your results in real time.</p>
+                </div>
+            </div>
+            <div class="amb-card-grid">
+                <article class="amb-card">
+                    <div class="amb-card-icon">1</div>
+                    <h3>Submit your application</h3>
+                    <p>Complete the Ambassador application with your academic or professional details and agree to the program terms.</p>
+                </article>
+                <article class="amb-card">
+                    <div class="amb-card-icon">2</div>
+                    <h3>Get reviewed and approved</h3>
+                    <p>Approved ambassadors receive access to the dashboard, referral tools, and program tracking.</p>
+                </article>
+                <article class="amb-card">
+                    <div class="amb-card-icon">3</div>
+                    <h3>Share and track conversions</h3>
+                    <p>Use your referral link or code to bring in new registrations and review your credit and payout progress.</p>
+                </article>
+            </div>
+        </section>
+
+        <section class="amb-section">
+            <div class="amb-section-head">
+                <div>
+                    <h2>Program snapshot</h2>
+                    <p>This page gives applicants a clear overview of the program structure before they apply.</p>
+                </div>
+            </div>
+            <div class="amb-table-wrap">
+                <table class="amb-table">
+                    <thead>
+                        <tr>
+                            <th>Area</th>
+                            <th>Details</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Referral access</td>
+                            <td>Approved ambassadors receive a unique referral link and referral code.</td>
+                            <td><span class="amb-pill">Included</span></td>
+                        </tr>
+                        <tr>
+                            <td>Tracking</td>
+                            <td>Referral activity is tracked through the Ambassador dashboard for transparency.</td>
+                            <td><span class="amb-pill">Live</span></td>
+                        </tr>
+                        <tr>
+                            <td>Payouts</td>
+                            <td>Payout methods and payout requests are managed from the Ambassador area after approval.</td>
+                            <td><span class="amb-pill">Dashboard Managed</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="amb-section amb-faq">
+            <div class="amb-section-head">
+                <div>
+                    <h2>Frequently asked questions</h2>
+                    <p>Clear guidance for new applicants and returning ambassadors.</p>
+                </div>
+            </div>
+
+            <div class="amb-faq-item">
+                <button type="button" class="amb-faq-button" onclick="toggleFaq(this)">
+                    <span>Do I need an account before applying?</span>
+                    <span>+</span>
+                </button>
+                <div class="amb-faq-content" style="display:none;">
+                    If you are not signed in, the application flow will first capture your account details and then submit your Ambassador request.
+                </div>
+            </div>
+
+            <div class="amb-faq-item">
+                <button type="button" class="amb-faq-button" onclick="toggleFaq(this)">
+                    <span>Where do I log in after approval?</span>
+                    <span>+</span>
+                </button>
+                <div class="amb-faq-content" style="display:none;">
+                    Approved ambassadors should use the dedicated Ambassador login page, not the normal student login page.
+                </div>
+            </div>
+
+            <div class="amb-faq-item">
+                <button type="button" class="amb-faq-button" onclick="toggleFaq(this)">
+                    <span>How are referrals credited?</span>
+                    <span>+</span>
+                </button>
+                <div class="amb-faq-content" style="display:none;">
+                    Every approved ambassador gets a unique code and link. Referred registrations are tracked and reflected inside the Ambassador dashboard.
+                </div>
+            </div>
+        </section>
+
+        <section class="amb-section amb-footer-cta">
+            <h2>Ready to join the Ambassador Program?</h2>
+            <p>Start your application today or sign in if you are already approved.</p>
+            <div class="amb-cta-row" style="justify-content:center; margin-bottom:0;">
+                <a href="@Url.Action("Apply", "Profile", new { area = "Ambassador" })" class="amb-btn amb-btn-secondary" style="background:#fff; color:#14213d;">Apply for Ambassador Access</a>
+                <a href="@Url.Action("Login", "AmbassadorAccount", new { area = "Ambassador" })" class="amb-btn amb-btn-primary" style="background:#ff7a00; box-shadow:none;">Go to Ambassador Login</a>
+            </div>
+        </section>
+    </div>
+</main>
+
+@section scripts {
+<script>
+    function toggleFaq(button) {
+        var content = button.nextElementSibling;
+        var symbol = button.querySelector('span:last-child');
+        var isOpen = content.style.display === 'block';
+        content.style.display = isOpen ? 'none' : 'block';
+        symbol.textContent = isOpen ? '+' : '-';
+    }
+</script>
+}

@@ -1,0 +1,126 @@
+﻿@using First_Aid_Made_Easy.BLL;
+@{
+	ViewBag.Title = "Our Ambassadors";
+
+	var a = new List<TeamVM>
+{
+		new TeamVM{ Name = "Dr.Afra Siyab Khan",Image = "arf syab.jpg",Text = "International medical university,Kyrgyzstan(IMU)" , Text2 = "" },
+		new TeamVM{ Name = "Dr. Abdul Rehman",Image = "abdulrehman.jpg",Text = "International medical university,Kyrgyzstan(UK)" , Text2 = "" },
+		new TeamVM{ Name = "Dr.Ahsan Ali",Image = "Ahsan ali.jpg",Text = "Samarkand state Medical" , Text2 = "" },
+		new TeamVM{ Name = "Dr.Hammad Ali Zia",Image = "hamad.jpg",Text = " INTERNATIONAL MEDICAL UNIVERSITY BISHKEK" , Text2 = "" },
+		new TeamVM{ Name = "Dr.Shanza Shamraz",Image = "ShanzaShamraz.jpg",Text = "Poonch medical Rawalakot" , Text2 = "" },
+		new TeamVM{ Name = "Dr.Fahad Ullah Imran",Image = "Fahadullah.jpg",Text = "ADAM university Kyrgyzstan" , Text2 = "" },
+		new TeamVM{ Name = "Dr.Muhammad Kamran",Image = "Kamran.png",Text = "Ambassador from kigma" , Text2 = "" },
+		new TeamVM{ Name = "Dr.M Ammad Shahid",Image = "ammad.png",Text = "International Medical University Kyrgyzstan" , Text2 = "" },
+		new TeamVM{ Name = "Dr.Usman Rasheed",Image = "UsmanRasheed.png",Text = "Asian medical institute Kyrgyzstan" , Text2 = "" },
+		new TeamVM{ Name = "Dr.Talha Abid",Image = "Talha.png",Text = "Guangxi University of Chinese medicine" , Text2 = "" },
+		//new TeamVM{ Name = "Dr.Muhammad Bilal",Image = "bilal.png",Text = "Tashkent medical academy Urgench" , Text2 = "" },
+		new TeamVM{ Name = "Dr.Muhammad Asif",Image = "asif.jpg",Text = "Asian medical institute of Kyrgyzstan" , Text2 = "" },
+		new TeamVM{ Name = "Dr.Amanullah",Image = "amanullah.jpg",Text = "Asian medical institute" , Text2 = "" },
+		new TeamVM{ Name = "Dr.Muhammad Saqlain",Image = "Saqlain.jpg",Text = "Kyrgyz state medical academy" , Text2 = "" },
+		new TeamVM{ Name = "Dr.Muhammad Waqar",Image = "Waqar.jpg",Text = "International Medical University" , Text2 = "" },
+		new TeamVM{ Name = "Dr.M Nabeel Arshad",Image = "Nabeel.jpg",Text = "House Officer services Hospital Lahore" , Text2 = "" },
+		new TeamVM{ Name = "Dr.Hafiz Muhammad Awais",Image = "Awais.jpg",Text = "International Medical University" , Text2 = "" },
+		//new TeamVM{ Name = "Dr.Seemab Shabbir",Image = "Seemab.jpg",Text = "Jalal-Abad state university" , Text2 = "" },
+		new TeamVM{ Name = "Dr.Ifrah Ahmad",Image = "Ifrah.jpg",Text = "Tashkent medical academy urgench" , Text2 = "" },
+		new TeamVM{ Name = "Dr.Amjad Iqbal",Image = "amjad.jpg",Text = "International Higher School of Medicine" , Text2 = "" },
+		new TeamVM{ Name = "Dr. M. Siddique Baber",Image = "Baber.jpg",Text = "Royal Metropolitan University" , Text2 = "" },
+		new TeamVM{ Name = "Dr. Ali Raza wattoo",Image = "aliraza.jpg",Text = "OSH state University" , Text2 = "" },
+		new TeamVM{ Name = "Dr. Danyal Haider",Image = "danyal.jpg",Text = "Kyrgyz State Medical academy" , Text2 = "" },
+		new TeamVM{ Name = "Dr. Yasir Ahmad",Image = "yasirahmed.jpg",Text = "International medical university" , Text2 = "" },
+		new TeamVM{ Name = "Dr. Muhammad Yaseen",Image = "yaseen.jpg",Text = "International medical university" , Text2 = "" },
+		new TeamVM{ Name = "Dr. Mujtaba Saleem",Image = "mujtaba.jpg",Text = "Andijon state medical institute" , Text2 = "" },
+		new TeamVM{ Name = "Dr. Ali Murtaza",Image = "alimurtaza.jpg",Text = "Jalalabad State University" , Text2 = "" },
+
+	};
+}
+<style>
+	.edu-blog .content.position-top {
+		margin-top: -75px;
+	}
+</style>
+
+<div class="edu-breadcrumb-area">
+	<div class="container">
+		<div class="breadcrumb-inner">
+			<div class="page-title">
+				<h1 class="title">Our Ambassadors</h1>
+			</div>
+		</div>
+	</div>
+	<ul class="shape-group">
+		<li class="shape-1">
+			<span></span>
+		</li>
+		<li class="shape-2 scene"><img data-depth="2" src="~/Areas/Landing/assets/images/about/shape-13.png" alt="shape"></li>
+		<li class="shape-3 scene"><img data-depth="-2" src="~/Areas/Landing/assets/images/about/shape-15.png" alt="shape"></li>
+		<li class="shape-4">
+			<span></span>
+		</li>
+		<li class="shape-5 scene"><img data-depth="2" src="~/Areas/Landing/assets/images/about/shape-07.png" alt="shape"></li>
+	</ul>
+</div>
+
+<!--=====================================-->
+<!--=        Blog Area Start            =-->
+<!--=====================================-->
+<section class="section-gap-equal">
+	<div class="container">
+		<div class="row g-5" id="masonry-gallery">
+			<!-- Start Blog Grid  -->
+			@foreach (var t in a)
+			{
+				<div class="col-lg-4 col-md-6 col-12 masonry-item" data-sal-delay="100" data-sal="slide-up" data-sal-duration="800">
+					<div class="edu-blog blog-style-5">
+						<div class="inner">
+							<div class="thumbnail">
+								<a href="blog-details.html">
+									<img style="width:370px; height:370px" loading="lazy" src="~/Areas/Landing/assets/images/team/@t.Image" alt="Blog Images">
+								</a>
+							</div>
+							<div class="content position-top">
+								<h5 class="title"><a href="javascript:;">@t.Name</a></h5>
+								<p style="height:52px" >@t.Text</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			}
+
+		</div>
+
+
+	</div>
+</section>
+<!--=====================================-->
+<!--=        CTA  Area Start            =-->
+<!--=====================================-->
+<!-- Start Ad Banner Area  -->
+<div class="edu-cta-banner-area home-one-cta-wrapper bg-image">
+	<div class="container">
+		<div class="edu-cta-banner">
+			<div class="row justify-content-center">
+				<div class="col-lg-7">
+					<div class="section-title section-center" data-sal-delay="150" data-sal="slide-up" data-sal-duration="800">
+						<h2 class="title">Get Your Quality  <span class="color-secondary">Skills</span> Through FAME</h2>
+						<a href="/Account/Register" class="edu-btn">Get started now <i class="icon-4"></i></a>
+					</div>
+				</div>
+			</div>
+			<ul class="shape-group">
+				<li class="shape-01 scene">
+					<img data-depth="2.5" src="~/Areas/Landing/assets/images/cta/shape-10.png" alt="shape">
+				</li>
+				<li class="shape-02 scene">
+					<img data-depth="-2.5" src="~/Areas/Landing/assets/images/cta/shape-09.png" alt="shape">
+				</li>
+				<li class="shape-03 scene">
+					<img data-depth="-2" src="~/Areas/Landing/assets/images/cta/shape-08.png" alt="shape">
+				</li>
+				<li class="shape-04 scene">
+					<img data-depth="2" src="~/Areas/Landing/assets/images/about/shape-13.png" alt="shape">
+				</li>
+			</ul>
+		</div>
+	</div>
+</div>

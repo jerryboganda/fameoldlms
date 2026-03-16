@@ -1,0 +1,208 @@
+﻿@model  First_Aid_Made_Easy.Models.SubscriptionsVM
+
+@using Microsoft.AspNet.Identity;
+@using First_Aid_Made_Easy.Models;
+@using First_Aid_Made_Easy.BLL;
+@{
+    ViewBag.Title = "Subscription Details";
+    ViewBag.BreadCrumb = new String[] { "Subscription", "Details" };
+    Layout = "~/Views/Shared/_LayoutNew.cshtml";
+    var a = ((StudentDetail)ViewBag.StudentDetail).User;
+    var en = Model.CurrentEnroll;
+    var sent = (bool)ViewBag.AlreadySent;
+}
+
+
+
+<div class="container-xxl" id="kt_content_container">
+    <!--begin::Layout-->
+    <div class="d-flex flex-column flex-xl-row">
+        <!--begin::Sidebar-->
+        <div class="flex-column flex-lg-row-auto">
+            <!--begin::Card-->
+            <div class="card mb-5 mb-xl-8">
+                <!--begin::Card body-->
+                <div class="card-body pt-15">
+                    <!--begin::Summary-->
+                    <div class="d-flex mb-5">
+                        <!--begin::Avatar-->
+                        <div class="symbol symbol-100px mb-7">
+                            <img src="@Url.Content("~/Images/"+a.User_Pic)" alt="image" />
+                        </div>
+                        <div style="margin-left:1rem">
+                            <a href="#" class="fs-3 text-gray-800 text-hover-primary fw-bold mb-1">@a.User_Name</a>
+                            <div class="fs-5 fw-semibold text-muted mb-6">@a.User_FatherName</div>
+                            <div class="fw-bold">Designation</div>
+                            <div class="fs-5 fw-semibold text-muted mb-6">@a.Occupation</div>
+                        </div>
+
+                    </div>
+                    <!--end::Summary-->
+                    <!--begin::Details toggle-->
+                    <div class="d-flex flex-stack fs-4 py-3">
+                        <div class="fw-bold rotate collapsible" data-bs-toggle="collapse" href="#kt_customer_view_details" role="button" aria-expanded="false" aria-controls="kt_customer_view_details">
+                            Details
+                            <span class="ms-2 rotate-180"> </span>
+                        </div>
+
+                    </div>
+                    <!--end::Details toggle-->
+                    <div class="separator separator-dashed my-3"></div>
+                    <!--begin::Details content-->
+                    <div id="kt_customer_view_details" class="collapse show">
+                        <div class="py-5 fs-6">
+                            <div class="fw-bold">Profile ID</div>
+                            <div class="text-gray-600">ID-@a.User_Id</div>
+                            <div class="fw-bold mt-5">Billing Email</div>
+                            <div class="text-gray-600">
+                                <a href="#" class="text-gray-600 text-hover-primary">@a.Email</a>
+                            </div>
+                            <div class="fw-bold mt-5">Address</div>
+                            <div class="text-gray-600">
+                                <a href="#" class="text-gray-600 text-hover-primary">@a.JobLocation</a>
+                            </div>
+                            @if (en != null && en.EnrollmentDate != null)
+                            {
+                                <!--begin::Details item-->
+                                <div class="fw-bold mt-5">Upcoming Invoice</div>
+                                <div class="text-gray-600">@en.EnrollmentID</div>
+                                <!--begin::Details item-->
+                                <!--begin::Details item-->
+                                <div class="fw-bold mt-5">Subscription Package</div>
+                                <div class="text-gray-600">@en.CourseName</div>
+                                <!--begin::Details item-->
+                                <!--begin::Details item-->
+                                <div class="fw-bold mt-5">Subscription Starting Date</div>
+                                <div class="text-gray-600">@string.Format("{0:MMM dd,yyyy}", en.EnrollmentDate)</div>
+                                <!--begin::Details item-->
+                                <!--begin::Details item-->
+                                <div class="fw-bold mt-5">Subscription End Date</div>
+                                <div class="text-gray-600">@string.Format("{0:MMM dd,yyyy}", en.ExpiryDate)</div>
+                                <!--begin::Details item-->
+                                <!--begin::Details item-->
+                                <div class="fw-bold mt-5">Total Days Left</div>
+                                <div class="text-gray-600">@en.RemainingDays</div><br>
+                                if (sent)
+                                {
+                                    <button type="button" class="btn btn-primary">Request Already Sent</button>
+                                }
+                                else
+                                {
+                                    <button type="button" id="btnRequesExt" data-accept="true" data-id="@en.EnrollmentID" class="btn btn-primary">Submit Request for Package Extension</button>
+                                }
+                            }
+
+                        </div>
+                    </div>
+                    <!--end::Details content-->
+                </div>
+                <!--end::Card body-->
+            </div>
+            <!--end::Card-->
+
+        </div>
+        <!--end::Sidebar-->
+        <!--begin::Content-->
+        <div class="flex-lg-row-fluid ms-lg-15">
+
+            <!--begin:::Tab content-->
+            <div class="tab-content" id="myTabContent">
+                <!--begin:::Tab pane-->
+                <div class="tab-pane fade show active" id="kt_customer_view_overview_tab" role="tabpanel">
+                    <!--begin::Card-->
+                    <div class="card pt-2 mb-6 mb-xl-9">
+                        <!--begin::Card header-->
+                        <div class="card-header border-0">
+                            <!--begin::Card title-->
+                            <div class="card-title">
+                                <h2>Invoices</h2>
+                            </div>
+                        </div>
+                        <div class="card-body pt-0" style="height: 500px;">
+                            <div id="kt_referred_users_tab_content" class="tab-content">
+                                <div id="kt_customer_details_invoices_1" class="py-0 tab-pane fade show active" role="tabpanel">
+                                    <table id="kt_customer_details_invoices_table_1" class="table align-middle table-row-dashed fs-6 fw-bold gy-5">
+                                        <thead class="border-bottom border-gray-200 fs-7 text-uppercase fw-bold">
+                                            <tr class="text-start text-muted gs-0">
+                                                <th class="min-w-100px">Invoice ID</th>
+                                                <th class="min-w-100px">Amount</th>
+                                                <th class="min-w-100px">Status</th>
+                                                <th class="min-w-125px">Date</th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="fs-6 fw-semibold text-gray-600">
+                                            @foreach (var b in Model.PackList)
+                                            {
+                                                <tr>
+                                                    <td> <a href="#" class="text-gray-600 text-hover-primary">@b.EnrollmentID</a> </td>
+                                                    <td class="text-success">@string.Format("{0:n0}",b.Amount)</td>
+                                                    <td>
+                                                        @if (b.Status == EnrollStatus.Expired.ToString())
+                                                        {<span class="badge badge-light-danger">@b.Status</span> }
+                                                    else if (b.Status == EnrollStatus.Continue.ToString())
+                                                    { <span class="badge badge-light-success">@b.Status</span> }
+                                                else
+                                                { <span class="badge badge-light-warning">@b.Status</span>}
+                                                    </td>
+                                                    <td>@string.Format("{0:MMM dd,yyyy}", b.EnrollmentDate)</td>
+                                                    <td><a title="Download PDF" target="_blank" class="font-size-20pt" href="/Billing/InvoicePDF/@b.EnrollmentID"><i class="fa fa-download"></i></a></td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section scripts {
+
+    <script src="~/Content/assetsn/js/custom/apps/customers/view/invoices.js"></script>
+    <script src="~/Content/assetsn/js/custom/apps/customers/view/payment-method.js"></script>
+    <script src="~/Content/assetsn/js/custom/apps/customers/view/payment-table.js"></script>
+    @if (TempData["Success"] != null)
+    {
+        <script>
+            Swal.fire({
+                position: 'top-end',
+                icon: 'success',
+                title: 'Ticket Posted Successfully',
+                showConfirmButton: false,
+                timer: 2500
+            })
+        </script>
+    }
+
+
+    <script>
+
+        $(document).on("click", "#btnRequesExt", function () {
+            var id = $(this).data("id");
+            var IsAccepted = $(this).data("accept");
+            var btn = $(this);
+            var div = $(this).closest(".acceptDiv");
+            btn.attr("disabled", true);
+            if (id != "") {
+                $.ajax({
+                    url: "/Billing/ExtensionRequest?EnrollID=" + id + "&IsAccepted=" + IsAccepted,
+                    success: function (data) {
+                        btn.text("Request Sent")
+                        if (IsAccepted) div.html(`<button data-accept="true" class="btn m-1 btn-sm btn-outline-success">Accepted</button>`)
+                        else div.html(`<button data-accept="true" class="btn m-1 btn-sm btn-outline-danger">Rejected</button>`)
+                    },
+                    error: function () {
+                        btn.text("Send Again");
+                    }
+                })
+            }
+        })
+    </script>
+}

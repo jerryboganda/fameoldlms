@@ -1,0 +1,85 @@
+@model First_Aid_Made_Easy.Models.TicketVM
+@{
+    ViewBag.Title = "Open New Ticket";
+    Layout = "~/Views/Shared/_LayoutStudent2026.cshtml";
+}
+
+<div class="anim-enter delay-100">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="d-flex align-items-center mb-4">
+                <a href="@Url.Action("TicketList", "Student")" class="btn btn-sm btn-light btn-icon me-3">
+                    <i data-feather="arrow-left"></i>
+                </a>
+                <div>
+                    <h2 class="mb-1">Open Support Ticket</h2>
+                    <p class="text-muted">Describe your issue and we'll help you out</p>
+                </div>
+            </div>
+
+            <div class="fame-card p-4 p-md-5">
+                <form id="ticketForm" enctype="multipart/form-data">
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Issue Category</label>
+                        @Html.DropDownListFor(m => m.CategoryID, 
+                            new SelectList((System.Collections.IEnumerable)ViewBag.Categories, "Category_Id", "Category_Name"), 
+                            "Select Category", 
+                            new { @class = "form-select form-select-lg" })
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Subject</label>
+                        @Html.TextBoxFor(m => m.Subject, new { @class = "form-control form-control-lg", placeholder = "Brief summary of the issue" })
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Description</label>
+                        @Html.TextAreaFor(m => m.Body, new { @class = "form-control", rows = "6", placeholder = "Detailed explanation..." })
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-3">
+                        <a href="@Url.Action("TicketList", "Student")" class="btn btn-light px-4">Cancel</a>
+                        <button type="button" onclick="SubmitTicket()" class="fame-btn fame-btn-primary px-5">
+                            Submit Ticket
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function SubmitTicket() {
+        var form = document.getElementById('ticketForm');
+        var formData = new FormData(form);
+        var btn = document.querySelector('button[onclick="SubmitTicket()"]');
+        
+        // Simple client-side validation
+        if(!formData.get('Subject') || !formData.get('Body') || !formData.get('CategoryID')) {
+            alert('Please fill in all fields');
+            return;
+        }
+
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Sending...';
+
+        $.ajax({
+            url: '@Url.Action("Save", "Student")',
+            type: 'POST',
+            data: model = {
+                Subject : formData.get('Subject'),
+                Body: formData.get('Body'),
+                CategoryID: formData.get('CategoryID')
+            },
+            success: function (res) {
+                 window.location.href = '@Url.Action("TicketList", "Student")';
+            },
+            error: function() {
+                alert('Error submitting ticket. Please try again.');
+                btn.disabled = false;
+                btn.innerHTML = 'Submit Ticket';
+            }
+        });
+    }
+</script>

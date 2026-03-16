@@ -1,0 +1,111 @@
+﻿@model First_Aid_Made_Easy.Models.QuestionPaperVM
+@{
+    Layout = "~/Views/Shared/_LayoutTeacher.cshtml";
+
+    ViewBag.Title = "Question Paper List";
+}
+
+<div class="pt-32pt">
+    <div class="container-fluid page__container d-flex flex-column flex-md-row align-items-center text-center text-sm-left">
+        <div class="flex d-flex flex-column flex-sm-row align-items-center">
+            <div class="mb-24pt mb-sm-0 mr-sm-24pt">
+                <h2 class="mb-0">Question Paper List</h2>
+                <ol class="breadcrumb p-0 m-0">
+                    <li class="breadcrumb-item"><a href="/Teacher/Index">Home</a></li>
+                    <li class="breadcrumb-item active">
+                        Question Paper List
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="page-section border-bottom-2">
+        <div style="margin: 0; max-width: 100%" class="container-fluid page__container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="page-separator">
+                        <div class="page-separator__text">Search Filters</div>
+                    </div>
+                    <div style="margin-top:20px">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label>Tags</label>
+                                <input id="Tags" type="text" class="form-control tags" placeholder="Tags">
+                            </div>
+                            <div class="col-md-4">
+                                <label>Difficulty Level</label>
+                                @Html.DropDownListFor(model => model.DifficultyLevel, new SelectList(First_Aid_Made_Easy.BLL.Common.Difficulty, "Value", "Text"), "Please Select", new { @class = "form-control select2", @required = "required", @data_toggle = "select" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="page-separator">
+                        <div class="page-separator__text">Basic Information</div>
+                    </div>
+                    <div class="table-responsive" style="margin-top:20px" id="divPartial">
+                        @Html.Partial("_List")
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section scripts {
+    <!-- DateRangePicker -->
+    <script src="~/Content/assets/vendor/moment.min.js"></script>
+    <script src="~/Content/assets/vendor/daterangepicker.js"></script>
+    <script src="~/Content/assets/js/daterangepicker.js"></script>
+    @Scripts.Render("~/Scripts/List")
+
+    @if (TempData["Success"] != null)
+    {
+        <script>
+            toastr.success("Data Saved Successfully");
+        </script>
+    }
+
+    <script>
+        $(document).ready(function () {
+            $("#DTable").DataTable();
+            //$(document).find("#DTable_wrapper").css("display", "");
+        })
+
+        $(document).on("change", "#DifficultyLevel,#Tags", function () {
+            FilterList("DifficultyLevel")
+        })
+
+        function FilterList(Type) {
+            var DifficultyLevel = 0, Tags = "";
+
+            if (Type == "DifficultyLevel" && $("#DifficultyLevel option:selected").val() > 0) {
+                DifficultyLevel = $("#DifficultyLevel option:selected").val();
+            }
+            if (Type == "Tags") {
+                Tags = $("#Tags").val();
+            }
+            $(".divLoader").show();
+            $.ajax({
+                url: "/QuestionPaper/Filter?DifficultyLevel=" + DifficultyLevel + "&Tags=" + Tags,
+                method: "POST",
+                success: function (result) {
+                    if (result != null) {
+                        $("#DTable").DataTable().destroy();
+                        $("#divPartial").html(result);
+                        $("#DTable").DataTable();
+                        $(".divLoader").hide();
+                    }
+                }, error: function (err) {
+                    alert("Error" + err);
+                }
+            })
+        }
+    </script>
+
+}
+

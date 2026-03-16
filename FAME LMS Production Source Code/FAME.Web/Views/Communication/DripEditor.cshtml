@@ -1,0 +1,198 @@
+@model First_Aid_Made_Easy.Models.DripCampaignVM
+@{
+    ViewBag.Title = Model.Id > 0 ? "Edit Drip Campaign" : "New Drip Campaign";
+    Layout = "~/Views/Shared/_LayoutTeacher.cshtml";
+}
+
+<div class="pt-32pt">
+    <div class="container-fluid page__container">
+        <div class="d-flex align-items-center mb-24pt">
+            <div class="flex">
+                <h2 class="mb-0">@ViewBag.Title</h2>
+                <ol class="breadcrumb p-0 m-0">
+                    <li class="breadcrumb-item"><a href="/Communication/Index">Email Marketing</a></li>
+                    <li class="breadcrumb-item"><a href="/Communication/Drips">Automations</a></li>
+                    <li class="breadcrumb-item active">@ViewBag.Title</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="page-section">
+    <div class="container-fluid page__container">
+        <div class="row">
+            <!-- Settings -->
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header"><h4 class="card-title mb-0">Drip Settings</h4></div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label><strong>Drip Name *</strong></label>
+                            <input type="text" id="DripName" class="form-control" value="@Model.DripName" placeholder="e.g. Welcome Sequence" />
+                        </div>
+                        <div class="form-group">
+                            <label><strong>Trigger Type</strong></label>
+                            <select id="TriggerType" class="form-control">
+                                <option value="Registration" @(Model.TriggerType == "Registration" ? "selected" : "")>New Registration</option>
+                                <option value="Enrollment" @(Model.TriggerType == "Enrollment" ? "selected" : "")>Course Enrollment</option>
+                                <option value="Inactivity" @(Model.TriggerType == "Inactivity" ? "selected" : "")>Inactivity (Days)</option>
+                                <option value="Manual" @(Model.TriggerType == "Manual" ? "selected" : "")>Manual Enrollment</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Sender Account</label>
+                            <select id="FromAccountId" class="form-control">
+                                @if (ViewBag.SenderAccounts != null)
+                                {
+                                    foreach (SelectListItem item in ViewBag.SenderAccounts)
+                                    {
+                                        <option value="@item.Value" @(item.Selected ? "selected" : "")>@item.Text</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                        <hr />
+                        <button class="btn btn-primary btn-block" id="btnSaveDrip">
+                            <i class="material-icons mr-1" style="vertical-align:middle;font-size:18px;">save</i> Save Drip Campaign
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Steps Builder -->
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header d-flex align-items-center">
+                        <h4 class="card-title flex mb-0">Email Steps</h4>
+                        <button class="btn btn-sm btn-primary" id="btnAddStep">
+                            <i class="material-icons mr-1" style="vertical-align:middle;font-size:16px;">add</i> Add Step
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div id="stepsContainer">
+                            @if (Model.Steps != null && Model.Steps.Any())
+                            {
+                                foreach (var step in Model.Steps.OrderBy(s => s.StepOrder))
+                                {
+                                    <div class="step-item card mb-3 border-left-primary" data-order="@step.StepOrder">
+                                        <div class="card-body">
+                                            <div class="d-flex align-items-center mb-2">
+                                                <span class="badge badge-primary mr-2">Step @step.StepOrder</span>
+                                                <div>
+                                                    <label class="mb-0 mr-1">Wait</label>
+                                                    <input type="number" class="form-control form-control-sm d-inline step-delay" style="width:60px;" value="@step.DelayDays" min="0" />
+                                                    <label class="mb-0 ml-1">days, then send:</label>
+                                                </div>
+                                                <button class="btn btn-sm btn-outline-danger ml-auto btn-remove-step"><i class="material-icons" style="font-size:16px;">close</i></button>
+                                            </div>
+                                            <div class="form-group mb-2">
+                                                <input type="text" class="form-control step-subject" placeholder="Subject line" value="@step.Subject" />
+                                            </div>
+                                            <textarea class="form-control step-body" rows="4" placeholder="Email HTML body">@step.HtmlBody</textarea>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        </div>
+
+                        @if (Model.Steps == null || !Model.Steps.Any())
+                        {
+                            <div id="noSteps" class="text-center py-4 text-muted">
+                                <i class="material-icons" style="font-size:48px;">playlist_add</i>
+                                <p>No steps yet. Add your first email step.</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <input type="hidden" id="DripId" value="@Model.Id" />
+        @Html.AntiForgeryToken()
+    </div>
+</div>
+
+<style>
+    .border-left-primary { border-left: 4px solid #1a73e8 !important; }
+</style>
+
+@section scripts {
+    <script>
+        var stepCount = $(".step-item").length;
+
+        $("#btnAddStep").on("click", function () {
+            stepCount++;
+            $("#noSteps").hide();
+            var html = '<div class="step-item card mb-3 border-left-primary" data-order="' + stepCount + '">' +
+                '<div class="card-body">' +
+                '<div class="d-flex align-items-center mb-2">' +
+                '<span class="badge badge-primary mr-2">Step ' + stepCount + '</span>' +
+                '<div><label class="mb-0 mr-1">Wait</label>' +
+                '<input type="number" class="form-control form-control-sm d-inline step-delay" style="width:60px;" value="' + (stepCount === 1 ? 0 : 3) + '" min="0" />' +
+                '<label class="mb-0 ml-1">days, then send:</label></div>' +
+                '<button class="btn btn-sm btn-outline-danger ml-auto btn-remove-step"><i class="material-icons" style="font-size:16px;">close</i></button>' +
+                '</div>' +
+                '<div class="form-group mb-2"><input type="text" class="form-control step-subject" placeholder="Subject line" /></div>' +
+                '<textarea class="form-control step-body" rows="4" placeholder="Email HTML body"></textarea>' +
+                '</div></div>';
+            $("#stepsContainer").append(html);
+        });
+
+        $(document).on("click", ".btn-remove-step", function () {
+            $(this).closest(".step-item").fadeOut(200, function () {
+                $(this).remove();
+                renumberSteps();
+            });
+        });
+
+        function renumberSteps() {
+            $(".step-item").each(function (i) {
+                $(this).data("order", i + 1);
+                $(this).find(".badge").text("Step " + (i + 1));
+            });
+            stepCount = $(".step-item").length;
+            if (stepCount === 0) $("#noSteps").show();
+        }
+
+        $("#btnSaveDrip").on("click", function () {
+            var name = $("#DripName").val();
+            if (!name) { Swal.fire('Required', 'Drip name is required.', 'warning'); return; }
+
+            var steps = [];
+            $(".step-item").each(function (i) {
+                steps.push({
+                    StepOrder: i + 1,
+                    DelayDays: parseInt($(this).find(".step-delay").val()) || 0,
+                    Subject: $(this).find(".step-subject").val(),
+                    HtmlBody: $(this).find(".step-body").val()
+                });
+            });
+
+            var data = {
+                Id: parseInt($("#DripId").val()) || 0,
+                DripName: name,
+                TriggerType: $("#TriggerType").val(),
+                FromAccountId: parseInt($("#FromAccountId").val()) || null,
+                Steps: steps
+            };
+
+            $.ajax({
+                url: '/Communication/SaveDrip',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(data),
+                headers: { 'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val() },
+                success: function (res) {
+                    if (res.success) {
+                        $("#DripId").val(res.id);
+                        Swal.fire({ icon: 'success', title: 'Drip Saved!', timer: 1500, showConfirmButton: false });
+                    } else {
+                        Swal.fire('Error', res.message || 'Failed to save.', 'error');
+                    }
+                },
+                error: function () { Swal.fire('Error', 'Server error.', 'error'); }
+            });
+        });
+    </script>
+}

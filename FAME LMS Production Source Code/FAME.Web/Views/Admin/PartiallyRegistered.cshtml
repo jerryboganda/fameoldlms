@@ -1,0 +1,58 @@
+﻿@{
+	ViewBag.Title = "Book Code";
+	Layout = "~/Views/Shared/_LayoutTeacher.cshtml";
+	var List = (List<First_Aid_Made_Easy.DAL.AspNetUsers>)ViewBag.List;
+}
+<style>
+	.row {
+		width: 100% !important;
+	}
+</style>
+<div class="pt-32pt">
+	<div class="container-fluid page__container d-flex flex-column flex-md-row align-items-center text-center text-sm-left">
+		<div class="flex d-flex flex-column flex-sm-row align-items-center">
+			<div class="mb-24pt mb-sm-0 mr-sm-24pt">
+				<h2 class="mb-0">Partially Registered Students</h2>
+				<ol class="breadcrumb p-0 m-0">
+					<li class="breadcrumb-item"><a href="#">Home</a></li>
+					<li class="breadcrumb-item active">
+						Partially Registered
+					</li>
+				</ol>
+			</div>
+		</div>
+	</div>
+	<div class="page-section border-bottom-2">
+		<div class="page-section border-bottom-2">
+			<div style="margin: 0;max-width: 100%" class="container-fluid page__container">
+				<table id="DTable" class="table table-bordered">
+					<thead>
+						<tr style="background-color: #364e9c">
+							<th>Email</th>
+							<th>Phone Number</th>
+							<th></th>
+						</tr>
+					</thead>
+					<tbody>
+						@foreach (var i in List ?? new List<First_Aid_Made_Easy.DAL.AspNetUsers>())
+						{
+							<tr>
+								<td>@i.Email</td>
+								<td>@i.PhoneNumber</td>
+								<td>
+									<a href="javascript:;" id="btnRowDelete" data-url="/Enrollment/DeleteRequest/@i.Id" data-name="Student" class="text-danger"><i class="fa fa-trash Font20"></i></a>
+								</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+
+@section scripts {
+	@Scripts.Render("~/Scripts/List")
+
+}
+

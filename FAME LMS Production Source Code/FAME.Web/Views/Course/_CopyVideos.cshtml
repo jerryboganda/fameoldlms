@@ -1,0 +1,56 @@
+﻿
+@model First_Aid_Made_Easy.Models.CourseVM
+
+@{ var i = 0; }
+<div class="row">
+	<div class="col-md-12">
+		<div class="page-separator">
+			<div class="page-separator__text">Sections</div>
+		</div>
+		<div class="accordion js-accordion accordion--boxed mb-24pt" id="parent">
+			@foreach (var s in Model.SectionList)
+			{
+				i++;
+				<div id="sec-@s.Section_ID" class="accordion__item  ">
+					<a href="#" class="accordion__toggle" data-toggle="collapse" data-target="#course-toc-@i" data-parent="#parent">
+						<span class="flex">@s.Section_Name</span>
+						<span class="accordion__toggle-icon material-icons">keyboard_arrow_down</span>
+					</a>
+					<div class="accordion__menu collapse course-toc " id="course-toc-@i">
+						@* Videos directly under this section (no subsection) *@
+						@foreach (var v in s.VideoList)
+						{
+							<div id="@v.Video_Id" class="accordion__menu-link">
+								<input type="checkbox" id="isCopy_@v.Video_Id" class="isSelectedForCopy" value="@v.Video_Id" /> &emsp;
+								<a class="flex">@v.Video_Name</a>
+								<span class="text-muted">(@v.TypeS)  @v.Video_Length m</span>
+							</div>
+						}
+						@* Sub-sections and their videos *@
+						@if (s.SectionSubList != null && s.SectionSubList.Any())
+						{
+							foreach (var sub in s.SectionSubList)
+							{
+								<div class="accordion__menu-link" style="background:#f0f1f5; font-weight:600; padding:8px 16px; border-top:1px solid #ddd;">
+									<span class="material-icons" style="font-size:16px; margin-right:6px; vertical-align:middle;">subdirectory_arrow_right</span>
+									@sub.SectionSub_Name
+								</div>
+								if (sub.VideoList != null)
+								{
+									foreach (var v in sub.VideoList)
+									{
+										<div id="@v.Video_Id" class="accordion__menu-link" style="padding-left:36px;">
+											<input type="checkbox" id="isCopy_@v.Video_Id" class="isSelectedForCopy" value="@v.Video_Id" /> &emsp;
+											<a class="flex">@v.Video_Name</a>
+											<span class="text-muted">(@v.TypeS)  @v.Video_Length m</span>
+										</div>
+									}
+								}
+							}
+						}
+					</div>
+				</div>
+			}
+		</div>
+	</div>
+</div>

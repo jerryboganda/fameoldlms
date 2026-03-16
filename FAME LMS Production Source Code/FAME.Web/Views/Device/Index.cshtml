@@ -1,0 +1,139 @@
+﻿@using Microsoft.AspNet.Identity
+@using First_Aid_Made_Easy.BLL
+@model List<First_Aid_Made_Easy.DAL.tbl_UserDevices>
+
+@{
+    ViewBag.Title = "Device Management";
+    Layout = "~/Views/Shared/_LayoutStudent2026.cshtml";
+}
+
+<div class="card bg-glass border-glass mb-5">
+    <div class="card-body">
+        <div class="d-flex align-items-center">
+            <div class="symbol symbol-50px me-4">
+                <span class="symbol-label bg-light-primary text-primary"><i class="fa fa-shield-alt fs-2"></i></span>
+            </div>
+            <div>
+                <h3 class="card-title text-white fw-bold mb-1">Connected Devices</h3>
+                <div class="text-white-50 fs-7">Manage devices that have access to your account.</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-6 mb-10">
+    @if (Model != null && Model.Count > 0)
+    {
+        foreach (var device in Model)
+        {
+            var isMobile = device.IsMobile == true;
+            var deviceIcon = isMobile ? "fa-mobile-alt" : "fa-laptop";
+            var deviceType = isMobile ? "Mobile Device" : "Desktop / Laptop";
+            var isActive = device.IsActive == true;
+            
+            // Basic User Agent Parsing
+            var ua = device.UserAgent;
+            string deviceName = isActive ? "Current Session" : "Unknown Device";
+            
+            if (ua.Contains("Windows")) { deviceName = "Windows PC"; }
+            else if (ua.Contains("Mac")) { deviceName = "MacBook / iMac"; }
+            else if (ua.Contains("Android")) { deviceName = "Android Device"; }
+            else if (ua.Contains("iPhone") || ua.Contains("iPad")) { deviceName = "iOS Device"; }
+
+            <div class="col-md-6 col-xl-4">
+                <div class="card h-100 border-glass bg-glass hover-scale">
+                    <div class="card-body p-5">
+                        <div class="d-flex justify-content-between align-items-center mb-5">
+                            <div class="symbol symbol-40px">
+                                <span class="symbol-label bg-light-info text-info"><i class="fa @deviceIcon fs-3"></i></span>
+                            </div>
+                            @if (isActive)
+                            {
+                                <span class="badge badge-light-success">Active</span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-light-danger">Inactive</span>
+                            }
+                        </div>
+                        
+                        <h4 class="text-white fw-bold mb-1">@deviceName</h4>
+                        <div class="text-white-50 fs-8 mb-4">@deviceType</div>
+                        
+                        <div class="d-flex flex-column gap-2 mb-4">
+                            <div class="d-flex justify-content-between text-white-50 fs-8">
+                                <span>IP Address:</span>
+                                <span class="text-white">@device.IpAddress</span>
+                            </div>
+                            <div class="d-flex justify-content-between text-white-50 fs-8">
+                                <span>Last Seen:</span>
+                                <span class="text-white">@string.Format("{0:dd/MM/yyyy}", device.CreatedDT)</span>
+                            </div>
+                        </div>
+                        
+                        <button class="btn btn-sm btn-light-danger w-100 btnRemoveDevice" data-id="@device.DeviceID">
+                            <i class="fa fa-trash-alt me-2"></i> Revoke Access
+                        </button>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="col-12 text-center py-10">
+            <h4 class="text-white-50">No connected devices found.</h4>
+        </div>
+    }
+</div>
+
+@section scripts {
+    <script>
+        $(document).ready(function() {
+            $(".btnRemoveDevice").click(async function() {
+                var id = $(this).data('id');
+                
+                const { value: text } = await Swal.fire({
+                    title: 'Revoke Access?',
+                    text: "Are you sure you want to remove this device?",
+                    icon: 'warning',
+                    background: '#1e1e2d',
+                    color: '#fff',
+                    input: 'textarea',
+                    inputPlaceholder: 'Reason for removal...',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Yes, remove it!'
+                });
+
+                if (text) {
+                    $.ajax({
+                        url: "/Device/DeleteDeviceRequest/" + id + "?Notes=" + text,
+                        method: "POST",
+                        success: function (result) {
+                            Swal.fire({
+                                title: 'Removed!',
+                                text: 'Device removal request submitted.',
+                                icon: 'success',
+                                background: '#1e1e2d',
+                                color: '#fff' 
+                            }).then(() => {
+                                location.reload();
+                            });
+                        },
+                        error: function() {
+                             Swal.fire({
+                                title: 'Error',
+                                text: 'Could not process request.',
+                                icon: 'error',
+                                background: '#1e1e2d',
+                                color: '#fff'
+                            });
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+}

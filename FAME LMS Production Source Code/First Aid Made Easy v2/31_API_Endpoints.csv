@@ -1,0 +1,103 @@
+Method,Path,Auth,Role,Module,Description,Request Body,Response,Phase
+POST,/api/v1/auth/register,Public,,Identity,Register new student,{email; password; firstName; lastName},201 {userId; message},1
+POST,/api/v1/auth/login,Public,,Identity,Login with email/password,{email; password},200 {accessToken; refreshToken; expiresIn},1
+POST,/api/v1/auth/refresh,Public,,Identity,Refresh access token,{refreshToken},200 {accessToken; refreshToken; expiresIn},1
+POST,/api/v1/auth/logout,Authenticated,Any,Identity,Revoke refresh token,,204,1
+POST,/api/v1/auth/forgot-password,Public,,Identity,Request password reset,{email},200 {message},1
+POST,/api/v1/auth/reset-password,Public,,Identity,Reset password with token,{token; newPassword},200 {message},1
+POST,/api/v1/auth/confirm-email,Public,,Identity,Confirm email address,{userId; token},200 {message},1
+POST,/api/v1/auth/resend-confirmation,Public,,Identity,Resend confirmation email,{email},200 {message},1
+POST,/api/v1/auth/google,Public,,Identity,Google OAuth login,{idToken},200 {accessToken; refreshToken},1
+POST,/api/v1/auth/change-password,Authenticated,Any,Identity,Change current password,{currentPassword; newPassword},200 {message},1
+GET,/api/v1/users/me,Authenticated,Any,Identity,Get current user profile,,200 {user},1
+PUT,/api/v1/users/me,Authenticated,Any,Identity,Update current user profile,{firstName; lastName; phoneNumber},200 {user},1
+PUT,/api/v1/users/me/avatar,Authenticated,Any,Identity,Upload avatar image,multipart/form-data,200 {avatarUrl},1
+GET,/api/v1/users,Authenticated,Admin,Identity,List all users (paginated),?page&pageSize&search&role&status,200 {items[]; totalCount; page},1
+GET,/api/v1/users/{id},Authenticated,Admin,Identity,Get user details,,200 {user; subscriptions; activity},1
+PUT,/api/v1/users/{id}/roles,Authenticated,Admin,Identity,Assign roles to user,{roles[]},200 {user},1
+DELETE,/api/v1/users/{id},Authenticated,Admin,Identity,Deactivate user account,,204,1
+GET,/api/v1/tracks,Public,,Catalog,List all exam tracks,,200 {items[]},1
+GET,/api/v1/tracks/{slug},Public,,Catalog,Get track with courses,,200 {track; courses[]},1
+GET,/api/v1/courses,Public,,Catalog,List courses (paginated),?page&pageSize&trackId&search,200 {items[]; totalCount},1
+GET,/api/v1/courses/{slug},Public,,Catalog,Get course detail,,200 {course; modules[]; chapters[]},1
+POST,/api/v1/courses,Authenticated,Admin,Catalog,Create new course,{title; examTrackId; description; ...},201 {course},1
+PUT,/api/v1/courses/{id},Authenticated,Admin,Catalog,Update course,{title; description; ...},200 {course},1
+DELETE,/api/v1/courses/{id},Authenticated,Admin,Catalog,Archive course,,204,1
+POST,/api/v1/courses/{id}/modules,Authenticated,Admin,Catalog,Add module to course,{title; displayOrder},201 {module},1
+PUT,/api/v1/modules/{id},Authenticated,Admin,Catalog,Update module,{title; displayOrder},200 {module},1
+POST,/api/v1/modules/{id}/chapters,Authenticated,Admin,Catalog,Add chapter to module,{title; contentHtml; videoId},201 {chapter},1
+PUT,/api/v1/chapters/{id},Authenticated,Admin,Catalog,Update chapter,{title; contentHtml; videoId},200 {chapter},1
+GET,/api/v1/search,Public,,Catalog,Search across content,?q&type&trackId,200 {results[]; totalCount},1
+POST,/api/v1/search/reindex,Authenticated,Admin,Catalog,Trigger search reindex,,202 {message},1
+GET,/api/v1/courses/{id}/modules,Public,,Catalog,List modules for course,,200 {modules[]},1
+GET,/api/v1/modules/{id}/chapters,Public,,Catalog,List chapters for module,,200 {chapters[]},1
+POST,/api/v1/exams/{examId}/start,Authenticated,Student,Assessment,Start an exam attempt,,201 {attemptId; questions[]; timeLimit},2
+POST,/api/v1/attempts/{id}/answer,Authenticated,Student,Assessment,Submit answer for question,{questionId; selectedOptionId},200 {saved},2
+POST,/api/v1/attempts/{id}/submit,Authenticated,Student,Assessment,Submit exam for scoring,,200 {score; totalQuestions; correct; passed},2
+GET,/api/v1/attempts/{id},Authenticated,Student,Assessment,Get attempt result,,200 {attempt; answers[]; questions[]},2
+GET,/api/v1/attempts/{id}/review,Authenticated,Student,Assessment,Review attempt with explanations,,200 {questions[]; answers[]; explanations[]},2
+GET,/api/v1/exams,Authenticated,Student,Assessment,List available exams,?trackId,200 {items[]},2
+GET,/api/v1/exams/{id},Authenticated,Student,Assessment,Get exam details,,200 {exam; questionCount; timeLimit},2
+GET,/api/v1/users/me/attempts,Authenticated,Student,Assessment,Get exam history,?examId&page,200 {items[]; totalCount},2
+POST,/api/v1/admin/questions,Authenticated,Admin,Assessment,Create MCQ question,{questionText; options[]; explanation; ...},201 {question},2
+PUT,/api/v1/admin/questions/{id},Authenticated,Admin,Assessment,Update MCQ question,{questionText; options[]; ...},200 {question},2
+POST,/api/v1/admin/questions/import,Authenticated,Admin,Assessment,Bulk import questions,{questions[]},201 {imported; errors[]},2
+POST,/api/v1/admin/exams,Authenticated,Admin,Assessment,Create exam definition,{title; trackId; questionCount; timeLimit; ...},201 {exam},2
+PUT,/api/v1/admin/exams/{id},Authenticated,Admin,Assessment,Update exam definition,{title; ...},200 {exam},2
+GET,/api/v1/review/today,Authenticated,Student,Assessment,Get today's review cards,,200 {cards[]; totalDue},2
+POST,/api/v1/review/{cardId}/rate,Authenticated,Student,Assessment,Rate review card difficulty,{rating: 1-5},200 {nextReviewAt; interval},2
+GET,/api/v1/packages,Public,,Payment,List subscription packages,,200 {items[]},1
+GET,/api/v1/packages/{slug},Public,,Payment,Get package details,,200 {package; features},1
+POST,/api/v1/checkout,Authenticated,Student,Payment,Initiate checkout,{packageId; gateway; couponCode?},201 {checkoutId; redirectUrl?; paymentDetails},1
+POST,/api/v1/checkout/{id}/confirm,Authenticated,Student,Payment,Confirm payment (client-side),{gatewayResponse},200 {subscription},1
+POST,/api/v1/webhooks/jazzcash,Public,,Payment,JazzCash payment webhook,gateway-specific payload,200,1
+POST,/api/v1/webhooks/easypaisa,Public,,Payment,Easypaisa payment webhook,gateway-specific payload,200,1
+POST,/api/v1/webhooks/stripe,Public,,Payment,Stripe payment webhook,gateway-specific payload,200,1
+GET,/api/v1/users/me/subscriptions,Authenticated,Student,Payment,Get my subscriptions,,200 {items[]},1
+GET,/api/v1/users/me/payments,Authenticated,Student,Payment,Get payment history,?page,200 {items[]; totalCount},1
+GET,/api/v1/users/me/payments/{id}/receipt,Authenticated,Student,Payment,Download payment receipt,,200 application/pdf,1
+POST,/api/v1/coupons/validate,Authenticated,Student,Payment,Validate coupon code,{code; packageId},200 {valid; discount; message},1
+POST,/api/v1/admin/coupons,Authenticated,Admin,Payment,Create coupon,{code; type; value; ...},201 {coupon},1
+GET,/api/v1/admin/coupons,Authenticated,Admin,Payment,List coupons,?page&active,200 {items[]; totalCount},1
+PUT,/api/v1/admin/coupons/{id},Authenticated,Admin,Payment,Update coupon,{value; isActive; ...},200 {coupon},1
+POST,/api/v1/admin/subscriptions,Authenticated,Admin,Payment,Manual subscription grant,{userId; packageId; startsAt; expiresAt},201 {subscription},1
+PUT,/api/v1/admin/subscriptions/{id},Authenticated,Admin,Payment,Update subscription,{expiresAt; status},200 {subscription},1
+GET,/api/v1/admin/revenue,Authenticated,Admin,Payment,Revenue analytics,?from&to&groupBy,200 {total; mrr; byGateway; byPackage; trend[]},1
+GET,/api/v1/enrollments,Authenticated,Student,Enrollment,Get my enrollments,,200 {items[]},1
+GET,/api/v1/enrollments/{id},Authenticated,Student,Enrollment,Get enrollment detail,,200 {enrollment; progress; chapters[]},1
+POST,/api/v1/enrollments/{id}/chapters/{chapterId}/complete,Authenticated,Student,Enrollment,Mark chapter complete,,200 {progress},1
+POST,/api/v1/enrollments/{id}/video-progress,Authenticated,Student,Enrollment,Update video progress,{lectureId; watchedSeconds; totalSeconds},200 {videoProgress},1
+POST,/api/v1/bookmarks,Authenticated,Student,Enrollment,Bookmark a chapter,{chapterId; note?},201 {bookmark},1
+DELETE,/api/v1/bookmarks/{id},Authenticated,Student,Enrollment,Remove bookmark,,204,1
+GET,/api/v1/bookmarks,Authenticated,Student,Enrollment,List my bookmarks,?page,200 {items[]},1
+GET,/api/v1/notifications,Authenticated,Any,Communication,Get notifications,?page&unreadOnly,200 {items[]; unreadCount},2
+PUT,/api/v1/notifications/{id}/read,Authenticated,Any,Communication,Mark notification read,,200,2
+PUT,/api/v1/notifications/read-all,Authenticated,Any,Communication,Mark all read,,200 {updated},2
+GET,/api/v1/notification-preferences,Authenticated,Any,Communication,Get notification prefs,,200 {preferences[]},2
+PUT,/api/v1/notification-preferences,Authenticated,Any,Communication,Update notification prefs,{preferences[]},200 {preferences[]},2
+POST,/api/v1/admin/announcements,Authenticated,Admin,Communication,Create announcement,{title; body; type; targetAudience},201 {announcement},2
+GET,/api/v1/chat/rooms,Authenticated,Any,Communication,List my chat rooms,,200 {rooms[]},2
+POST,/api/v1/chat/rooms/{id}/messages,Authenticated,Any,Communication,Send chat message,{content},201 {message},2
+GET,/api/v1/certificates,Authenticated,Student,Certificate,List my certificates,,200 {items[]},3
+GET,/api/v1/certificates/{id}/download,Authenticated,Student,Certificate,Download certificate PDF,,200 application/pdf,3
+GET,/api/v1/verify/{code},Public,,Certificate,Verify certificate authenticity,,200 {valid; certificate},3
+POST,/api/v1/admin/certificates/templates,Authenticated,Admin,Certificate,Create certificate template,{name; htmlTemplate},201 {template},3
+POST,/api/v1/admin/certificates/issue,Authenticated,Admin,Certificate,Manually issue certificate,{userId; templateId; courseId?},201 {certificate},3
+GET,/api/v1/admin/certificates,Authenticated,Admin,Certificate,List all certificates,?page&userId,200 {items[]; totalCount},3
+GET,/api/v1/ambassador/dashboard,Authenticated,Ambassador,Ambassador,Ambassador dashboard,,200 {referrals; earnings; clicks},3
+GET,/api/v1/ambassador/referrals,Authenticated,Ambassador,Ambassador,List referrals,?page&status,200 {items[]; totalCount},3
+POST,/api/v1/ambassador/payouts/request,Authenticated,Ambassador,Ambassador,Request payout,{amount; method},201 {payout},3
+GET,/api/v1/ambassador/payouts,Authenticated,Ambassador,Ambassador,List payouts,?page,200 {items[]},3
+POST,/api/v1/admin/ambassadors/{id}/approve,Authenticated,Admin,Ambassador,Approve ambassador,,200 {ambassador},3
+PUT,/api/v1/admin/ambassadors/{id},Authenticated,Admin,Ambassador,Update ambassador settings,{commissionRate; status},200 {ambassador},3
+GET,/api/v1/admin/ambassadors,Authenticated,Admin,Ambassador,List all ambassadors,?page&status,200 {items[]; totalCount},3
+POST,/api/v1/admin/ambassadors/payouts/{id}/process,Authenticated,Admin,Ambassador,Process payout,{transactionRef},200 {payout},3
+GET,/api/v1/admin/analytics/overview,Authenticated,Admin,Analytics,Dashboard overview,,200 {registrations; revenue; activeUsers; exams},2
+GET,/api/v1/admin/analytics/registrations,Authenticated,Admin,Analytics,Registration trends,?from&to&groupBy,200 {data[]; total},2
+GET,/api/v1/admin/analytics/exams,Authenticated,Admin,Analytics,Exam performance stats,?trackId&from&to,200 {attempts; avgScore; passRate},2
+GET,/api/v1/admin/analytics/students/{id},Authenticated,Admin,Analytics,Student progress detail,,200 {enrollments; exams; activity},2
+GET,/api/v1/admin/analytics/export,Authenticated,Admin,Analytics,Export analytics CSV,?type&from&to,200 text/csv,2
+GET,/api/v1/health,Public,,System,Health check,,200 {status; checks[]},1
+GET,/api/v1/health/ready,Public,,System,Readiness probe,,200 {ready},1
+GET,/api/v1/admin/audit-logs,Authenticated,Admin,System,Query audit logs,?userId&entity&from&to&page,200 {items[]; totalCount},1
+GET,/api/v1/admin/system/info,Authenticated,Admin,System,System information,,200 {version; uptime; environment},1

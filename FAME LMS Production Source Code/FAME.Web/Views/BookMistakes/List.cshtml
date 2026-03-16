@@ -1,0 +1,95 @@
+﻿@model  List<First_Aid_Made_Easy.DAL.tbl_BookMistakes>
+@{
+    ViewBag.Title = "Request";
+    Layout = "~/Views/Shared/_LayoutTeacher.cshtml";
+    string name = "Book Mistakes ";
+
+    <!-- DateRangePicker -->
+    <link type="text/css" href="~/Content/assets/vendor/daterangepicker.css" rel="stylesheet">
+}
+
+<div class="pt-32pt">
+    <div class="page__container d-flex flex-column flex-md-row align-items-center text-center text-sm-left">
+        <div class="flex d-flex flex-column flex-sm-row align-items-center">
+            <div class="mb-24pt mb-sm-0 mr-sm-24pt">
+                <h2 class="mb-0">@(name ) List</h2>
+                <ol class="breadcrumb p-0 m-0">
+                    <li class="breadcrumb-item active">
+                        @(name )  List
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="page-section border-bottom-2">
+        <div style="" class="page__container">
+            <div class="row">
+                <div class="col-md-12">
+                    @*<div class="page-separator">
+                        <div class="page-separator__text">Basic information</div>
+                    </div>
+                    <div class="col-md-4">
+                        <input id="dateRange" type="text" class="form-control" data-daterangepicker-locale-format="MM/DD/YYYY" placeholder="Select A Date Range" data-toggle="daterangepicker" data-daterangepicker-ranges="true" data-daterangepicker-drops="down">
+                    </div>*@
+                    <div class="table-responsive" style="margin-top:20px" id="divPartial">
+                        @Html.Partial("_List")
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section scripts {
+    <!-- DateRangePicker -->
+    <script src="~/Content/assets/vendor/moment.min.js"></script>
+    <script src="~/Content/assets/vendor/daterangepicker.js"></script>
+    <script src="~/Content/assets/js/daterangepicker.js"></script>
+    @Scripts.Render("~/Scripts/List")
+
+    @if (TempData["Success"] != null)
+    {
+        <script>
+            toastr.success("Data Saved Successfully");
+        </script>
+    }
+
+    <script>
+        $(document).ready(function () {
+            $("#DTable").DataTable();
+        })
+
+
+        $(document).on("change", "#dateRange", function () {
+            var id = $(this).data('id');
+            var range = $(this).val();
+
+            var Dates = range.split(" to ");
+            var DateFrom = Dates[0];
+            var DateTo = Dates[1];
+
+            $("#divLoaderid").show();
+            $.ajax({
+                url: "/Request/FilterList?DateFrom=" + DateFrom + "&DateTo=" + DateTo ,
+                method: "POST",
+                success: function (result) {
+                    if (result != null) {
+                        $("#DTable").DataTable().destroy();
+                        $("#divPartial").html(result);
+                        $("#DTable").DataTable();
+                    }
+                    $("#divLoaderid").hide();
+                }, error: function (err) {
+                    alert("Error" + err);
+                    $("#divLoaderid").hide();
+                }
+            })
+        })
+    </script>
+
+}
+

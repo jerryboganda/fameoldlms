@@ -1,0 +1,171 @@
+@model First_Aid_Made_Easy.Models.SubscriptionsVM
+@{
+    ViewBag.Title = "My Subscriptions";
+    Layout = "~/Views/Shared/_LayoutStudent2026.cshtml";
+}
+
+<div class="anim-enter delay-100">
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div>
+            <p class="text-muted">Manage your plans and billing history</p>
+        </div>
+        <a href="@Url.Action("OurPackages", "Home", new { area = "Landing" })" class="fame-btn fame-btn-primary">
+            <i data-feather="plus-circle"></i>
+            <span>Buy New Plan</span>
+        </a>
+    </div>
+
+    <!-- Overview Cards -->
+    <div class="row g-4 mb-5">
+        <div class="col-lg-8">
+            <h4 class="mb-3">Active Plan</h4>
+            @if (Model.PackList != null && Model.PackList.Any(x => x.Status == "Continue" || x.Status == "Active"))
+            {
+                foreach (var plan in Model.PackList.Where(x => x.Status == "Continue" || x.Status == "Active"))
+                {
+                    <div class="fame-card bg-grad-primary text-white border-0 mb-3 position-relative overflow-hidden">
+                        <!-- Decorative Shapes -->
+                        <div style="position: absolute; right: -20px; top: -20px; opacity: 0.1;">
+                            <i data-feather="shield" style="width: 150px; height: 150px;"></i>
+                        </div>
+
+                        <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between p-2">
+                            <div>
+                                <div class="badge bg-white text-primary mb-2">@plan.Status</div>
+                                <h3 class="text-white mb-1">@plan.SectionName</h3> <!-- Usually holds Package Name -->
+                                <div class="opacity-75 mb-3">Enrolled: @plan.EnrollmentDate</div>
+                                
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <i data-feather="calendar" style="width: 16px;"></i>
+                                        <span>Expires: @(plan.DExpiryDate?.ToString("MMM dd, yyyy") ?? "N/A")</span>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <i data-feather="clock" style="width: 16px;"></i>
+                                        <span>@plan.RemainingDays Days left</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-4 mt-md-0 text-md-end">
+                                <div class="display-6 fw-bold mb-0">@(plan.Amount != null ? "PKR " + plan.Amount.Value.ToString("N0") : "PKR 0")</div>
+                                <div class="opacity-75 small">Total Paid</div>
+                            </div>
+                        </div>
+
+                        <!-- Progress Bar -->
+                        <div class="mt-4 bg-white bg-opacity-25 rounded-pill" style="height: 6px;">
+                            @{
+                                var totalDays = (plan.DExpiryDate.Value - plan.DEnrollmentDate.Value).TotalDays;
+                                var percentage = totalDays > 0 ? (plan.RemainingDays / totalDays) * 100 : 0;
+                                percentage = Math.Max(0, Math.Min(100, percentage));
+                            }
+                            <div class="bg-white rounded-pill" style="height: 6px; width: @percentage%"></div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="fame-card text-center py-5">
+                    <div class="mb-3">
+                         <i data-feather="slash" class="text-muted" style="width: 48px; height: 48px;"></i>
+                    </div>
+                    <h5>No Active Subscription</h5>
+                    <p class="text-muted">You don't have any active plans at the moment.</p>
+                </div>
+            }
+        </div>
+
+        <div class="col-lg-4">
+            <h4 class="mb-3">Quick Actions</h4>
+            <div class="fame-card">
+                 <div class="d-grid gap-3">
+                     <a href="@Url.Action("TicketList", "Student")" class="btn btn-light d-flex align-items-center gap-3 p-3">
+                         <div class="bg-primary bg-opacity-10 p-2 rounded text-primary">
+                             <i data-feather="help-circle"></i>
+                         </div>
+                         <div class="text-start">
+                             <div class="fw-bold">Billing Support</div>
+                             <div class="small text-muted">Trouble with payment?</div>
+                         </div>
+                     </a>
+                     <a href="@Url.Action("Faqs", "Student")" class="btn btn-light d-flex align-items-center gap-3 p-3">
+                         <div class="bg-success bg-opacity-10 p-2 rounded text-success">
+                             <i data-feather="message-circle"></i>
+                         </div>
+                         <div class="text-start">
+                             <div class="fw-bold">FAQs</div>
+                             <div class="small text-muted">Common questions</div>
+                         </div>
+                     </a>
+                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- History Tables -->
+    <div class="fame-card">
+        <ul class="nav nav-pills mb-4" id="subTabs" role="tablist">
+            <li class="nav-item">
+                <button class="nav-link active" id="history-tab" data-bs-toggle="tab" data-bs-target="#history" type="button">Payment History</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" id="expired-tab" data-bs-toggle="tab" data-bs-target="#expired" type="button">Expired Plans</button>
+            </li>
+        </ul>
+        
+        <div class="tab-content" id="subTabsContent">
+            <!-- Payment History -->
+            <div class="tab-pane fade show active" id="history" role="tabpanel">
+                @if (Model.PackList != null && Model.PackList.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Plan Name</th>
+                                    <th>Date</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th class="text-end">Invoice</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.PackList)
+                                {
+                                    <tr>
+                                        <td class="fw-bold">@item.SectionName</td>
+                                        <td>@item.EnrollmentDate</td>
+                                        <td>@(item.Amount != null ? "PKR " + item.Amount.Value.ToString("N0") : "PKR 0")</td>
+                                        <td>
+                                            @if(item.Status == "Active" || item.Status == "Continue") {
+                                                <span class="badge bg-success-subtle text-success">Paid</span>
+                                            } else {
+                                                <span class="badge bg-secondary-subtle text-secondary">@item.Status</span>
+                                            }
+                                        </td>
+                                        <td class="text-end">
+                                            <button class="btn btn-sm btn-icon btn-light">
+                                                <i data-feather="download" style="width: 16px;"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <p class="text-muted text-center py-4">No payment history found.</p>
+                }
+            </div>
+            
+            <!-- Expired Plans -->
+            <div class="tab-pane fade" id="expired" role="tabpanel">
+                 <p class="text-muted text-center py-4">No expired plans found.</p>
+            </div>
+        </div>
+    </div>
+</div>

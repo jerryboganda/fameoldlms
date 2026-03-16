@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32630.192
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FAME.Web", "FAME.Web\FAME.Web.csproj", "{4CA34DA0-9D8B-46C3-8D1E-3DFFBECA7487}"
+EndProject
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "FAME.DB", "FAME.DB\FAME.DB.sqlproj", "{BCD52BA8-EF13-4E09-9752-DB0253033D19}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4CA34DA0-9D8B-46C3-8D1E-3DFFBECA7487}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4CA34DA0-9D8B-46C3-8D1E-3DFFBECA7487}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4CA34DA0-9D8B-46C3-8D1E-3DFFBECA7487}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4CA34DA0-9D8B-46C3-8D1E-3DFFBECA7487}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BCD52BA8-EF13-4E09-9752-DB0253033D19}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BCD52BA8-EF13-4E09-9752-DB0253033D19}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BCD52BA8-EF13-4E09-9752-DB0253033D19}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{BCD52BA8-EF13-4E09-9752-DB0253033D19}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BCD52BA8-EF13-4E09-9752-DB0253033D19}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BCD52BA8-EF13-4E09-9752-DB0253033D19}.Release|Any CPU.Deploy.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {DF158B1C-2184-4A50-9193-99C254512E4A}
+	EndGlobalSection
+EndGlobal

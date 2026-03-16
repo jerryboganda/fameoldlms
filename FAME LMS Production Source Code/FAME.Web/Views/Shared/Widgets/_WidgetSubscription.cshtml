@@ -1,0 +1,269 @@
+@using First_Aid_Made_Easy.BLL
+@{
+    var enrollment = ViewBag.Enrollment as dynamic;
+    var packageName = enrollment?.PackageName ?? "Free Plan";
+    
+    int daysRemaining = 0;
+    DateTime? expiryDate = null;
+    DateTime? startDate = null;
+    int totalDays = 30;
+    
+    if (enrollment?.Enrollment_EndDate != null)
+    {
+        try
+        {
+            expiryDate = (DateTime)enrollment.Enrollment_EndDate;
+            startDate = enrollment.Enrollment_Date ?? DateTime.Now.AddDays(-30);
+            daysRemaining = Math.Max(0, (expiryDate.Value - DateTime.Now).Days);
+            totalDays = Math.Max(1, (expiryDate.Value - startDate.Value).Days);
+        }
+        catch { }
+    }
+    
+    double percentRemaining = totalDays > 0 ? Math.Round((double)daysRemaining / totalDays * 100) : 0;
+    bool isExpiring = daysRemaining <= 7 && daysRemaining > 0;
+    bool isExpired = daysRemaining <= 0;
+    
+    // Status colors
+    string statusClass = isExpired ? "danger" : isExpiring ? "warning" : "success";
+    string statusText = isExpired ? "Expired" : isExpiring ? "Expiring Soon" : "Active";
+}
+
+<div class="fame-widget-card fame-subscription-widget @(isExpiring ? "warning-border" : "") @(isExpired ? "danger-border" : "")">
+    <div class="fame-widget-header">
+        <div class="fame-widget-title">
+            <i data-feather="credit-card" class="fame-widget-icon"></i>
+            <span>Subscription Status</span>
+        </div>
+        <span class="fame-sub-status @statusClass">
+            <span class="fame-sub-status-dot"></span>
+            @statusText
+        </span>
+    </div>
+    
+    <div class="fame-widget-body">
+        <div class="fame-sub-content">
+            <!-- Gauge Circle -->
+            <div class="fame-sub-gauge">
+                <svg viewBox="0 0 120 120">
+                    <circle class="gauge-bg" cx="60" cy="60" r="52"></circle>
+                    <circle class="gauge-progress @statusClass" cx="60" cy="60" r="52" stroke-dasharray="@(percentRemaining * 3.27), 327"></circle>
+                </svg>
+                <div class="fame-sub-gauge-inner">
+                    <div class="fame-sub-days">@daysRemaining</div>
+                    <div class="fame-sub-days-label">days left</div>
+                </div>
+            </div>
+            
+            <!-- Package Info -->
+            <div class="fame-sub-info">
+                <div class="fame-sub-package">@packageName</div>
+                
+                <div class="fame-sub-dates">
+                    @if (startDate.HasValue)
+                    {
+                        <div class="fame-sub-date-row">
+                            <i data-feather="calendar" style="width: 14px; height: 14px;"></i>
+                            <span>Started: @startDate.Value.ToString("MMM dd, yyyy")</span>
+                        </div>
+                    }
+                    @if (expiryDate.HasValue)
+                    {
+                        <div class="fame-sub-date-row @(isExpiring || isExpired ? "fame-text-" + statusClass : "")">
+                            <i data-feather="clock" style="width: 14px; height: 14px;"></i>
+                            <span>Expires: @expiryDate.Value.ToString("MMM dd, yyyy")</span>
+                        </div>
+                    }
+                </div>
+                
+                @if (isExpiring || isExpired)
+                {
+                    <a href="@Url.Action("Index", "Package")" class="fame-sub-renew-btn">
+                        <i data-feather="refresh-cw" style="width: 16px; height: 16px;"></i>
+                        Renew Subscription
+                    </a>
+                }
+                else
+                {
+                    <a href="@Url.Action("MySubscriptions", "Student")" class="fame-sub-manage-btn">
+                        Manage Subscription
+                        <i data-feather="arrow-right" style="width: 16px; height: 16px;"></i>
+                    </a>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.fame-subscription-widget.warning-border {
+    border-color: rgba(245, 158, 11, 0.4);
+}
+
+.fame-subscription-widget.danger-border {
+    border-color: rgba(239, 68, 68, 0.4);
+}
+
+.fame-sub-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.fame-sub-status.success {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10B981;
+}
+
+.fame-sub-status.warning {
+    background: rgba(245, 158, 11, 0.1);
+    color: #F59E0B;
+}
+
+.fame-sub-status.danger {
+    background: rgba(239, 68, 68, 0.1);
+    color: #EF4444;
+}
+
+.fame-sub-status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+.fame-sub-content {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+}
+
+.fame-sub-gauge {
+    position: relative;
+    width: 140px;
+    height: 140px;
+    flex-shrink: 0;
+}
+
+.fame-sub-gauge svg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+}
+
+.fame-sub-gauge .gauge-bg {
+    fill: none;
+    stroke: var(--fame-bg-tertiary);
+    stroke-width: 8;
+}
+
+.fame-sub-gauge .gauge-progress {
+    fill: none;
+    stroke-width: 8;
+    stroke-linecap: round;
+    transition: stroke-dasharray 1s ease-out;
+}
+
+.fame-sub-gauge .gauge-progress.success { stroke: #10B981; }
+.fame-sub-gauge .gauge-progress.warning { stroke: #F59E0B; }
+.fame-sub-gauge .gauge-progress.danger { stroke: #EF4444; }
+
+.fame-sub-gauge-inner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.fame-sub-days {
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--fame-text-primary);
+    line-height: 1;
+}
+
+.fame-sub-days-label {
+    font-size: 12px;
+    color: var(--fame-text-tertiary);
+    margin-top: 4px;
+}
+
+.fame-sub-info {
+    flex: 1;
+}
+
+.fame-sub-package {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--fame-text-primary);
+    margin-bottom: 16px;
+}
+
+.fame-sub-dates {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.fame-sub-date-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--fame-text-secondary);
+}
+
+.fame-text-warning { color: #F59E0B; }
+.fame-text-danger { color: #EF4444; }
+
+.fame-sub-renew-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #F59E0B, #D97706);
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: var(--fame-radius-md);
+    text-decoration: none;
+    transition: all 200ms;
+}
+
+.fame-sub-renew-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(245, 158, 11, 0.3);
+}
+
+.fame-sub-manage-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--fame-primary);
+    text-decoration: none;
+    transition: gap 200ms;
+}
+
+.fame-sub-manage-btn:hover {
+    gap: 12px;
+}
+
+@@media (max-width: 640px) {
+    .fame-sub-content {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .fame-sub-dates {
+        align-items: center;
+    }
+}
+</style>

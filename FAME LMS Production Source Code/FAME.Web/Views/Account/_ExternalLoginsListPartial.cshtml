@@ -1,0 +1,52 @@
+﻿@model First_Aid_Made_Easy.Models.ExternalLoginListViewModel
+@using Microsoft.Owin.Security
+
+@{
+    var loginProviders = Context.GetOwinContext().Authentication.GetExternalAuthenticationTypes();
+    var isLocalHost = Request?.Url != null && (Request.Url.Host.Equals("localhost", StringComparison.OrdinalIgnoreCase) || Request.Url.Host.Equals("127.0.0.1"));
+    var googleRedirectUri = System.Configuration.ConfigurationManager.AppSettings["GoogleOAuthAuthorizedRedirectLocal"];
+    if (loginProviders.Count() == 0)
+    {
+        @*<div>
+                <p>
+                    There are no external authentication services configured. See <a href="https://go.microsoft.com/fwlink/?LinkId=403804">this article</a>
+                    for details on setting up this ASP.NET application to support logging in via external services.
+                </p>
+            </div>*@
+    }
+    else
+    {
+        <div style="margin-left:auto">
+            @using (Html.BeginForm("ExternalLogin", "Account", new { ReturnUrl = Model.ReturnUrl }))
+            {
+                <div class="d-flex align-items-center">
+                    <div class="text-gray-400 fw-semibold fs-6 me-3 me-md-6" data-kt-translate="general-or">Or</div>
+                    @Html.AntiForgeryToken()
+                    @foreach (AuthenticationDescription p in loginProviders)
+                    {
+
+                        <button type="submit" id="@p.AuthenticationType" title="Log in using your @p.Caption account" name="provider" value="@p.AuthenticationType" class="border-0 bg-light">
+                            @if (p.AuthenticationType == "Google")
+                            {<img alt="Logo" src="~/Content/assetsn/media/svg/brand-logos/google-icon.svg" class="p-4 w-50px" /> }
+                            else
+                            {<img alt="Logo" src="~/Content/assetsn/media/svg/brand-logos/facebook-3.svg" class="p-4 w-50px" /> }
+
+                        </button>
+                    }
+                    <button href="#" class="border-0 bg-light">
+                        <img alt="Logo" src="~/Content/assetsn/media/svg/brand-logos/apple-black.svg" class="theme-light-show p-4 w-50px" />
+                        <img alt="Logo" src="~/Content/assetsn/media/svg/brand-logos/apple-black-dark.svg" class="theme-dark-show p-4 w-50px" />
+                    </button>
+                </div>
+
+                if (isLocalHost)
+                {
+                    <div class="mt-4 alert alert-warning py-3 px-4" role="alert">
+                        <strong>Google sign-in setup required for localhost.</strong>
+                        <div class="small mt-1">Add <code>@googleRedirectUri</code> to the Google OAuth client's authorized redirect URIs, then retry.</div>
+                    </div>
+                }
+            }
+        </div>
+    }
+}

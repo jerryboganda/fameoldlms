@@ -1,0 +1,297 @@
+@* FAME Student Dashboard 2026: Mobile-First Header - FIXED *@
+<header class="fame-header">
+    <!-- Mobile Menu Toggle -->
+    <button type="button" class="fame-menu-toggle" onclick="toggleSidebar()" aria-label="Open menu">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+    </button>
+
+    <div class="fame-header-title">
+        <img src="@Url.Content("~/Images/FAME_Logo_Final.png")" alt="First Aid Made Easy" class="fame-header-logo" />
+        <h2 class="fame-header-text">@(ViewBag.Title ?? "Dashboard")</h2>
+    </div>
+
+    <div class="fame-user-actions">
+        <!-- User Profile Dropdown -->
+        <div class="fame-dropdown" id="userDropdown">
+            <button type="button" class="fame-user-profile" id="userDropdownBtn">
+                @{
+                    var userPic = ViewBag.User?.User_Pic;
+                    var hasValidPic = !string.IsNullOrEmpty(userPic) && userPic != "userLogo.jpg";
+                }
+                @if (hasValidPic)
+                {
+                    <img src="@Url.Content("~/Images/" + userPic)" class="fame-avatar" alt="User" />
+                }
+                else
+                {
+                    <div class="fame-avatar fame-avatar-placeholder">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                    </div>
+                }
+                <div class="fame-user-info-wrapper">
+                    <span class="fame-user-name">@(ViewBag.User?.User_Name?.Split(' ')[0] ?? "Student")</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="fame-chevron">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </div>
+            </button>
+            <div class="fame-dropdown-menu" id="userDropdownMenu">
+                <div class="fame-dropdown-header">
+                    <div style="font-weight: 600;">@(ViewBag.User?.User_Name ?? "Student")</div>
+                    <div style="font-size: 0.75rem; color: var(--fame-text-muted);">@(ViewBag.User?.Email ?? "")</div>
+                </div>
+                <a href="/Profile/MyProfile" class="fame-dropdown-item">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    My Profile
+                </a>
+                <a href="@Url.Action("MySubscriptions", "Student")" class="fame-dropdown-item">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+                    Subscription
+                </a>
+                <div class="fame-dropdown-divider"></div>
+                @using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <a href="javascript:document.getElementById('logoutForm').submit()" class="fame-dropdown-item fame-logout-item">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                        Log Out
+                    </a>
+                }
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Mobile Dropdown Overlay -->
+<div class="fame-dropdown-overlay" id="dropdownOverlay"></div>
+
+<style>
+/* CRITICAL HEADER & DROPDOWN FIXES */
+
+/* Mobile/Tablet: show logo, hide text */
+.fame-header-logo {
+    display: block;
+    height: 32px;
+    width: auto;
+    object-fit: contain;
+}
+.fame-header-text {
+    display: none;
+}
+
+/* Desktop (992px+): hide logo, show text */
+@@media (min-width: 992px) {
+    .fame-header-logo {
+        display: none;
+    }
+    .fame-header-text {
+        display: block;
+    }
+}
+
+.fame-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.fame-user-profile {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 8px;
+    border: 1px solid transparent;
+    background: transparent;
+    border-radius: 20px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.fame-user-profile:hover {
+    background: var(--fame-bg-page);
+    border-color: var(--fame-border);
+}
+
+.fame-user-info-wrapper {
+    display: none;
+    align-items: center;
+    gap: 4px;
+}
+
+@@media (min-width: 768px) {
+    .fame-user-info-wrapper {
+        display: flex;
+    }
+}
+
+.fame-user-name {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--fame-text-main);
+}
+
+.fame-chevron {
+    color: var(--fame-text-muted);
+    transition: transform 0.2s ease;
+}
+
+.fame-dropdown.open .fame-chevron {
+    transform: rotate(180deg);
+}
+
+.fame-dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 8px;
+    background: #fff;
+    border: 1px solid var(--fame-border);
+    border-radius: 12px;
+    box-shadow: var(--shadow-lg);
+    min-width: 220px;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+}
+
+.fame-dropdown.open .fame-dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+.fame-dropdown-header {
+    padding: 16px;
+    border-bottom: 1px solid var(--fame-border);
+}
+
+.fame-dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    color: var(--fame-text-main);
+    text-decoration: none;
+    font-size: 0.875rem;
+    transition: background 0.2s ease;
+}
+
+.fame-dropdown-item:hover {
+    background: var(--fame-bg-page);
+    color: var(--fame-primary);
+}
+
+.fame-dropdown-divider {
+    height: 1px;
+    background: var(--fame-border);
+    margin: 4px 0;
+}
+
+.fame-logout-item {
+    color: var(--fame-danger) !important;
+}
+
+.fame-menu-toggle {
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+/* MOBILE RESPONSIVE OVERRIDES */
+@@media (max-width: 767px) {
+    .fame-dropdown-overlay {
+        display: none !important;
+    }
+
+    .fame-dropdown.open .fame-dropdown-menu {
+        position: absolute !important;
+        top: 100% !important;
+        right: 0 !important;
+        left: auto !important;
+        bottom: auto !important;
+        width: 260px !important;
+        margin-top: 6px !important;
+        border-radius: 12px !important;
+        z-index: 1100 !important;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    }
+
+    .fame-dropdown-item {
+        padding: 12px 16px !important;
+        font-size: 0.9rem !important;
+    }
+}
+</style>
+
+<script>
+(function() {
+    var overlay = document.getElementById('dropdownOverlay');
+    
+    // Close all dropdowns
+    function closeAllDropdowns() {
+        document.querySelectorAll('.fame-dropdown').forEach(function(d) {
+            d.classList.remove('open');
+            var btn = d.querySelector('button');
+            if (btn) btn.setAttribute('aria-expanded', 'false');
+        });
+        if (overlay) overlay.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+    
+    // Toggle dropdown
+    function toggleDropdown(dropdown) {
+        var isOpen = dropdown.classList.contains('open');
+        closeAllDropdowns();
+        
+        if (!isOpen) {
+            dropdown.classList.add('open');
+            var btn = dropdown.querySelector('button');
+            if (btn) btn.setAttribute('aria-expanded', 'true');
+        }
+    }
+    
+    // Overlay click closes dropdown
+    if (overlay) {
+        overlay.addEventListener('click', closeAllDropdowns);
+    }
+    
+    // Attach click handlers
+    document.querySelectorAll('.fame-dropdown > button').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleDropdown(btn.parentElement);
+        });
+    });
+    
+    // Close on outside click
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.fame-dropdown') && !e.target.closest('.fame-dropdown-overlay')) {
+            closeAllDropdowns();
+        }
+    });
+    
+    // Close on escape
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeAllDropdowns();
+    });
+    
+    // Handle resize
+    window.addEventListener('resize', function() {
+        if (window.innerWidth >= 768) {
+            if (overlay) overlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    });
+})();
+</script>

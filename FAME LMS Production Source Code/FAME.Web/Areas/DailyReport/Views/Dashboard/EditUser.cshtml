@@ -1,0 +1,74 @@
+@model First_Aid_Made_Easy.Models.DailyReportUserVM
+@{
+    ViewBag.Title = "Edit User";
+    Layout = "~/Areas/DailyReport/Views/Shared/_Layout.cshtml";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-user-edit me-2"></i>Edit User</h2>
+    <div>
+        @Html.ActionLink("Back to Users", "Users", "Dashboard", new { area = "DailyReport" }, new { @class = "btn btn-secondary" })
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">User Information</h5>
+            </div>
+            <div class="card-body">
+                @using (Html.BeginForm("EditUser", "Dashboard", new { area = "DailyReport" }, FormMethod.Post, new { @class = "needs-validation", novalidate = "novalidate" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.HiddenFor(m => m.ID)
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            @Html.LabelFor(m => m.FirstName, new { @class = "form-label" })
+                            @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control", placeholder = "Enter first name" })
+                            @Html.ValidationMessageFor(m => m.FirstName, "", new { @class = "text-danger" })
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            @Html.LabelFor(m => m.LastName, new { @class = "form-label" })
+                            @Html.TextBoxFor(m => m.LastName, new { @class = "form-control", placeholder = "Enter last name" })
+                            @Html.ValidationMessageFor(m => m.LastName, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        @Html.LabelFor(m => m.UserName, new { @class = "form-label" })
+                        @Html.TextBoxFor(m => m.UserName, new { @class = "form-control", placeholder = "Enter username" })
+                        @Html.ValidationMessageFor(m => m.UserName, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="mb-3">
+                        @Html.LabelFor(m => m.Password, new { @class = "form-label" })
+                        @Html.PasswordFor(m => m.Password, new { @class = "form-control", placeholder = "Leave blank to keep current password" })
+                        @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+                        <div class="form-text">Leave blank to keep the current password</div>
+                    </div>
+
+                    <div class="mb-3">
+                        @Html.LabelFor(m => m.Role, new { @class = "form-label" })
+                        @Html.DropDownListFor(m => m.Role, ViewBag.Roles as SelectList, "Select Role", new { @class = "form-select" })
+                        @Html.ValidationMessageFor(m => m.Role, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="d-flex justify-content-end">
+                        @Html.ActionLink("Cancel", "Users", "Dashboard", new { area = "DailyReport" }, new { @class = "btn btn-secondary me-2" })
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Update User
+                        </button>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

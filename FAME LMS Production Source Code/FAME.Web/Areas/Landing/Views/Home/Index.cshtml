@@ -1,0 +1,1083 @@
+@{
+    ViewBag.Title = "Home";
+}
+<style>
+    .video-gallery .thumbnail img {
+        border-radius: 0 10px 0 10px !important;
+    }
+</style>
+<!--=====================================-->
+<!--=       Hero Banner Area Start      =-->
+<!--=====================================-->
+<div class="hero-banner hero-style-2 bg-image" style="background-color: #f5f2eb;">
+    <div class="container">
+        <div class="row row--45 align-items-center">
+            <div class="col-lg-6">
+                <div class="banner-content">
+                    <!-- <h1 class="title" data-sal-delay="100" data-sal="slide-up" data-sal-duration="1000">The Best <br> Program to <span class="color-secondary" style="color: #525fe1;">Enroll</span> for Exchange</h1> -->
+                    <h2><span class="color-secondary" style="color: #525fe1;">Prepare for FCPS-1 | MD/MS-1 | NRE-1 | NRE-2 | AMC-1 | USMLE | PLAB | UKMLA | HAAD | MOH | NEET PG and DHA pass in <span class="blink_me text-danger"> 1st attempt !</span> </span></h2>
+                    <h3 data-sal-delay="200" style="text-transform: uppercase; " data-sal="slide-up" data-sal-duration="1000">Pakistan's First website having complete Medical lectures library in Urdu/Hindi</h3>
+
+                    <div class="banner-btn d-block d-xl-none" data-sal-delay="400" data-sal="slide-up" data-sal-duration="1000">
+                        <a href="/Account/Login" class="edu-btn"><span class="material-symbols-outlined"> login </span> Login</a>
+                        <a href="/Account/Register" class="edu-btn">Register New User </a>
+                    </div>
+                    @*<div class="banner-btn" data-sal-delay="400" data-sal="slide-up" data-sal-duration="1000">
+                            <a href="/Account/NRECrashTest" class="edu-btn">Free FCPS, NRE for August Attempt <i class="icon-4"></i></a>
+                        </div>*@
+                    <div class="banner-btn" data-sal-delay="400" data-sal="slide-up" data-sal-duration="1000">
+                        <a href="/Landing/Home/DemoVideos" class="edu-btn">Free Demo Lectures <i class="icon-4"></i></a>
+                    </div>
+                    <div class="banner-btn" data-sal-delay="400" data-sal="slide-up" data-sal-duration="1000">
+                        <a id="FreeTestUrl" href="/QuestionPaper/SolveFreeTrialTest" class="edu-btn">Free Trial MCQ<i class="icon-4"></i></a>
+                    </div>
+                    <div class="banner-btn" data-sal-delay="400" data-sal="slide-up" data-sal-duration="1000">
+                        <a href="/Landing/Home/Guidelines" class="edu-btn">UKMLA/PLAB, HAAD, MOH, DOH, EMREE Guidelines <i class="icon-4"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-6 d-none d-md-block">
+                <div class="banner-gallery" style="grid-template-columns:none !important">
+                    <div class="thumbnail-1" data-sal-delay="500" data-sal="slide-up" data-sal-duration="1000">
+                        <img loading="lazy" src="~/Areas/Landing/assets/images/banner/Dr Img.jpeg" alt="Dr Hafiz Atif"
+                             style="background-size: cover; background-repeat: no-repeat; background-size: contain; margin-top: 20px; max-height: 380px; border-radius:4rem;">
+                    </div>
+                    <div class="online-support" data-sal-delay="600" data-sal="slide-right" data-sal-duration="1000">
+                        <div class="inner">
+                            <div class="icon">
+                                <a href="https://wa.me/923180049742" target="_blank"><img loading="lazy" style="border-radius:50%" src="~/Areas/Landing/assets/images/icons/whatsappLogo.jpeg" /></a>
+
+                            </div>
+                            <div class="content">
+                                <span class="subtitle">Online Support </span>
+                                <h4 class="title"><a target="_blank" href="https://wa.me/923180049742">+92 (318) 0049-742</a></h4>
+                            </div>
+                        </div>
+                    </div>
+                    <ul class="shape-group">
+                        <li class="shape-1 scene shape-light" data-sal-delay="1000" data-sal="fade" data-sal-duration="1000">
+                            <img loading="lazy" data-depth="2" src="~/Areas/Landing/assets/images/faq/shape-13.png" alt="Shape">
+                        </li>
+                        <li class="shape-1 scene shape-dark" data-sal-delay="1000" data-sal="fade" data-sal-duration="1000">
+                            <img loading="lazy" data-depth="2" src="~/Areas/Landing/assets/images/faq/dark-shape-13.png" alt="Shape">
+                        </li>
+                        <li class="shape-2 scene" data-sal-delay="1000" data-sal="fade" data-sal-duration="1000">
+                            <img loading="lazy" data-depth="-2" src="~/Areas/Landing/assets/images/faq/shape-12.png" alt="Shape">
+                        </li>
+                        <li class="shape-3 scene shape-light" data-sal-delay="1000" data-sal="fade" data-sal-duration="1000">
+                            <img loading="lazy" data-depth="2" src="~/Areas/Landing/assets/images/faq/shape-09.png" alt="Shape">
+                        </li>
+                        <li class="shape-3 scene shape-dark" data-sal-delay="1000" data-sal="fade" data-sal-duration="1000">
+                            <img loading="lazy" data-depth="2" src="~/Areas/Landing/assets/images/faq/dark-shape-09.png" alt="Shape">
+                        </li>
+                        <li class="shape-4 scene" data-sal-delay="1000" data-sal="fade" data-sal-duration="1000">
+                            <img loading="lazy" data-depth="-2" src="~/Areas/Landing/assets/images/cta/shape-04.png" alt="Shape">
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- Give a div here with dr atif image and his name side by side only in mobile -->
+            <div class="d-flex align-items-center justify-content-center mb-3 d-block d-md-none" style="gap: 1rem;">
+                <img src="~/Areas/Landing/assets/images/banner/Dr Img.jpeg" alt="Dr Hafiz Atif" loading="lazy" style="width:120px; height:160px; object-fit:cover; border-radius:1rem;" />
+                <div>
+                    <h2 class="title mb-0"><span class="color-secondary">Dr.Hafiz Atif </span></h2>
+                    <span class="subtitle">USMLE,FCPS-1, MD/MS-1</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--=====================================-->
+<!--=       Category Area Start      	=-->
+<!--=====================================-->
+<section class="why-choose-area-3 edu-section-gap">
+    <div class="container">
+        <div class="row row--45">
+            <div class="section-title-flex section-title" data-sal-delay="150" data-sal="slide-up" data-sal-duration="800">
+                <div class="left-content">
+                    <h2 class="title">The First Aid Made Easy <br>Platform by <span class="color-secondary">Dr.Hafiz Atif </span></h2>
+                    <span class="shape-line"><i class="icon-19"></i></span>
+                </div>
+                <div class="right-content">
+                    <p>
+                        FAME is Asia's premier online medical education platform providing comprehensive video tutorials including First Aid Step-1 and Step-2 CK, BRS
+                        Physiology lectures, ENT and Ophthalmology high-yield courses, COVID-19 updates, FCPS past papers, NRE
+                        Made Easy Books Vol. 1 & 2, PMC Mock Tests, Obstetrics & Gynaecology (UWorld QBank, Ten Teachers), AMC MADE EASY Lectures,
+                        AMC-1 Recalls, PLAB preparation, OSCE/NRE-2 courses, SK-18,19,20 & 21 past papers, Rafi Points,
+                        Double A Notes, Wahab Dogar Surgery, Short Snell Anatomy, Kaplan Surgery, Pathoma General Pathology , and
+                        Anatomy Shelf notes-trusted by international medical students from Pakistan, India, Nepal, Bangladesh, and Afghanistan.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!--=====================================-->
+<!--=       About Area Start      		=-->
+<!--=====================================-->
+<div class="gap-bottom-equal edu-about-area about-style-2">
+    <div class="container edublink-animated-shape">
+        <div class="row g-5 align-items-center">
+            <div class="col-lg-12">
+                <div class="about-image-gallery">
+                    <img loading="lazy" class="main-img-1" src="~/Areas/Landing/assets/images/about/Library.jpg?v=09092025" alt="About Image">
+                    <div class="author-box" data-parallax='{"x": 0, "y": -120}'>
+                        <div class="inner">
+                            <div class="thumb">
+                                <img loading="lazy" style="display:none" src="~/Areas/Landing/assets/images/about/shape-03.png" alt="Shape Image">
+                            </div>
+                            <div class="content">
+                                <h4 class="title">Dr. Hafiz Atif</h4>
+                                <p>USMLE,FCPS-1, MD/MS-1</p>
+                            </div>
+                        </div>
+                    </div>
+                    <ul class="shape-group">
+                        <li class="shape-1 scene" data-sal-delay="500" data-sal="fade" data-sal-duration="200">
+                            <img loading="lazy" data-depth="2" src="~/Areas/Landing/assets/images/about/shape-38.png" alt="Shape">
+                        </li>
+                        <li class="shape-2 scene" data-sal-delay="500" data-sal="fade" data-sal-duration="200">
+                            <img loading="lazy" data-depth="-2" src="~/Areas/Landing/assets/images/about/shape-37.png" alt="Shape">
+                        </li>
+                        <li class="shape-3 scene" data-sal-delay="500" data-sal="fade" data-sal-duration="200">
+                            <img loading="lazy" data-depth="1.8" src="~/Areas/Landing/assets/images/about/shape-04.png" alt="Shape">
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="col-lg-12">
+                <div class="about-content">
+                    <div class="section-title section-left" data-sal-delay="150" data-sal="slide-up" data-sal-duration="800">
+                        <span class="pre-title">About Us</span>
+                        <h2 class="title">Video Lectures on almost  <span class="color-secondary" style="color: #525fe1;">20 books</span></h2>
+                        <span class="shape-line"><i class="icon-19"></i></span>
+                    </div>
+                    <ul class="features-list" style=" columns: 2; -webkit-columns: 2; -moz-columns: 2;" data-sal-delay="150" data-sal="slide-up" data-sal-duration="800">
+                        <li>First Aid Step 1 Videos</li>
+                        <li>First Aid Step 2 ck Videos</li>
+                        <li>BRS Physiology Videos</li>
+                        <li>Pathoma Videos</li>
+                        <li>Kaplan Surgery Videos</li>
+                        <li>Anotomy Shelf Notes Videos</li>
+                        <li>Gynecology and Obstetrucs Videos</li>
+                        <li>Opthamology Videos</li>
+                        <li>ENT Videos</li>
+                        <li>FCPS past papers Videos</li>
+                        <li>NRE Mock test Videos</li>
+                        <li>MRCS Videos</li>
+                        <li>SK 18 & 19 Videos</li>
+                        <li>Rafi Ponits Videos</li>
+                        <li>Double A Videos</li>
+                        <li>NRE-1 Videos</li>
+                        <li>NRE-2 Videos</li>
+                        <li>Wahab Dogar Systematic & General Surgery Videos</li>
+                        <li>Obs & Gynecology Videos By Ten Teachers</li>
+                        <li>Short Snell Videos</li>
+                        <li>Covid 19 Videos</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <ul class="shape-group">
+            <li class="shape-1 circle scene" data-sal-delay="500" data-sal="fade" data-sal-duration="200">
+                <span data-depth="-2.3"></span>
+            </li>
+        </ul>
+    </div>
+</div>
+<!--=====================================-->
+<!--=       Course Area Start      		=-->
+<!--=====================================-->
+<!-- End Course Area -->
+<!--=====================================-->
+<!--=       Video Area Start      		=-->
+<!--=====================================-->
+
+<div class="video-area-1" style="padding:1rem ; ">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-9">
+                <div class="video-gallery">
+                    <div class="thumbnail">
+                        <img loading="lazy" src="~/Areas/Landing/assets/images/about/Library.jpg" alt="Thumb">
+                        <a href="~/Areas/Landing/assets/images/others/Fame Ad-1(1).m4v" class="video-play-btn video-popup-activation">
+                            <i class="icon-18"></i>
+                        </a>
+                    </div>
+                    <ul class="shape-group">
+                        <li class="shape-1 scene">
+                            <img loading="lazy" data-depth="2" class="rotateit" src="~/Areas/Landing/assets/images/about/shape-37.png" alt="Shape">
+                        </li>
+                        <li class="shape-2 scene">
+                            <img loading="lazy" data-depth="-2" src="~/Areas/Landing/assets/images/faq/shape-04.png" alt="Shape">
+                        </li>
+                        <li class="shape-3 scene shape-light">
+                            <img loading="lazy" data-depth="2" src="~/Areas/Landing/assets/images/faq/shape-14.png" alt="Shape">
+                        </li>
+                        <li class="shape-3 scene shape-dark">
+                            <img loading="lazy" data-depth="2" src="~/Areas/Landing/assets/images/faq/dark-shape-14.png" alt="Shape">
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Start Brand Area  -->
+<div class="edu-brand-area brand-area-2 bg-image">
+    <div class="container edublink-animated-shape">
+
+        <div class="section-title section-center" data-sal="slide-up" data-sal-duration="800">
+            <span class="pre-title">Trial Videos</span>
+            <h2 class="title">Trial Videos</h2>
+            <span class="shape-line"><i class="icon-19"></i></span>
+        </div>
+        <div class="brand-grid-wrap brand-style-2">
+            <div class="brand-grid">
+                <a target="_blank" href="https://fb.watch/eyMkTwknV1/">
+                    <img loading="lazy" class="increase" src="~/Areas/Landing/assets/images/books/book Usmle-1.jpeg" alt="USMLE Step-1 Video Lectures Online" title="USMLE Step-1 Video Lectures Online">
+                </a>
+            </div>
+            <div class="brand-grid">
+                <a target="_blank" href="https://fb.watch/exzo3i4BQf/">
+                    <img loading="lazy" class="increase" src="~/Areas/Landing/assets/images/books/book BRS.jpeg" alt="BRS Physiology Video Lectures Online" title="BRS Physiology Video Lectures Online">
+                </a>
+            </div>
+            <div class="brand-grid">
+                <a target="_blank" href="https://fb.watch/exzlgnuw-A/">
+                    <img loading="lazy" class="increase" src="~/Areas/Landing/assets/images/books/Book usmle-2.jpeg" alt="USMLE Step-2 CK Video Lectures Online" title="USMLE Step-2 CK Video Lectures Online">
+                </a>
+            </div>
+            <div class="brand-grid">
+                <a target="_blank" href="https://fb.watch/exzo3i4BQf/">
+                    <img loading="lazy" class="increase" src="~/Areas/Landing/assets/images/books/book usmle-2ck.jpeg" alt="USMLE Step-2 CK Video Lectures Online" title="USMLE Step-2 CK Video Lectures Online">
+                </a>
+            </div>
+            <div class="brand-grid">
+                <img loading="lazy" class="increase" src="~/Areas/Landing/assets/images/books/book pathalogy.jpeg" alt="Pathalogy Video Lectures Online" title="Pathalogy Video Lectures Online">
+            </div>
+            <div class="brand-grid">
+                <img loading="lazy" class="increase" src="~/Areas/Landing/assets/images/books/book-02.jpg" alt="Clinical Ophthamology Video Lectures Online" title="Clinical Ophthamology Video Lectures Online">
+            </div>
+            <div class="brand-grid">
+                <img loading="lazy" class="increase" src="~/Areas/Landing/assets/images/books/book-07.jpg" alt="Ophthal High Yield Video Lectures Online" title="Ophthal High Yield Video Lectures Online">
+            </div>
+            <div class="brand-grid">
+                <img loading="lazy" class="increase" src="~/Areas/Landing/assets/images/books/book-09.jpg" alt="ENT High Yield Video Lectures Online" title="ENT High Yield Video Lectures Online">
+            </div>
+            <div class="brand-grid">
+                <a target="_blank" href="https://fb.watch/exzSkgaatQ/">
+                    <img loading="lazy" class="increase" src="~/Areas/Landing/assets/images/books/book-03.jpg" alt="Obstetrics and Gynaecology Video Lectures Online" title="Obstetrics and Gynaecology Video Lectures Online">
+                </a>
+            </div>
+            <div class="brand-grid">
+                <img loading="lazy" class="increase" src="~/Areas/Landing/assets/images/books/book-08.jpg" alt="USMLE-2 UWorld QBank" title="USMLE-2 UWorld QBank">
+            </div>
+            <div class="brand-grid">
+                <img loading="lazy" class="increase" src="~/Areas/Landing/assets/images/books/book-05.jpg" alt="COVID-19 Video Lectures Online" title="COVID-19 Video Lectures Online">
+            </div>
+            <div class="brand-grid">
+                <img loading="lazy" class="increase" src="~/Areas/Landing/assets/images/books/FCPSpearls.jpg" alt="FCPS Pearls Video Lectures Online" title="FCPS Pearls Video Lectures Online" />
+            </div>
+            <div class="brand-grid">
+                <img loading="lazy" class="increase" src="~/Areas/Landing/assets/images/books/DoubleANotes.jpg" alt="Doulbe 'A' Notes for FCPS-1" title="Doulbe 'A' Notes for FCPS-1" />
+            </div>
+            <div class="brand-grid">
+                <img loading="lazy" class="increase" src="~/Areas/Landing/assets/images/books/Gatnaecology.jpg" alt="Gynaecology By Ten Teachers " title="Gynaecology By Ten Teachers" />
+            </div>
+            <div class="brand-grid">
+                <img loading="lazy" class="increase" src="~/Areas/Landing/assets/images/books/GeneralSurgery.jpg" alt="General Surgery Video Lectures Online" title="General Surgery Video Lectures Online" />
+            </div>
+            <div class="brand-grid">
+                <img loading="lazy" class="increase" src="~/Areas/Landing/assets/images/books/NreMadeEasy1.jpg" alt="NRE-1 Video Lectures Online" title="NRE-1 Video Lectures Online" />
+            </div>
+            <div class="brand-grid">
+                <img loading="lazy" class="increase" src="~/Areas/Landing/assets/images/books/NreMadeEasy2.jpg" alt="NRE-2 Video Lectures Online" title="NRE-2 Video Lectures Online" />
+            </div>
+            <div class="brand-grid">
+                <img loading="lazy" class="increase" src="~/Areas/Landing/assets/images/books/Obstetrics.jpg" alt="Obstetrics By Ten Teachers" title="Obstetrics By Ten Teachers" />
+            </div>
+            <div class="brand-grid">
+                <img loading="lazy" class="increase" src="~/Areas/Landing/assets/images/books/SK-Golden18.jpg" alt="SK-Golden 18 Video Lectures Online" title="SK-Golden 18 Video Lectures Online" />
+            </div>
+            <div class="brand-grid">
+                <img loading="lazy" class="increase" src="~/Areas/Landing/assets/images/books/SK-Golden19.jpg" alt="SK-Golden 19 Video Lectures Online" title="SK-Golden 19 Video Lectures Online" />
+            </div>
+            <ul class="shape-group">
+                <li class="shape-1 scene" data-sal-delay="500" data-sal="fade" data-sal-duration="200">
+                    <img loading="lazy" data-depth="-2" src="~/Areas/Landing/assets/images/about/shape-37.png" alt="Shape">
+                </li>
+            </ul>
+        </div>
+        <ul class="shape-group">
+            <li class="shape-2 scene shape-light" data-sal-delay="500" data-sal="fade" data-sal-duration="200">
+                <img loading="lazy" data-depth="-2" src="~/Areas/Landing/assets/images/about/shape-41.png" alt="Shape">
+            </li>
+            <li class="shape-2 scene shape-dark" data-sal-delay="500" data-sal="fade" data-sal-duration="200">
+                <img loading="lazy" data-depth="-2" src="~/Areas/Landing/assets/images/about/dark-shape-41.png" alt="Shape">
+            </li>
+        </ul>
+    </div>
+    <!-- End Brand Area  -->
+    <!-- Quick Links to New Pages -->
+    <div class="container edu-section-gap">
+        <div class="row justify-content-center g-4">
+            <div class="col-12 col-sm-6 col-lg-3">
+                <div class="card h-100 shadow border-0 text-center card-hover-effect">
+                    <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                        <i class="icon-19 mb-3" style="font-size:2.5rem;color:#525fe1;"></i>
+                        <h5 class="card-title">Our Packages</h5>
+                        <p class="card-text">Explore all our medical education plans and pricing.</p>
+                        <a href="/Landing/Home/OurPackages" class="btn btn-primary mt-auto">View Packages</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6 col-lg-3">
+                <div class="card h-100 shadow border-0 text-center card-hover-effect">
+                    <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                        <i class="icon-18 mb-3" style="font-size:2.5rem;color:#525fe1;"></i>
+                        <h5 class="card-title">Demo Videos</h5>
+                        <p class="card-text">Watch sample lectures and see our teaching style.</p>
+                        <a href="/Landing/Home/DemoVideos" class="btn btn-primary mt-auto">Watch Demos</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6 col-lg-3">
+                <div class="card h-100 shadow border-0 text-center card-hover-effect">
+                    <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                        <i class="icon-26 mb-3" style="font-size:2.5rem;color:#525fe1;"></i>
+                        <h5 class="card-title">Success Stories</h5>
+                        <p class="card-text">Read testimonials and achievements from our students.</p>
+                        <a href="/Landing/Home/SuccessStories" class="btn btn-primary mt-auto">See Stories</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6 col-lg-3">
+                <div class="card h-100 shadow border-0 text-center card-hover-effect">
+                    <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                        <i class="icon-19 mb-3" style="font-size:2.5rem;color:#525fe1;"></i>
+                        <h5 class="card-title">Guidelines</h5>
+                        <p class="card-text">Important exam and preparation guidelines for UKMLA/PLAB, HAAD, MOH, DOH, EMREE.</p>
+                        <a href="/Landing/Home/Guidelines" class="btn btn-primary mt-auto">View Guidelines</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--=====================================-->
+    <!--=       CounterUp Area Start      	=-->
+    <!--=====================================-->
+    <div class="counterup-area-5 edu-section-gap">
+        <div class="container">
+            <div class="row g-5">
+                <div class="col-lg-3 col-sm-6" data-sal-delay="100" data-sal="slide-up" data-sal-duration="800">
+                    <div class="edu-counterup counterup-style-5 secondary-color">
+                        <h2 class="counter-item count-number">
+                            <span class="odometer" data-odometer-final="55">.</span><span>K+</span>
+                        </h2>
+                        <h6 class="title">Facebook Following</h6>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-sm-6" data-sal-delay="100" data-sal="slide-up" data-sal-duration="800">
+                    <div class="edu-counterup counterup-style-5 secondary-color">
+                        <h2 class="counter-item count-number">
+                            <span class="odometer" data-odometer-final="9">.</span><span>K+</span>
+                        </h2>
+                        <h6 class="title">Instagarm Following</h6>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-sm-6" data-sal-delay="100" data-sal="slide-up" data-sal-duration="800">
+                    <div class="edu-counterup counterup-style-5 secondary-color">
+                        <h2 class="counter-item count-number">
+                            <span class="odometer" data-odometer-final="17">.</span><span>K+</span>
+                        </h2>
+                        <h6 class="title">Youtube Subscribers</h6>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-sm-6" data-sal-delay="50" data-sal="slide-up" data-sal-duration="800">
+                    <div class="edu-counterup counterup-style-5 primary-color">
+                        <h2 class="counter-item count-number">
+                            <span class="odometer" data-odometer-final="13">.</span><span>K +</span>
+                        </h2>
+                        <h6 class="title">Student Enrolled</h6>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-sm-6" data-sal-delay="150" data-sal="slide-up" data-sal-duration="800">
+                    <div class="edu-counterup counterup-style-5 extra02-color">
+                        <h2 class="counter-item count-number">
+                            <span class="odometer" data-odometer-final="95">.</span><span>% +</span>
+                        </h2>
+                        <h6 class="title">Satisfaction Rate</h6>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-sm-6" data-sal-delay="200" data-sal="slide-up" data-sal-duration="800">
+                    <div class="edu-counterup counterup-style-5 extra05-color">
+                        <h2 class="counter-item count-number">
+                            <span class="odometer" data-odometer-final="6">.</span><span>+</span>
+                        </h2>
+                        <h6 class="title">Year of Experience</h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--=====================================-->
+    <!--=       Testimonial Area Start      =-->
+    <!--=====================================-->
+    <!-- Start Testimonial Area  -->
+    <div class="testimonial-area-5 gap-lg-bottom-equal">
+        <div class="container">
+            <div class="row g-lg-5">
+                <div class="col-lg-5">
+                    <div class="testimonial-heading-area">
+                        <div class="section-title section-left" data-sal-delay="150" data-sal="slide-up" data-sal-duration="800">
+                            <span class="pre-title">Testimonials</span>
+                            <h2 class="title">What Our Students Have To Say</h2>
+                            <span class="shape-line"><i class="icon-19"></i></span>
+                            <p>We thrive to provide quality medical education across the globe. Our students acknowledge our struggles in keen words.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-7">
+                    <div class="swiper-testimonial-slider-wrapper swiper testimonial-coverflow">
+                        <div class="swiper-wrapper">
+                            <div class="swiper-slide">
+                                <div class="testimonial-grid" data-title="Dr. Abdullah" data-content="Asslam o Alikum
+                                Sir hope you are enjoying good health Inshallah
+                                My name is Abdullah
+                                M a student of final year MBBs in Asian medical institute Kyrgyzstan .
+                                As we all know that from the starting it was very difficult for students to coverup their Mbbs syllabus according to Pakistani council’s requirement as well as  to clear basic concept and gain clinical skills via books …
+                                But now from the blessings of Allah we fmgs get the Platform  “*first aid made easy”*By Dr Hafiz Atif ,
+                                By which we can easily clear our concepts of basics and clinical subjects,as I am doing by using it ….I am very thankful to Allah and then this platform who helped me and still helping to all…">
+                                    <div class="thumbnail">
+                                        <img loading="lazy" src="~/Areas/Landing/assets/images/testimonial/DrAbdullah.jpeg" alt="Testimonial">
+                                        <span class="qoute-icon"><i class="icon-26"></i></span>
+
+                                    </div>
+                                    <div class="content">
+                                        <p>
+                                            Asslam o Alikum
+                                            Sir hope you are enjoying good health Inshallah
+                                            My name is Abdullah
+                                            M a student of final year MBBs in Asian medical institute Kyrgyzstan .
+                                            As we all know that from the starting it was very difficult for students ...
+                                            <button type="button" class="btn btn-primary"> Read More </button>
+                                        </p>
+                                        <div class="rating-icon">
+                                            <i class="icon-23"></i>
+                                            <i class="icon-23"></i>
+                                            <i class="icon-23"></i>
+                                            <i class="icon-23"></i>
+                                            <i class="icon-23"></i>
+                                        </div>
+                                        <h5 class="title">Dr. Abdullah </h5>
+                                        <span class="subtitle">Student</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="swiper-slide">
+                                <div class="testimonial-grid" data-title="Dr Baacha Inaam" data-content="First Aid Made EASY is such an amazing platform. I m short of words.
+                                    But i want to clearify an issue which mostly  subscribing aspirants want. That mostly students say that subscription fee is too much and give example of other platforms that they give lifetime access .
+                                    I wanna clearify that FAME is the only platform all over Pakistan which explained everything you need.
+                                    It's not limited to only specific subject like only physio, patho or only surgery.
+                                    FAME website provieds you ALL IN ONE.
+                                    It provides both basics and clinical subjects.
+                                    This is why i choose this platform.
+                                    In a nutshell:
+                                              You will never regret after subscribing it.
+                                    Dr Baacha Inaam
+                                    House officer at Bahwal Victoria Hospital, Bahawalpur">
+                                    <div class="thumbnail">
+                                        <img loading="lazy" src="~/Areas/Landing/assets/images/testimonial/DrBaacha.jpeg" alt="Testimonial">
+                                        <span class="qoute-icon"><i class="icon-26"></i></span>
+
+                                    </div>
+                                    <div class="content">
+                                        <p>
+                                            First Aid Made EASY is such an amazing platform. I m short of words.
+                                            But i want to clearify an issue which mostly  subscribing aspirants want....
+                                            <button type="button" class="btn btn-primary"> Read More </button>
+                                        </p>
+                                        <div class="rating-icon">
+                                            <i class="icon-23"></i>
+                                            <i class="icon-23"></i>
+                                            <i class="icon-23"></i>
+                                            <i class="icon-23"></i>
+                                            <i class="icon-23"></i>
+                                        </div>
+                                        <h5 class="title">Dr Baacha Inaam </h5>
+                                        <span class="subtitle">Student</span>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div class="swiper-slide">
+                                <div class="testimonial-grid" data-title="Dr Muhammad Talha" data-content="I am from Guangxi University of Chinese medicine
+                                    First aid made easy platform is  such a amazing platform & Dr HAFIZ hafiz who's the founder of that platform are really a cooperatives & nice man and a great Mentor
+                                    All important books like as First aid step 1 ck 2 & e.t.c are available in lectures series .that material is enough to clear the all concepts regarded medical knowledge
+                                    This platform also helpful for preparation of FCPS .plab .USMLE and different exam of worlds 🌎
+                                    Please subscribe the youtube channel (First aid made easy platform)">
+                                    <div class="thumbnail">
+                                        <img loading="lazy" src="~/Areas/Landing/assets/images/testimonial/DRTalha.jpeg" alt="Testimonial">
+                                        <span class="qoute-icon"><i class="icon-26"></i></span>
+
+                                    </div>
+                                    <div class="content">
+                                        <p>
+                                            I am from Guangxi University of Chinese medicine
+                                            First aid made easy platform is  such a amazing platform & Dr HAFIZ hafiz who's the founder of that platform....
+                                            <button type="button" class="btn btn-primary"> Read More </button>
+                                        </p>
+                                        <div class="rating-icon">
+                                            <i class="icon-23"></i>
+                                            <i class="icon-23"></i>
+                                            <i class="icon-23"></i>
+                                            <i class="icon-23"></i>
+                                            <i class="icon-23"></i>
+                                        </div>
+                                        <h5 class="title">Dr Muhammad Talha </h5>
+                                        <span class="subtitle">Student</span>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div class="swiper-slide">
+                                <div class="testimonial-grid" data-title="Dr Fazal Abbas" data-content="I am from International University of Kyrgyzstan (ISM-IUK) Bishkek Kyrgyzstan
+                                    First Aid made Easy platform is one of the best resource in market right now for learning medical sciences & Exam prepairation both Basic and Clinical.
+                                    I absolutely recommend.
+                                    Really I never find such an amazing lectures on every topics....Every single high yield topic explained in such a pattern easy to memorize
+                                    Fame platform enable you to crack NRE/FCPs/.plab./USMLE in easy way with high score..
+                                    As simple as possible the one and only mentor Dr.Hafiz Atif who taught all medical knowledge Fist Aid Step 1&,Mock test ,past papers.Q.world bank.etc.
+                                    This is the only best online medical lectures site you can find for such least price if you really grip over the concepts.
+                                    Just trust me and go blindly to secubscie YouTube channel..and sign up First Aid Made Easy Lectures.">
+                                    <div class="thumbnail">
+                                        <img loading="lazy" src="~/Areas/Landing/assets/images/testimonial/DrFazal.jpeg" alt="Testimonial">
+                                        <span class="qoute-icon"><i class="icon-26"></i></span>
+
+                                    </div>
+                                    <div class="content">
+                                        <p>
+                                            I am from International University of Kyrgyzstan (ISM-IUK) Bishkek Kyrgyzstan
+                                            First Aid made Easy platform is one of the best resource in market right now for learning medical sciences....
+                                            <button type="button" class="btn btn-primary"> Read More </button>
+                                        </p>
+                                        <div class="rating-icon">
+                                            <i class="icon-23"></i>
+                                            <i class="icon-23"></i>
+                                            <i class="icon-23"></i>
+                                            <i class="icon-23"></i>
+                                            <i class="icon-23"></i>
+                                        </div>
+                                        <h5 class="title">Dr Fazal Abbas </h5>
+                                        <span class="subtitle">Student</span>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div class="swiper-slide">
+                                <div class="testimonial-grid" data-title="Dr.Junaid Kabir" data-content="My name is Dr.Junaid Kabir, I am final year student of asian medical institute.I am very thankful and grateful to Dr Hafiz Atif & First Aid made easy Plateform for Giving Us this opportunity to learn clinical and basic knowledge Through his plate form first aid mase easy .It is great because it is only plateform who teach us First Aid Usmle step 1 book line by line & the thing i like and very impressive is that all explanation are in urdu And well explained by collection of many books & many Questions banks .     I Am very thankful Dr Hafiz Atif And Fist Aid Made easy Plateform">
+                                    <div class="thumbnail">
+                                        <img loading="lazy" src="~/Areas/Landing/assets/images/testimonial/Dr.Junaid.jpeg" alt="Testimonial">
+                                        <span class="qoute-icon"><i class="icon-26"></i></span>
+
+                                    </div>
+                                    <div class="content">
+                                        <p>
+                                            My name is Dr.Junaid Kabir, I am final year student of asian medical institute.I am very thankful and grateful to Dr Hafiz Atif & First Aid made easy Plateform for Giving Us this opportunity to...
+                                            <button type="button" class="btn btn-primary"> Read More </button>
+                                        </p>
+                                        <div class="rating-icon">
+                                            <i class="icon-23"></i>
+                                            <i class="icon-23"></i>
+                                            <i class="icon-23"></i>
+                                            <i class="icon-23"></i>
+                                            <i class="icon-23"></i>
+                                        </div>
+                                        <h5 class="title">Dr.Junaid Kabir </h5>
+                                        <span class="subtitle">Student</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="swiper-pagination"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End Testimonial Area  -->
+    <!--=====================================-->
+    <!--=       Brand Area Start      		=-->
+    <!--=====================================-->
+    <!--=====================================-->
+    <!--=       FAQ Area Start      		=-->
+    <!--=====================================-->
+    <div class="edu-faq-area faq-style-1">
+        <div class="container">
+            <div class="row g-5 row--45">
+                <div class="col-lg-6">
+                    <div class="edu-faq-gallery">
+                        <div class="row g-5">
+                            <div class="col-6" data-sal-delay="50" data-sal="slide-right" data-sal-duration="800">
+                                <div class="faq-thumbnail thumbnail-1">
+                                    <img loading="lazy" src="~/Areas/Landing/assets/images/faq/edu3.jpeg" alt="Faq Images">
+                                </div>
+                            </div>
+                            <div class="col-6" data-sal-delay="100" data-sal="slide-left" data-sal-duration="800">
+                                <div class="faq-thumbnail thumbnail-2">
+                                    <img loading="lazy" src="~/Areas/Landing/assets/images/faq/edu2.jpeg" alt="Faq Images">
+                                </div>
+                            </div>
+                            <div class="col-6" data-sal-delay="50" data-sal="slide-right" data-sal-duration="800">
+                                <div class="faq-thumbnail thumbnail-3">
+                                    <img loading="lazy" src="~/Areas/Landing/assets/images/faq/edu1.jpeg" alt="Faq Images">
+                                </div>
+                            </div>
+                            <div class="col-6" data-sal-delay="100" data-sal="slide-left" data-sal-duration="800">
+                                <div class="faq-thumbnail thumbnail-4">
+                                    <img loading="lazy" src="~/Areas/Landing/assets/images/faq/edu4.jpeg" alt="Faq Images">
+                                </div>
+                            </div>
+                        </div>
+                        <ul class="shape-group">
+                            <li class="shape-1 scene shape-light" data-sal-delay="500" data-sal="fade" data-sal-duration="200">
+                                <img loading="lazy" data-depth="2" src="~/Areas/Landing/assets/images/faq/shape-02.png" alt="Shape Images">
+                            </li>
+                            <li class="shape-1 scene shape-dark" data-sal-delay="500" data-sal="fade" data-sal-duration="200">
+                                <img loading="lazy" data-depth="1.5" src="~/Areas/Landing/assets/images/faq/dark-shape-02.png" alt="Shape Images">
+                            </li>
+                            <li class="shape-2 scene" data-sal-delay="500" data-sal="fade" data-sal-duration="200">
+                                <img loading="lazy" data-depth="-2" src="~/Areas/Landing/assets/images/faq/shape-03.png" alt="Shape Images">
+                            </li>
+                            <li class="shape-3 scene" data-sal-delay="500" data-sal="fade" data-sal-duration="200">
+                                <img loading="lazy" data-depth="2" src="~/Areas/Landing/assets/images/faq/shape-04.png" alt="Shape Images">
+                            </li>
+                            <li class="shape-4 scene" data-sal-delay="500" data-sal="fade" data-sal-duration="200">
+                                <img loading="lazy" data-depth="-2" src="~/Areas/Landing/assets/images/faq/shape-05.png" alt="Shape Images">
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-6" data-sal-delay="100" data-sal="slide-up" data-sal-duration="800">
+                    <div class="edu-faq-content">
+                        <div class="section-title section-left">
+                            <h2 class="title">FAQs</h2>
+                        </div>
+                        <div class="faq-accordion" id="faq-accordion">
+                            <div class="accordion">
+                                <div class="accordion-item">
+                                    <h5 class="accordion-header">
+                                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true">
+                                            Q. Difference between 1 and 2 month plan subscription?
+                                        </button>
+                                    </h5>
+                                    <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#faq-accordion">
+                                        <div class="accordion-body">
+                                            <p>Both have the same content,only duration of access is different</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="accordion-item">
+                                    <h5 class="accordion-header">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false">
+                                            Q. What is the timing of lectures?
+                                        </button>
+                                    </h5>
+                                    <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#faq-accordion">
+                                        <div class="accordion-body">
+                                            <p>
+                                                Prerecorded online lectures available on website 24hrs access,
+                                                You can listen according to your own schedule.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="accordion-item">
+                                    <h5 class="accordion-header">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false">
+                                            Q. How can i get these lectures on daily basis or all at a time ?
+                                        </button>
+                                    </h5>
+                                    <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#faq-accordion">
+                                        <div class="accordion-body">
+                                            <p>24hrs access, all lectures will be provided at day 1 of taking subscription(available on website).</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="accordion-item">
+                                    <h5 class="accordion-header">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsefour" aria-expanded="false">
+                                            Q. How much duration of preps is required to cover these lectures ?
+                                        </button>
+                                    </h5>
+                                    <div id="collapsefour" class="accordion-collapse collapse" data-bs-parent="#faq-accordion">
+                                        <div class="accordion-body">
+                                            <p>
+                                                It depends on you that how hardworking you are.<br />
+                                                Lectures Can be covered in 2-3 months.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="accordion-item">
+                                    <h5 class="accordion-header">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsefive" aria-expanded="false">
+                                            Q. What is passing rate of your platform?
+                                        </button>
+                                    </h5>
+                                    <div id="collapsefive" class="accordion-collapse collapse" data-bs-parent="#faq-accordion">
+                                        <div class="accordion-body">
+                                            <p>
+                                                Passing rate is almost 90-95% .
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="accordion-item">
+                                    <h5 class="accordion-header">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsesix" aria-expanded="false">
+                                            Q. Do u provide any certificate at the completion of course?
+                                        </button>
+                                    </h5>
+                                    <div id="collapsesix" class="accordion-collapse collapse" data-bs-parent="#faq-accordion">
+                                        <div class="accordion-body">
+                                            <p>
+                                                No, we make your concepts crystal clear,
+                                                make you fully prepare for all those exams related to your medical field.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="accordion-item">
+                                    <h5 class="accordion-header">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseseven" aria-expanded="false">
+                                            Q. Can i get further discount?
+                                        </button>
+                                    </h5>
+                                    <div id="collapseseven" class="accordion-collapse collapse" data-bs-parent="#faq-accordion">
+                                        <div class="accordion-body">
+                                            <p> We already offer you 50% off so no further discount. </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <ul class="shape-group">
+                            <li class="shape-1 scene shape-light" data-sal-delay="500" data-sal="fade" data-sal-duration="200">
+                                <img loading="lazy" data-depth="1.5" src="~/Areas/Landing/assets/images/about/shape-02.png" alt="Shape Images">
+                            </li>
+                            <li class="shape-2 scene" data-sal-delay="500" data-sal="fade" data-sal-duration="200">
+                                <span data-depth="-2.2"></span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--=====================================-->
+    <!--=      		Blog Area Start   		=-->
+    <!--=====================================-->
+
+    @section scripts{
+
+        <style>
+            /* ── Popup Image Slider ── */
+            .fame-popup-overlay {
+                position: fixed;
+                top: 0; left: 0; width: 100%; height: 100%;
+                background: rgba(0, 0, 0, 0.72);
+                z-index: 99999;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                opacity: 0;
+                transition: opacity 0.35s ease;
+                padding: 16px;
+                box-sizing: border-box;
+            }
+            .fame-popup-overlay.active { opacity: 1; }
+            .fame-popup-overlay.closing { opacity: 0; }
+
+            .fame-popup-slider {
+                position: relative;
+                width: 100%;
+                max-width: 820px;
+                background: #fff;
+                border-radius: 18px;
+                overflow: hidden;
+                box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+                transform: scale(0.88);
+                transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+            }
+            .fame-popup-overlay.active .fame-popup-slider { transform: scale(1); }
+            .fame-popup-overlay.closing .fame-popup-slider { transform: scale(0.88); }
+
+            .fame-popup-close {
+                position: absolute;
+                top: 14px; right: 14px;
+                width: 38px; height: 38px;
+                background: rgba(0, 0, 0, 0.55);
+                color: #fff;
+                border: 2px solid rgba(255,255,255,0.3);
+                border-radius: 50%;
+                font-size: 22px;
+                cursor: pointer;
+                z-index: 10;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.2s;
+                line-height: 1;
+                padding: 0;
+                font-family: Arial, sans-serif;
+            }
+            .fame-popup-close:hover { background: rgba(220, 38, 38, 0.85); border-color: rgba(255,255,255,0.5); }
+
+            .fame-slides-wrap {
+                position: relative;
+                width: 100%;
+                overflow: hidden;
+            }
+            .fame-slide-track {
+                display: flex;
+                transition: transform 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+                will-change: transform;
+            }
+            .fame-slide {
+                min-width: 100%;
+                position: relative;
+            }
+            .fame-slide img {
+                width: 100%;
+                height: auto;
+                display: block;
+                max-height: 520px;
+                object-fit: contain;
+                background: #f8fafc;
+            }
+            .fame-slide a { display: block; text-decoration: none; }
+
+            .fame-slide-nav {
+                position: absolute;
+                top: 50%; transform: translateY(-50%);
+                width: 44px; height: 44px;
+                background: rgba(255, 255, 255, 0.9);
+                border: none; border-radius: 50%;
+                font-size: 20px;
+                cursor: pointer;
+                z-index: 5;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.2s;
+                color: #1e293b;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+                font-family: Arial, sans-serif;
+                padding: 0;
+                line-height: 1;
+            }
+            .fame-slide-nav:hover {
+                background: #fff;
+                box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+                transform: translateY(-50%) scale(1.08);
+            }
+            .fame-slide-prev { left: 14px; }
+            .fame-slide-next { right: 14px; }
+
+            .fame-slide-dots {
+                position: absolute;
+                bottom: 16px; left: 50%;
+                transform: translateX(-50%);
+                display: flex;
+                gap: 9px;
+                z-index: 5;
+                padding: 6px 14px;
+                background: rgba(0,0,0,0.35);
+                border-radius: 20px;
+            }
+            .fame-slide-dot {
+                width: 10px; height: 10px;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.45);
+                border: none;
+                cursor: pointer;
+                transition: all 0.25s;
+                padding: 0;
+            }
+            .fame-slide-dot.active {
+                background: #fff;
+                transform: scale(1.25);
+                box-shadow: 0 0 6px rgba(255,255,255,0.5);
+            }
+
+            .fame-popup-slider.single-slide .fame-slide-nav,
+            .fame-popup-slider.single-slide .fame-slide-dots { display: none; }
+
+            @@media (max-width: 768px) {
+                .fame-popup-slider { border-radius: 14px; max-width: 98%; }
+                .fame-slide img { max-height: 360px; }
+                .fame-slide-nav { width: 34px; height: 34px; font-size: 16px; }
+                .fame-slide-prev { left: 8px; }
+                .fame-slide-next { right: 8px; }
+                .fame-popup-close { width: 32px; height: 32px; font-size: 18px; top: 10px; right: 10px; }
+                .fame-slide-dots { bottom: 10px; gap: 7px; padding: 4px 10px; }
+                .fame-slide-dot { width: 8px; height: 8px; }
+            }
+            @@media (max-width: 480px) {
+                .fame-popup-overlay { padding: 8px; }
+                .fame-popup-slider { border-radius: 12px; }
+                .fame-slide img { max-height: 280px; }
+            }
+        </style>
+
+        <script>
+            var ResultID = localStorage.getItem("FreeResultID");
+            if (ResultID) {
+                $("#FreeTestUrl").attr("href", "/QuestionPaper/Continue/" + ResultID);
+            }
+
+            // Popup Image Slider
+            (function () {
+                var currentSlide = 0, slideCount = 0, autoTimer = null, overlay = null;
+
+                function fetchAndShowSlider() {
+                    $.ajax({
+                        url: '/PopupSlidesHandler.ashx?action=active',
+                        type: 'GET',
+                        dataType: 'json',
+                        success: function (data) {
+                            if (data && data.success && data.slides && data.slides.length > 0) {
+                                buildSlider(data.slides);
+                            }
+                        },
+                        error: function () { }
+                    });
+                }
+
+                function buildSlider(slides) {
+                    slideCount = slides.length;
+                    currentSlide = 0;
+
+                    overlay = document.createElement('div');
+                    overlay.className = 'fame-popup-overlay';
+
+                    var singleClass = slideCount === 1 ? ' single-slide' : '';
+                    var html = '<div class="fame-popup-slider' + singleClass + '">';
+                    html += '<button class="fame-popup-close" aria-label="Close">&times;</button>';
+                    html += '<div class="fame-slides-wrap"><div class="fame-slide-track">';
+
+                    for (var i = 0; i < slides.length; i++) {
+                        var s = slides[i];
+                        html += '<div class="fame-slide">';
+                        if (s.linkUrl) html += '<a href="' + escAttr(s.linkUrl) + '" target="_blank">';
+                        html += '<img src="' + escAttr(s.imagePath) + '" alt="' + escAttr(s.title || 'Slide ' + (i + 1)) + '" loading="eager" />';
+                        if (s.linkUrl) html += '</a>';
+                        html += '</div>';
+                    }
+
+                    html += '</div></div>';
+
+                    if (slideCount > 1) {
+                        html += '<button class="fame-slide-nav fame-slide-prev" aria-label="Previous">&#10094;</button>';
+                        html += '<button class="fame-slide-nav fame-slide-next" aria-label="Next">&#10095;</button>';
+                        html += '<div class="fame-slide-dots">';
+                        for (var j = 0; j < slideCount; j++) {
+                            html += '<button class="fame-slide-dot' + (j === 0 ? ' active' : '') + '" data-idx="' + j + '"></button>';
+                        }
+                        html += '</div>';
+                    }
+
+                    html += '</div>';
+                    overlay.innerHTML = html;
+                    document.body.appendChild(overlay);
+
+                    requestAnimationFrame(function () {
+                        requestAnimationFrame(function () { overlay.classList.add('active'); });
+                    });
+
+                    overlay.querySelector('.fame-popup-close').addEventListener('click', closeSlider);
+                    overlay.addEventListener('click', function (e) { if (e.target === overlay) closeSlider(); });
+
+                    if (slideCount > 1) {
+                        overlay.querySelector('.fame-slide-prev').addEventListener('click', function () {
+                            goTo((currentSlide - 1 + slideCount) % slideCount); restartAuto();
+                        });
+                        overlay.querySelector('.fame-slide-next').addEventListener('click', function () {
+                            goTo((currentSlide + 1) % slideCount); restartAuto();
+                        });
+
+                        var dots = overlay.querySelectorAll('.fame-slide-dot');
+                        for (var d = 0; d < dots.length; d++) {
+                            dots[d].addEventListener('click', function () {
+                                goTo(parseInt(this.getAttribute('data-idx'))); restartAuto();
+                            });
+                        }
+
+                        var touchStartX = 0, touchStartY = 0, swiping = false;
+                        var swipeWrap = overlay.querySelector('.fame-slides-wrap');
+                        swipeWrap.addEventListener('touchstart', function (e) {
+                            touchStartX = e.changedTouches[0].screenX;
+                            touchStartY = e.changedTouches[0].screenY;
+                            swiping = true;
+                        }, { passive: true });
+                        swipeWrap.addEventListener('touchend', function (e) {
+                            if (!swiping) return;
+                            swiping = false;
+                            var dx = touchStartX - e.changedTouches[0].screenX;
+                            var dy = touchStartY - e.changedTouches[0].screenY;
+                            if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
+                                if (dx > 0) goTo((currentSlide + 1) % slideCount);
+                                else goTo((currentSlide - 1 + slideCount) % slideCount);
+                                restartAuto();
+                            }
+                        }, { passive: true });
+
+                        startAuto();
+                        overlay.querySelector('.fame-popup-slider').addEventListener('mouseenter', stopAuto);
+                        overlay.querySelector('.fame-popup-slider').addEventListener('mouseleave', startAuto);
+                    }
+
+                    document.addEventListener('keydown', escHandler);
+                }
+
+                function goTo(idx) {
+                    currentSlide = idx;
+                    var track = overlay.querySelector('.fame-slide-track');
+                    track.style.transform = 'translateX(-' + (currentSlide * 100) + '%)';
+                    var dots = overlay.querySelectorAll('.fame-slide-dot');
+                    for (var i = 0; i < dots.length; i++) {
+                        if (i === currentSlide) dots[i].classList.add('active');
+                        else dots[i].classList.remove('active');
+                    }
+                }
+
+                function startAuto() { stopAuto(); if (slideCount <= 1) return; autoTimer = setInterval(function () { goTo((currentSlide + 1) % slideCount); }, 4500); }
+                function stopAuto() { if (autoTimer) { clearInterval(autoTimer); autoTimer = null; } }
+                function restartAuto() { stopAuto(); startAuto(); }
+
+                function closeSlider() {
+                    stopAuto();
+                    document.removeEventListener('keydown', escHandler);
+                    if (overlay) {
+                        overlay.classList.remove('active');
+                        overlay.classList.add('closing');
+                        setTimeout(function () { if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay); overlay = null; }, 350);
+                    }
+                }
+
+                function escHandler(e) { if (e.key === 'Escape' || e.keyCode === 27) closeSlider(); }
+                function escAttr(s) { if (!s) return ''; return s.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+                if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fetchAndShowSlider);
+                else fetchAndShowSlider();
+            })();
+        </script>
+
+    }

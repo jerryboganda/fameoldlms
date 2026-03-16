@@ -1,0 +1,73 @@
+@using First_Aid_Made_Easy.BLL
+@{
+    var courses = ViewBag.Courses as IEnumerable<dynamic>;
+    var displayCourses = courses?.Take(6) ?? Enumerable.Empty<dynamic>();
+}
+
+<div class="fame-card fame-animate-slide-up">
+    <div class="fame-card-header">
+        <h3 class="fame-card-title">
+            <i data-feather="book-open" style="width: 20px; height: 20px; margin-right: 8px; vertical-align: middle;"></i>
+            My Courses
+        </h3>
+        <a href="@Url.Action("MyCourses", "Student")" class="fame-card-action">View All →</a>
+    </div>
+    <div class="fame-card-body" style="padding: 16px;">
+        @if (displayCourses.Any())
+        {
+            <div class="fame-courses-grid">
+                @foreach (var course in displayCourses)
+                {
+                    var progress = course.Progress;
+                    var thumbnail = !string.IsNullOrEmpty((string)course.Course_Pic) 
+                        ? "/File-Repository/Course/" + course.Course_Pic 
+                        : "/Areas/Landing/assets/images/course-placeholder.jpg";
+                    var videoCount = course.Lessons;
+                    var sectionCount = 0; // SectionCount not available in VM
+                    
+                    <div class="fame-course-card">
+                        <div class="fame-course-thumb">
+                            <img src="@thumbnail" alt="@course.Course_Name" onerror="this.src='/Areas/Landing/assets/images/logo/fame-logo.png'">
+                            <div class="fame-course-overlay"></div>
+                            
+                            <!-- Progress Ring -->
+                            <svg class="fame-course-progress-ring" viewBox="0 0 50 50" data-progress="@progress">
+                                <circle class="bg" cx="25" cy="25" r="22"></circle>
+                                <circle class="progress" cx="25" cy="25" r="22" style="--progress: @progress;"></circle>
+                            </svg>
+                            <div class="fame-course-progress-text">@progress%</div>
+                        </div>
+                        <div class="fame-course-content">
+                            <h4 class="fame-course-title">@course.Course_Name</h4>
+                            <div class="fame-course-meta">
+                                <span class="fame-course-meta-item">
+                                    <i data-feather="layers" style="width: 14px; height: 14px;"></i>
+                                    @sectionCount sections
+                                </span>
+                                <span class="fame-course-meta-item">
+                                    <i data-feather="play-circle" style="width: 14px; height: 14px;"></i>
+                                    @videoCount videos
+                                </span>
+                            </div>
+                            <a href="@Url.Action("TakeCourse", "Student", new { id = course.Course_Id })" class="fame-course-continue">
+                                <i data-feather="play" style="width: 16px; height: 16px;"></i>
+                                Continue
+                            </a>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div style="text-align: center; padding: 48px 24px; color: var(--fame-text-tertiary);">
+                <i data-feather="book" style="width: 48px; height: 48px; margin-bottom: 16px; opacity: 0.5;"></i>
+                <p style="margin-bottom: 16px;">You haven't enrolled in any courses yet.</p>
+                <a href="@Url.Action("Packages", "Package")" class="fame-btn fame-btn-primary">
+                    <i data-feather="plus" style="width: 16px; height: 16px;"></i>
+                    Browse Packages
+                </a>
+            </div>
+        }
+    </div>
+</div>

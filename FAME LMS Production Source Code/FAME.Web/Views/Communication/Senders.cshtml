@@ -1,0 +1,406 @@
+@model First_Aid_Made_Easy.Models.SenderAccountListVM
+@{
+    ViewBag.Title = "Sender Accounts";
+    Layout = "~/Views/Shared/_LayoutTeacher.cshtml";
+}
+
+<div class="pt-32pt">
+    <div class="container-fluid page__container">
+        <div class="d-flex align-items-center mb-24pt">
+            <div class="flex">
+                <h2 class="mb-0">Sender Accounts</h2>
+                <ol class="breadcrumb p-0 m-0">
+                    <li class="breadcrumb-item"><a href="/Communication/Index">Email Marketing</a></li>
+                    <li class="breadcrumb-item active">Senders</li>
+                </ol>
+            </div>
+            <button class="btn btn-outline-info mr-2" id="btnSyncBrevo">
+                <i class="material-icons mr-1" style="vertical-align:middle;font-size:18px;">sync</i> Sync from Brevo
+            </button>
+            <button class="btn btn-primary" id="btnNewSender">
+                <i class="material-icons mr-1" style="vertical-align:middle;font-size:18px;">add</i> Add Sender
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="page-section">
+    <div class="container-fluid page__container">
+        <div class="card">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Sender Name</th>
+                            <th>Email Address</th>
+                            <th>SMTP Host</th>
+                            <th>API Mode</th>
+                            <th>Daily Limit</th>
+                            <th>Sent Today</th>
+                            <th>Default</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var s in Model.Senders)
+                        {
+                            <tr>
+                                <td><strong>@s.SenderName</strong></td>
+                                <td>@s.Email</td>
+                                <td>@(s.SmtpHost ?? "-")</td>
+                                <td>
+                                    @if (s.UseBrevoApi)
+                                    {
+                                        <span class="badge badge-info">Brevo API</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge badge-secondary">SMTP</span>
+                                    }
+                                </td>
+                                <td>@s.DailyLimit.ToString("N0")</td>
+                                <td>@s.SentToday.ToString("N0")</td>
+                                <td>
+                                    @if (s.IsDefault)
+                                    {
+                                        <span class="badge badge-success"><i class="material-icons" style="font-size:14px;vertical-align:middle;">check</i> Default</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (s.IsActive)
+                                    {
+                                        <span class="badge badge-success">Active</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge badge-secondary">Inactive</span>
+                                    }
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-info btn-edit-sender" data-id="@s.Id" title="Edit">
+                                        <i class="material-icons" style="vertical-align:middle;font-size:16px;">edit</i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-warning btn-test-sender" data-id="@s.Id" title="Send Test">
+                                        <i class="material-icons" style="vertical-align:middle;font-size:16px;">send</i>
+                                    </button>
+                                    @if (!s.IsDefault)
+                                    {
+                                        <button class="btn btn-sm btn-outline-success btn-default-sender" data-id="@s.Id" title="Set as Default">
+                                            <i class="material-icons" style="vertical-align:middle;font-size:16px;">star_outline</i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger btn-delete-sender" data-id="@s.Id" title="Delete">
+                                            <i class="material-icons" style="vertical-align:middle;font-size:16px;">delete</i>
+                                        </button>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        @if (!Model.Senders.Any())
+        {
+            <div class="text-center py-5">
+                <i class="material-icons" style="font-size:64px;color:#ccc;">alternate_email</i>
+                <h4 class="text-muted mt-3">No Sender Accounts</h4>
+                <p class="text-muted">Click <strong>Sync from Brevo</strong> to import your existing senders, or add one manually.</p>
+                <button class="btn btn-outline-info mr-2" onclick="$('#btnSyncBrevo').click();">
+                    <i class="material-icons mr-1" style="vertical-align:middle;font-size:18px;">sync</i> Sync from Brevo
+                </button>
+                <button class="btn btn-primary" onclick="$('#btnNewSender').click();">Add Sender Account</button>
+            </div>
+        }
+
+        <!-- Sender Modal -->
+        <div class="modal fade" id="senderModal" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="senderModalTitle">Add Sender Account</h5>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label><strong>Sender Name *</strong></label>
+                                    <input type="text" id="senderName" class="form-control" placeholder="e.g. FAME Team" />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label><strong>Email Address *</strong></label>
+                                    <input type="email" id="senderEmail" class="form-control" placeholder="e.g. admin@firstaidmadeeasy.com.pk" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr />
+                        <h6>Sending Method</h6>
+                        <div class="form-check form-check-inline mb-3">
+                            <input class="form-check-input" type="radio" name="sendMethod" id="methodBrevo" value="brevo" checked>
+                            <label class="form-check-label" for="methodBrevo">Brevo API (Recommended)</label>
+                        </div>
+                        <div class="form-check form-check-inline mb-3">
+                            <input class="form-check-input" type="radio" name="sendMethod" id="methodSmtp" value="smtp">
+                            <label class="form-check-label" for="methodSmtp">Custom SMTP</label>
+                        </div>
+
+                        <!-- Brevo Settings -->
+                        <div id="brevoSettings">
+                            <div class="form-group">
+                                <label><strong>Brevo API Key *</strong></label>
+                                <input type="password" id="brevoApiKey" class="form-control" placeholder="xkeysib-..." />
+                                <small class="form-text text-muted">Get your API key from <a href="https://app.brevo.com/settings/keys/api" target="_blank">Brevo Dashboard</a></small>
+                            </div>
+                        </div>
+
+                        <!-- SMTP Settings -->
+                        <div id="smtpSettings" style="display:none;">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="form-group">
+                                        <label><strong>SMTP Host *</strong></label>
+                                        <input type="text" id="smtpHost" class="form-control" placeholder="e.g. smtp.gmail.com" />
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label><strong>Port *</strong></label>
+                                        <input type="number" id="smtpPort" class="form-control" value="587" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Username</label>
+                                        <input type="text" id="smtpUser" class="form-control" />
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Password</label>
+                                        <input type="password" id="smtpPass" class="form-control" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-check mb-3">
+                                <input type="checkbox" class="form-check-input" id="smtpSsl" checked>
+                                <label class="form-check-label">Enable SSL/TLS</label>
+                            </div>
+                        </div>
+
+                        <hr />
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Daily Send Limit</label>
+                                    <input type="number" id="dailyLimit" class="form-control" value="500" />
+                                    <small class="form-text text-muted">Maximum emails per day from this account</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Reply-To Email</label>
+                                    <input type="email" id="replyTo" class="form-control" placeholder="(optional)" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="senderIsActive" checked>
+                            <label class="form-check-label">Active</label>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="hidden" id="senderId" value="0" />
+                        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" id="btnSaveSender">Save Sender</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @Html.AntiForgeryToken()
+    </div>
+</div>
+
+@section scripts {
+    <style>
+        /* Fix modal z-index stacking when inside mdk-drawer-layout */
+        #senderModal { z-index: 1060 !important; }
+        .modal-backdrop { z-index: 1050 !important; }
+    </style>
+    <script>
+        // Move the modal to body so it's not trapped inside mdk-drawer-layout stacking context
+        $(function () {
+            $("#senderModal").appendTo("body");
+        });
+
+        // Toggle send method
+        $("input[name='sendMethod']").on("change", function () {
+            if ($(this).val() === 'brevo') {
+                $("#brevoSettings").show(); $("#smtpSettings").hide();
+            } else {
+                $("#brevoSettings").hide(); $("#smtpSettings").show();
+            }
+        });
+
+        // New sender
+        $("#btnNewSender").on("click", function () {
+            resetSenderForm();
+            $("#senderModalTitle").text("Add Sender Account");
+            $("#senderModal").modal("show");
+        });
+
+        // Sync from Brevo
+        $("#btnSyncBrevo").on("click", function () {
+            Swal.fire({
+                title: 'Sync Senders from Brevo',
+                html: '<p class="mb-2">Enter your Brevo API key to import all verified senders from your Brevo account.</p>' +
+                      '<input id="swalBrevoKey" class="swal2-input" placeholder="xkeysib-..." type="password" style="width:90%;">',
+                focusConfirm: false,
+                showCancelButton: true,
+                confirmButtonText: '<i class="material-icons" style="vertical-align:middle;font-size:16px;margin-right:4px;">sync</i> Sync Now',
+                preConfirm: function () {
+                    var key = document.getElementById('swalBrevoKey').value;
+                    if (!key) { Swal.showValidationMessage('API Key is required'); return false; }
+                    return key;
+                }
+            }).then(function (result) {
+                if (result.isConfirmed && result.value) {
+                    Swal.fire({ title: 'Syncing...', text: 'Fetching senders from Brevo...', allowOutsideClick: false, didOpen: function () { Swal.showLoading(); } });
+                    $.post('/Communication/SyncFromBrevo', { apiKey: result.value }, function (res) {
+                        if (res.success) {
+                            Swal.fire({ icon: 'success', title: 'Sync Complete!', text: res.message, timer: 2000, showConfirmButton: false })
+                                .then(function () { location.reload(); });
+                        } else {
+                            Swal.fire('Sync Failed', res.message || 'Could not fetch senders from Brevo.', 'error');
+                        }
+                    }).fail(function () { Swal.fire('Error', 'Network error during sync.', 'error'); });
+                }
+            });
+        });
+
+        // Edit sender
+        $(document).on("click", ".btn-edit-sender", function () {
+            var id = $(this).data("id");
+            $.getJSON('/Communication/GetSender?id=' + id, function (res) {
+                var s = res.data;
+                if (!s) { Swal.fire('Error', 'Sender not found.', 'error'); return; }
+                $("#senderId").val(s.Id);
+                $("#senderName").val(s.SenderName || s.AccountName);
+                $("#senderEmail").val(s.Email || s.FromEmail);
+                if (s.UseBrevoApi || s.UseApi) {
+                    $("#methodBrevo").prop("checked", true).trigger("change");
+                    $("#brevoApiKey").val(s.BrevoApiKey || s.ApiKey || '');
+                } else {
+                    $("#methodSmtp").prop("checked", true).trigger("change");
+                    $("#smtpHost").val(s.SmtpHost || '');
+                    $("#smtpPort").val(s.SmtpPort || 587);
+                    $("#smtpUser").val(s.SmtpUser || s.SmtpUsername || '');
+                    $("#smtpPass").val(s.SmtpPassword || '');
+                    $("#smtpSsl").prop("checked", (s.SmtpUseSsl !== false && s.EnableSSL !== false));
+                }
+                $("#dailyLimit").val(s.DailyLimit || 500);
+                $("#replyTo").val(s.ReplyToEmail || '');
+                $("#senderIsActive").prop("checked", s.IsActive !== false);
+                $("#senderModalTitle").text("Edit Sender Account");
+                $("#senderModal").modal("show");
+            });
+        });
+
+        // Delete sender
+        $(document).on("click", ".btn-delete-sender", function () {
+            var id = $(this).data("id");
+            Swal.fire({
+                title: 'Delete Sender?', text: 'This sender will be removed.', icon: 'warning',
+                showCancelButton: true, confirmButtonColor: '#d33', confirmButtonText: 'Delete'
+            }).then(function (result) {
+                if (result.isConfirmed) {
+                    $.post('/Communication/DeleteSender', { id: id }, function (res) {
+                        if (res.success) location.reload();
+                        else Swal.fire('Error', 'Cannot delete sender in use.', 'error');
+                    });
+                }
+            });
+        });
+
+        // Set default
+        $(document).on("click", ".btn-default-sender", function () {
+            var id = $(this).data("id");
+            $.post('/Communication/SetDefaultSender', { id: id }, function (res) {
+                if (res.success) location.reload();
+                else Swal.fire('Error', 'Failed to update.', 'error');
+            });
+        });
+
+        // Test sender
+        $(document).on("click", ".btn-test-sender", function () {
+            var id = $(this).data("id");
+            Swal.fire({
+                title: 'Send Test Email',
+                input: 'email',
+                inputLabel: 'Recipient email address',
+                inputPlaceholder: 'your@email.com',
+                showCancelButton: true,
+                confirmButtonText: 'Send Test'
+            }).then(function (result) {
+                if (result.isConfirmed && result.value) {
+                    Swal.fire({ title: 'Sending...', allowOutsideClick: false, didOpen: function() { Swal.showLoading(); } });
+                    $.post('/Communication/TestSender', { id: id, email: result.value }, function (res) {
+                        if (res.success) Swal.fire('Sent!', 'Test email sent successfully.', 'success');
+                        else Swal.fire('Failed', res.message || 'Could not send test email.', 'error');
+                    }).fail(function (xhr) {
+                        Swal.fire('Error', xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : 'Network error. Please try again.', 'error');
+                    });
+                }
+            });
+        });
+
+        // Save sender
+        $("#btnSaveSender").on("click", function () {
+            var name = $("#senderName").val();
+            var email = $("#senderEmail").val();
+            if (!name || !email) { Swal.fire('Required', 'Name and email are required.', 'warning'); return; }
+
+            var isBrevo = $("input[name='sendMethod']:checked").val() === 'brevo';
+            var data = {
+                Id: parseInt($("#senderId").val()) || 0,
+                SenderName: name,
+                Email: email,
+                UseBrevoApi: isBrevo,
+                BrevoApiKey: isBrevo ? $("#brevoApiKey").val() : null,
+                SmtpHost: !isBrevo ? $("#smtpHost").val() : null,
+                SmtpPort: !isBrevo ? parseInt($("#smtpPort").val()) : null,
+                SmtpUser: !isBrevo ? $("#smtpUser").val() : null,
+                SmtpPassword: !isBrevo ? $("#smtpPass").val() : null,
+                SmtpUseSsl: !isBrevo ? $("#smtpSsl").is(":checked") : null,
+                DailyLimit: parseInt($("#dailyLimit").val()) || 500,
+                ReplyToEmail: $("#replyTo").val(),
+                IsActive: $("#senderIsActive").is(":checked"),
+                __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+            };
+
+            $.post('/Communication/SaveSender', data, function (res) {
+                if (res.success) {
+                    Swal.fire({ icon: 'success', title: 'Sender Saved!', timer: 1500, showConfirmButton: false })
+                        .then(function () { location.reload(); });
+                } else {
+                    Swal.fire('Error', res.message || 'Failed to save.', 'error');
+                }
+            });
+        });
+
+        function resetSenderForm() {
+            $("#senderId").val(0);
+            $("#senderName, #senderEmail, #brevoApiKey, #smtpHost, #smtpUser, #smtpPass, #replyTo").val('');
+            $("#smtpPort").val(587);
+            $("#dailyLimit").val(500);
+            $("#methodBrevo").prop("checked", true).trigger("change");
+            $("#senderIsActive, #smtpSsl").prop("checked", true);
+        }
+    </script>
+}

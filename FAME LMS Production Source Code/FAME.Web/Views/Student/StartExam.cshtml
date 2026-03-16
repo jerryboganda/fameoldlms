@@ -1,0 +1,408 @@
+@{
+    ViewBag.Title = "Professional Exam Readiness";
+    Layout = "~/Views/Shared/_LayoutStudent2026.cshtml";
+    int examId = ViewBag.ExamID;
+}
+
+<style>
+    :root {
+        --exam-surface: #ffffff;
+        --exam-muted: #f1f5f9;
+        --exam-border: #e2e8f0;
+        --exam-accent: #0f766e;
+    }
+
+    .exam-prep-card {
+        background: var(--exam-surface);
+        border: 1px solid var(--exam-border);
+        border-radius: 24px;
+        box-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+        position: relative;
+    }
+
+    .exam-header-pro {
+        position: relative;
+        background: #0f172a;
+        padding: 3rem 2rem 4rem;
+        overflow: hidden;
+    }
+
+    .exam-header-pro::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: radial-gradient(circle at 50% 100%, #1e40af 0%, transparent 60%),
+                    linear-gradient(135deg, #0f766e 0%, #0f172a 100%);
+        opacity: 0.9;
+    }
+
+    .exam-abstract-pattern {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0.1;
+        background-image: radial-gradient(#fff 1px, transparent 1px);
+        background-size: 24px 24px;
+    }
+
+    .exam-header-content {
+        position: relative;
+        z-index: 10;
+        text-align: center;
+        color: white;
+    }
+
+    .exam-badge-row {
+        display: flex;
+        justify-content: center;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+    }
+
+    .exam-badge {
+        padding: 0.4rem 0.8rem;
+        border-radius: 100px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(4px);
+    }
+
+    .exam-body-pro {
+        padding: 1.5rem 1.25rem;
+        margin-top: -3rem;
+        position: relative;
+        z-index: 20;
+    }
+
+    @@media (min-width: 768px) {
+        .exam-body-pro {
+            padding: 2rem 3rem 2.5rem;
+        }
+    }
+
+    .stat-bar-pro {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.75rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-item-pro {
+        background: white;
+        border: 1px solid var(--exam-border);
+        border-radius: 20px;
+        padding: 1.25rem 0.75rem;
+        text-align: center;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+    }
+
+    .stat-item-pro:hover {
+        transform: translateY(-5px);
+        border-color: var(--exam-accent);
+        box-shadow: 0 10px 15px -3px rgba(15, 118, 110, 0.1);
+    }
+
+    .stat-item-pro i {
+        font-size: 1.1rem;
+        color: var(--exam-accent);
+        margin-bottom: 0.5rem;
+        display: inline-flex;
+        width: 36px;
+        height: 36px;
+        align-items: center;
+        justify-content: center;
+        background: #f0fdfa;
+        border-radius: 10px;
+    }
+
+    .stat-value {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: #0f172a;
+        line-height: 1.1;
+        margin-bottom: 0.2rem;
+    }
+
+    .stat-label {
+        font-size: 0.7rem;
+        font-weight: 600;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.025em;
+    }
+
+    .instruction-card {
+        background: #f8fafc;
+        border-radius: 20px;
+        border: 1px solid #f1f5f9;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .instruction-title {
+        font-size: 0.95rem;
+        font-weight: 800;
+        color: #0f172a;
+        margin-bottom: 1.25rem;
+        display: flex;
+        align-items: center;
+    }
+
+    .instruction-title::before {
+        content: "";
+        width: 4px;
+        height: 18px;
+        background: var(--exam-accent);
+        margin-right: 0.75rem;
+        border-radius: 4px;
+    }
+
+    .instruction-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .instruction-row-pro {
+        display: flex;
+        align-items: flex-start;
+        padding: 0.65rem 0;
+        border-bottom: 1px solid #eff6ff;
+    }
+
+    .instruction-row-pro:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+
+    .instruction-row-pro:first-child {
+        padding-top: 0;
+    }
+
+    .instruction-check {
+        width: 20px;
+        height: 20px;
+        background: white;
+        border: 2px solid #cbd5e1;
+        border-radius: 50%;
+        margin-right: 1rem;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        transition: all 0.3s ease;
+        margin-top: 0.15rem;
+        font-size: 0.7rem;
+    }
+
+    .instruction-row-pro:hover .instruction-check {
+        background: var(--exam-accent);
+        border-color: var(--exam-accent);
+    }
+
+    .instruction-text {
+        font-size: 0.9rem;
+        line-height: 1.5;
+        color: #334155;
+    }
+
+    .instruction-text strong {
+        color: #0f172a;
+        font-weight: 700;
+    }
+
+    .btn-launch-pro {
+        background: #0f766e;
+        color: white;
+        font-weight: 800;
+        font-size: 1rem;
+        padding: 1rem 2rem;
+        border-radius: 100px;
+        border: none;
+        box-shadow: 0 10px 15px -3px rgba(15, 118, 110, 0.3);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        width: 100%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        margin-bottom: 1rem;
+    }
+
+    .btn-launch-pro:hover {
+        background: #115e59;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 20px 25px -5px rgba(15, 118, 110, 0.4);
+    }
+
+    .btn-launch-pro i {
+        margin-left: 0.75rem;
+        transition: transform 0.3s ease;
+    }
+
+    .btn-launch-pro:hover i {
+        transform: translateX(5px);
+    }
+
+    .return-link {
+        color: #64748b;
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        transition: color 0.2s ease;
+        margin-bottom: 0.5rem;
+    }
+
+    .return-link:hover {
+        color: #0f172a;
+    }
+
+    .return-link i {
+        margin-right: 0.5rem;
+    }
+
+    .exam-footer-pro {
+        padding: 1rem;
+        background: #f8fafc;
+        border-top: 1px solid #f1f5f9;
+        text-align: center;
+        font-size: 0.75rem;
+        color: #94a3b8;
+        font-weight: 500;
+    }
+</style>
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-xl-6 col-lg-8">
+            <div class="exam-prep-card">
+                
+                <!-- Premium Header Section -->
+                <div class="exam-header-pro">
+                    <div class="exam-abstract-pattern"></div>
+                    <div class="exam-header-content">
+                        <div class="exam-badge-row">
+                            <div class="exam-badge">Professional Mock</div>
+                            <div class="exam-badge" style="background: rgba(34, 197, 94, 0.2); border-color: rgba(34, 197, 94, 0.3);">Validated Module</div>
+                        </div>
+                        <h1 class="h2 fw-bolder text-white mb-2" id="examTitle" style="letter-spacing: -0.01em;">Preparing Exam Module...</h1>
+                        <p class="text-white text-opacity-75 mb-0 fs-7">Verify your technical readiness before launching the session.</p>
+                    </div>
+                </div>
+
+                <!-- Main Professional Content -->
+                <div class="exam-body-pro">
+                    
+                    <!-- High-Impact Stats -->
+                    <div class="stat-bar-pro">
+                        <div class="stat-item-pro">
+                            <i class="bi bi-stopwatch"></i>
+                            <div class="stat-value" id="examDuration">--</div>
+                            <div class="stat-label">Duration</div>
+                        </div>
+                        <div class="stat-item-pro">
+                            <i class="bi bi-card-list"></i>
+                            <div class="stat-value" id="examQuestions">--</div>
+                            <div class="stat-label">Questions</div>
+                        </div>
+                        <div class="stat-item-pro">
+                            <i class="bi bi-award"></i>
+                            <div class="stat-value" id="examPass">--</div>
+                            <div class="stat-label">To Pass</div>
+                        </div>
+                    </div>
+
+                    <!-- Refined Instructions -->
+                    <div class="instruction-card">
+                        <div class="instruction-title">Security & Protocol Guidelines</div>
+                        <div class="instruction-list">
+                            <div class="instruction-row-pro">
+                                <div class="instruction-check"><i class="bi bi-check-lg" style="font-size: 0.8rem;"></i></div>
+                                <div class="instruction-text">Ensure your <strong>internet connection</strong> is stable throughout the entire activity.</div>
+                            </div>
+                            <div class="instruction-row-pro">
+                                <div class="instruction-check"><i class="bi bi-check-lg" style="font-size: 0.8rem;"></i></div>
+                                <div class="instruction-text">Do <strong>not refresh</strong>, reload, or navigate away from the exam tab.</div>
+                            </div>
+                            <div class="instruction-row-pro">
+                                <div class="instruction-check"><i class="bi bi-check-lg" style="font-size: 0.8rem;"></i></div>
+                                <div class="instruction-text">The professional timer will start <strong>immediately</strong> upon session launch.</div>
+                            </div>
+                            <div class="instruction-row-pro">
+                                <div class="instruction-check"><i class="bi bi-check-lg" style="font-size: 0.8rem;"></i></div>
+                                <div class="instruction-text">Validated results will be generated <strong>automatically</strong> upon submission.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Final Action Container -->
+                    <div class="text-center px-lg-6">
+                        <a href="/Student/TakeExam/@examId" class="btn-launch-pro" id="btnStart">
+                            Launch Professional Exam <i class="bi bi-arrow-right-short fs-3"></i>
+                        </a>
+                        <div>
+                            <a href="/Student/MockTests" class="return-link">
+                                <i class="bi bi-arrow-left"></i> Return to Mock Test List
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Institutional Footer -->
+                <div class="exam-footer-pro">
+                    <i class="bi bi-shield-check me-2"></i> Professional Grade Examination Framework &copy; 2026 FAME LMS
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+             var examId = @examId;
+             var userId = '@User.Identity.GetUserId()';
+             
+             // Elegant fade-in of localized data
+             $.ajax({
+                url: '/api/StudentBank/PaperList?id=' + userId,
+                type: 'GET',
+                success: function (response) {
+                    if (response.success && response.data) {
+                        var exam = response.data.find(x => x.PaperID == examId);
+                        if (exam) {
+                            $('#examTitle').fadeOut(200, function() {
+                                $(this).text(exam.PaperTitle).fadeIn(400);
+                            });
+                            $('#examDuration').text(exam.Time + 'm');
+                            $('#examQuestions').text(exam.Questions);
+                            $('#examPass').text((exam.PassPer || 50) + '%');
+                        }
+                    }
+                },
+                error: function() {
+                    $('#examTitle').text("Readiness Error: Connection Lost");
+                }
+            });
+        });
+    </script>
+}
+
+
+

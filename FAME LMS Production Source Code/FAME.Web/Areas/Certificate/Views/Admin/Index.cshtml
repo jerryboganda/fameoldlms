@@ -1,0 +1,246 @@
+@model First_Aid_Made_Easy.Models.Certificate.CertificateAdminDashboardVM
+@{
+    ViewBag.Title = "Certificate Manager";
+    Layout = "~/Views/Shared/_LayoutTeacher.cshtml";
+}
+
+<div class="container-fluid px-4 py-4">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-bold mb-1"><i class="bi bi-award me-2"></i>Certificate Manager</h3>
+            <p class="text-muted mb-0">Create, manage, and track certificates</p>
+        </div>
+        <div>
+            <a href="@Url.Action("Builder", "Admin", new { area = "Certificate" })" class="btn btn-primary">
+                <i class="bi bi-plus-lg me-1"></i> New Template
+            </a>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3 col-sm-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="rounded-circle bg-primary bg-opacity-10 p-3 me-3">
+                            <i class="bi bi-file-earmark-richtext fs-4 text-primary"></i>
+                        </div>
+                        <div>
+                            <div class="text-muted small">Templates</div>
+                            <div class="fs-4 fw-bold">@Model.TotalTemplates</div>
+                            <div class="text-success small">@Model.ActiveTemplates active</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="rounded-circle bg-success bg-opacity-10 p-3 me-3">
+                            <i class="bi bi-patch-check fs-4 text-success"></i>
+                        </div>
+                        <div>
+                            <div class="text-muted small">Issued</div>
+                            <div class="fs-4 fw-bold">@Model.TotalIssued</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="rounded-circle bg-warning bg-opacity-10 p-3 me-3">
+                            <i class="bi bi-hourglass-split fs-4 text-warning"></i>
+                        </div>
+                        <div>
+                            <div class="text-muted small">Pending Approvals</div>
+                            <div class="fs-4 fw-bold">@Model.PendingApprovals</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="rounded-circle bg-info bg-opacity-10 p-3 me-3">
+                            <i class="bi bi-qr-code-scan fs-4 text-info"></i>
+                        </div>
+                        <div>
+                            <div class="text-muted small">Verifications</div>
+                            <div class="fs-4 fw-bold">@Model.TotalVerifications</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (Model.RenderFailedCount > 0 || Model.OpenCorrectionRequests > 0)
+    {
+        <div class="alert alert-warning d-flex align-items-center mb-4">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            <div>
+                @if (Model.RenderFailedCount > 0)
+                {
+                    <span class="me-3"><strong>@Model.RenderFailedCount</strong> render failures</span>
+                }
+                @if (Model.OpenCorrectionRequests > 0)
+                {
+                    <span><strong>@Model.OpenCorrectionRequests</strong> open correction requests —
+                        <a href="@Url.Action("Corrections", "Admin", new { area = "Certificate" })">Review</a>
+                    </span>
+                }
+            </div>
+        </div>
+    }
+
+    <div class="row g-4">
+        <!-- Quick Actions -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white fw-semibold">Quick Actions</div>
+                <div class="list-group list-group-flush">
+                    <a href="@Url.Action("Builder", "Admin", new { area = "Certificate" })" class="list-group-item list-group-item-action d-flex align-items-center">
+                        <i class="bi bi-plus-circle me-3 text-primary"></i> Create Template
+                    </a>
+                    <a href="@Url.Action("Templates", "Admin", new { area = "Certificate" })" class="list-group-item list-group-item-action d-flex align-items-center">
+                        <i class="bi bi-collection me-3 text-primary"></i> Manage Templates
+                    </a>
+                    <a href="@Url.Action("Rules", "Admin", new { area = "Certificate" })" class="list-group-item list-group-item-action d-flex align-items-center">
+                        <i class="bi bi-sliders me-3 text-primary"></i> Issuance Rules
+                    </a>
+                    <a href="@Url.Action("Issues", "Admin", new { area = "Certificate" })" class="list-group-item list-group-item-action d-flex align-items-center">
+                        <i class="bi bi-list-check me-3 text-primary"></i> Issued Certificates
+                    </a>
+                    <a href="@Url.Action("Assets", "Admin", new { area = "Certificate" })" class="list-group-item list-group-item-action d-flex align-items-center">
+                        <i class="bi bi-images me-3 text-primary"></i> Assets (Logos, Signatures)
+                    </a>
+                    <a href="@Url.Action("Corrections", "Admin", new { area = "Certificate" })" class="list-group-item list-group-item-action d-flex align-items-center">
+                        <i class="bi bi-pencil-square me-3 text-primary"></i> Correction Requests
+                        @if (Model.OpenCorrectionRequests > 0)
+                        {
+                            <span class="badge bg-warning ms-auto">@Model.OpenCorrectionRequests</span>
+                        }
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Templates -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <span class="fw-semibold">Recent Templates</span>
+                    <a href="@Url.Action("Templates", "Admin", new { area = "Certificate" })" class="text-decoration-none small">View All</a>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Name</th>
+                                <th>Type</th>
+                                <th>Status</th>
+                                <th>Version</th>
+                                <th>Updated</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var t in Model.RecentTemplates)
+                            {
+                                <tr>
+                                    <td class="fw-medium">@t.Name</td>
+                                    <td><span class="badge bg-secondary">@t.Type</span></td>
+                                    <td>
+                                        @if (t.Status == "Active")
+                                        {
+                                            <span class="badge bg-success">Active</span>
+                                        }
+                                        else if (t.Status == "Draft")
+                                        {
+                                            <span class="badge bg-warning text-dark">Draft</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">@t.Status</span>
+                                        }
+                                    </td>
+                                    <td>v@(t.Version)</td>
+                                    <td class="text-muted small">@t.UpdatedAt.ToString("MMM dd, yyyy")</td>
+                                    <td>
+                                        <a href="@Url.Action("Builder", "Admin", new { area = "Certificate", id = t.Id })" class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                            @if (!Model.RecentTemplates.Any())
+                            {
+                                <tr><td colspan="6" class="text-center text-muted py-4">No templates created yet.</td></tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Recent Issues -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <span class="fw-semibold">Recent Issues</span>
+                    <a href="@Url.Action("Issues", "Admin", new { area = "Certificate" })" class="text-decoration-none small">View All</a>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Learner</th>
+                                <th>Course</th>
+                                <th>Status</th>
+                                <th>Issued</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var i in Model.RecentIssues)
+                            {
+                                <tr style="cursor:pointer" onclick="window.location='@Url.Action("IssueDetail", "Admin", new { area = "Certificate", id = i.Id })'">
+                                    <td class="fw-medium">@i.LearnerName</td>
+                                    <td>@i.CourseName</td>
+                                    <td>
+                                        @switch (i.Status)
+                                        {
+                                            case "Issued":
+                                                <span class="badge bg-success">Issued</span>
+                                                break;
+                                            case "PendingApproval":
+                                                <span class="badge bg-warning text-dark">Pending</span>
+                                                break;
+                                            case "Revoked":
+                                                <span class="badge bg-danger">Revoked</span>
+                                                break;
+                                            default:
+                                                <span class="badge bg-secondary">@i.Status</span>
+                                                break;
+                                        }
+                                    </td>
+                                    <td class="text-muted small">@(i.IssuedAt?.ToString("MMM dd, yyyy") ?? "—")</td>
+                                </tr>
+                            }
+                            @if (!Model.RecentIssues.Any())
+                            {
+                                <tr><td colspan="4" class="text-center text-muted py-4">No certificates issued yet.</td></tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

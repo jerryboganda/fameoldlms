@@ -1,0 +1,73 @@
+﻿
+@model First_Aid_Made_Easy.Models.CourseVM
+@using Microsoft.AspNet.Identity
+@using First_Aid_Made_Easy.BLL
+@{
+    ViewBag.Title = "NRE JUNE ATTEMPT";
+    ViewBag.BreadCrumb = new String[] { "Documents", "NRE JUNE ATTEMPT" };
+    Layout = "~/Views/Shared/_LayoutNew.cshtml";
+
+}
+@section styles {
+
+    <style>
+        .video-container {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            /*padding-top: 56.25%;*/ /* 16:9 Aspect Ratio */
+        }
+
+        .responsive-iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .video {
+            width: 100%;
+            height: 100%;
+        }
+
+        #vid-cont {
+            display: flex;
+            align-items: center
+        }
+
+        .fullscreen-button {
+            position: absolute;
+            top: 2%;
+            left: 90%;
+            z-index: 10;
+        }
+    </style>
+}
+
+<div class="container-xxl" id="kt_content_container">
+    <!--begin::Row-->
+    <div class="row g-5 g-xl-10 mb-5 mb-xl-10" style="height: 800px;">
+        <!--begin::Col-->
+        <div class="col-lg-12">
+        <div  style="width:100%;height:100%; position: relative;">
+            <iframe src="https://drive.google.com/file/d/1Ph2JqOsgYCEbD9553Abul7NTJjhtp1wz/preview"   style="width:100%;height:100%" frameborder="0" scrolling="no" seamless=""></iframe>
+            <div style="width: 80px; height: 80px; position: absolute; opacity: 0; right: 0px; top: 0px;">&nbsp;</div>
+        </div>
+            <!-- <iframe src="https://drive.google.com/file/d/1Ph2JqOsgYCEbD9553Abul7NTJjhtp1wz/preview" style="width:100%;height:100%" seamless="" allow="autoplay"></iframe> -->
+        </div>
+    </div>
+
+</div>
+
+@section scripts {
+    <script>
+        //     $(".divLoader").show();
+        // jQuery(window).load(function () {
+        //     $(".divLoader").hide();
+        // })
+</script>
+}

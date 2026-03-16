@@ -1,0 +1,53 @@
+﻿@model First_Aid_Made_Easy.Models.StudentVM
+@{
+	int Sr = 0;
+	var prepo = new First_Aid_Made_Easy.BLL.PackageRepository();
+}
+<table style="width:100% !important" id="DTable" class="table table-bordered">
+	<thead>
+		<tr style="background-color: #364e9c">
+			<th>Pic</th>
+			<th>Name / Email / Phone</th>
+			<th>Enrollment</th>
+			<th>Portal / ExamType </th>
+			<th>College / Job Location </th>
+			<th>Request / R.F / Status</th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var i in Model.List)
+		{
+			Sr++;
+			<tr>
+				<td> <img alt="N/A" loading="lazy" src="@Url.Content("/Images/" + i.User_Pic ?? "userLogo.jpg")" style="width:50px;height:auto" /> </td>
+				<td>
+					<a target="_blank" href="/Admin/StudentDetail/@i.User_Id">
+						@(i.User_Name) <br /> @i.Email
+					</a>
+					<br /> <a href="https://wa.me/@i.Student_Mobile" target="_blank">@i.Student_Mobile</a>
+				</td>
+				<td>
+					@First_Aid_Made_Easy.BLL.Common.FL(i.PackageName,50)
+					<br /> @prepo.getText(i.Duration).Replace("--- Rs.", "")
+					<br /> @string.Format("{0:dd/MM/yyyy}", i.Enrollment_Date) <b>@(i.Enrollment_Date !=null ?"TO" : "")</b> @string.Format("{0:dd/MM/yyyy}", i.Enrollment_EndDate)
+				</td>
+				<td>
+					@(First_Aid_Made_Easy.BLL.Common.Universities.FirstOrDefault(x => x.Value == i.Type)?.Text) <br />
+					@(i.ExamType ?? "N/A" )
+				</td>
+				<td> @i.Institute <br /> @i.JobLocation </td>
+				<td>
+					@if (i.IsAccepted)
+					{<span class="text-success">Accepted</span>}
+					else
+					{ <span class="text-danger">Pending</span>}
+					<br /><b>@string.Format("{0:dd/MM/yyyy}", i.CreateDT)</b> - Web
+					<br />@if (i.IsAccepted && i.PackageName == null)
+					{<span class="text-danger"> Expired</span> }
+					else if (i.IsAccepted && i.PackageName != null)
+					{ <span class="text-success"> Continue</span>}
+				</td>
+			</tr>
+		}
+	</tbody>
+</table>

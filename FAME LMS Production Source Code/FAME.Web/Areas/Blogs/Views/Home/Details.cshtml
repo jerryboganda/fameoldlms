@@ -1,0 +1,296 @@
+﻿@model First_Aid_Made_Easy.Models.BlogPostVM
+
+@{
+	ViewBag.Title = Model.Title;
+
+}
+<style>
+
+	.edu-breadcrumb-area .shape-group li.shape-2 {
+		top: 20px;
+		left: 11%;
+	}
+
+	.edu-breadcrumb-area {
+		padding: 45px 0 45px;
+	}
+
+	.p-30 {
+		padding: 30px
+	}
+	.edu-blog-widget.widget-latest-post .latest-post .thumbnail a img {
+		max-width: 95px;
+	}
+</style>
+
+
+<div class="edu-breadcrumb-area">
+	<div class="container">
+
+		<div class="breadcrumb-inner">
+			<div class="page-title">
+				<h1 class="title">Blog Details</h1>
+			</div>
+			<ul class="edu-breadcrumb">
+				<li class="breadcrumb-item"><a href="/">Home</a></li>
+				<li class="separator"><i class="icon-angle-right"></i></li>
+				<li class="breadcrumb-item"><a href="/blogs">Blogs</a></li>
+				<li class="separator"><i class="icon-angle-right"></i></li>
+				<li class="breadcrumb-item active" aria-current="page">Blog Details</li>
+			</ul>
+		</div>
+	</div>
+	<ul class="shape-group">
+		<li class="shape-1">
+			<span></span>
+		</li>
+		<li class="shape-2 scene" style="transform: translate3d(0px, 0px, 0px) rotate(0.0001deg); transform-style: preserve-3d; backface-visibility: hidden; pointer-events: none;"><img data-depth="2" src="~/Areas/Landing/assets/images/about/shape-13.png" alt="shape" style="transform: translate3d(10.5px, -29px, 0px); transform-style: preserve-3d; backface-visibility: hidden; position: relative; display: block; left: 0px; top: 0px;"></li>
+		<li class="shape-3 scene" style="transform: translate3d(0px, 0px, 0px) rotate(0.0001deg); transform-style: preserve-3d; backface-visibility: hidden; pointer-events: none;"><img data-depth="-2" src="~/Areas/Landing/assets/images/about/shape-15.png" alt="shape" style="transform: translate3d(-5.7px, 6.1px, 0px); transform-style: preserve-3d; backface-visibility: hidden; position: relative; display: block; left: 0px; top: 0px;"></li>
+		<li class="shape-4">
+			<span></span>
+		</li>
+		<li class="shape-5 scene" style="transform: translate3d(0px, 0px, 0px) rotate(0.0001deg); transform-style: preserve-3d; backface-visibility: hidden; pointer-events: none;"><img data-depth="2" src="~/Areas/Landing/assets/images/about/shape-07.png" alt="shape" style="transform: translate3d(6.9px, -29.8px, 0px); transform-style: preserve-3d; backface-visibility: hidden; position: relative; display: block; left: 0px; top: 0px;"></li>
+	</ul>
+</div>
+
+
+<div class="blog-details-area section-gap-equal">
+	<div class="container">
+		<div class="row row--30">
+			<div class="col-lg-8">
+				<div class="blog-details-content">
+					<div class="entry-content">
+						<span class="category">@Model.Category</span>
+						<h3 class="title">@Model.Title</h3>
+						<ul class="blog-meta">
+							<li><i class="icon-27"></i>@string.Format("{0:MMM dd, yyyy}", Model.PublishedDT)</li>
+							<li><i class="icon-28"></i>@Model.Author</li>
+						</ul>
+					</div>
+
+					@Html.Raw(Model.BlogContent)
+
+				</div>
+
+
+				<div class="blog-pagination">
+					<div class="row g-5">
+						<div class="col-lg-6">
+							<div class="blog-pagination-list prev-post">
+								<a href="#">
+									<i class="icon-west"></i>
+									<span></span>
+								</a>
+							</div>
+						</div>
+
+						<div class="col-lg-6">
+							<div class="blog-pagination-list next-post">
+								<a href="#">
+									<span></span>
+									<i class="icon-east"></i>
+								</a>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- End Comment Area  -->
+				<!--<div class="comment-form-area">
+					<h3 class="heading-title">Leave Your Comment Here</h3>
+					<form class="comment-form">
+						<div class="row g-5">
+							<div class="form-group col-lg-6">
+								<input type="text" name="comm-name" id="comm-name" placeholder="Your Name*">
+							</div>
+							<div class="form-group col-lg-6">
+								<input type="email" name="comm-email" id="comm-email" placeholder="Your Email*">
+							</div>
+							<div class="form-group col-12">
+								<textarea name="comm-message" id="comm-message" cols="30" rows="5" placeholder="Leave A Comment"></textarea>
+							</div>
+							<div class="form-group">
+								<div class="edu-form-check">
+									<input type="checkbox" id="save-info">
+									<label for="save-info">Save my name, email, and website in this browser for the next time I comment.</label>
+								</div>
+							</div>
+							<div class="form-group col-12">
+								<button type="submit" class="edu-btn submit-btn">Send Message <i class="icon-4"></i></button>
+							</div>
+						</div>
+					</form>
+				</div>-->
+
+			</div>
+			<div class="col-lg-4">
+				<div class="edu-blog-sidebar">
+					<!-- Start Single Widget  -->
+					<!--<div class="edu-blog-widget widget-search">
+						<div class="inner">
+							<h4 class="widget-title">Search</h4>
+							<div class="content">
+								<form class="blog-search" action="#">
+									<button class="search-button"><i class="icon-2"></i></button>
+									<input type="text" placeholder="Search">
+								</form>
+							</div>
+						</div>
+					</div>-->
+					<!-- End Single Widget  -->
+					<!-- Start Single Widget  -->
+					<div class="edu-blog-widget widget-latest-post">
+						<div class="inner">
+							<h4 class="widget-title">Latest Post</h4>
+							<div class="content latest-post-list">
+
+							</div>
+						</div>
+					</div>
+					<!-- End Single Widget  -->
+					<!-- Start Single Widget  -->
+					<div class="edu-blog-widget widget-categories">
+						<div class="inner">
+							<h4 class="widget-title">Categories</h4>
+							<div class="content">
+								<ul class="category-list">
+								</ul>
+							</div>
+						</div>
+					</div>
+					<!-- End Single Widget  -->
+					<!-- Start Single Widget  -->
+					<div class="edu-blog-widget widget-action">
+						<div class="inner">
+							<h4 class="title">Get Online Courses From <span>FAME</span></h4>
+							<span class="shape-line"><i class="icon-19"></i></span>
+							<a href="/Account/Register" class="edu-btn btn-medium">Start Now <i class="icon-4"></i></a>
+						</div>
+					</div>
+					<!-- End Single Widget  -->
+					<!-- Start Single Widget  -->
+					<!--<div class="edu-blog-widget widget-categories">
+						<div class="inner">
+							<h4 class="widget-title">Archives</h4>
+							<div class="content">
+								<ul class="category-list">
+									<li><a href="#">2017 Nevember <span>(3)</span></a></li>
+									<li><a href="#">2018 December <span>(7)</span></a></li>
+									<li><a href="#">2019 January<span>(2)</span></a></li>
+									<li><a href="#">2020 February <span>(1)</span></a></li>
+									<li><a href="#">2021 March <span>(3)</span></a></li>
+								</ul>
+							</div>
+						</div>
+					</div>-->
+					<!-- End Single Widget  -->
+					<!-- Start Single Widget  -->
+					<div class="edu-blog-widget widget-tags">
+						<div class="inner">
+							<h4 class="widget-title">Tags</h4>
+							<div class="content">
+								<div class="tag-list">
+									@if (Model.Tags != null)
+									{
+										foreach (var a in Model.Tags.Split(','))
+										{
+											<a href="#">@a</a>
+										}
+									}
+								</div>
+							</div>
+						</div>
+					</div>
+					<!-- End Single Widget  -->
+
+					<div class="edu-blog-widget widget-tags">
+						<div class="inner">
+							<h6 class="widget-title">Share on:</h6>
+							<div class="content">
+								<ul class="social-share icon-transparent">
+									<li>
+										<a href="#"><i class="icon-facebook"></i></a>
+									</li>
+									<li>
+										<a href="#"><i class="icon-twitter"></i></a>
+									</li>
+									<li>
+										<a href="#"><i class="icon-instagram"></i></a>
+									</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+@section scripts {
+	<script>
+		function GetMetaData() {
+			$.ajax({
+				url: '/Blogs/Home/GetBlogsMetaData/@Model.Slug',
+				type: 'GET',
+				success: function (result) {
+					// 1. Fill Latest Posts
+					let latestHtml = '';
+					result.RecentPosts.forEach(function (post) {
+						latestHtml += `
+							<div class="latest-post">
+								<div class="thumbnail">
+									<a href="/blogs/home/details/${post.Slug}">
+										<img src="/Images/${post.FeaturedImage}" alt="${post.Title}">
+									</a>
+								</div>
+								<div class="post-content">
+									<h6 class="title">
+										<a href="/blogs/home/details/${post.Slug}">${post.Title}</a>
+									</h6>
+									<ul class="blog-meta">
+										<li><i class="icon-27"></i>${formatDate(post.PublishedDate)}</li>
+									</ul>
+								</div>
+							</div>`;
+					});
+					$('.latest-post-list').html(latestHtml);
+
+					// 2. Fill Categories
+					let categoryHtml = '';
+					result.Categories.forEach(function (cat) {
+						categoryHtml += `<li><a href="/blogs/home/index?Category=${cat.Name}">${cat.Name} <span>(${cat.Count})</span></a></li>`;
+					});
+					$('.widget-categories .category-list').html(categoryHtml);
+
+					if (result.PrevBlog) {
+						$('.prev-post a').attr('href', '/blogs/home/details/' + result.PrevBlog.Slug);
+						$('.prev-post span').text(result.PrevBlog.Title);
+					} else {
+						$('.prev-post').hide();
+					}
+
+					// 2. Set Next Post
+					if (result.NextBlog) {
+						$('.next-post a').attr('href', '/blogs/home/details/' + result.NextBlog.Slug);
+						$('.next-post span').text(result.NextBlog.Title);
+					} else {
+						$('.next-post').hide(); // Hide if no next post
+					}
+				},
+				error: function () {
+					alert("Failed to load blog metadata.");
+				}
+			});
+
+			function formatDate(dateStr) {
+				if (!dateStr) return '';
+				const date = new Date(dateStr);
+				const options = { year: 'numeric', month: 'short', day: 'numeric' };
+				return date.toLocaleDateString('en-US', options);
+			}
+		}
+
+		GetMetaData();
+	</script>
+}

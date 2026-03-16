@@ -1,0 +1,185 @@
+﻿@using First_Aid_Made_Easy.BLL
+@model First_Aid_Made_Easy.Models.StudentNotifVM
+@{
+	ViewBag.Title = "ADD Notification";
+	Layout = "~/Views/Shared/_LayoutTeacher.cshtml";
+}
+
+<div class="pt-32pt">
+	<div class="container-fluid page__container d-flex flex-column flex-md-row align-items-center text-center text-sm-left">
+		<div class="flex d-flex flex-column flex-sm-row align-items-center">
+			<div class="mb-24pt mb-sm-0 mr-sm-24pt">
+				<h2 class="mb-0">Describe Notification</h2>
+				<ol class="breadcrumb p-0 m-0">
+					<li class="breadcrumb-item"><a href="/Teacher/Index">Home</a></li>
+					<li class="breadcrumb-item active">
+						Describe Notification
+					</li>
+				</ol>
+			</div>
+		</div>
+	</div>
+	<div class="page-section border-bottom-2">
+		<div class="container-fluid page__container">
+			<div class="row">
+				<div class="col-md-12">
+					<div class="page-separator">
+						<div class="page-separator__text">Basic information</div>
+					</div>
+					<form action="/Notification/Index" id="frmNotification" enctype="multipart/form-data" method="post">
+						@Html.HiddenFor(model => model.ID)
+						@Html.HiddenFor(model => model.MaessageBody)
+						@Html.HiddenFor(model => model.PackageIds)
+						@Html.HiddenFor(model => model.UniversityIds)
+						@Html.HiddenFor(model => model.SendAt)
+						<div class="row">
+							<div class="col-md-12">
+								<label class="form-label">Short Title</label>
+								<div class="form-group mb-24pt">
+									@Html.TextBoxFor(model => model.MessageTitle, new { @class = "form-control form-control-lg", @placeholder = "Short Title" })
+									<div class="text-accent-red" id="MessageTitleval"></div>
+								</div>
+							</div>
+							<div class="col-md-12">
+								<label class="form-label">Short Description</label>
+								<div class="form-group mb-24pt">
+									@Html.TextBoxFor(model => model.Description, new { @class = "form-control form-control-lg", @placeholder = "Short Title" })
+									<div class="text-accent-red" id="Descriptionval"></div>
+								</div>
+							</div>
+
+							<div class="col-12 col-md-12 mb-3">
+								<label class="form-label">Portals</label>
+								@Html.DropDownList("UniversityId", new SelectList(First_Aid_Made_Easy.BLL.Common.Universities.Where(x => x.Value > 0 && x.IsActive), "Value", "Text"), "Please Select", new { @class = "form-control select2", @multiple = true, @data_toggle = "select" })
+								<span class="text-muted">Notification will only sent to to students who belogs to these selected portals. If none selected then it will be sent to all portals.</span>
+							</div>
+							<div class="col-12 col-md-12 mb-3">
+								<label class="form-label">Packages</label>
+								@Html.DropDownList("PackageId", new SelectList(ViewBag.Packages, "PackageID", "PackageName"), "Please Select", new { @class = "form-control select2", @multiple = true, @data_toggle = "select" })
+								<span class="text-muted">Notification will only sent to to students who has active sunscription to these selected packages. If none selected then it will be sent to all packages</span>
+							</div>
+							<div class="col-4 col-md-4 mb-3">
+								<label class="form-label"> @Html.CheckBoxFor(x => x.IsActive) Is Active</label> <br />
+								<span class="text-muted">If unchecked notification will not appear anywhere.</span>
+							</div>
+							<div class="col-4 col-md-4 mb-3">
+								<label class="form-label"> @Html.CheckBoxFor(x => x.IsPush) Show on Push</label> <br />
+								<span class="text-muted">If checked pushed notification will sent to app.</span>
+							</div>
+							<div class="col-4 col-md-4 mb-3">
+								<label class="form-label"> @Html.CheckBoxFor(x => x.IsPopup) Show Popup</label> <br />
+								<span class="text-muted">If checked popup notification will appear after login.</span>
+							</div>
+
+							<div class="col-md-12 my-4">
+								<label class="form-label">Notification Body</label>
+								<textarea class="tinymce" id="tiny"></textarea>
+							</div>
+							<div class="col-md-8">
+								<label class="form-label">Image</label>
+								<div class="form-group mb-24pt">
+									@Html.TextBoxFor(model => model.ImageFile, new { @class = "form-control form-control-lg", @type = "file" })
+									<div class="text-accent-red" id="MaessageBodyval"></div>
+								</div>
+							</div>
+							<div class="col-md-4">
+								<img id="Uploaded" src="@Url.Content("~/Images/"+Model.PicturePath)" style="width:250px ; height:100%" />
+							</div>
+							<div class="col-md-4">
+								<label class="form-label">Sent Time (PAK)</label>
+								@Html.TextBox("SentTime", string.Format("{0:yyyy-MM-ddTHH:mm}", Model.SendAt ?? Common.GetCurrentDate()), new { @class = "form-control form-control-lg", @type = "datetime-local" })
+								<span class="text-muted">Notification will appear after this datetime.</span>
+							</div>
+
+						</div>
+						<div class="card">
+							<div class="card-header text-center">
+								<a href="/Notification/Index" class="btn btn-outline-accent-electric-violet"><i class="fa fa-recycle"></i>&nbsp; New</a>
+
+								@if (Model.ID > 0)
+								{
+									<button type="button" id="btnSave" data-check="true" class="btn btn-outline-success">&nbsp; Update</button>
+								}
+								else
+								{
+									<button type="button" id="btnSave" class="btn btn-outline-success">&nbsp; Save</button>
+								}
+								<a href="/Notification/List" class="btn btn-outline-accent-dodger-blue"><i class="fa fa-backward"></i>&nbsp; Back To List</a>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+@section scripts {
+	<script src="~/Scripts/tinymce/tinymce.js"></script>
+	<script src="~/Content/assets/vendor/moment.min.js"></script>
+	@if (TempData["Success"] != null)
+	{
+		<script>
+			Swal.fire({
+				position: 'top-end',
+				icon: 'success',
+				title: 'Data Saved Successfully',
+				showConfirmButton: false,
+				timer: 1500
+			})
+		</script>
+	}
+
+	<script>
+        var model = @Html.Raw(Json.Encode(Model));
+        $(document).ready(function () {
+            tinymce.init({
+                selector: 'textarea#tiny',
+                statusbar: true,
+                plugins: 'code,wordcount',
+                toolbar: "undo redo | styleselect | forecolor | bold italic | alignleft aligncenter alignright alignjustify | outdent indent | link image | removeformat",
+                force_br_newlines: true,
+                force_p_newlines: false,
+                forced_root_block: '',
+                height: 300,
+                init_instance_callback: function (editor) {
+                    editor.on('keydown', function (e) {
+                    });
+                    editor.on('paste', function (e) {
+                    });
+                }
+            });
+
+			$("#tiny").html(model.MaessageBody);
+			$("#PackageId").val(model.PackageIds?.split(",")).change();
+			$("#UniversityId").val(model.UniversityIds?.split(",")).change();
+        })
+		$(document).on("click", "#btnSave", function () {
+			$("#MaessageBody").val( tinyMCE.get('tiny').getContent());
+			$("#PackageIds").val($("#PackageId").val().join(','));
+			$("#UniversityIds").val($("#UniversityId").val().join(','));
+			$("#SendAt").val(moment($("#SentTime").val()).format("MM/DD/YYYY hh:mm:ss A"));
+            var result = ValidateForm();
+            if (result) {
+				$("#frmNotification").submit();
+            }
+		})
+
+		function ValidateForm() {
+			if (!$("#MessageTitle").val() || !$("#Description").val()) {
+				Swal.fire("Required", "Title and Description is required")
+				return false;
+			}
+				return true;
+		}
+
+        $(document).on("change", "#ImageFile", function (event) {
+           var link = URL.createObjectURL(event.target.files[0]);
+            $("#Uploaded").attr("src", link);
+        })
+
+
+	</script>
+
+}
+

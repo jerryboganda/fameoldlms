@@ -1,0 +1,70 @@
+﻿@model First_Aid_Made_Easy.Models.QuestionPaperVM
+@using First_Aid_Made_Easy.BLL
+@{
+    Layout = "~/Views/Shared/_LayoutTeacher.cshtml";
+    ViewBag.Title = " Preview Questions";
+    int Sr = 0;
+}
+<style>
+    .divValidate {
+        display: none;
+        color: red;
+    }
+</style>
+<div class="pt-32pt">
+    <div class="container-fluid page__container d-flex flex-column flex-md-row align-items-center text-center text-sm-left">
+        <div class="flex d-flex flex-column flex-sm-row align-items-center">
+            <div class="mb-24pt mb-sm-0 mr-sm-24pt">
+                <h2 class="mb-0">Preview Questions</h2>
+            </div>
+        </div>
+        <div class="ml-lg-16pt">
+            <a href="/QuestionPaper/List" class="btn btn-primary"><i class="fa fa-backward Font20"></i>Back To List </a>
+        </div>
+    </div>
+
+
+    <div class="page-section border-bottom-2">
+        <div class="container-fluid page__container">
+
+            @if (Model != null)
+            {
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <h3>Total Questions : @Model.QuestionList.Count()</h3>
+                        <div class="page-separator">
+                            <div class="page-separator__text">Questions List</div>
+                        </div>
+                    </div>
+                    @foreach (var q in Model.QuestionList)
+                    {
+                        Sr++;
+                        <div class="col-md-12 card mb-10">
+                            <div>
+                                <h4>
+                                    <span class="text-danger">@Sr - </span> @q.Question
+                                    <a class="text-warning" target="_blank" href="/Questions/Index?Type=1&id=@q.Question_Id"> <i class="fa fa-edit"></i> </a>
+                                </h4>
+                                <table class="table table-bordered">
+                                    @foreach (var o in q.Options)
+                                    {
+                                        <tr class="@(o.IsCorrect ? "text-success" : "" )"><td>  @o.OptionText</td></tr>
+                                    }
+                                </table>
+                            </div>
+                            <div>@Html.Raw(q.AnsExplain)</div>
+                        </div>
+                        <div class="page-separator">
+                            <div class="page-separator__text"></div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>
+@section scripts {
+
+}
+

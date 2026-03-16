@@ -1,0 +1,34 @@
+﻿@model First_Aid_Made_Easy.Models.ExamVM
+@using First_Aid_Made_Easy.BLL
+@{
+    int Sr = 0;
+}
+<table style="width:100% !important" id="DTable" class="table table-bordered">
+    <thead>
+        <tr style="background-color: #364e9c">
+            <th>Sr.</th>
+            <th>Pic</th>
+            <th>Title</th>
+            <th>Level</th>
+            <th>Tags</th>
+            <th style="min-width:80px">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var i in Model.List)
+        {
+            Sr++;
+            <tr>
+                <td>@Sr</td>
+                <td> <img style="width:50px;height:50px" src="@Url.Content("~/Images/"+i.Thumbnail)" /> </td>
+                <td>@i.ExamTitle</td>
+                <td>@Common.DifficultyS(i.DifficultyLevel ?? 0)</td>
+                <td>@i.Tags</td>
+                <td>
+                    <a href="/Exam/Index/@i.ExamID" vlaue="" class="text-warning"><i class="fa fa-edit Font20"></i></a>
+                    <a href="javascript:;" id="btnRowDelete" data-name="Question Exam" data-url="/Exam/Delete/@i.ExamID" class="text-danger"><i class="fa fa-trash Font20"></i></a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

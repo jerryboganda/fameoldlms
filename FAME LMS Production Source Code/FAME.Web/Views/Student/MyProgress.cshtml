@@ -1,0 +1,120 @@
+@model List<First_Aid_Made_Easy.DAL.sp_lstVideos_Result>
+@{
+    ViewBag.Title = "My Progress";
+    Layout = "~/Views/Shared/_LayoutStudent2026.cshtml";
+
+    // Grouping data for the view
+    var byCourse = Model.GroupBy(x => x.Course_Name).ToList();
+    var totalVideos = Model.Count();
+    var completedVideos = Model.Count(x => x.isCompleted == true); // Assuming 1 is true
+    var completionRate = totalVideos > 0 ? (int)((double)completedVideos / totalVideos * 100) : 0;
+}
+
+<div class="anim-enter delay-100">
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div>
+            <p class="text-muted">Track your performance and course completion</p>
+        </div>
+        
+        <!-- Global Stat -->
+        <div class="d-none d-md-flex align-items-center gap-4">
+             <div class="text-end">
+                 <div class="h3 mb-0 text-primary fw-bold">@completionRate%</div>
+                 <div class="small text-muted">Overall Completion</div>
+             </div>
+             <div style="width: 50px; height: 50px;">
+                 <svg viewBox="0 0 36 36" class="circular-chart text-primary">
+                      <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                      <path class="circle" stroke-dasharray="@completionRate, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                 </svg>
+             </div>
+        </div>
+    </div>
+
+    @if (Model.Any())
+    {
+        <div class="row g-4">
+            @foreach (var group in byCourse)
+            {
+                var cTotal = group.Count();
+                var cCompleted = group.Where(x => x.isCompleted == true).Count();
+                var cRate = cTotal > 0 ? (int)((double)cCompleted / cTotal * 100) : 0;
+
+                <div class="col-12">
+                     <div class="fame-card p-4">
+                         <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between mb-3">
+                             <div class="mb-3 mb-md-0">
+                                 <h4 class="mb-1">@group.Key</h4>
+                                 <div class="d-flex align-items-center gap-3 text-muted small">
+                                     <span><i data-feather="video" style="width: 14px;"></i> @cCompleted / @cTotal Videos</span>
+                                     <!-- <span><i data-feather="clock" style="width: 14px;"></i> 12h 40m Spent</span> (Calculated later) -->
+                                 </div>
+                             </div>
+                             
+                             <div style="min-width: 200px;">
+                                 <div class="d-flex align-items-center justify-content-between mb-1">
+                                     <small class="fw-bold text-primary">@cRate% Complete</small>
+                                     <small class="text-muted">Target: 100%</small>
+                                 </div>
+                                 <div class="progress" style="height: 8px;">
+                                     <div class="progress-bar bg-grad-success" role="progressbar" style="width: @cRate%" aria-valuenow="@cRate" aria-valuemin="0" aria-valuemax="100"></div>
+                                 </div>
+                             </div>
+                         </div>
+                         
+                         <!-- Detail Accordion Trigger (Optional) -->
+                         <button class="btn btn-sm btn-light w-100 mt-2" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-@group.Key.GetHashCode()">
+                             View Topic Breakdown <i data-feather="chevron-down" style="width: 16px;"></i>
+                         </button>
+
+                         <div class="collapse mt-3" id="collapse-@group.Key.GetHashCode()">
+                             <div class="table-responsive">
+                                 <table class="table table-sm table-borderless">
+                                     <thead class="text-muted small border-bottom">
+                                         <tr>
+                                             <th>Topic</th>
+                                             <th class="text-end">Status</th>
+                                         </tr>
+                                     </thead>
+                                     <tbody>
+                                         @foreach(var vid in group.Take(10)) // Limit display
+                                         {
+                                             <tr>
+                                                 <td><i data-feather="play-circle" style="width: 14px; color: #cbd5e1;"></i> @vid.Video_Name</td>
+                                                 <td class="text-end">
+                                                     @if(vid.isCompleted == true) {
+                                                         <span class="badge bg-success-subtle text-success">Watched</span>
+                                                     } else {
+                                                          <span class="badge bg-light text-muted">Pending</span>
+                                                     }
+                                                 </td>
+                                             </tr>
+                                         }
+                                         @if(group.Count() > 10) { <tr><td colspan="2" class="text-center small text-muted">And @(group.Count() - 10) more videos...</td></tr> }
+                                     </tbody>
+                                 </table>
+                             </div>
+                         </div>
+                     </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+         <div class="fame-card text-center py-5">
+            <div class="mb-3">
+                 <i data-feather="bar-chart-2" class="text-muted" style="width: 48px; height: 48px;"></i>
+            </div>
+            <h5>No Progress Recorded</h5>
+            <p class="text-muted">Start watching videos to track your stats.</p>
+        </div>
+    }
+</div>
+
+<style>
+    .circular-chart { display: block; margin: 0 auto; max-width: 80%; max-height: 250px; }
+    .circle-bg { fill: none; stroke: #eee; stroke-width: 3.8; }
+    .circle { fill: none; stroke-width: 2.8; stroke-linecap: round; animation: progress 1s ease-out forwards; stroke: var(--fame-primary); }
+    @@keyframes progress { 0% { stroke-dasharray: 0 100; } }
+</style>

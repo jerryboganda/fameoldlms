@@ -1,0 +1,118 @@
+@model First_Aid_Made_Easy.Models.DripCampaignListVM
+@{
+    ViewBag.Title = "Drip Campaigns (Automations)";
+    Layout = "~/Views/Shared/_LayoutTeacher.cshtml";
+}
+
+<div class="pt-32pt">
+    <div class="container-fluid page__container">
+        <div class="d-flex align-items-center mb-24pt">
+            <div class="flex">
+                <h2 class="mb-0">Drip Campaigns</h2>
+                <ol class="breadcrumb p-0 m-0">
+                    <li class="breadcrumb-item"><a href="/Communication/Index">Email Marketing</a></li>
+                    <li class="breadcrumb-item active">Automations</li>
+                </ol>
+            </div>
+            <a href="/Communication/DripEditor" class="btn btn-primary">
+                <i class="material-icons mr-1" style="vertical-align:middle;font-size:18px;">add</i> New Drip Campaign
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="page-section">
+    <div class="container-fluid page__container">
+        @if (Model.Drips.Any())
+        {
+            <div class="card">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Trigger</th>
+                                <th>Steps</th>
+                                <th>Enrolled</th>
+                                <th>Sent</th>
+                                <th>Status</th>
+                                <th>Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var d in Model.Drips)
+                            {
+                                <tr>
+                                    <td><strong><a href="/Communication/DripEditor?id=@d.Id">@d.DripName</a></strong></td>
+                                    <td><span class="badge badge-light">@d.TriggerType</span></td>
+                                    <td>@d.StepCount</td>
+                                    <td>@d.EnrolledCount.ToString("N0")</td>
+                                    <td>@d.TotalSent.ToString("N0")</td>
+                                    <td>
+                                        @if (d.IsActive)
+                                        {
+                                            <span class="badge badge-success">Active</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge badge-secondary">Paused</span>
+                                        }
+                                    </td>
+                                    <td>@d.CreatedAt.ToString("MMM dd, yyyy")</td>
+                                    <td>
+                                        <a href="/Communication/DripEditor?id=@d.Id" class="btn btn-sm btn-outline-info" title="Edit">
+                                            <i class="material-icons" style="vertical-align:middle;font-size:16px;">edit</i>
+                                        </a>
+                                        <button class="btn btn-sm @(d.IsActive ? "btn-outline-warning" : "btn-outline-success") btn-toggle-drip" data-id="@d.Id" title="@(d.IsActive ? "Pause" : "Activate")">
+                                            <i class="material-icons" style="vertical-align:middle;font-size:16px;">@(d.IsActive ? "pause" : "play_arrow")</i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger btn-delete-drip" data-id="@d.Id" title="Delete">
+                                            <i class="material-icons" style="vertical-align:middle;font-size:16px;">delete</i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <i class="material-icons" style="font-size:64px;color:#ccc;">autorenew</i>
+                <h4 class="text-muted mt-3">No Drip Campaigns</h4>
+                <p class="text-muted">Create automated email sequences that trigger based on user actions.</p>
+                <a href="/Communication/DripEditor" class="btn btn-primary">Create Drip Campaign</a>
+            </div>
+        }
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        $(".btn-toggle-drip").on("click", function () {
+            var id = $(this).data("id");
+            $.post('/Communication/ToggleDrip', { id: id }, function (res) {
+                if (res.success) location.reload();
+                else Swal.fire('Error', 'Failed to update.', 'error');
+            });
+        });
+
+        $(".btn-delete-drip").on("click", function () {
+            var id = $(this).data("id");
+            Swal.fire({
+                title: 'Delete Drip Campaign?', text: 'All steps and queued emails will be removed.', icon: 'warning',
+                showCancelButton: true, confirmButtonColor: '#d33', confirmButtonText: 'Delete'
+            }).then(function (result) {
+                if (result.isConfirmed) {
+                    $.post('/Communication/DeleteDrip', { id: id }, function (res) {
+                        if (res.success) location.reload();
+                        else Swal.fire('Error', res.message || 'Failed to delete.', 'error');
+                    });
+                }
+            });
+        });
+    </script>
+}

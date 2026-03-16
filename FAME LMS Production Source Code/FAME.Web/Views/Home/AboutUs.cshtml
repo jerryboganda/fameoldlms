@@ -1,0 +1,146 @@
+﻿@{
+    ViewBag.Title = "About Us";
+}
+
+
+<div class="page-section bg-alt border-bottom-2">
+    <div class="container page__container">
+
+        <div class="d-flex flex-column flex-lg-row align-items-center">
+            <div class="d-flex flex-column flex-md-row align-items-center align-items-md-start flex mb-16pt mb-lg-0 text-center text-md-left">
+                <div class="flex">
+                    <h1 class="h2 measure-lead-max mb-16pt">About Us</h1>
+                </div>
+            </div>
+            <div class="ml-lg-16pt">
+                <a href="/Home/Courses" class="btn btn-light">Get Started</a>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="page-section">
+
+
+    <div class="container page__container">
+
+        <div class="row">
+            <div class="col-lg-8">
+
+                <div class="d-flex flex-column flex-md-row align-items-md-center mb-16pt">
+                    <div class="mb-16pt mb-md-0 mr-md-16pt">
+                        <div class="rounded p-relative o-hidden overlay overlay--primary">
+                            <img style="width:250px;height:200px" class="img-fluid rounded" src="~/Content/assets/images/FAME/docsab.jpg" alt="image">
+                            <div class="overlay__content"></div>
+                        </div>
+                    </div>
+                    <div class="flex">
+                        <p class="lead measure-paragraph-max">
+                            <strong> "It is impossible for a man to learn what he thinks he already knows."</strong>
+                            <br />
+                            FIRST AID MADE EASY is the best platform for students to prepare for USMLE | PLAB | NEET | FCPS  | MD | MS
+                            in an easy and a comprehensive way
+                        </p>
+                    </div>
+                </div>
+
+                <blockquote class="blockquote blockquote--reverse pl-0">
+                    <p class="text-50">
+                        The very foundation of this platform was laid by Dr Hafiz Atif with a keen vision
+                        of enabling many young students the chance of striving for the best and to raise their standards of learning
+                        according toe the latest modern methods of learning that are available in the world of medicine  FIRST AID MADE EASY
+                        is an online E-Learning platform that enables medical students from around the world to groom their medical
+                        knowledge so that they may succeed in their professions .
+                    </p>
+                    <footer class="blockquote-footer">
+                        <cite title="Source Title">
+                            Learn at Your Own Pace
+                        </cite>
+                    </footer>
+                </blockquote>
+
+                <p class="text-50 measure-paragraph-max mb-24pt">
+                    Our fully integrated Online E-Learning platform allows students to
+                    prepare for the related courses with full easy and flexibility.
+                </p>
+
+                <h4>DR HAFIZ ATIF</h4>
+
+                <div class="d-flex flex-column flex-md-row mb-32pt">
+                    <div class="flex mb-16pt mb-md-0 mr-md-16pt">
+                        <p class="lead text-70 measure-paragraph-max">
+                            I would like to advice my students to work hard in order to achieve success in
+                            their progressing medical careers. And participating in first aid made easy is like paving a way towards a successful career ahead !
+                        </p>
+
+                        <blockquote class="blockquote">
+                            <p class="text-50">
+                                I would like to advice my students to work hard in order to achieve success
+                                in their progressing medical careers. And participating in first aid made easy is like paving a
+                                way towards a successful career ahead !
+                            </p>
+                            <footer class="blockquote-footer">
+                                <cite title="Source Title">C.E.O – FIRST AID MADE EASY PLATFORM</cite>
+                            </footer>
+                        </blockquote>
+                    </div>
+                    <div>
+                        <div class="rounded p-relative o-hidden overlay overlay--primary">
+                            <img style="width:250px;height:200px" class="img-fluid rounded" src="~/Content/assets/images/FAME/Hfizsab.png" alt="image">
+                            <div class="overlay__content"></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-lg-4">
+                <div class="d-flex flex-column flex-md-row align-items-center align-items-md-start flex mb-16pt mb-lg-0 text-center text-md-left">
+                    <div class="flex">
+                        <h1 class="h2 measure-lead-max mb-16pt">Get In Touch</h1>
+                        <p>So what are you waiting for. GRAB the subscription to the courses and start paving your way to the future !</p>
+                        <div class="m-2 d-flex align-items-center">
+                            <i class="text-primary-red material-icons icon--left">location_on</i>
+                            <div class="mr-16pt">
+                                <a href="#" class="card-title">
+                                    Lahore , Pakistan
+                                </a>
+                            </div>
+                        </div>
+                        <div class="m-2 d-flex align-items-center">
+                            <i class="text-primary-yellow material-icons icon--left">email</i>
+                            <div class="mr-16pt">
+                                <a href="#" class="card-title">
+                                    info@firstaidmadeeasy.com.pk
+                                </a>
+                            </div>
+                        </div>
+                        <div class="m-2 d-flex align-items-center">
+                            <i style="color:green" class="material-icons icon--left">call</i>
+                            <div class="mr-16pt">
+                                <a href="#" class="card-title">
+                                    +92 300 7131730
+                                </a>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+@section scripts {
+
+    @*@Scripts.Render("~/Scripts/List")*@
+    <script>
+        $(document).ready(function () {
+            $(".accordion__toggle").trigger("click");
+        })
+
+    </script>
+}

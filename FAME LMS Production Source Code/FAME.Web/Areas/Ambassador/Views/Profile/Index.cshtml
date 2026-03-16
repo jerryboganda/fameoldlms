@@ -1,0 +1,244 @@
+@model First_Aid_Made_Easy.Models.AmbassadorProfileVM
+@{
+    ViewBag.Title = "Ambassador Profile";
+    Layout = "~/Views/Shared/_LayoutAmbassador.cshtml";
+}
+
+<div class="container-fluid py-4">
+    <div class="row">
+        <!-- Profile Card -->
+        <div class="col-lg-4">
+            <div class="card mb-4">
+                <div class="card-body text-center">
+                    <!-- Avatar -->
+                    <div class="avatar-circle bg-primary text-white mx-auto mb-3">
+                        <span class="avatar-initials">@Model.Initials</span>
+                    </div>
+                    <h5 class="mb-1">@Model.FullName</h5>
+                    <p class="text-muted mb-2">@Model.Email</p>
+                    
+                    <!-- Status Badge -->
+                    <span class="badge @Model.StatusBadgeClass badge-lg mb-3">@Model.Status</span>
+
+                    <!-- Tier Badge -->
+                    @if (!string.IsNullOrEmpty(Model.Tier))
+                    {
+                        <div class="mb-3">
+                            <span class="badge badge-pill @Model.TierBadgeClass">
+                                <i class="material-icons align-middle mr-1" style="font-size: 0.875rem;">@Model.TierIcon</i>
+                                @Model.Tier Ambassador
+                            </span>
+                        </div>
+                    }
+
+                    <hr>
+
+                    <!-- Quick Stats -->
+                    <div class="row text-center">
+                        <div class="col-4">
+                            <h5 class="mb-0 font-weight-bold">@Model.TotalReferrals</h5>
+                            <small class="text-muted">Referrals</small>
+                        </div>
+                        <div class="col-4">
+                            <h5 class="mb-0 font-weight-bold text-success">@Model.Currency @Model.TotalEarnings.ToString("N0")</h5>
+                            <small class="text-muted">Earned</small>
+                        </div>
+                        <div class="col-4">
+                            <h5 class="mb-0 font-weight-bold text-primary">@Model.ConversionRate.ToString("0.0")%</h5>
+                            <small class="text-muted">Rate</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Referral Link -->
+            <div class="card mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="material-icons align-middle mr-1">link</i>
+                        Your Referral Link
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="input-group mb-2">
+                        <input type="text" class="form-control form-control-sm" id="referralLink" 
+                               value="@Model.ReferralLink" readonly>
+                        <div class="input-group-append">
+                            <button class="btn btn-primary btn-sm" onclick="copyLink()">
+                                <i class="material-icons align-middle" style="font-size: 1rem;">content_copy</i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <strong class="text-primary">@Model.ReferralCode</strong>
+                        <br>
+                        <small class="text-muted">Your referral code</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Member Since -->
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <i class="material-icons text-muted mr-3">calendar_today</i>
+                        <div>
+                            <small class="text-muted">Member since</small>
+                            <br>
+                            <span>@Model.JoinedAt.ToString("MMMM dd, yyyy")</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Details Section -->
+        <div class="col-lg-8">
+            <!-- Personal Information -->
+            <div class="card mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="material-icons align-middle mr-1">person</i>
+                        Personal Information
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="text-muted small">Full Name</label>
+                            <p class="mb-0 font-weight-medium">@Model.FullName</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="text-muted small">Email Address</label>
+                            <p class="mb-0">@Model.Email</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="text-muted small">Phone Number</label>
+                            <p class="mb-0">@(Model.PhoneNumber ?? "-")</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="text-muted small">Institution</label>
+                            <p class="mb-0">@(Model.Institution ?? "-")</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Application Details -->
+            <div class="card mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="material-icons align-middle mr-1">description</i>
+                        Application Details
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="text-muted small">How will you promote?</label>
+                            <p class="mb-0">@(Model.PromotionMethod ?? "-")</p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="text-muted small">Expected Reach</label>
+                            <p class="mb-0">@(Model.ExpectedReach ?? "-")</p>
+                        </div>
+                    </div>
+                    @if (!string.IsNullOrEmpty(Model.WhyAmbassador))
+                    {
+                        <div>
+                            <label class="text-muted small">Why did you want to become an ambassador?</label>
+                            <p class="mb-0">@Model.WhyAmbassador</p>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Social Links -->
+            @if (Model.SocialLinks != null && Model.SocialLinks.Count > 0)
+            {
+                <div class="card mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">
+                            <i class="material-icons align-middle mr-1">share</i>
+                            Social Media Links
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            @foreach (var link in Model.SocialLinks)
+                            {
+                                <div class="col-md-6 mb-2">
+                                    <div class="d-flex align-items-center">
+                                        <i class="material-icons text-muted mr-2">link</i>
+                                        <a href="@link.Value" target="_blank" class="text-truncate">@link.Key: @link.Value</a>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <!-- Commission Rate -->
+            <div class="card">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="material-icons align-middle mr-1">percent</i>
+                        Your Commission Rates
+                    </h6>
+                </div>
+                <div class="card-body">
+                    @if (Model.CommissionRates != null && Model.CommissionRates.Count > 0)
+                    {
+                        <div class="row">
+                            @foreach (var rate in Model.CommissionRates)
+                            {
+                                <div class="col-md-4 mb-3">
+                                    <div class="border rounded p-3 text-center h-100">
+                                        <h4 class="text-success mb-1">@rate.RateDisplay</h4>
+                                        <small class="text-muted">@rate.Description</small>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted mb-0">No commission rates configured. Contact support for details.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function copyLink() {
+            var copyText = document.getElementById("referralLink");
+            copyText.select();
+            copyText.setSelectionRange(0, 99999);
+            document.execCommand("copy");
+            toastr.success('Referral link copied to clipboard!');
+        }
+    </script>
+}
+
+<style>
+    .avatar-circle {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+    }
+    .avatar-initials {
+        font-weight: bold;
+    }
+    .badge-lg {
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+    }
+</style>

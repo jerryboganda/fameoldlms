@@ -1,0 +1,236 @@
+@model First_Aid_Made_Easy.Models.RequestPayoutVM
+@{
+    ViewBag.Title = "Request Payout";
+    Layout = "~/Views/Shared/_LayoutAmbassador.cshtml";
+}
+
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <!-- Page Header -->
+            <div class="mb-4">
+                <a href="@Url.Action("Index")" class="text-muted">
+                    <i class="material-icons align-middle">arrow_back</i>
+                    Back to Payouts
+                </a>
+                <h4 class="mt-2 mb-0">Request Payout</h4>
+                <p class="text-muted">Withdraw your available earnings</p>
+            </div>
+
+            @if (ViewBag.Error != null)
+            {
+                <div class="alert alert-danger">
+                    <i class="material-icons align-middle mr-1">error</i>
+                    @ViewBag.Error
+                </div>
+            }
+
+            <!-- Balance Card -->
+            <div class="card bg-gradient-success text-white mb-4">
+                <div class="card-body text-center py-4">
+                    <p class="text-white-50 mb-1">Available Balance</p>
+                    <h2 class="font-weight-bold mb-0">@Model.Currency @Model.AvailableBalance.ToString("N0")</h2>
+                    <small class="text-white-50">Min. payout: @Model.Currency @Model.MinPayoutAmount.ToString("N0")</small>
+                </div>
+            </div>
+
+            <!-- Request Form -->
+            <div class="card">
+                <div class="card-body">
+                    <form action="@Url.Action("Request")" method="post" id="payoutForm">
+                        @Html.AntiForgeryToken()
+
+                        <!-- Amount -->
+                        <div class="form-group">
+                            <label class="font-weight-medium">Amount to Withdraw <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">@Model.Currency</span>
+                                </div>
+                                <input type="number" name="Amount" id="amount" class="form-control form-control-lg"
+                                       min="@Model.MinPayoutAmount" max="@Model.AvailableBalance" step="1"
+                                       value="@Model.AvailableBalance" required>
+                                <div class="input-group-append">
+                                    <button type="button" class="btn btn-outline-secondary" onclick="setMaxAmount()">Max</button>
+                                </div>
+                            </div>
+                            <small class="text-muted">
+                                Available: @Model.Currency @Model.AvailableBalance.ToString("N0")
+                            </small>
+                        </div>
+
+                        <!-- Payout Method -->
+                        <div class="form-group">
+                            <label class="font-weight-medium">Payout Method <span class="text-danger">*</span></label>
+                            @if (Model.PayoutMethods != null && Model.PayoutMethods.Count > 0)
+                            {
+                                <div class="payout-methods">
+                                    @foreach (var method in Model.PayoutMethods)
+                                    {
+                                        <div class="form-check payout-method-option p-3 mb-2 border rounded @(method.IsDefault ? "border-primary" : "")">
+                                            <input class="form-check-input" type="radio" name="PayoutMethodId" 
+                                                   id="method_@method.Id" value="@method.Id" @(method.IsDefault ? "checked" : "") required>
+                                            <label class="form-check-label w-100" for="method_@method.Id">
+                                                <div class="d-flex align-items-center">
+                                                    <i class="material-icons mr-2 text-muted">@method.MethodIcon</i>
+                                                    <div>
+                                                        <strong>@method.MethodTypeDisplay</strong>
+                                                        @if (method.IsDefault)
+                                                        {
+                                                            <span class="badge badge-primary badge-sm ml-1">Default</span>
+                                                        }
+                                                        <br>
+                                                        <small class="text-muted">@method.AccountHolderName • @method.MaskedAccountNumber</small>
+                                                    </div>
+                                                </div>
+                                            </label>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="alert alert-warning">
+                                    <i class="material-icons align-middle mr-1">warning</i>
+                                    No payout methods configured.
+                                    <a href="@Url.Action("Methods")">Add a payout method</a> first.
+                                </div>
+                            }
+                        </div>
+
+                        <!-- Notes (optional) -->
+                        <div class="form-group">
+                            <label class="font-weight-medium">Notes (Optional)</label>
+                            <textarea name="Notes" class="form-control" rows="2" 
+                                      placeholder="Any special instructions..."></textarea>
+                        </div>
+
+                        <!-- Summary -->
+                        <div class="bg-light rounded p-3 mb-4">
+                            <h6 class="font-weight-bold mb-3">Payout Summary</h6>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Amount Requested:</span>
+                                <span id="summaryAmount" class="font-weight-medium">@Model.Currency @Model.AvailableBalance.ToString("N0")</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Processing Fee:</span>
+                                <span class="text-success">@Model.Currency 0</span>
+                            </div>
+                            <hr class="my-2">
+                            <div class="d-flex justify-content-between">
+                                <strong>You Will Receive:</strong>
+                                <strong id="summaryTotal" class="text-success">@Model.Currency @Model.AvailableBalance.ToString("N0")</strong>
+                            </div>
+                        </div>
+
+                        <!-- Terms -->
+                        <div class="form-group">
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input" id="agreeTerms" required>
+                                <label class="custom-control-label" for="agreeTerms">
+                                    I confirm the account details are correct and understand that payouts may take 1-3 business days.
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Submit -->
+                        <button type="submit" class="btn btn-success btn-lg btn-block" 
+                                id="submitBtn" @(Model.PayoutMethods == null || Model.PayoutMethods.Count == 0 ? "disabled" : "")>
+                            <i class="material-icons align-middle mr-1">payments</i>
+                            Request Payout
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Processing Info -->
+            <div class="card mt-4">
+                <div class="card-body">
+                    <h6 class="font-weight-bold mb-3">
+                        <i class="material-icons align-middle mr-1 text-info">schedule</i>
+                        Processing Times
+                    </h6>
+                    <div class="row small text-muted">
+                        <div class="col-6">
+                            <strong>Bank Transfer</strong>
+                            <p class="mb-0">1-3 business days</p>
+                        </div>
+                        <div class="col-6">
+                            <strong>Mobile Money</strong>
+                            <p class="mb-0">Usually instant</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        var currency = '@Model.Currency';
+        var maxAmount = @Model.AvailableBalance;
+
+        function setMaxAmount() {
+            $('#amount').val(maxAmount);
+            updateSummary();
+        }
+
+        function updateSummary() {
+            var amount = parseFloat($('#amount').val()) || 0;
+            $('#summaryAmount').text(currency + ' ' + amount.toLocaleString());
+            $('#summaryTotal').text(currency + ' ' + amount.toLocaleString());
+        }
+
+        $(document).ready(function () {
+            $('#amount').on('input change', updateSummary);
+
+            $('#payoutForm').submit(function (e) {
+                var amount = parseFloat($('#amount').val());
+                var min = @Model.MinPayoutAmount;
+
+                if (amount < min) {
+                    e.preventDefault();
+                    toastr.warning('Minimum payout amount is ' + currency + ' ' + min.toLocaleString());
+                    return false;
+                }
+
+                if (amount > maxAmount) {
+                    e.preventDefault();
+                    toastr.warning('Amount exceeds available balance.');
+                    return false;
+                }
+
+                if (!$('#agreeTerms').is(':checked')) {
+                    e.preventDefault();
+                    toastr.warning('Please confirm the terms.');
+                    return false;
+                }
+
+                if (!$('input[name="PayoutMethodId"]:checked').val()) {
+                    e.preventDefault();
+                    toastr.warning('Please select a payout method.');
+                    return false;
+                }
+
+                $('#submitBtn').prop('disabled', true).html('<span class="spinner-border spinner-border-sm mr-1"></span> Processing...');
+            });
+        });
+    </script>
+}
+
+<style>
+    .bg-gradient-success {
+        background: linear-gradient(135deg, #1cc88a 0%, #13855c 100%);
+    }
+    .payout-method-option {
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .payout-method-option:hover {
+        background-color: #f8f9fc;
+    }
+    .payout-method-option input:checked + label {
+        color: #4e73df;
+    }
+</style>

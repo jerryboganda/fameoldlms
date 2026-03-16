@@ -1,0 +1,40 @@
+
+
+@model First_Aid_Made_Easy.Models.DailyReportVM
+
+
+<table class="table table-hover text-nowrap">
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Body</th>
+            <th>Created Date</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+
+
+        @if (Model.List != null && Model.List.Any())
+        {
+            foreach (var item in Model.List)
+            {
+                <tr>
+                    <td>@(item.Date)</td>
+                    <td>@item.Body</td>
+                    <td>@(string.Format("{0:yyyy-MM-dd hh:mm tt}",item.CreatedDT))</td>
+                    <td>
+                        @Html.ActionLink("Edit", "Index", new { id = item.ID }, new { @class = "btn btn-warning btn-sm" })
+                        <button class="btn btn-danger btn-sm" onclick="deleteItem(@item.ID)">Delete</button>
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="4" class="text-center">No records found</td>
+            </tr>
+        }
+    </tbody>
+</table>

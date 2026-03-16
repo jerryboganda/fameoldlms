@@ -1,0 +1,45 @@
+﻿@using Microsoft.AspNet.Identity
+@using First_Aid_Made_Easy.BLL
+@if (Request.IsAuthenticated)
+{
+    using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
+    {
+        @Html.AntiForgeryToken()
+        <ul class="nav navbar-nav navbar-right">
+            <li>
+                <a href="/Student/Index" class="dropdown-item">Dashboard</a>
+            </li>
+            @if (User.IsInRole("Teacher"))
+            {
+                <li>
+                    <a href="/Teacher/Index" class="dropdown-item">Teacher</a>
+                </li>
+            }
+            @if (User.IsInRole("Admin"))
+            {
+                <li>
+                    <a href="/Admin/Index" class="dropdown-item">Admin</a>
+                </li>
+            }
+            @if (User.IsInRole("Assistant"))
+            {
+                <li>
+                    <a href="/Teacher/AssistantIndex" class="dropdown-item">Assistant</a>
+                </li>
+            }
+            <li>
+                <a href="/Profile/MyProfile" class="dropdown-item">@Common.GetUserNameByASpUserID(User.Identity.GetUserId()).User_Name</a>
+            </li>
+            <li>
+                <a class="dropdown-item" id="btnLogout" href="javascript:document.getElementById('logoutForm').submit()">Log off</a>
+            </li>
+        </ul>
+    }
+}
+else
+{
+    <ul class="nav navbar-nav navbar-right">
+        <li>@Html.ActionLink("Register", "Register", "Account", routeValues: null, htmlAttributes: new { id = "registerLink", @class = "dropdown-item" })</li>
+        <li>@Html.ActionLink("Log in", "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink", @class = "dropdown-item" })</li>
+    </ul>
+}

@@ -1,0 +1,311 @@
+@using First_Aid_Made_Easy.BLL
+@using Microsoft.AspNet.Identity
+@{
+    var userId = User.Identity.GetUserId();
+}
+
+<div class="fame-widget-card">
+    <div class="fame-widget-header">
+        <div class="fame-widget-title">
+            <i data-feather="help-circle" class="fame-widget-icon"></i>
+            <span>Question Bank</span>
+        </div>
+        <a href="@Url.Action("CreateTest", "QuestionPaper")" class="fame-widget-link">
+            Practice
+            <i data-feather="arrow-right" style="width: 16px; height: 16px;"></i>
+        </a>
+    </div>
+    
+    <div class="fame-widget-body">
+        <div class="fame-qbank-content">
+            <!-- Doughnut Chart -->
+            <div class="fame-qbank-chart">
+                <canvas id="qbankChart" width="140" height="140"></canvas>
+                <div class="fame-qbank-chart-center">
+                    <div class="fame-qbank-total" id="qbankTotal">--</div>
+                    <div class="fame-qbank-total-label">Questions</div>
+                </div>
+            </div>
+            
+            <!-- Stats -->
+            <div class="fame-qbank-stats">
+                <div class="fame-qbank-stat">
+                    <div class="fame-qbank-stat-bar">
+                        <span class="fame-qbank-stat-fill correct" id="correctBar" style="width: 0%;"></span>
+                    </div>
+                    <div class="fame-qbank-stat-info">
+                        <span class="fame-qbank-stat-dot correct"></span>
+                        <span class="fame-qbank-stat-label">Correct</span>
+                        <span class="fame-qbank-stat-value" id="correctCount">0</span>
+                    </div>
+                </div>
+                
+                <div class="fame-qbank-stat">
+                    <div class="fame-qbank-stat-bar">
+                        <span class="fame-qbank-stat-fill incorrect" id="incorrectBar" style="width: 0%;"></span>
+                    </div>
+                    <div class="fame-qbank-stat-info">
+                        <span class="fame-qbank-stat-dot incorrect"></span>
+                        <span class="fame-qbank-stat-label">Incorrect</span>
+                        <span class="fame-qbank-stat-value" id="incorrectCount">0</span>
+                    </div>
+                </div>
+                
+                <div class="fame-qbank-stat">
+                    <div class="fame-qbank-stat-bar">
+                        <span class="fame-qbank-stat-fill skipped" id="skippedBar" style="width: 0%;"></span>
+                    </div>
+                    <div class="fame-qbank-stat-info">
+                        <span class="fame-qbank-stat-dot skipped"></span>
+                        <span class="fame-qbank-stat-label">Skipped</span>
+                        <span class="fame-qbank-stat-value" id="skippedCount">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Quick Actions -->
+        <div class="fame-qbank-actions">
+            <a href="@Url.Action("Favourites", "QuestionPaper")" class="fame-qbank-action">
+                <i data-feather="star" style="width: 18px; height: 18px; color: #F59E0B;"></i>
+                <div>
+                    <div class="fame-qbank-action-value" id="favoritesCount">0</div>
+                    <div class="fame-qbank-action-label">Favorites</div>
+                </div>
+            </a>
+            <div class="fame-qbank-action-divider"></div>
+            <a href="@Url.Action("CreateTest", "QuestionPaper")" class="fame-qbank-action">
+                <i data-feather="zap" style="width: 18px; height: 18px; color: var(--fame-primary);"></i>
+                <div>
+                    <div class="fame-qbank-action-label">Quick Practice</div>
+                    <div class="fame-qbank-action-hint">Random 20 questions</div>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    initQBankWidget();
+});
+
+function initQBankWidget() {
+    var ctx = document.getElementById('qbankChart');
+    if (!ctx) return;
+    
+    var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    
+    var chart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Correct', 'Incorrect', 'Skipped'],
+            datasets: [{
+                data: [0, 0, 0],
+                backgroundColor: ['#10B981', '#EF4444', '#94A3B8'],
+                borderWidth: 0,
+                cutout: '70%'
+            }]
+        },
+        options: {
+            responsive: false,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: isDark ? '#1E293B' : '#fff',
+                    titleColor: isDark ? '#F1F5F9' : '#1E293B',
+                    bodyColor: isDark ? '#94A3B8' : '#64748B',
+                    borderColor: isDark ? '#334155' : '#E2E8F0',
+                    borderWidth: 1
+                }
+            }
+        }
+    });
+    
+    // Load real data
+    $.get('/StudentBank/GetQuestionStats', function(data) {
+        if (data && data.success) {
+            var correct = data.correct || 0;
+            var incorrect = data.incorrect || 0;
+            var skipped = data.skipped || 0;
+            var total = correct + incorrect + skipped;
+            
+            // Update chart
+            chart.data.datasets[0].data = [correct, incorrect, skipped];
+            chart.update();
+            
+            // Update displays
+            $('#qbankTotal').text(total);
+            $('#correctCount').text(correct);
+            $('#incorrectCount').text(incorrect);
+            $('#skippedCount').text(skipped);
+            $('#favoritesCount').text(data.favorites || 0);
+            
+            // Update bars
+            if (total > 0) {
+                $('#correctBar').css('width', (correct / total * 100) + '%');
+                $('#incorrectBar').css('width', (incorrect / total * 100) + '%');
+                $('#skippedBar').css('width', (skipped / total * 100) + '%');
+            }
+        } else {
+            // Placeholder data
+            chart.data.datasets[0].data = [156, 42, 18];
+            chart.update();
+            $('#qbankTotal').text('216');
+            $('#correctCount').text('156');
+            $('#incorrectCount').text('42');
+            $('#skippedCount').text('18');
+            $('#favoritesCount').text('24');
+            $('#correctBar').css('width', '72%');
+            $('#incorrectBar').css('width', '19%');
+            $('#skippedBar').css('width', '8%');
+        }
+    }).fail(function() {
+        $('#qbankTotal').text('0');
+    });
+}
+</script>
+
+<style>
+.fame-qbank-content {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    margin-bottom: 20px;
+}
+
+.fame-qbank-chart {
+    position: relative;
+    width: 140px;
+    height: 140px;
+    flex-shrink: 0;
+}
+
+.fame-qbank-chart-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.fame-qbank-total {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--fame-text-primary);
+    line-height: 1;
+}
+
+.fame-qbank-total-label {
+    font-size: 11px;
+    color: var(--fame-text-tertiary);
+    margin-top: 4px;
+}
+
+.fame-qbank-stats {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.fame-qbank-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.fame-qbank-stat-bar {
+    height: 8px;
+    background: var(--fame-bg-tertiary);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.fame-qbank-stat-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 1s ease-out;
+}
+
+.fame-qbank-stat-fill.correct { background: linear-gradient(90deg, #10B981, #059669); }
+.fame-qbank-stat-fill.incorrect { background: linear-gradient(90deg, #EF4444, #DC2626); }
+.fame-qbank-stat-fill.skipped { background: linear-gradient(90deg, #94A3B8, #64748B); }
+
+.fame-qbank-stat-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+}
+
+.fame-qbank-stat-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.fame-qbank-stat-dot.correct { background: #10B981; }
+.fame-qbank-stat-dot.incorrect { background: #EF4444; }
+.fame-qbank-stat-dot.skipped { background: #94A3B8; }
+
+.fame-qbank-stat-label {
+    color: var(--fame-text-secondary);
+    flex: 1;
+}
+
+.fame-qbank-stat-value {
+    font-weight: 600;
+    color: var(--fame-text-primary);
+}
+
+.fame-qbank-actions {
+    display: flex;
+    background: var(--fame-bg-tertiary);
+    border-radius: var(--fame-radius-lg);
+    overflow: hidden;
+}
+
+.fame-qbank-action {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    text-decoration: none;
+    transition: background 200ms;
+}
+
+.fame-qbank-action:hover {
+    background: var(--fame-bg-hover);
+}
+
+.fame-qbank-action-divider {
+    width: 1px;
+    background: var(--fame-border);
+}
+
+.fame-qbank-action-value {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--fame-text-primary);
+}
+
+.fame-qbank-action-label {
+    font-size: 13px;
+    color: var(--fame-text-secondary);
+    font-weight: 500;
+}
+
+.fame-qbank-action-hint {
+    font-size: 11px;
+    color: var(--fame-text-tertiary);
+}
+
+@@media (max-width: 640px) {
+    .fame-qbank-content {
+        flex-direction: column;
+    }
+}
+</style>

@@ -1,0 +1,273 @@
+@model First_Aid_Made_Easy.Models.AdminApplicationsVM
+@{
+    ViewBag.Title = "Pending Applications";
+    Layout = "~/Views/Shared/_LayoutAmbassador.cshtml";
+}
+
+<div class="container-fluid py-4">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h4 class="mb-1">Ambassador Applications</h4>
+            <p class="text-muted mb-0">Review and approve ambassador applications</p>
+        </div>
+        <a href="@Url.Action("Index")" class="btn btn-outline-secondary">
+            <i class="material-icons align-middle mr-1">arrow_back</i>
+            Back to Dashboard
+        </a>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            <i class="material-icons align-middle mr-1">check_circle</i>
+            @TempData["Success"]
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show">
+            <i class="material-icons align-middle mr-1">error</i>
+            @TempData["Error"]
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+        </div>
+    }
+
+    <!-- Applications List -->
+    <div class="card">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-warning">
+                <i class="material-icons align-middle mr-1">pending_actions</i>
+                Pending Applications (@(Model.Applications?.Count ?? 0))
+            </h6>
+        </div>
+        <div class="card-body p-0">
+            @if (Model.Applications != null && Model.Applications.Count > 0)
+            {
+                foreach (var app in Model.Applications)
+                {
+                    <div class="application-item border-bottom p-4">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="d-flex align-items-start">
+                                    <div class="avatar-circle bg-warning text-white mr-3">
+                                        @app.Initials
+                                    </div>
+                                    <div>
+                                        <h5 class="mb-1">@app.FullName</h5>
+                                        <p class="text-muted mb-2">
+                                            <i class="material-icons align-middle mr-1" style="font-size: 1rem;">email</i>
+                                            @app.Email
+                                            @if (!string.IsNullOrEmpty(app.PhoneNumber))
+                                            {
+                                                <span class="mx-2">|</span>
+                                                <i class="material-icons align-middle mr-1" style="font-size: 1rem;">phone</i>
+                                                @app.PhoneNumber
+                                            }
+                                        </p>
+                                        <p class="mb-2">
+                                            <span class="badge badge-light mr-2">
+                                                <i class="material-icons align-middle mr-1" style="font-size: 0.75rem;">schedule</i>
+                                                Applied @app.AppliedAt.ToString("MMM dd, yyyy")
+                                            </span>
+                                            @if (!string.IsNullOrEmpty(app.Institution))
+                                            {
+                                                <span class="badge badge-light">
+                                                    <i class="material-icons align-middle mr-1" style="font-size: 0.75rem;">school</i>
+                                                    @app.Institution
+                                                </span>
+                                            }
+                                        </p>
+
+                                        <div class="bg-light rounded p-3 mb-3">
+                                            <div class="row small">
+                                                <div class="col-md-6 mb-2">
+                                                    <strong>How they'll promote:</strong>
+                                                    <p class="mb-0 text-muted">@(app.PromotionMethod ?? "Not specified")</p>
+                                                </div>
+                                                <div class="col-md-6 mb-2">
+                                                    <strong>Expected Reach:</strong>
+                                                    <p class="mb-0 text-muted">@(app.ExpectedReach ?? "Not specified")</p>
+                                                </div>
+                                            </div>
+                                            @if (!string.IsNullOrEmpty(app.WhyAmbassador))
+                                            {
+                                                <div class="mt-2">
+                                                    <strong>Why they want to be an ambassador:</strong>
+                                                    <p class="mb-0 text-muted">@app.WhyAmbassador</p>
+                                                </div>
+                                            }
+                                        </div>
+
+                                        @if (app.SocialLinks != null && app.SocialLinks.Count > 0)
+                                        {
+                                            <div class="mb-2">
+                                                <strong class="small">Social Links:</strong>
+                                                @foreach (var link in app.SocialLinks)
+                                                {
+                                                    <a href="@link.Value" target="_blank" class="badge badge-info mr-1">@link.Key</a>
+                                                }
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 text-md-right">
+                                <div class="btn-group-vertical">
+                                    <button class="btn btn-success mb-2" onclick="approveApplication(@app.Id)">
+                                        <i class="material-icons align-middle mr-1">check</i>
+                                        Approve
+                                    </button>
+                                    <button class="btn btn-outline-danger" onclick="rejectApplication(@app.Id)">
+                                        <i class="material-icons align-middle mr-1">close</i>
+                                        Reject
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <i class="material-icons text-muted" style="font-size: 4rem;">inbox</i>
+                    <h5 class="mt-3">No Pending Applications</h5>
+                    <p class="text-muted">All applications have been reviewed!</p>
+                    <a href="@Url.Action("Ambassadors")" class="btn btn-primary">
+                        View All Ambassadors
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Reject Modal -->
+<div class="modal fade" id="rejectModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Reject Application</h5>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <form id="rejectForm">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="id" id="rejectAppId">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Reason for rejection (will be sent to applicant)</label>
+                        <textarea name="reason" id="rejectReason" class="form-control" rows="3" required
+                                  placeholder="Please provide a reason for the rejection..."></textarea>
+                    </div>
+                    <div class="alert alert-info small mb-0">
+                        <i class="material-icons align-middle mr-1">info</i>
+                        The applicant will be notified via email with this reason.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger">Reject Application</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function approveApplication(id) {
+            if (!confirm('Are you sure you want to approve this application? The applicant will become an active ambassador.')) {
+                return;
+            }
+
+            $.ajax({
+                url: '@Url.Action("Approve")',
+                type: 'POST',
+                data: {
+                    id: id,
+                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                },
+                success: function (response) {
+                    if (response.success) {
+                        toastr.success('Application approved! Ambassador is now active.');
+                        location.reload();
+                    } else {
+                        toastr.error(response.message || 'Failed to approve application.');
+                    }
+                },
+                error: function () {
+                    toastr.error('An error occurred.');
+                }
+            });
+        }
+
+        function rejectApplication(id) {
+            $('#rejectAppId').val(id);
+            $('#rejectReason').val('');
+            // Move modal to body to escape any parent stacking context
+            $('#rejectModal').appendTo('body');
+            $('#rejectModal').modal('show');
+        }
+
+        // AJAX submit for reject form
+        $('#rejectForm').on('submit', function(e) {
+            e.preventDefault();
+            var reason = $('#rejectReason').val();
+            if (!reason || !reason.trim()) {
+                toastr.error('Please provide a reason for rejection.');
+                return;
+            }
+            var $btn = $(this).find('button[type="submit"]');
+            $btn.prop('disabled', true).text('Rejecting...');
+            $.ajax({
+                url: '@Url.Action("Reject")',
+                type: 'POST',
+                data: {
+                    id: $('#rejectAppId').val(),
+                    reason: reason,
+                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                },
+                success: function(response) {
+                    if (response.success) {
+                        toastr.success(response.message || 'Application rejected.');
+                        $('#rejectModal').modal('hide');
+                        location.reload();
+                    } else {
+                        toastr.error(response.message || 'Failed to reject application.');
+                        $btn.prop('disabled', false).text('Reject Application');
+                    }
+                },
+                error: function(xhr) {
+                    toastr.error('Server error: ' + (xhr.statusText || 'Unknown error') + ' (HTTP ' + xhr.status + ')');
+                    $btn.prop('disabled', false).text('Reject Application');
+                }
+            });
+        });
+    </script>
+}
+
+<style>
+    #rejectModal {
+        z-index: 1060 !important;
+    }
+    #rejectModal + .modal-backdrop,
+    .modal-backdrop {
+        z-index: 1050 !important;
+    }
+    .avatar-circle {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        font-weight: bold;
+        flex-shrink: 0;
+    }
+    .application-item:hover {
+        background-color: #f8f9fc;
+    }
+</style>

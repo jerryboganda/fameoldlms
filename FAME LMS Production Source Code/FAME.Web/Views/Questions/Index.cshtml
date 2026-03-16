@@ -1,0 +1,309 @@
+﻿@model First_Aid_Made_Easy.Models.QuestionVM
+@using First_Aid_Made_Easy.BLL
+@{
+    Layout = "~/Views/Shared/_LayoutTeacher.cshtml";
+
+    var Type = Model.TypeS;
+    ViewBag.Title = Type + " Describe";
+
+}
+
+<div class="pt-32pt">
+    <div class="container-fluid page__container d-flex flex-column flex-md-row align-items-center text-center text-sm-left">
+        <div class="flex d-flex flex-column flex-sm-row align-items-center">
+            <div class="mb-24pt mb-sm-0 mr-sm-24pt">
+                <h2 class="mb-0">Describe @Type</h2>
+                <ol class="breadcrumb p-0 m-0">
+                    <li class="breadcrumb-item"><a href="/Admin/Index">Home</a></li>
+                    <li class="breadcrumb-item active">
+                        Describe @Type
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="page-section border-bottom-2">
+        <div class="container-fluid page__container">
+
+            <div class="row">
+                <div class="col-md-12">
+
+                    <div class="page-separator">
+                        <div class="page-separator__text">Basic information</div>
+                    </div>
+                    @Html.ValidationSummary("", new { @class = "text-danger" })
+                    @Html.HiddenFor(model => model.Course_Fid)
+                    @Html.HiddenFor(model => model.Section_Fid)
+                    @Html.HiddenFor(model => model.Type)
+                    @Html.HiddenFor(model => model.Question_Id)
+                    <label class="form-label">Question</label>
+                    <div class="form-group mb-24pt">
+                        @Html.TextBoxFor(model => model.Question, new { @class = "form-control form-control-lg", @placeholder = "Question", @required = "required" })
+                        @Html.ValidationMessageFor(model => model.Question, "", new { @class = "text-accent-red" })
+                        <small class="form-text text-muted"></small>
+                    </div>
+
+                    @if (((int)QuestionType.Mcq) != Model.Type)
+                    {
+                        <div id="divAnswer">
+                            <label class="form-label">Answer</label>
+                            <div class="form-group mb-24pt">
+                                @Html.TextAreaFor(model => model.Answer, new { @class = "form-control form-control-lg", @placeholder = "Answer", @rows = 5 })
+                                @Html.ValidationMessageFor(model => model.Answer, "", new { @class = "text-accent-red" })
+                            </div>
+                        </div>
+
+                    }
+                    <div class="form-row">
+                        <div class="col-12 col-md-8 mb-3">
+                            <label class="form-label">Tags</label>
+                            @Html.TextBoxFor(model => model.Tags, new { @class = "form-control form-control-lg tags", @placeholder = "Tags for Search", @required = "required" })
+                            @Html.ValidationMessageFor(model => model.Tags, "", new { @class = "text-accent-red" })
+                            <small class="form-text text-muted">Separate keywords with a comma, space bar, or enter key</small>
+                        </div>
+                        <div class="col-12 col-md-4 mb-3">
+                            <label class="form-label">Difficulty Level</label>
+                            @Html.DropDownListFor(model => model.DifficultyLevel, new SelectList(First_Aid_Made_Easy.BLL.Common.Difficulty, "Value", "Text"), "Please Select", new { @class = "form-control select2", @required = "required", @data_toggle = "select" })
+                            @Html.ValidationMessageFor(model => model.DifficultyLevel, "", new { @class = "text-accent-red" })
+                        </div>
+                        <div class="col-12 col-md-4 mb-3">
+                            <label class="form-label">Marks</label>
+                            @Html.TextBoxFor(model => model.Marks, new { @class = "form-control form-control-lg", @type = "number" })
+                            @Html.ValidationMessageFor(model => model.Marks, "", new { @class = "text-accent-red" })
+                        </div>
+                        <div class="col-12 col-md-4 mb-3">
+                            <label class="form-label">System</label>
+                            @Html.DropDownListFor(model => model.SystemID, new SelectList(ViewBag.Systems, "ID", "Name"), "Please Select", new { @class = "form-control select2", @required = true })
+                        </div>
+                        <div class="col-12 col-md-4 mb-3">
+							<label class="form-label">Partition</label>
+                            @Html.DropDownListFor(model => model.PartitionID, new SelectList(ViewBag.Partitions, "ID", "Name"), "Please Select", new { @class = "form-control select2", @required = true })
+                        </div>
+                        <div class="col-12 col-md-4 mb-3">
+                            <label class="form-label">Add To Paper</label>
+                            @Html.DropDownListFor(model => model.PaperID, new SelectList(ViewBag.Papers, "PaperID", "PaperTitle"), "Please Select", new { @class = "form-control select2", @required = true })
+                        </div>
+                        <div class="col-12 col-md-8" style="margin-top:2rem;display:none">
+                            &emsp;<label class="form-label"><input name="IsMultiAns" type="radio" checked value="false" /> Single Answer</label>
+                            @*&emsp;<label class="form-label"><input name="IsMultiAns" type="radio" @(Model.IsMultiAns ? "checked" : "") value="true" /> Multiple Answers</label>*@
+                        </div>
+
+                    </div>
+                    @if (((int)QuestionType.Mcq) == Model.Type)
+                    {
+                        <div class="row">
+                            <div class="col-md-12">
+                                <table class="table table-bordered">
+                                    <tr style="background-color: #364e9c;color:white">
+                                        <td class="text-center" colspan="2">Options</td>
+                                        <td class="text-center">Details</td>
+                                    </tr>
+
+                                    @if (Model.Options != null && Model.Options.Count > 0)
+                                    {
+                                        foreach (var i in Model.Options)
+                                        {
+                                            <tr class="Options">
+                                                <td class="form-group mb-24pt">
+                                                    <input type="radio" @(i.IsCorrect ? "checked" : "") id="IsCorrect" name="IsCorrect" />
+                                                </td>
+                                                <td class="form-group mb-24pt">
+                                                    @Html.TextArea("OptionText", i.OptionText, new { @class = "form-control", @placeholder = "Option" })
+                                                </td>
+                                                <td class="form-group mb-24pt">
+                                                    @Html.TextArea("Details", i.Details, new { @class = "form-control", @placeholder = "Detail" })
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        for (int i = 0; i < 7; i++)
+                                        {
+                                            <tr class="Options">
+                                                <td class="form-group mb-24pt">
+                                                    <input type="radio" @(0 == i ? "checked" : "") id="IsCorrect" name="IsCorrect" />
+                                                </td>
+                                                <td class="form-group mb-24pt">
+                                                    @Html.TextArea("OptionText", "", new { @class = "form-control", @placeholder = "Option" })
+                                                </td>
+                                                <td class="form-group mb-24pt">
+                                                    @Html.TextArea("Details", "", new { @class = "form-control", @placeholder = "Detail" })
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                </table>
+                            </div>
+                        </div>
+                        <div class="form-group mb-24pt">
+                            <label class="form-label">Answer Explain</label>
+                            <textarea class="tinymce" name="AnsExplain" id="AnsExplain"></textarea>
+                        </div>
+                    }
+                    <div class="card">
+                        <div class="card-header text-center">
+                            <a href="@Url.Action("Index","Questions",new {Type= Model.Type })" class="btn btn-outline-accent-electric-violet"><i class="fa fa-recycle"></i>&nbsp; New</a>
+                            @if (Model.Question_Id > 0)
+                            {
+                                <button onclick="Save()" id="btnSave" class="btn btn-outline-accent-red">Update</button>
+                            }
+                            else
+                            {
+                                <button onclick="Save()" id="btnSave" class="btn btn-outline-success">Save</button>
+                            }
+                            <button onclick="Preview()" class="btn btn-outline-primary">Preview</button>
+                            <a href="@Url.Action("List","Questions",new { Type= Model.Type })" class="btn btn-outline-accent-dodger-blue"><i class="fa fa-backward"></i>&nbsp;  Back To List</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script src="~/Scripts/tinymce/tinymce.js"></script>
+
+    <script>
+        var model = @Html.Raw(Json.Encode(Model));
+        $(document).ready(function () {
+            tinymce.init({
+                selector: 'textarea.tinymce',
+                statusbar: true,
+                plugins: 'code,wordcount',
+                toolbar: "undo redo | styleselect | forecolor | bold italic | alignleft aligncenter alignright alignjustify | outdent indent | link image | removeformat",
+                force_br_newlines: true,
+                force_p_newlines: false,
+                forced_root_block: '', // Needed for 3.x
+                height: 500,
+                init_instance_callback: function (editor) {
+                    editor.on('keydown', function (e) {
+                        //KeyDownEvent(e, editor);
+                    });
+                    editor.on('paste', function (e) {
+                        //e.preventDefault();
+                        //Swal.fire('Sorry!', 'Cannot Paste Here. Please Type Manualy', 'warning');
+                    });
+                }
+            });
+
+            $("#AnsExplain").html(model.AnsExplain);
+        })
+
+        $("input[name=IsMultiAns]").change(function () {
+            var IsMultiAns = $("input[name=IsMultiAns]:checked").val();
+            if (IsMultiAns == "true")
+                $("input[name=IsCorrect]").attr("type", "checkbox")
+            else
+                $("input[name=IsCorrect]").attr("type", "radio")
+        })
+
+        function Save() {
+            var Options = [];
+
+            if ($("#Type").val() == '@((int)QuestionType.Mcq)') {
+                $("#Answer").val($("input[name=option]:checked").closest("tr").find(".Options").val())
+            }
+            $(".Options").each(function () {
+                if ($(this).find("#OptionText").val() != "") {
+                    Options.push({
+                        OptionText: $(this).find("#OptionText").val(),
+                        Details: $(this).find("#Details").val(),
+                        IsCorrect: $(this).find("#IsCorrect").is(":checked"),
+                    });
+                }
+            })
+
+            var data = {
+                Question_Id: $("#Question_Id").val(),
+                Question: $("#Question").val(),
+                Answer: $("#Answer").val(),
+                Tags: $("#Tags").val(),
+                IsMultiAns: $("input[name=IsMultiAns]:checked").val(),
+                AnsExplain: tinyMCE.get('AnsExplain').getContent(),
+                SystemID: $("#SystemID").val(),
+				PartitionID: $("#PartitionID").val(),
+                PaperID: $("#PaperID").val(),
+                DifficultyLevel: $("#DifficultyLevel option:selected").val(),
+                Section_Fid: $("#Section_Fid").val(),
+                Course_Fid: $("#Course_Fid").val(),
+                Type: $("#Type").val(),
+                Marks: $("#Marks").val(),
+                Options: Options
+            }
+
+            $("#btnSave").hide();
+            $.ajax({
+                url: '/Questions/Index',
+                method: 'POST',
+                data: JSON.stringify(data),
+                dataType: 'Json',
+                contentType: 'application/json',
+                success: function (response) {
+                    if (response.Question_Id > 0) {
+                        DataSaved();
+                        $("#btnSave").attr("disabled", true);
+                    }
+                },
+                error: function (err) {
+
+                }
+
+            });
+        }
+
+        function Preview() {
+            if ($("#Question_Id").val() > 0)
+                window.location.href = "/Questions/Preview/" + $("#Question_Id").val() ;
+        }
+
+    $(document).on("click", "#btnDelete", function () {
+        var btn = $(this);
+        var id = btn.data("id");
+        var Name = btn.data("name");
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You Want To Delete the @Type '" + Name + "' ?",
+            icon: 'warning',
+            showCancelButton: false,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: "/Questions/DeleteQuestion/" + id,
+                    method: "GET",
+                    beforeSend: function () {
+                        swal.fire({
+                            html: '<h5>Deleting @Type...</h5>',
+                            showConfirmButton: false,
+                            onRender: function () { $('.swal2-content').prepend(sweet_loader); }
+                        });
+                    },
+                    success: function (result) {
+                        if (result) {
+                            btn.hide();
+                            Swal.fire(
+                                'Delete!',
+                                'The @Type ' + Name +' Has Been Deleted.',
+                                'success'
+                            )
+                            window.location.href = "/Questions/List?Type="+$("#Type").val();
+                        }
+                    }, error: function (err) {
+                        alert("Error" + err);
+                    }
+                })
+
+            }
+        })
+    })
+    </script>
+
+}
+

@@ -1,0 +1,30 @@
+﻿@model First_Aid_Made_Easy.Models.ChatVM
+@using First_Aid_Made_Easy.BLL
+@{
+    int Sr = 0;
+}
+<table style="width:100% !important" id="DTable" class="table table-bordered">
+    <thead>
+        <tr style="background-color: #364e9c">
+            <th>Sr.</th>
+            <th>Title</th>
+            <th>Last Msg</th>
+            <th style="min-width:80px">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var i in Model.GroupList)
+        {
+            Sr++;
+            <tr>
+                <td>@Sr</td>
+                <td>@i.Title</td>
+                <td>@i.Descriptiom</td>
+                <td>
+                    <a href="/Chat/GroupIndex/@i.ConvID" vlaue="" class="text-warning"><i class="fa fa-edit Font20"></i></a>
+                    <a href="javascript:;" id="btnRowDelete" data-name="Group" data-url="/Chat/DeleteGroup/@i.ConvID" class="text-danger"><i class="fa fa-trash Font20"></i></a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

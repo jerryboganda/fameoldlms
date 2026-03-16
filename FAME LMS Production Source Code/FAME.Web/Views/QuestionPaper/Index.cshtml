@@ -1,0 +1,518 @@
+﻿@model First_Aid_Made_Easy.Models.QuestionPaperVM
+@using First_Aid_Made_Easy.BLL
+@{
+	Layout = "~/Views/Shared/_LayoutTeacher.cshtml";
+
+	ViewBag.Title = " Describe Question Paper";
+	var MCQs = Model.QuestionList?.Where(x => x.Type == (int)QuestionType.Mcq).ToList();
+	var Shorts = Model.QuestionList?.Where(x => x.Type == (int)QuestionType.Short).ToList();
+	var Longs = Model.QuestionList?.Where(x => x.Type == (int)QuestionType.Long).ToList();
+}
+<style>
+	#btnUnSelect {
+		display: none
+	}
+
+	.selected > td > #btnSelect {
+		display: none
+	}
+
+	.selected > td > #btnUnSelect {
+		display: block !important
+	}
+</style>
+<div class="pt-32pt">
+	<div class="container-fluid page__container d-flex flex-column flex-md-row align-items-center text-center text-sm-left">
+		<div class="flex d-flex flex-column flex-sm-row align-items-center">
+			<div class="mb-24pt mb-sm-0 mr-sm-24pt">
+				<h2 class="mb-0">Describe Question Paper</h2>
+			</div>
+		</div>
+	</div>
+
+
+	<div class="page-section border-bottom-2">
+		<div class="page__container">
+
+			<div class="row">
+				<div class="col-md-12">
+
+					<div class="page-separator">
+						<div class="page-separator__text">Basic information</div>
+					</div>
+					@Html.ValidationSummary("", new { @class = "text-danger" })
+					@Html.HiddenFor(model => model.PaperID)
+					<label class="form-label">Paper Title</label>
+					<div class="form-group mb-24pt">
+						@Html.TextBoxFor(model => model.PaperTitle, new { @class = "form-control form-control-lg", @placeholder = "", @required = "required" })
+						@Html.ValidationMessageFor(model => model.PaperTitle, "", new { @class = "text-accent-red" })
+						<small class="form-text text-muted"></small>
+					</div>
+					<div style="display:none">
+						<label class="form-label">Description</label>
+						<div class="form-group mb-24pt">
+							@Html.TextBoxFor(model => model.Description, new { @class = "form-control form-control-lg", @placeholder = "" })
+							@Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-accent-red" })
+						</div>
+					</div>
+
+					<div class="form-row">
+
+						@*<div class="col-12 col-md-6 mb-3">
+								<label class="form-label">Packages</label>
+								@Html.DropDownListFor(x => x.PackageIDs, new SelectList(ViewBag.Packages, "PackageID", "PackageName"), new { @class = "form-control select2", @multiple = true })
+							</div>
+							<div class="col-12 col-md-6 mb-3">
+								<label class="form-label">Courses</label>
+								@Html.DropDownListFor(x => x.CourseIDs, new SelectList(ViewBag.Courses, "Course_Id", "Course_Name"), new { @class = "form-control select2", @multiple = true })
+							</div>
+							<div class="col-12 col-md-8 mb-3">
+								<label class="form-label">Sections</label>
+								@Html.DropDownListFor(x => x.SectionIDs, new SelectList(ViewBag.Sections, "Value", "Text"), new { @class = "form-control select2", @multiple = true })
+							</div>*@
+						<div class="col-12 col-md-12 mb-3">
+							<label class="form-label">University</label>
+							@Html.DropDownListFor(model => model.UniversityID, new SelectList(First_Aid_Made_Easy.BLL.Common.Universities.Where(x => x.Value > 0 && x.IsActive), "Value", "Text"), "Please Select", new { @class = "form-control select2", @multiple = true, @data_toggle = "select" })
+							@Html.ValidationMessageFor(model => model.UniversityID, "", new { @class = "text-accent-red" })
+						</div>
+						<div class="col-12 col-md-12 mb-3" style="display:none">
+							<label class="form-label">Add To Exams</label>
+							@Html.DropDownListFor(x => x.ExamIDs, new SelectList(ViewBag.Exams, "ExamID", "ExamTitle"), new { @class = "form-control select2", @multiple = true })
+						</div>
+						<div class="col-12 col-md-8 mb-3" style="display:none">
+							<label class="form-label">Tags</label>
+							@Html.TextBoxFor(model => model.Tags, new { @class = "form-control form-control-lg tags", @placeholder = "Tags for Search", @required = "required" })
+							@Html.ValidationMessageFor(model => model.Tags, "", new { @class = "text-accent-red" })
+							<small class="form-text text-muted">Separate keywords with a comma, space bar, or enter key</small>
+						</div>
+						<div class="col-12 col-md-3 mb-3" style="display:none">
+							<label class="form-label">Difficulty Level</label>
+							@Html.DropDownListFor(model => model.DifficultyLevel, new SelectList(First_Aid_Made_Easy.BLL.Common.Difficulty, "Value", "Text"), "Please Select", new { @class = "form-control select2", @data_toggle = "select" })
+							@Html.ValidationMessageFor(model => model.DifficultyLevel, "", new { @class = "text-accent-red" })
+						</div>
+						<div class="col-12 col-md-12 mb-3" style="display:none">
+							<label class="form-label">Notification Box Message</label>
+							@Html.TextBoxFor(model => model.Notes, new { @class = "form-control form-control-lg", @placeholder = "Message in notification box" })
+							@Html.ValidationMessageFor(model => model.Notes, "", new { @class = "text-accent-red" })
+						</div>
+						<div class="col-12 col-md-3 mb-3" style="display:none">
+							<label class="form-label">Marks</label>
+							@Html.TextBoxFor(model => model.Marks, new { @class = "form-control form-control-lg", @placeholder = "Total Marks" })
+							@Html.ValidationMessageFor(model => model.Marks, "", new { @class = "text-accent-red" })
+						</div>
+						<div class="col-12 col-md-3 mb-3">
+							<label class="form-label">Start Time (PAK)</label>
+							@Html.TextBoxFor(model => model.StartTime, new { @class = "form-control form-control-lg", @type = "datetime-local" })
+							@Html.ValidationMessageFor(model => model.StartTime, "", new { @class = "text-accent-red" })
+						</div>
+						<div class="col-12 col-md-3 mb-3">
+							<label class="form-label">Expiry Time (PAK)  </label>
+							@Html.TextBoxFor(model => model.ExpiryTime, new { @class = "form-control form-control-lg", @type = "datetime-local" })
+							@Html.ValidationMessageFor(model => model.ExpiryTime, "", new { @class = "text-accent-red" })
+							<span class="text-muted">(if you dont set It will never expire)</span>
+						</div>
+						<div class="col-12 col-md-3 mb-3">
+							<label class="form-label">Show Answer At (PAK)</label>
+							@Html.TextBoxFor(model => model.AnswerTime, new { @class = "form-control form-control-lg", @type = "datetime-local" })
+							@Html.ValidationMessageFor(model => model.AnswerTime, "", new { @class = "text-accent-red" })
+						</div>
+						<div class="col-12 col-md-3 mb-3">
+							<label class="form-label">Time Alloted (min)</label>
+							@Html.TextBoxFor(model => model.Time, new { @class = "form-control form-control-lg", @placeholder = "Time in min" })
+							@Html.ValidationMessageFor(model => model.Time, "", new { @class = "text-accent-red" })
+						</div>
+						<div class="col-12 col-md-3 mb-3">
+							<label class="form-label">Mock Test Type</label>
+							@Html.DropDownListFor(x => x.MockTestType, new SelectList(Common.MockTestTypesDdl, "Value", "Text"), "Please Select", new { @class = "form-control select2" })
+						</div>
+						<div class="col-12 col-md-3 mb-3">
+							<label class="form-label">Passing Perc</label>
+							@Html.TextBoxFor(model => model.PassPer, new { @class = "form-control form-control-lg", @placeholder = "Passing Perc" })
+							@Html.ValidationMessageFor(model => model.PassPer, "", new { @class = "text-accent-red" })
+						</div>
+
+						<div class="col-md-3">
+							<label class="form-label">Thumbnail</label>
+							<input name="File" id="File" class="form-control" type="file" accept="image/png, image/gif, image/jpeg">
+						</div>
+
+						@if (Model.Thumbnail != null)
+						{
+							<div class="col-md-3">
+								<img style="width:150px;height:150px" src="@Url.Content("~/Images/"+Model.Thumbnail)" />
+							</div>
+						}
+
+						@if (Model.PaperID > 0)
+						{
+
+							<div class="col-12 col-md-6 mb-3">
+								<label class="form-label">Recheck Question</label>
+								@Html.DropDownList("RecheckQuestion", new SelectList(MCQs, "Question_Id", "Question"), "Please Select", new { @class = "form-control select2", @required = "required", @data_toggle = "select" })
+
+								<div style="margin-top:10px;width:100%;text-align:right">
+									<button class="btn btn-success" id="btnRecheckQuestion" type="button">Recheck</button>
+								</div>
+							</div>
+						}
+
+					</div>
+					@* =========== MCQs ==================*@
+				<div data-type="@((int)QuestionType.Mcq)" class="row">
+					<h2 class="col-md-12">MCQs Questions (<span id="Count">@(MCQs?.Count ?? 0)</span>)</h2>
+					<div class="col-md-6">
+						<label>System</label>
+						@Html.DropDownList("SystemID", new SelectList(ViewBag.Systems, "ID", "Name"), "Please Select", new { @class = "form-control select2", @required = true })
+					</div>
+					<div class="col-md-3">
+						<label>Text</label>
+						<input id="Text" type="text" class="form-control" placeholder="Text">
+					</div>
+					<div class="col-md-3">
+						<label>Partition</label>
+						@Html.DropDownList("PartitionIDF", new SelectList(ViewBag.Partitions, "ID", "Name"), "Please Select", new { @class = "form-control select2", @required = true })
+					</div>
+					<div class="col-md-12">
+						<table id="mDTable" class="table table-bordered">
+							<thead>
+								<tr style="background-color: #364e9c">
+									<th>
+										Question
+										<button type="button" style=" margin-left: 50%; " class="btn btn-success selectall">Select All</button>
+										<button type="button" class="btn btn-danger unselectall">Un-Select All</button>
+									</th>
+									<th style="max-width:20px"></th>
+								</tr>
+							</thead>
+							<tbody id="qBody">
+								@if (MCQs != null)
+								{
+									foreach (var q in MCQs)
+									{
+										<tr data-id="@q.Question_Id" data-type="@q.Type" class="selected">
+											<td>@q.Question</td>
+											<td>
+												<button href="javascript:;" id="btnSelect" class="btn btn-success"><i class="fa fa-check-circle Font20"></i></button>
+												<button href="javascript:;" id="btnUnSelect" class="btn btn-danger">x</button>
+											</td>
+										</tr>
+									}
+								}
+							</tbody>
+						</table>
+					</div>
+				</div>
+					@* =========== MCQs ==================*@
+
+
+					<div class="card">
+						<div class="card-header text-center">
+							<p style="display:none" class="text-accent-red field-validation-valid" id="validation">Please Fill all required Fields</p>
+							<p style="display:none" class="text-accent-red field-validation-valid" id="Questvalidation">Please Add atleast one question</p>
+							<a href="/QuestionPaper/Index" class="btn btn-outline-accent-electric-violet"><i class="fa fa-recycle"></i>&nbsp; New</a>
+							@if (Model.PaperID > 0)
+							{
+								<button onclick="Save()" id="btnSave" class="btn btn-outline-accent-red">Update</button>
+								<a href="javascript:;" id="btnDelete" data-id="@Model.PaperID" class="btn btn-outline-accent-red"><i class="fa fa-trash"></i>&nbsp;  Delete</a>
+							}
+							else
+							{
+								<button onclick="Save()" id="btnSave" class="btn btn-outline-success">Save</button>
+							}
+							<a href="@Url.Action("List","QuestionPaper")" class="btn btn-outline-accent-dodger-blue"><i class="fa fa-backward"></i>&nbsp;  Back To List</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+@section scripts {
+	@Scripts.Render("~/bundles/jqueryval")
+	<script>
+        var _mDTable;
+        $(document).ready(function () {
+
+            applyDatatable("mDTable");
+            $("#sDTable").DataTable();
+            $("#lDTable").DataTable();
+
+            if ($("#PaperID").val() > 0) {
+                $("#SectionIDs").val(@Html.Raw(Json.Encode(Model.SectionIDs?.Split(',')))).change();
+                $("#CourseIDs").val(@Html.Raw(Json.Encode(Model.CourseIDs?.Split(',')))).change();
+                $("#PackageIDs").val(@Html.Raw(Json.Encode(Model.PackageIDs?.Split(',')))).change();
+				$("#UniversityID").val(@Html.Raw(Json.Encode(Model.UniversityID?.Split(',')))).change();
+            }
+        })
+
+        $(document).on("click", ".selectall", function () {
+            var row = $(this).closest(".row");
+            row.find("table").DataTable().destroy();
+            row.find("tbody tr").addClass("selected");
+            row.find("tbody tr").removeClass("notSelected");
+            Count(row)
+            applyDatatable(row.find(".table").attr('id'))
+        })
+        $(document).on("click", ".unselectall", function () {
+            var row = $(this).closest(".row");
+            row.find("table").DataTable().destroy();
+            row.find("tbody tr").removeClass("selected");
+            row.find("tbody tr").addClass("notSelected");
+            Count(row)
+            applyDatatable(row.find(".table").attr('id'))
+        })
+
+        $(document).on("click", "#btnSelect", function () {
+            $(this).closest("tr").addClass("selected");
+            $(this).closest("tr").removeClass("notSelected");
+            Count($(this).closest(".row"))
+        })
+
+        $(document).on("click", "#btnUnSelect", function () {
+            $(this).closest("tr").removeClass("selected");
+            $(this).closest("tr").addClass("notSelected");
+            Count($(this).closest(".row"))
+        })
+
+        function Count(row) {
+            var id = row.find(".table").attr('id');
+            if (id.indexOf("m") == 0) { }
+            row.find("#Count").text(_mDTable.rows().nodes().filter(x => $(x).hasClass("selected")).length);
+        }
+
+        function Save() {
+
+            $("#mDTable").DataTable().destroy();
+            $("#sDTable").DataTable().destroy();
+            $("#lDTable").DataTable().destroy();
+
+            var data = {
+                PaperID: $("#PaperID").val(),
+                PaperTitle: $("#PaperTitle").val(),
+                Description: $("#Description").val(),
+                Tags: $("#Tags").val(),
+                Time: $("#Time").val(),
+				PassPer: $("#PassPer").val(),
+				MockTestType: $("#MockTestType").val(),
+                Notes: $("#Notes").val(),
+                Marks: $("#Marks").val(),
+                ExpiryDT: moment($("#ExpiryTime").val()).format("MM/DD/YYYY hh:mm:ss A"),
+                AnswerDT: moment($("#AnswerTime").val()).format("MM/DD/YYYY hh:mm:ss A"),
+                StartDT: moment($("#StartTime").val()).format("MM/DD/YYYY hh:mm:ss A"),
+				UniversityID: $("#UniversityID").val().join(','),
+                //SectionIDs: $("#SectionIDs").val().join(','),
+                //CourseIDs: $("#CourseIDs").val().join(','),
+                //PackageIDs: $("#PackageIDs").val().join(','),
+                ExamIDs: $("#ExamIDs").val().join(','),
+                DifficultyLevel: $("#DifficultyLevel option:selected").val(),
+                Questions: $(".selected").map(function () { return { ID: $(this).data("id"), Type: $(this).data("type") } }).toArray(),
+            }
+
+            if (IsValid(data)) {
+                $(".divLoader").show();
+                $("#btnSave").hide();
+                $.ajax({
+                    url: '/QuestionPaper/Index',
+                    method: 'POST',
+                    data: JSON.stringify(data),
+                    dataType: 'Json',
+                    contentType: 'application/json',
+                    success: function (response) {
+                        if (response.PaperID > 0) {
+                            UploadFiles(response.PaperID);
+                            DataSaved();
+                            $(".divLoader").hide();
+                            applyDatatable("mDTable");
+                        }
+                    },
+                    error: function (err) {
+                        $(".divLoader").hide();
+
+                    }
+
+                });
+            }
+        }
+
+        function IsValid(data) {
+            $(".field-validation-valid").hide();
+            if (data.Time == "" || data.PaperTitle == "" || data.Questions.length == 0) {
+                if (data.PaperTitle == "") $('[data-valmsg-for="PaperTitle"]').html("Paper Title Is Required").show();
+                if (data.Time == "") $('[data-valmsg-for="Time"]').html("Time Is Required").show();
+                if (data.Questions.length == 0) $('#Questvalidation').show();
+                //if (data.ExpiryDT.indexOf("Invalid") >= 0) $('[data-valmsg-for="ExpiryTime"]').html("Expiry Time Is Required").show();
+                $("#validation").show();
+                return false;
+            } else
+                return true;
+        }
+
+        $(document).on("click", "#btnDelete", function () {
+            var btn = $(this);
+            var id = btn.data("id");
+            var Name = btn.data("name");
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You Want To Delete the Question Paper ?",
+                icon: 'warning',
+                showCancelButton: false,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: "/QuestionPaper/Delete/" + id,
+                        method: "GET",
+                        beforeSend: function () {
+                            swal.fire({
+                                html: '<h5>Deleting Question Paper...</h5>',
+                                showConfirmButton: false,
+                                onRender: function () { $('.swal2-content').prepend(sweet_loader); }
+                            });
+                        },
+                        success: function (result) {
+                            if (result) {
+                                btn.hide();
+                                Swal.fire(
+                                    'Delete!',
+                                    'The Question Paper  Has Been Deleted.',
+                                    'success'
+                                )
+                                window.location.href = "/QuestionPaper/List?Type=" + $("#Type").val();
+                            }
+                        }, error: function (err) {
+                            alert("Error" + err);
+                        }
+                    })
+
+                }
+            })
+        })
+	</script>
+	<script>
+
+		$(document).on("keyup", "#Text", function (e) {
+			if (e.which == 13) {
+				FilterList($(this))
+			}
+		})
+
+		$(document).on("change", "#TagsF,#SystemID,#PartitionIDF", function (e) {
+			FilterList($(this))
+		})
+
+		function FilterList(th) {
+			var row = th.closest(".row");
+			var Tags = row.find("#TagsF").val() || "";
+			var Text = row.find("#Text").val() || "";
+			var SystemID = row.find("#SystemID").val() || 0;
+			if (SystemID == 0) {
+				Swal.fire({
+					position: 'top-end',
+					icon: 'success',
+					title: 'Please select a System For searching Questions',
+					showConfirmButton: false,
+					timer: 1500
+				})
+				return;
+			}
+			var PartitionID = row.find("#PartitionIDF").val() || 0;
+			var Type = row.data("type");
+			$(".divLoader").show();
+			$.ajax({
+				url: "/Questions/Filter?Type=" + Type + "&Tags=" + Tags + "&Text=" + Text + "&SystemID=" + SystemID + "&PartitionID=" + PartitionID,
+				method: "POST",
+				success: function (result) {
+					if (result != null) {
+						row.find(".table").DataTable().destroy();
+						row.find("#qBody > .notSelected").remove();
+						AppendRows(result.List, row)
+						applyDatatable(row.find(".table").attr('id'))
+						$(".divLoader").hide();
+					}
+				}, error: function (err) {
+					alert("Error" + err);
+				}
+			})
+		}
+		function applyDatatable(id) {
+			var dt = $("#" + id).DataTable();
+			if (id.indexOf("m") == 0) {
+				_mDTable = dt;
+			}
+		}
+
+		function AppendRows(data, row) {
+			var body = row.find("#qBody");
+			$.each(data, function (i, q) {
+				if (!row.find("#qBody > .selected[data-id=" + q.Question_Id + "]").is(":visible")) {
+					var html = `
+							<tr data-id="${q.Question_Id}" data-type="${q.Type}" class="notSelected">
+								<td>${q.Question || ""} ( ${q.PartitionName || 'N/A'} )</td>
+								<td>
+									<button href="javascript:;" id="btnSelect" class="btn btn-success"><i class="fa fa-check-circle Font20"></i></button>
+									<button href="javascript:;" id="btnUnSelect" class="btn btn-danger">x</button>
+								</td>
+							</tr>
+							`;
+					body.append(html);
+				}
+			})
+		}
+	</script>
+	<script>
+
+		function UploadFiles(PaperID) {
+			var formdata = new FormData();
+			var File = document.getElementById('File');
+			if (File.files.length > 0) {
+				var sfilename = File.files[0].name;
+				formdata.append(sfilename, File.files[0]);
+				$.ajax({
+					url: '/QuestionPaper/UploadImage/' + PaperID,
+					type: "POST",
+					contentType: false,
+					processData: false,
+					data: formdata,
+					success: function (result) {
+					},
+					error: function (err) {
+						alert(err.statusText);
+					}
+				});
+			}
+		}
+
+
+	</script>
+	<script>
+
+
+		$(document).on("click", "#btnRecheckQuestion", function (e) {
+			var qid = $("#RecheckQuestion").val();
+			var PaperID = $("#PaperID").val();
+			if (qid > 0 && PaperID > 0) {
+				$.ajax({
+					url: "/QuestionPaper/RecheckQuestion",
+					data: {
+						QPID: PaperID,
+						QuestionID: qid
+					},
+					success: function (r) {
+						if (r) {
+							Swal.fire(
+								'Rechecked!',
+								'The Question Has Been Rechecked.',
+								'success'
+							)
+						}
+					}
+				})
+			}
+		})
+
+
+	</script>
+}
+

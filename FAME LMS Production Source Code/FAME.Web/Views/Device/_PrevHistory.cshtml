@@ -1,0 +1,42 @@
+﻿@model  List<First_Aid_Made_Easy.DAL.sp_lstDeleteDeviceReq_Result>
+@using First_Aid_Made_Easy.BLL
+@{
+    int Sr = 0;
+}
+
+<table style="width:100% !important" id="DTable" class="table table-bordered">
+    <thead>
+        <tr style="background-color: #364e9c;color:white">
+            <td>Sr.</td>
+            <td>Device</td>
+            <td>Notes</td>
+            <td>Req. Time</td>
+            <td>Status</td>
+        </tr>
+    </thead>
+    <tbody>
+
+        @foreach (var a in Model)
+        {
+            Sr++;
+            var Device = a.UserAgent;
+            var s = a.UserAgent?.IndexOf("(") ?? -1;
+            var e = a.UserAgent?.IndexOf(")") ?? -1;
+            if (s != -1)
+            {
+                Device = a.UserAgent.Substring(s, e - s + 1);
+            }
+            <tr>
+                <td>@Sr</td>
+                <td>
+                    @Device <br />
+                    @(a.IsMobile == true ? "Mobile Device ( iOS or Android )" : "Laptop / Desktop PC" ) <br />
+                    Reg. Date : @string.Format("{0:dd/MM/yyyy}", a.DevCreatedDT)
+                </td>
+                <td>@a.Notes</td>
+                <td>@string.Format("{0:dd/MM/yyyy}", a.DateTime)</td>
+                <td>@( a.IsAccepted == true ? "Accepted" : "Rejected" )</td>
+            </tr>
+        }
+    </tbody>
+</table>

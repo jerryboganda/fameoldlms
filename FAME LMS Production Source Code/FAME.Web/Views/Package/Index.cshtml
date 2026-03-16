@@ -1,0 +1,356 @@
+﻿@model First_Aid_Made_Easy.Models.PackageVM
+@{
+	ViewBag.Title = "ADD Package";
+	Layout = "~/Views/Shared/_LayoutTeacher.cshtml";
+}
+
+
+<!-- DateRangePicker -->
+<link type="text/css" href="~/Content/assets/vendor/daterangepicker.css" rel="stylesheet">
+
+<div class="pt-32pt">
+	<div class=" page__container d-flex flex-column flex-md-row align-items-center text-center text-sm-left">
+		<div class="flex d-flex flex-column flex-sm-row align-items-center">
+			<div class="mb-24pt mb-sm-0 mr-sm-24pt">
+				<h2 class="mb-0">Describe Package</h2>
+				<ol class="breadcrumb p-0 m-0">
+					<li class="breadcrumb-item"><a href="/Teacher/Index">Home</a></li>
+					<li class="breadcrumb-item active">
+						Describe Package
+					</li>
+				</ol>
+			</div>
+		</div>
+	</div>
+	<div class="page-section border-bottom-2">
+		<div class=" page__container">
+			<div class="row">
+				<div class="col-md-12">
+					<div class="page-separator">
+						<div class="page-separator__text">Basic information</div>
+					</div>
+					@Html.HiddenFor(model => model.PackageID)
+					<div class="row">
+
+						<div class="col-md-4">
+                            <label class="form-label">SortID</label>
+							<div class="form-group mb-24pt">
+								@Html.TextBoxFor(model => model.SortID, new { @class = "form-control form-control-lg",@type="number" })
+								<div class="text-accent-red" id="SortIDval"></div>
+							</div>
+						</div>
+						<div class="col-md-4">
+							<label class="form-label">Package Name</label>
+							<div class="form-group mb-24pt">
+								@Html.TextBoxFor(model => model.PackageName, new { @class = "form-control form-control-lg", @placeholder = "Package Name Here", @required = "required" })
+								<div class="text-accent-red" id="PackageNameval"></div>
+							</div>
+						</div>
+
+						<div class="col-md-4">
+							<label style="margin-top:40px" class="form-label">
+								@Html.CheckBoxFor(model => model.HasType, new { })
+								Has Multiple Course Types
+							</label>
+						</div>
+
+						<div class="col-md-12">
+							<label class="form-label">Package Description</label>
+							<div class="form-group mb-24pt">
+								@Html.TextBoxFor(model => model.PackageDescription, new { @class = "form-control form-control-lg", @placeholder = "Package Short Description Here", @required = "required" })
+								<div class="text-accent-red" id="PackageDescriptionval"></div>
+							</div>
+						</div>
+
+						<div class="col-md-12" id="divMultiType">
+							<button onclick="return AddType()" class="btn btn-success">Add Type</button>
+						</div>
+
+						<div class="col-md-12" id="divSingleType">
+							<label class="form-label">For Course</label>
+							<div class="form-group mb-24pt">
+								@Html.DropDownListFor(model => model.CourseIds, new SelectList(ViewBag.Courses, "Value", "Text"), new { @class = "form-control  select2", @multiple = "multiple", @required = "required" })
+								<div class="text-accent-red" id="CourseIdsval"></div>
+							</div>
+						</div>
+
+					</div>
+					<div class="card">
+						<div class="card-header text-center">
+							<a href="/Package/Index" class="btn btn-outline-accent-electric-violet"><i class="fa fa-recycle"></i>&nbsp; New</a>
+
+							@if (Model.PackageID > 0)
+							{
+								<a href="javascript:;" id="btnSave" data-check="true" class="btn btn-outline-success">&nbsp; Update</a>
+								<a href="javascript:;" data-id="@Model.PackageID" id="btnDelete" class="btn btn-outline-accent-red"><i class="fa fa-trash"></i>&nbsp;  Delete</a>
+							}
+							else
+							{
+								<a href="javascript:;" id="btnSave" class="btn btn-outline-success">&nbsp; Save</a>
+							}
+							<a href="/Package/List" class="btn btn-outline-accent-dodger-blue"><i class="fa fa-backward"></i>&nbsp; Back To List</a>
+						</div>
+					</div>
+					@if (Model.PackageID > 0)
+					{
+
+						<table id="tblDetail" class="table table-bordered">
+							<thead>
+								<tr>
+									<th>Duration</th>
+									<th>Duration Price</th>
+									<th>Action</th>
+								</tr>
+							</thead>
+							<tbody>
+								@if (Model.Durations != null)
+								{
+									foreach (var d in Model.Durations)
+									{
+										<tr>
+											<td>@First_Aid_Made_Easy.BLL.Common.Duration.FirstOrDefault(x => x.Value == d.DurationS).Text</td>
+											<td>@d.Price</td>
+											<td>
+												<a href="/Package/AddInstallments/@d.ID" class="@(d.InstallmentsExist?"text-success": "text-info")"><i class="fa fa-book Font20"></i></a>
+												<a href="/Package/DurationIndex/@d.ID" vlaue="" class="text-warning"><i class="fa fa-edit Font20"></i></a>
+											</td>
+										</tr>
+									}
+								}
+							</tbody>
+						</table>
+						<div class="text-sm-center form-group mb-32pt">
+							<small class="form-text text-muted"><a id="btn-AddDetail" href="/Package/DurationIndex?PackID=@Model.PackageID" class="btn btn-success">Add More Duration</a></small>
+						</div>
+					}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+@section scripts {
+	<!-- DateRangePicker -->
+	<script src="~/Content/assets/vendor/moment.min.js"></script>
+	<script src="~/Content/assets/vendor/daterangepicker.js"></script>
+	<script src="~/Content/assets/js/daterangepicker.js"></script>
+	@if (TempData["Success"] != null)
+	{
+		<script>
+			Swal.fire({
+				position: 'top-end',
+				icon: 'success',
+				title: 'Data Saved Successfully',
+				showConfirmButton: false,
+				timer: 1500
+			})
+		</script>
+	}
+
+<script>
+		var jsonModel = @Html.Raw(Json.Encode(Model));
+        $(document).ready(function () {
+            $(".make-switch").attr("data-on-color", "success").attr("data-off-color", "danger").attr("data-on-text", "Yes").attr("data-off-text", "No");
+			if ($("#PackageID").val() > 0) {
+				$("#CourseIds").val(jsonModel.CourseIds).change();
+
+				$.each(jsonModel.Group, function (i,v) {
+					var elt = AddType();
+					elt.find("#Type").val(v.Type);
+					$.each(v.List, function (ind,vp) {
+						var elp = AddPaper(elt)
+						elp.find("#Paper").val(vp.Paper);
+						elp.find(".CourseIds").val(vp.CourseIds).change();
+					})
+				})
+			}
+			$("#HasType").change();
+        })
+        $(document).on("click", "#btnSave", function () {
+            var result = ValidateForm();
+            if (result) {
+                Create();
+            }
+		})
+
+	$(document).on("change", "#HasType", function () {
+		if ($(this).is(":checked")) {
+			$("#divMultiType").show();
+			$("#divSingleType").hide();
+		} else {
+			$("#divMultiType").hide();
+			$("#divSingleType").show();
+		}
+	})
+
+
+	$(document).on("click", "#btnAddPaper", function () {
+		AddPaper($(this).closest(".divType"));
+	})
+
+
+		function Create() {
+			var HasType = $("#HasType").is(":checked");
+			var details = [];
+			if (HasType) {
+				$(".CourseIds").each(function () {
+					var Paper = $(this).closest(".divPaper").find("#Paper").val();
+					var Type = $(this).closest(".divType").find("#Type").val();
+					if ($(this).val().length > 0) {
+						$.each($(this).val(),function (i, v) {
+							details.push({
+								CourseID: v,
+								Paper: Paper,
+								Type: Type
+							})
+						})
+					}
+				})
+			}
+            var data = {
+                PackageID: $("#PackageID").val(),
+                SortID: $("#SortID").val(),
+                PackageName: $("#PackageName").val(),
+                PackageDescription: $("#PackageDescription").val(),
+                CourseIds: $("#CourseIds").val(),
+				PackagePrice: $("#PackagePrice").val(),
+				HasType: HasType,
+				Detail: details
+            }
+            Save(data);
+        }
+
+	function Save(data) {
+		$("#btnSave").hide();
+		$.ajax({
+			url: '/Package/Index',
+			method: 'POST',
+			data: JSON.stringify(data),
+			dataType: 'Json',
+			contentType: 'application/json',
+			success: function (response) {
+				if (response == true) {
+					window.location.href = "/Package/List";
+				}
+			},
+			error: function (err) {
+				Swal.fire({
+					position: 'top-end',
+					icon: 'error',
+					title: 'Something Went Wrong',
+					showConfirmButton: false,
+					timer: 1500
+				})
+			}
+		});
+	}
+
+	function ValidateForm() {
+
+		var PackageName = $("#PackageName").val();
+		var PackageDescription = $("#PackageDescription").val();
+		var Course_Price = $("#Course_Price").val();
+
+		if (PackageName == "" || PackageDescription == "" || Course_Price == "") {
+
+			if (PackageName == "") {
+				$("#PackageNameval").html(" Package Name Is Required");
+			}
+
+			if (PackageDescription == "") {
+				$("#PackageDescriptionval").html("Package Description Is Required");
+			}
+
+			if (PackagePrice == "") {
+				$("#PackagePriceval").html("Package Price Is Required");
+			}
+
+			return false;
+		}
+		return true;
+	}
+
+
+	$(document).on("click", "#btnDelete", function () {
+		var id = $(this).data('id');
+		var btn = $(this);
+		Swal.fire({
+			title: 'Are you sure?',
+			text: " You Want To Delete The Package?",
+			icon: 'warning',
+			showCancelButton: false,
+			confirmButtonColor: '#3085d6',
+			cancelButtonColor: '#d33',
+			confirmButtonText: 'Yes!'
+		}).then((result) => {
+			if (result.isConfirmed) {
+				$.ajax({
+					url: "/Package/Deactivate/" + id,
+					method: "POST",
+					beforeSend: function () {
+						swal.fire({
+							html: '<h5>Loading...</h5>',
+							showConfirmButton: false,
+							onRender: function () {
+								// there will only ever be one sweet alert open.
+								$('.swal2-content').prepend(sweet_loader);
+							}
+						});
+					},
+					success: function (result) {
+						if (result) {
+							btn.hide();
+							Swal.fire(
+								'Deletes!',
+								'The Package Has Been Removed.',
+								'success'
+							)
+							window.location.href = "/Package/List";
+						}
+					}, error: function (err) {
+						alert("Error" + err);
+					}
+				})
+
+			}
+		})
+	})
+
+		function AddType() {
+			var html = `<div class="card pt-4 divType">
+						<div class="row">
+							<div class="col-md-4">
+								<div class="form-group mb-24pt">
+									@Html.TextBox("Type", "", new { @class = "form-control form-control-lg", @placeholder = "Type Name Here" })
+								</div>
+							</div>
+							<div class="col-md-4">
+								<button id="btnAddPaper" class="btn btn-success mb-auto mt-2"><i class="fa fa-plus"></i></button>
+							</div>
+						</div>
+					</div>`;
+			$("#divMultiType").append(html);
+			return $("#divMultiType .divType:last");
+		}
+
+		function AddPaper(el) {
+			var l = $(".CourseIds").length + 1;
+			var html = `<div class="col-md-12 d-flex divPaper">
+						<div class="form-group mb-24pt">
+							@Html.TextBox("Paper", "", new { @class = "form-control form-control-lg", @placeholder = "Paper Name Here" })
+						</div>
+						<div class="form-group w-100 pt-2">
+							@Html.DropDownList("SelectCourseId", new SelectList(ViewBag.Courses, "Value", "Text"), new { @class = "form-control CourseIds w-100 select2", @multiple = "multiple", @required = "required" })
+						</div>
+					</div>`;
+			html = html.replaceAll("SelectCourseId", "CourseId" + l);
+			el.append(html);
+			var lastPaper = el.find(".divPaper:last");
+			lastPaper.find(".select2").select2();
+			return lastPaper;
+		}
+
+</script>
+
+}
+

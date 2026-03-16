@@ -1,0 +1,132 @@
+﻿@model First_Aid_Made_Easy.Models.MeetingVM
+@using System.Web.Configuration;
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_LayoutNew.cshtml";
+    string version = "2.5.0";
+}
+
+
+<style>
+    .sdk-select {
+        height: 34px;
+        border-radius: 4px;
+    }
+
+    .websdktest button {
+        float: right;
+        margin-left: 5px;
+    }
+
+    #nav-tool {
+        margin-bottom: 0px;
+    }
+
+    #show-test-tool {
+        position: absolute;
+        top: 100px;
+        left: 0;
+        display: block;
+        z-index: 99999;
+    }
+
+    #display_name {
+        width: 250px;
+    }
+
+
+    #websdk-iframe {
+        width: 700px;
+        height: 500px;
+        border: 1px;
+        border-color: red;
+        border-style: dashed;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        left: 50%;
+        margin: 0;
+    }
+</style>
+
+
+
+<div class="container-xxl d-none" id="kt_content_container">
+    <!--begin::Connected Accounts-->
+    <div class="card mb-5 mb-xl-10">
+        <iframe id="meetingifram" src=""> 
+
+        </iframe>
+    </div>
+
+</div>
+
+
+@section scripts {
+
+    <!-- For Component and Client View -->
+    <script src="https://source.zoom.us/@(version)/lib/vendor/react.min.js"></script>
+    <script src="https://source.zoom.us/@(version)/lib/vendor/react-dom.min.js"></script>
+    <script src="https://source.zoom.us/@(version)/lib/vendor/redux.min.js"></script>
+    <script src="https://source.zoom.us/@(version)/lib/vendor/redux-thunk.min.js"></script>
+    <script src="https://source.zoom.us/@(version)/lib/vendor/lodash.min.js"></script>
+
+    <!-- For Client View -->
+    <script src="https://source.zoom.us/zoom-meeting-@(version).min.js"></script>
+    <script src="~/Scripts/js/tool.js"></script>
+    <script src="~/Scripts/js/vconsole.min.js"></script>
+    <script>
+        var meetingConfig = {
+            name: "@Model.Course",
+            email:"",
+            mn: @Model.MeetingNo,
+            pwd: "@Model.Password",
+            role: @Model.Role,
+            lang:"en-US"
+        };
+
+        window.addEventListener('DOMContentLoaded', function (event) {
+            console.log('DOM fully loaded and parsed');
+            websdkready();
+        });
+
+        function websdkready() {
+            var testTool = window.testTool;
+            if (testTool.isMobileDevice()) {
+                vConsole = new VConsole();
+            }
+            console.log("checkSystemRequirements");
+            console.log(JSON.stringify(ZoomMtg.checkSystemRequirements()));
+
+            ZoomMtg.preLoadWasm(); // pre download wasm file to save time.
+            ZoomMtg.prepareWebSDK()
+
+            var SDK_KEY = "@WebConfigurationManager.AppSettings["SDK_KEY"]";
+            var SDK_SECRET = "@WebConfigurationManager.AppSettings["SDK_SECRET"]";
+
+            testTool.setCookie("meeting_number", meetingConfig.mn);
+            testTool.setCookie("meeting_pwd", meetingConfig.pwd);
+
+            var signature = ZoomMtg.generateSDKSignature({
+                meetingNumber: meetingConfig.mn,
+                sdkKey: SDK_KEY,
+                sdkSecret: SDK_SECRET,
+                role: meetingConfig.role,
+                success: function (res) {
+                    console.log(res.result);
+                    meetingConfig.signature = res.result;
+                    meetingConfig.sdkKey = SDK_KEY;
+                    var joinUrl = "/Zoom/Meeting?" + testTool.serialize(meetingConfig);
+                    console.log(joinUrl);
+                    //window.open(joinUrl, "_blank");
+                    window.location.href = joinUrl;
+                },
+            });
+
+        }
+
+
+    </script>
+
+}

@@ -1,0 +1,203 @@
+﻿@{
+    ViewBag.Title = "Course Save";
+    Layout = "~/Views/Shared/_LayoutTeacher.cshtml";
+}
+
+<!-- Select2 -->
+<link type="text/css" href="~/Content/assets/css/select2.css" rel="stylesheet">
+<link type="text/css" href="~/Content/assets/vendor/select2/select2.min.css" rel="stylesheet">
+
+<!-- DateRangePicker -->
+<link type="text/css" href="~/Content/assets/vendor/daterangepicker.css" rel="stylesheet">
+
+<div class="pt-32pt">
+    <div class="container-fluid page__container d-flex flex-column flex-md-row align-items-center text-center text-sm-left">
+        <div class="flex d-flex flex-column flex-sm-row align-items-center">
+            <div class="mb-24pt mb-sm-0 mr-sm-24pt">
+                <h2 class="mb-0">Copy Section</h2>
+                <ol class="breadcrumb p-0 m-0">
+                    <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                    <li class="breadcrumb-item active">
+                        Copy Section
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </div>
+    <div class="page-section border-bottom-2">
+        <div class="container-fluid page__container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="page-separator">
+                        <div class="page-separator__text">Basic information</div>
+                    </div>
+                    <form action="/Coupon/Index" method="post">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label class="form-label">From Course</label>
+                                <div class="form-group mb-24pt">
+                                    @Html.DropDownList("FromCourse", new SelectList(ViewBag.Courses, "Value", "Text"), "Select Course From", new { @class = "form-control  select2", @required = "required", @data_toggle = "select" })
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Section</label>
+                                <div class="form-group mb-24pt">
+                                    @Html.DropDownList("SectionID", new SelectList(ViewBag.Section, "Value", "Text"), "Select Section Option", new { @class = "form-control  select2", @data_toggle = "select", @required = "required" })
+                                    <div id="SectionIDVal" style="display:none" class="text-danger">Please Select Section</div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">To Course</label>
+                                <div class="form-group mb-24pt">
+                                    @Html.DropDownList("ToCourse", new SelectList(ViewBag.Courses, "Value", "Text"), "Select Course To", new { @class = "form-control  select2", @required = "required", @data_toggle = "select" })
+                                    <div id="ToCourseVal" style="display:none" class="text-danger">Please Select Course</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header text-center">
+                                <a href="/Enrollment/CopySection" class="btn btn-outline-accent-electric-violet"><i class="fa fa-recycle"></i>&nbsp; New</a>
+                                <a href="javscript:;" id="btnCopy" class="btn btn-outline-success">Copy</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <!-- Select2 -->
+    <script src="~/Content/assets/vendor/select2/select2.min.js"></script>
+    <script src="~/Content/assets/js/select2.js"></script>
+    <!-- DateRangePicker -->
+    <script src="~/Content/assets/vendor/moment.min.js"></script>
+    <script src="~/Content/assets/vendor/daterangepicker.js"></script>
+    <script src="~/Content/assets/js/daterangepicker.js"></script>
+    @if (TempData["Success"] != null)
+    {
+        <script>
+            Swal.fire({
+                position: 'top-end',
+                icon: 'success',
+                title: 'Section Copied Successfully',
+                showConfirmButton: false,
+                timer: 1500
+            })
+        </script>
+    }
+
+    <script>
+        $(document).ready(function () {
+            $(".make-switch").attr("data-on-color", "success").attr("data-off-color", "danger").attr("data-on-text", "Yes").attr("data-off-text", "No");
+            @*if ($("#Id").val() > 0) {
+                if (parseFloat(@Model.RUses) < parseFloat(@Model.NoOfUses)) {
+                    $("select").attr("disabled", true);
+                    $("input[type=text]").attr("readonly", true);
+                }
+            }*@
+        })
+        $(document).on("change", "#FromCourse", function () {
+            var courseid = $(this).val();
+            $.ajax({
+                url: "/Coupon/LoadSections/" + courseid,
+                type: "GET",
+                success: function (result) {
+                    $("#SectionID").html("");
+                    $.each(result, function (i, val) {
+                        var option = `<option value="${val.Value}">${val.Text}</option>`;
+                        $("#SectionID").append(option);
+                    })
+                },
+                error: function (err) {
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'error',
+                        title: err,
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                }
+            })
+        })
+
+        $(document).on("click", "#btnDelete", function () {
+            Swal.fire({
+                position: 'top-end',
+                icon: 'error',
+                title: 'Not Available',
+                showConfirmButton: false,
+                timer: 1500
+            })
+        })
+
+        function IsPageValid() {
+            $("#ToCourseVal,#SectionIDVal").hide();
+            var sid = $("#SectionID option:selected").val();
+            var cid = $("#ToCourse option:selected").val();
+            if ( sid == "" || cid == "" ) {
+                if (sid == "")
+                    $("#SectionIDVal").show();
+                if (cid == "")
+                    $("#ToCourseVal").show();
+                return false
+            } else
+            return true
+        }
+
+        $(document).on("click", "#btnCopy", function () {
+            if (IsPageValid()) {
+                var btn = $(this);
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You Want To Copy This Section?",
+                    icon: 'warning',
+                    showCancelButton: false,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: "/Enrollment/CopySection",
+                            data: {
+                                Toid: $("#ToCourse option:selected").val(),
+                                Sid: $("#SectionID option:selected").val() || 0,
+                                Fromid: $("#FromCourse option:selected").val(),
+                            },
+                            method: "POST",
+                            beforeSend: function () {
+                                swal.fire({
+                                    html: '<h5>Loading...</h5>',
+                                    showConfirmButton: false,
+                                    onRender: function () {
+                                        // there will only ever be one sweet alert open.
+                                        $('.swal2-content').prepend(sweet_loader);
+                                    }
+                                });
+                            },
+                            success: function (result) {
+                                if (result) {
+                                   // btn.hide();
+                                    Swal.fire(
+                                        'Accepted!',
+                                        'The Section Has Been Copied.',
+                                        'success'
+                                    )
+                                }
+                            }, error: function (err) {
+                                alert("Error" + err);
+                            }
+                        })
+
+                    }
+                })
+            }
+        })
+    </script>
+
+}
+

@@ -1,0 +1,266 @@
+@using First_Aid_Made_Easy.BLL
+@using Microsoft.AspNet.Identity
+@using System.Linq
+@{
+    var user = ViewBag.User ?? Common.GetUserNameByASpUserID(User.Identity.GetUserId());
+    var userName = (user?.User_Name ?? "Student").ToString();
+    var firstName = userName.Split(' ')[0];
+    
+    // Time-based greeting
+    var hour = DateTime.Now.Hour;
+    string greeting = hour < 12 ? "Good Morning" : hour < 17 ? "Good Afternoon" : "Good Evening";
+    string emoji = hour < 12 ? "☀️" : hour < 17 ? "🌤️" : "🌙";
+    
+    // Enrollment info
+    var enrollment = ViewBag.Enrollment as dynamic;
+    var packageName = enrollment?.PackageName ?? "Free Plan";
+    var courses = ViewBag.Courses as IEnumerable<dynamic>;
+    var liveClasses = ViewBag.LiveClasses as IEnumerable<dynamic>;
+    
+    int courseCount = courses?.Count() ?? 0;
+    int liveCount = liveClasses?.Count() ?? 0;
+}
+
+<div class="fame-widget-hero">
+    <div class="fame-hero-bg">
+        <div class="fame-hero-gradient"></div>
+        <div class="fame-hero-pattern"></div>
+    </div>
+    
+    <div class="fame-hero-content">
+        <div class="fame-hero-text">
+            <span class="fame-hero-badge">
+                <i data-feather="star" style="width: 14px; height: 14px;"></i>
+                @packageName
+            </span>
+            <h1 class="fame-hero-title">@greeting, @firstName! @emoji</h1>
+            <p class="fame-hero-subtitle">Welcome back to your learning dashboard. You have <strong>@courseCount courses</strong> to explore@(liveCount > 0 ? $" and <strong>{liveCount} live classes</strong> coming up" : "").</p>
+            
+            <div class="fame-hero-actions">
+                <a href="@Url.Action("MyCourses", "Student")" class="fame-btn fame-btn-hero-primary">
+                    <i data-feather="play-circle" style="width: 18px; height: 18px;"></i>
+                    Continue Learning
+                </a>
+                <a href="@Url.Action("CreateTest", "QuestionPaper")" class="fame-btn fame-btn-hero-secondary">
+                    <i data-feather="edit-3" style="width: 18px; height: 18px;"></i>
+                    Practice Test
+                </a>
+                @if (liveCount > 0)
+                {
+                    <a href="@Url.Action("MyMeetings", "Student")" class="fame-btn fame-btn-hero-live">
+                        <span class="fame-pulse-dot"></span>
+                        <i data-feather="video" style="width: 18px; height: 18px;"></i>
+                        Live Classes
+                    </a>
+                }
+            </div>
+        </div>
+        
+        <div class="fame-hero-illustration">
+            <div class="fame-hero-card">
+                <div class="fame-hero-card-icon">🎓</div>
+                <div class="fame-hero-card-text">Keep up the great work!</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.fame-widget-hero {
+    position: relative;
+    border-radius: var(--fame-radius-xl);
+    overflow: hidden;
+    margin-bottom: var(--fame-space-lg);
+}
+
+.fame-hero-bg {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, var(--fame-primary) 0%, var(--fame-secondary) 50%, #C084FC 100%);
+}
+
+.fame-hero-gradient {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 30% 50%, rgba(255,255,255,0.1) 0%, transparent 50%);
+}
+
+.fame-hero-pattern {
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+
+.fame-hero-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 48px;
+    gap: 32px;
+}
+
+.fame-hero-text {
+    flex: 1;
+}
+
+.fame-hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    background: rgba(255,255,255,0.2);
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 20px;
+    color: white;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    backdrop-filter: blur(4px);
+}
+
+.fame-hero-title {
+    font-size: 32px;
+    font-weight: 700;
+    color: white;
+    margin: 0 0 12px 0;
+    line-height: 1.2;
+}
+
+.fame-hero-subtitle {
+    font-size: 16px;
+    color: rgba(255,255,255,0.85);
+    margin: 0 0 28px 0;
+    line-height: 1.6;
+    max-width: 500px;
+}
+
+.fame-hero-subtitle strong {
+    color: white;
+}
+
+.fame-hero-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.fame-btn-hero-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 24px;
+    background: white;
+    color: var(--fame-primary);
+    border-radius: var(--fame-radius-md);
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 200ms;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+}
+
+.fame-btn-hero-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+}
+
+.fame-btn-hero-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 24px;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.3);
+    color: white;
+    border-radius: var(--fame-radius-md);
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 200ms;
+    backdrop-filter: blur(4px);
+}
+
+.fame-btn-hero-secondary:hover {
+    background: rgba(255,255,255,0.25);
+}
+
+.fame-btn-hero-live {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 24px;
+    background: linear-gradient(135deg, #EF4444, #DC2626);
+    color: white;
+    border-radius: var(--fame-radius-md);
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 200ms;
+    box-shadow: 0 4px 14px rgba(239,68,68,0.4);
+}
+
+.fame-btn-hero-live:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(239,68,68,0.5);
+}
+
+.fame-pulse-dot {
+    width: 8px;
+    height: 8px;
+    background: white;
+    border-radius: 50%;
+    animation: pulse 1.5s infinite;
+}
+
+.fame-hero-illustration {
+    flex-shrink: 0;
+}
+
+.fame-hero-card {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: var(--fame-radius-xl);
+    padding: 32px;
+    text-align: center;
+    backdrop-filter: blur(8px);
+}
+
+.fame-hero-card-icon {
+    font-size: 64px;
+    margin-bottom: 12px;
+}
+
+.fame-hero-card-text {
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+@@keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.2); }
+}
+
+@@media (max-width: 768px) {
+    .fame-hero-content {
+        flex-direction: column;
+        padding: 32px 24px;
+        text-align: center;
+    }
+    
+    .fame-hero-subtitle {
+        max-width: 100%;
+    }
+    
+    .fame-hero-actions {
+        justify-content: center;
+    }
+    
+    .fame-hero-illustration {
+        display: none;
+    }
+    
+    .fame-hero-title {
+        font-size: 24px;
+    }
+}
+</style>

@@ -1,0 +1,796 @@
+﻿@model First_Aid_Made_Easy.Models.CourseVM
+@{
+    ViewBag.Title = "Course Preview";
+    ViewBag.BreadCrumb = new String[] { "Ourse Courses", "Course Preview" };
+    Layout = "~/Views/Shared/_LayoutNew.cshtml";
+    int i = 0;
+    Func<decimal?, string> HrsMin = First_Aid_Made_Easy.BLL.Common.HrsMins;
+}
+
+
+<div class="container-xxl" id="kt_content_container">
+    <!--begin::Row-->
+    <div class="row g-5 g-xl-10 mb-5 mb-xl-10" style="height: 970px;">
+        <!--begin::Col-->
+        <div class="col-xl-8">
+            <!--begin::Tables widget 8-->
+            <div class="card h-xl-100">
+                <!--begin::Header-->
+                <img class="card-header position-relative py-0  mx-8 my-8" src="@Url.Content("~/Images/"+Model.Course_Pic)" style="height: 300px; background-color: rgb(139, 132, 196);">
+                <div class=" position-relative py-0 mx-8 my-2">
+                    <h2>@Model.Course_Name</h2>
+
+                </div>
+                <div class="text-gray-400 fw-semibold fs-20 mx-8 my-2">
+                    @Model.Teacher_Name | <span style="color:rgb(80, 184, 80) ;">+Follow</span>
+                </div>
+
+                <div class="card-header position-relative py-0 border-bottom-2 mt-8">
+
+                    <!--begin::Nav-->
+                    <ul class="nav nav-stretch nav-pills nav-pills-custom d-flex">
+                        <!--begin::Nav item-->
+                        <li class="nav-item p-0 ms-0 me-8">
+                            <!--begin::Nav link-->
+                            <a class="nav-link btn btn-color-muted px-0" data-bs-toggle="tab" href="#kt_table_widget_7_tab_content_1">
+                                <!--begin::Title-->
+                                <span class="nav-text fw-semibold fs-4 mb-3">Overview</span>
+                                <!--end::Title-->
+                                <!--begin::Bullet-->
+                                <span class="bullet-custom position-absolute z-index-2 w-100 h-2px top-100 bottom-n100 bg-primary rounded"></span>
+                                <!--end::Bullet-->
+                            </a>
+                            <!--end::Nav link-->
+                        </li>
+                        <!--end::Nav item-->
+                        <!--begin::Nav item-->
+                        <li class="nav-item p-0 ms-0 me-8">
+                            <!--begin::Nav link-->
+                            <a class="nav-link btn btn-color-muted px-0" data-bs-toggle="tab" href="#kt_table_widget_7_tab_content_2">
+                                <!--begin::Title-->
+                                <span class="nav-text fw-semibold fs-4 mb-3">FAQ</span>
+                                <!--end::Title-->
+                                <!--begin::Bullet-->
+                                <span class="bullet-custom position-absolute z-index-2 w-100 h-2px top-100 bottom-n100 bg-primary rounded"></span>
+                                <!--end::Bullet-->
+                            </a>
+                            <!--end::Nav link-->
+                        </li>
+                        <!--end::Nav item-->
+                        <!--begin::Nav item-->
+                        <li class="nav-item p-0 ms-0 me-8">
+                            <!--begin::Nav link-->
+                            <a class="nav-link btn btn-color-muted px-0 show active" data-bs-toggle="tab" href="#kt_table_widget_7_tab_content_3">
+                                <!--begin::Title-->
+                                <span class="nav-text fw-semibold fs-4 mb-3">Discussion</span>
+                                <!--end::Title-->
+                                <!--begin::Bullet-->
+                                <span class="bullet-custom position-absolute z-index-2 w-100 h-2px top-100 bottom-n100 bg-primary rounded"></span>
+                                <!--end::Bullet-->
+                            </a>
+                            <!--end::Nav link-->
+                        </li>
+                        <!--end::Nav item-->
+                        <!--begin::Nav item-->
+                        <li class="nav-item p-0 ms-0 me-8">
+                            <!--begin::Nav link-->
+                            <a class="nav-link btn btn-color-muted px-0" data-bs-toggle="tab" href="#kt_table_widget_7_tab_content_4">
+                                <!--begin::Title-->
+                                <span class="nav-text fw-semibold fs-4 mb-3">Reviews</span>
+                                <!--end::Title-->
+                                <!--begin::Bullet-->
+                                <span class="bullet-custom position-absolute z-index-2 w-100 h-2px top-100 bottom-n100 bg-primary rounded"></span>
+                                <!--end::Bullet-->
+                            </a>
+                            <!--end::Nav link-->
+                        </li>
+                        <!--end::Nav item-->
+
+                    </ul>
+                    <!--end::Nav-->
+                    <!--begin::Toolbar-->
+                    <div class="card-toolbar">
+                        <!--begin::Action-->
+                        <div class="float-end">
+                            <a href="#" class="btn btn-primary me-2" style="font-weight:bold;"><i style="font-size:24px" class="fa">&#xf087;</i>Like</a>
+                            <a href="#" class="btn btn-primary" style="font-weight:bold;"><i style="font-size:24px" class="fa">&#xf064;</i>Share</a>
+                        </div>
+                        <!--end::Action-->
+                    </div>
+                    <!--end::Toolbar-->
+                </div>
+                <!--end::Header-->
+                <!--begin::Body-->
+                <div class="card-body">
+                    <!--begin::Tab Content (ishlamayabdi)-->
+                    <div class="tab-content mb-2">
+                        <!--begin::Tap pane-->
+                        <div class="tab-pane fade" id="kt_table_widget_7_tab_content_1">
+                            <!--begin::Table container-->
+                            <div class="table-responsive">
+                                <!--begin::Table-->
+                                <table class="table align-middle">
+                                    <!--begin::Table head-->
+                                    <thead>
+                                        <tr>
+                                            <th class="min-w-150px p-0"></th>
+                                            <th class="min-w-200px p-0"></th>
+                                            <th class="min-w-100px p-0"></th>
+                                            <th class="min-w-80px p-0"></th>
+                                        </tr>
+                                    </thead>
+                                    <!--end::Table head-->
+                                    <!--begin::Table body-->
+                                    <tbody>
+                                        <h2>Course Discription</h2>
+                                        <div class="text-gray-400 fw-semibold fs-100 my-8"><p>@Model.Course_Description</p></div>
+                                        <h2>Course Outcomes</h2>
+                                        <div class="text-gray-400 fw-semibold fs-100 my-8" style="display: flex;">
+                                            <ul>
+                                                @foreach (var d in Model.Details)
+                                                {
+                                                    <li>@d.CourseDetail_Body</li>
+                                                }
+                                            </ul>
+                                        </div>
+
+                                    </tbody>
+                                    <!--end::Table body-->
+                                </table>
+                                <!--end::Table-->
+                            </div>
+                            <!--end::Table container-->
+                        </div>
+                        <!--end::Tap pane-->
+                        <!--begin::Tap pane-->
+                        <div class="tab-pane fade" id="kt_table_widget_7_tab_content_2">
+                            <!--begin::Table container-->
+                            <div class="table-responsive">
+                                <!--begin::Table-->
+                                <table class="table align-middle">
+                                    <!--begin::Table head-->
+                                    <thead>
+                                        <tr>
+                                            <th class="min-w-150px p-0"></th>
+                                            <th class="min-w-200px p-0"></th>
+                                            <th class="min-w-100px p-0"></th>
+                                            <th class="min-w-80px p-0"></th>
+                                        </tr>
+                                    </thead>
+                                    <!--end::Table head-->
+                                    <!--begin::Table body-->
+                                    <tbody>
+                                    </tbody>
+                                    <!--end::Table body-->
+                                </table>
+                                <!--end::Table-->
+                            </div>
+                            <!--end::Table container-->
+                        </div>
+                        <!--end::Tap pane-->
+                        <!--begin::Tap pane-->
+                        <div class="tab-pane fade show active" id="kt_table_widget_7_tab_content_3">
+                            <!--begin::Table container-->
+                            <div class="table-responsive">
+                                <!--begin::Table-->
+                                <table class="table align-middle">
+                                    <!--begin::Table head-->
+                                    <thead>
+                                        <tr>
+                                            <th class="min-w-150px p-0"></th>
+                                            <th class="min-w-200px p-0"></th>
+                                            <th class="min-w-100px p-0"></th>
+                                            <th class="min-w-80px p-0"></th>
+                                        </tr>
+                                    </thead>
+                                    <!--end::Table head-->
+                                    <!--begin::Table body-->
+                                    <tbody>
+                                    </tbody>
+                                    <!--end::Table body-->
+                                </table>
+                                <!--end::Table-->
+                            </div>
+                            <!--end::Table container-->
+                        </div>
+                        <!--end::Tap pane-->
+                        <!--begin::Tap pane-->
+                        <div class="tab-pane fade" id="kt_table_widget_7_tab_content_4">
+                            <!--begin::Table container-->
+                            <div class="table-responsive">
+                                <!--begin::Table-->
+                                <table class="table align-middle">
+                                    <!--begin::Table head-->
+                                    <thead>
+                                        <tr>
+                                            <th class="min-w-150px p-0"></th>
+                                            <th class="min-w-200px p-0"></th>
+                                            <th class="min-w-100px p-0"></th>
+                                            <th class="min-w-80px p-0"></th>
+                                        </tr>
+                                    </thead>
+                                    <!--end::Table head-->
+                                    <!--begin::Table body-->
+                                    <tbody>
+                                    </tbody>
+                                    <!--end::Table body-->
+                                </table>
+                                <!--end::Table-->
+                            </div>
+                            <!--end::Table container-->
+                        </div>
+                        <!--end::Tap pane-->
+                        <!--begin::Tap pane-->
+                        <div class="tab-pane fade" id="kt_table_widget_7_tab_content_5">
+                            <!--begin::Table container-->
+                            <div class="table-responsive">
+                                <!--begin::Table-->
+                                <table class="table align-middle">
+                                    <!--begin::Table head-->
+                                    <thead>
+                                        <tr>
+                                            <th class="min-w-150px p-0"></th>
+                                            <th class="min-w-200px p-0"></th>
+                                            <th class="min-w-100px p-0"></th>
+                                            <th class="min-w-80px p-0"></th>
+                                        </tr>
+                                    </thead>
+                                    <!--end::Table head-->
+                                    <!--begin::Table body-->
+                                    <tbody>
+                                    </tbody>
+                                    <!--end::Table body-->
+                                </table>
+                                <!--end::Table-->
+                            </div>
+                            <!--end::Table container-->
+                        </div>
+                        <!--end::Tap pane-->
+                    </div>
+                    <!--end::Tab Content-->
+
+                </div>
+                <!--end: Card Body-->
+            </div>
+            <!--end::Tables widget 8-->
+        </div>
+        <!--end::Col-->
+        <!--begin::Col-->
+        <div class="col-xxl-4">
+            <!--begin::List widget 20-->
+            <div class="card h-xl-100">
+                <!--begin::Header-->
+                <div class="card-header border-0 pt-5">
+                    <h3 class="card-title align-items-start flex-column">
+                        <span class="card-label fw-bold text-dark">Course Content</span>
+                        <span class="text-muted mt-1 fw-semibold fs-7">
+                            Lecture (@Model.Lessons) Total (@HrsMin(Model.DurationInMin))
+                        </span>
+                    </h3>
+                </div>
+                <!--end::Header-->
+                <!--begin::Body-->
+                <div class="card-body pt-6">
+                    <!--begin::Item-->
+                    <div class="d-flex flex-stack">
+
+                        <!--begin::Section-->
+                        <div class="d-flex align-items-center flex-row-fluid flex-wrap">
+                            <!--begin:Author-->
+                            <div class="flex-grow-1 me-2">
+                                <a href="#" class="text-gray-800 text-hover-primary fs-6 fw-bold">Module 1</a>
+                                <span class="fw-semibold d-block fs-7">Introduction</span>
+                            </div>
+                            <!--end:Author-->
+                            <!--begin:Author-->
+                            <div class="flex-grow-2">
+                                <span class="text-muted fw-semibold d-block fs-7"><i class='fas fa-book-open' style='font-size:15px'></i> 21 lecture&nbsp;<i class='far fa-clock' style='font-size:15px'></i> 54 min</span>
+                            </div>
+                            <!--end:Author-->
+                            <!--begin::Actions-->
+                            <a href="#" class="btn btn-sm btn-icon  btn-active-color-primary w-30px h-30px me-2">
+                                <i class='fas fa-chevron-circle-down' style='font-size:20px; color: rgb(152, 177, 180)'></i>
+                            </a>
+                            <!--begin::Actions-->
+                        </div>
+                        <!--end::Section-->
+                    </div>
+                    <!--end::Item-->
+                    <!--begin::Separator-->
+                    <div class="separator separator-dashed my-4"></div>
+                    <!--end::Separator-->
+                    <!--begin::Item-->
+                    <div class="d-flex flex-stack">
+
+                        <!--begin::Section-->
+                        <div class="d-flex align-items-center flex-row-fluid flex-wrap">
+                            <!--begin:Author-->
+                            <div class="flex-grow-1 me-2">
+                                <a href="../../demo3/dist/pages/user-profile/overview.html" class="text-gray-800 text-hover-primary fs-6 fw-bold">Module 2</a>
+                                <span class="fw-semibold d-block fs-7">Introduction</span>
+                            </div>
+                            <!--end:Author-->
+                            <!--begin:Author-->
+                            <div class="flex-grow-2">
+
+                                <span class="text-muted fw-semibold d-block fs-7"><i class='fas fa-book-open' style='font-size:15px'></i> 21 lecture&nbsp;<i class='far fa-clock' style='font-size:15px'></i> 54 min</span>
+                            </div>
+                            <!--end:Author-->
+                            <!--begin::Actions-->
+                            <a href="#" class="btn btn-sm btn-icon  btn-active-color-primary w-30px h-30px me-2">
+                                <i class='fas fa-chevron-circle-down' style='font-size:20px; color: rgb(69, 117, 103);'></i>
+                            </a>
+                            <!--begin::Actions-->
+                        </div>
+                        <!--end::Section-->
+                    </div>
+                    <!--end::Item-->
+                    <!--begin::Body-->
+                    <div class="card-body ps-0 m-0">
+                        <!--begin::Timeline-->
+                        <div class="timeline-label">
+                            <!--begin::Item-->
+                            <div class="timeline-item">
+
+                                <!--begin::Badge-->
+                                <div class="timeline-badge">
+                                    <i class="fa fa-genderless text-primary fs-1"></i>
+                                </div>
+                                <!--end::Badge-->
+                                <!--begin::Text-->
+                                <div class="fw-bold text-gray-800 ps-3">Getting started lessons <br> <span class="fw-mormal timeline-content text-muted">Easy</span></div>
+                                <!--end::Text-->
+                            </div>
+                            <!--end::Item-->
+                            <!--begin::Item-->
+                            <div class="timeline-item">
+
+                                <!--begin::Badge-->
+                                <div class="timeline-badge">
+                                    <i class="fa fa-genderless text-primary fs-1"></i>
+                                </div>
+                                <!--end::Badge-->
+                                <!--begin::Text-->
+                                <div class="fw-bold text-gray-800 ps-3">Overview about basic tools <br> <span class="fw-mormal timeline-content text-muted">Intermediate</span></div>
+                                <!--end::Text-->
+                            </div>
+                            <!--end::Item-->
+                            <!--begin::Item-->
+                            <div class="timeline-item">
+
+                                <!--begin::Badge-->
+                                <div class="timeline-badge">
+                                    <i class="fa fa-genderless text-primary fs-1"></i>
+                                </div>
+                                <!--end::Badge-->
+                                <!--begin::Text-->
+                                <div class="fw-bold text-gray-800 ps-3">Visual design using tools <br> <span class="fw-mormal timeline-content text-muted">Hard</span></div>
+                                <!--end::Text-->
+                            </div>
+                            <!--end::Item-->
+                            <!--begin::Item-->
+                            <div class="timeline-item">
+
+                                <!--begin::Badge-->
+                                <div class="timeline-badge">
+                                    <i class="fa fa-genderless text-primary fs-1"></i>
+                                </div>
+                                <!--end::Badge-->
+                                <!--begin::Text-->
+                                <div class="fw-bold text-gray-800 ps-3">Getting started lessons <br> <span class="fw-mormal timeline-content text-muted">Easy</span></div>
+                                <!--end::Text-->
+                            </div>
+                            <!--end::Item-->
+                            <!--begin::Item-->
+                            <div class="timeline-item">
+
+                                <!--begin::Badge-->
+                                <div class="timeline-badge">
+                                    <i class="fa fa-genderless text-primary fs-1"></i>
+                                </div>
+                                <!--end::Badge-->
+                                <!--begin::Text-->
+                                <div class="fw-bold text-gray-800 ps-3">Overview about basic tools <br> <span class="fw-mormal timeline-content text-muted">Intermediate</span></div>
+                                <!--end::Text-->
+                            </div>
+                            <!--end::Item-->
+                            <!--begin::Item-->
+                            <div class="timeline-item">
+
+                                <!--begin::Badge-->
+                                <div class="timeline-badge">
+                                    <i class="fa fa-genderless text-primary fs-1"></i>
+                                </div>
+                                <!--end::Badge-->
+                                <!--begin::Text-->
+                                <div class="fw-bold text-gray-800 ps-3">Visual design using tools <br> <span class="fw-mormal timeline-content text-muted">Hard</span></div>
+                                <!--end::Text-->
+                            </div>
+                            <!--end::Item-->
+
+                        </div>
+                        <!--end::Timeline-->
+                    </div>
+                    <!--end: Card Body-->
+                    <!--begin::Separator-->
+                    <div class="separator separator-dashed my-4"></div>
+                </div>
+                <!--end::Body-->
+            </div>
+            <!--end::List widget 20-->
+        </div>
+        <!--end::Col-->
+    </div>
+    <!--end::Row-->
+</div>
+
+
+
+<div style="display:none" class="page-section border-bottom-2">
+    <div class="container page__container">
+
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="row mb-24pt">
+                    <div class="col-md-7">
+                        <div class="page-separator">
+                            <div class="page-separator__text">About this course</div>
+                        </div>
+                        <p class="text-70">@Model.Course_Description</p>
+                        <div class="mb-24pt">
+                            <span class="chip chip-outline-secondary d-inline-flex align-items-center">
+                                <i class="material-icons icon--left">schedule</i>
+                                @HrsMin(Model.DurationInMin)
+                            </span>
+                            <span class="chip chip-outline-secondary d-inline-flex align-items-center">
+                                <i class="material-icons icon--left">assessment</i>
+                                Beginner
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="page-separator">
+                            <div class="page-separator__text ">What you’ll learn</div>
+                        </div>
+                        <ul class="list-unstyled">
+                            @foreach (var d in Model.Details)
+                            {
+                                <li class="d-flex align-items-center">
+                                    <span class="material-icons text-50 mr-8pt">check</span>
+                                    <span class="text-70">@d.CourseDetail_Body</span>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+                <div class="page-separator">
+                    <div class="page-separator__text">Table of contents</div>
+                </div>
+                <div class="accordion js-accordion accordion--boxed " id="parent">
+                    @if (Model.SectionList.Count <= 0)
+                    {
+                        <div class="accordion__menu-link">
+                            <span class="text-accent-red">Sorry No Content Available For This Course</span>
+                        </div>
+                    }
+
+                    @foreach (var s in Model.SectionList)
+                    {
+                        i++;
+                        <div class="accordion__item open">
+                            <a href="#" class="accordion__toggle" data-toggle="collapse" data-target="#course-toc-@i" data-parent="#parent">
+                                <span class="flex">@s.Section_Name</span>
+                                <span class="accordion__toggle-icon material-icons">keyboard_arrow_down</span>
+                            </a>
+                            <div class="accordion__menu collapse show" id="course-toc-@i">
+
+                                @foreach (var v in s.VideoList)
+                                {
+                                    <div class="accordion__menu-link">
+                                        <span class="material-icons icon-16pt icon--left text-muted">lock</span>
+                                        <a class="flex btnplayVideo" data-id="@v.Video_Id">@v.Video_Name</a>
+                                        <span class="text-muted">@v.Video_Length</span>
+                                    </div>
+                                }
+                                @if (s.VideoList.Count > 0)
+                                {
+                                    <div class="accordion__menu-link">
+                                        <button type="button" data-id="@s.Section_ID" class="btn btn-outline-accent mb-8pt" id="btnUnlockSec">Unlock - Only Rs.@s.Section_Price/mo</button>
+                                        @*<button type="button" class="btn btn-outline-accent mb-8pt" data-toggle="modal" data-target="#PaymentModal" data-whatever="Title">Unlock - Only Rs.@s.Section_Price/mo</button>*@
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="accordion__menu-link">
+                                        <span class="text-accent-red">Sorry No Video Available For This Section</span>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <div class="modal fade" id="PaymentModal" tabindex="-1" role="dialog" aria-labelledby="PaymentModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="PaymentModalLabel">Choose Your Payment Method</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                @*"/Payment/PayByEasyPaisa"*@
+                                <a href="#" class="btn btn-light btn-block mb-24pt">
+                                    <span class="fab fa-exchange-alt icon--left"></span>
+                                    Continue with EasyPaisa
+                                </a>
+                                <a href="#" class="btn btn-light btn-block mb-24pt">
+                                    <span class="fab fa-java icon--left"></span>
+                                    Continue with JazzCash
+                                </a>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-body py-16pt text-center">
+                        <span class="icon-holder icon-holder--outline-secondary rounded-circle d-inline-flex mb-8pt">
+                            <i class="material-icons">timer</i>
+                        </span>
+                        <h4 class="card-title"><strong>Unlock Course</strong></h4>
+                        <p class="card-subtitle text-70 mb-24pt">Get access to all videos in this Course</p>
+                        <button type="button" class="btn btn-accent mb-8pt" data-id="@Model.Course_Id" id="btnUnlockCo">Unlock - Only Rs.@Model.Course_Price/mo</button>
+                        @*<button type="button" class="btn btn-accent mb-8pt" data-toggle="modal" data-target="#PaymentModal" data-whatever="">Unlock - Only Rs.@Model.Course_Price/mo</button>*@
+                        <p class="mb-0">Have an account? <a href="/Account/Login">Login</a></p>
+                    </div>
+                </div>
+                <div class="page-separator">
+                    <div class="page-separator__text">Author</div>
+                </div>
+                <div class="media align-items-center mb-16pt">
+                    <span class="media-left mr-16pt">
+                        <img src="@Url.Content("/Images/"+Model.Teacher_Pic)" width="40" alt="avatar" class="rounded-circle">
+                    </span>
+                    <div class="media-body">
+                        <a class="card-title m-0" href="/Home/Teacher_Preview/@Model.Teacher_Fid">@Model.Teacher_Name</a>
+                        <p class="text-50 lh-1 mb-0">Instructor</p>
+                    </div>
+                </div>
+                <p class="text-70">Fueled by my passion for understanding the nuances of cross-cultural advertising, I consider myself a forever student, eager to both build on my academic foundations in psychology and sociology and stay in tune with the latest digital marketing strategies through continued coursework.</p>
+                <a href="/Home/Teacher_Preview/@Model.Teacher_Fid" class="btn btn-white mb-24pt">Detail</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            $(".preloader").hide();
+            $(".accordion__toggle").trigger("click");
+        })
+
+        $("#btnplayVideo").click(function () {
+            var CourseID = $(this).data().id;
+            loadVideo(CourseID);
+        })
+
+
+
+        $('#PaymentModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget) // Button that triggered the modal
+            var recipient = button.data('whatever') // Extract info from data-* attributes
+            // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+            //Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+            var modal = $(this)
+            modal.find('.modal-title').text('New message to ' + recipient)
+            modal.find('.modal-body input').val(recipient)
+        })
+
+        $(document).on("click", "#btnUnlockSec ", function () {
+            var id = $(this).data("id");
+            Enroll("ST", id);
+        })
+        $(document).on("click", "#btnUnlockCo", function () {
+            var id = $(this).data("id");
+            Enroll("CR", id);
+        })
+        function Enroll(For, id) {
+            Swal.fire({
+                title: 'Enter Your Coupon Secret',
+                input: 'text',
+                inputAttributes: {
+                    autocapitalize: 'off'
+                },
+                showCancelButton: true,
+                confirmButtonText: 'Submit',
+                showLoaderOnConfirm: true,
+                preConfirm: (login) => {
+                    return fetch(`/Enrollment/Enroll/${id}?Method=CP&EnrollFor=${For}&Secret=${login}`, {
+                        method: 'POST',
+                    })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error(response.statusText)
+                            }
+                            return response.json()
+                        })
+                        .catch(error => {
+                            Swal.showValidationMessage(
+                                `Request failed: ${error}`
+                            )
+                        })
+                },
+                allowOutsideClick: () => !Swal.isLoading()
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    if (result.value == "Success") {
+                        Swal.fire({
+                            title: `Success`,
+                            text: 'Enrollment Succefull Please Visit "Our Courses" Page.Thank You',
+                        })
+                        window.location.href = "/Student/MyCourses";
+                    }
+                    if (result.value == "Error") {
+                        Swal.fire({
+                            title: `Error`,
+                            text: 'Sorry! Something Went Wrong',
+                        })
+                    }
+                    if (result.value > 0) {
+                        Swal.fire({
+                            title: `Success`,
+                            text: 'Your Amount IS Discounted by ' + result.value + "%",
+                        })
+                    }
+                }
+            })
+        }
+    </script>
+    <script>
+    @* function Enroll(For, id) {
+        const swalWithBootstrapButtons = Swal.mixin({
+            customClass: {
+                confirmButton: 'btn btn-success',
+                cancelButton: 'btn btn-danger'
+            },
+            buttonsStyling: false
+        })
+
+        swalWithBootstrapButtons.fire({
+            title: 'How You Want To Pay',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Pay By EasyPaisa',
+            cancelButtonText: 'Pay By JazzCash',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+
+                $.ajax({
+                    url: "/Enrollment/Enroll/",
+                    type: "GET",
+                    data: {
+                        id: id,
+                        Method: method,
+                        EnrollFor: For, //Course/Section
+                        Secret: "",
+                    },
+                    success: function (r) {
+                        switch (r) {
+                            case "Login":
+                                var urlpost = "@Url.Action("Login","Account",new {returnUrl = " / Home / Course_Preview / CourseID" })";
+                                window.location.href = urlpost.replace("CourseID", "@Model.Course_Id");
+                                break;
+                            case "Already":
+                                swalWithBootstrapButtons.fire(
+                                    'Accepted!',
+                                    'You Have Already Enrolled This Section.',
+                                    'warning'
+                                )
+                                break;
+                            case "success":
+                                swalWithBootstrapButtons.fire(
+                                    'Accepted!',
+                                    'Your request has been Transmitted.',
+                                    'success'
+                                )
+                                break;
+                            default:
+                                swalWithBootstrapButtons.fire(
+                                    'Sorry!',
+                                    'Something Went Wrong',
+                                    'error'
+                                )
+                        }
+                    },
+                    Error: function (err) {
+                        swalWithBootstrapButtons.fire(
+                            'Sorry!',
+                            err,
+                            'error'
+                        )
+                    }
+                })
+
+                /* Read more about handling dismissals below */
+            } else if (result.dismiss === Swal.DismissReason.cancel) {
+                $.ajax({
+                    url: "/Enrollment/JC" + Action + "/" + id,
+                    type: "GET",
+                    success: function (r) {
+                        switch (r) {
+                            case "Login":
+                                var urlpost = "@Url.Action("Login","Account",new {returnUrl = " / Home / Course_Preview / CourseID" })";
+                                window.location.href = urlpost.replace("CourseID", "@Model.Course_Id");
+                                break;
+                            case "Already":
+                                swalWithBootstrapButtons.fire(
+                                    'Accepted!',
+                                    'You Have Already Enrolled This Section.',
+                                    'warning'
+                                )
+                                break;
+                            case "success":
+                                swalWithBootstrapButtons.fire(
+                                    'Accepted!',
+                                    'Your request has been Transmitted.',
+                                    'success'
+                                )
+                                break;
+                            default:
+                                swalWithBootstrapButtons.fire(
+                                    'Sorry!',
+                                    'Something Went Wrong',
+                                    'error'
+                                )
+                        }
+                    },
+                    Error: function (err) {
+                        swalWithBootstrapButtons.fire(
+                            'Sorry!',
+                            err,
+                            'error'
+                        )
+                    }
+                })
+            }
+        })
+    } *@
+                        //Swal.fire({
+                        //    title: 'Are you sure?',
+                        //    text: "You won't be able to revert this!",
+                        //    icon: 'warning',
+                        //    showCancelButton: true,
+                        //    confirmButtonColor: '#3085d6',
+                        //    cancelButtonColor: '#d33',
+                        //    confirmButtonText: 'Yes, delete it!'
+                        //}).then((result) => {
+                        //    if (result.isConfirmed) {
+                        //        Swal.fire(
+                        //            'Deleted!',
+                        //            'Your file has been deleted.',
+                        //            'success'
+                        //        )
+                        //    }
+                        //})
+
+                        //Swal.fire({
+                        //    title: 'Sweet!',
+                        //    text: 'Modal with a custom image.',
+                        //    imageUrl: 'https://unsplash.it/400/200',
+                        //    imageWidth: 400,
+                        //    imageHeight: 200,
+                        //    imageAlt: 'Custom image',
+                        //})
+    </script>
+}

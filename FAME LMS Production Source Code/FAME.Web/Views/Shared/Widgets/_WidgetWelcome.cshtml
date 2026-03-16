@@ -1,0 +1,39 @@
+@using First_Aid_Made_Easy.BLL
+@using Microsoft.AspNet.Identity
+@using System.Linq
+@{
+    var user = ViewBag.User ?? Common.GetUserNameByASpUserID(User.Identity.GetUserId());
+    var userName = (user?.User_Name ?? "Student").ToString();
+    var firstName = userName.Split(' ')[0];
+    
+    // Get time-based greeting
+    var hour = DateTime.Now.Hour;
+    string greeting;
+    if (hour < 12) greeting = "Good Morning";
+    else if (hour < 17) greeting = "Good Afternoon";
+    else greeting = "Good Evening";
+    
+    // Get enrollment info
+    var enrollment = ViewBag.Enrollment as dynamic;
+    var packageName = enrollment?.PackageName ?? "Free Plan";
+}
+
+<div class="fame-hero fame-animate-slide-up">
+    <div class="fame-hero-content">
+        <p class="fame-hero-greeting">@greeting,</p>
+        <h1 class="fame-hero-title">Welcome back, @firstName! 👋</h1>
+        <p class="fame-hero-subtitle">
+            You're enrolled in <strong>@packageName</strong>. Keep up the great work on your learning journey!
+        </p>
+        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+            <a href="@Url.Action("MyCourses", "Student")" class="fame-hero-btn">
+                <i data-feather="play-circle" style="width: 18px; height: 18px;"></i>
+                Continue Learning
+            </a>
+            <a href="@Url.Action("CreateTest", "QuestionPaper")" class="fame-hero-btn" style="background: rgba(16, 185, 129, 0.2); border-color: rgba(16, 185, 129, 0.3);">
+                <i data-feather="edit-3" style="width: 18px; height: 18px;"></i>
+                Practice Test
+            </a>
+        </div>
+    </div>
+</div>

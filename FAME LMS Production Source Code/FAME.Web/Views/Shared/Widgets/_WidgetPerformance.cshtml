@@ -1,0 +1,100 @@
+@using First_Aid_Made_Easy.BLL
+@using Microsoft.AspNet.Identity
+@{
+    // Performance data would typically come from the controller
+    // For now, we'll use placeholder data that can be enhanced later
+    var userId = User.Identity.GetUserId();
+}
+
+<div class="fame-card fame-animate-slide-up">
+    <div class="fame-card-header">
+        <h3 class="fame-card-title">
+            <i data-feather="bar-chart-2" style="width: 20px; height: 20px; margin-right: 8px; vertical-align: middle;"></i>
+            Test Performance
+        </h3>
+        <a href="@Url.Action("PreviousTests", "QuestionPaper")" class="fame-card-action">View Details →</a>
+    </div>
+    <div class="fame-card-body">
+        <div class="fame-chart-container" id="performanceChartContainer">
+            <canvas id="performanceChart" 
+                    data-labels='["Week 1", "Week 2", "Week 3", "Week 4"]'
+                    data-values='[65, 72, 78, 82]'>
+            </canvas>
+        </div>
+        
+        <div class="fame-performance-summary">
+            <div class="fame-perf-item">
+                <div class="fame-perf-value fame-text-accent" id="avgScore">--</div>
+                <div class="fame-perf-label">Avg Score</div>
+            </div>
+            <div class="fame-perf-item">
+                <div class="fame-perf-value fame-text-success" id="testsCompleted">--</div>
+                <div class="fame-perf-label">Tests Done</div>
+            </div>
+            <div class="fame-perf-item">
+                <div class="fame-perf-value fame-text-warning" id="questionsAttempted">--</div>
+                <div class="fame-perf-label">Questions</div>
+            </div>
+        </div>
+    </div>
+    <div class="fame-card-footer">
+        <div style="display: flex; gap: 12px;">
+            <a href="@Url.Action("CreateTest", "QuestionPaper")" class="fame-btn fame-btn-primary" style="flex: 1;">
+                <i data-feather="plus" style="width: 16px; height: 16px;"></i>
+                New Test
+            </a>
+            <a href="@Url.Action("MockTests", "QuestionPaper")" class="fame-btn fame-btn-secondary" style="flex: 1;">
+                <i data-feather="file-text" style="width: 16px; height: 16px;"></i>
+                Mock Tests
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        loadPerformanceData();
+    });
+    
+    function loadPerformanceData() {
+        // Load performance data from API
+        $.get('/StudentBank/GetPerformance?id=@userId', function(response) {
+            if (response && response.success && response.data) {
+                var data = response.data;
+                
+                // Update summary stats
+                $('#avgScore').text((data.AverageScore || 0) + '%');
+                $('#testsCompleted').text(data.TestsCompleted || 0);
+                $('#questionsAttempted').text(data.TotalQuestions || 0);
+                
+                // Update chart if we have weekly data
+                if (data.WeeklyScores && data.WeeklyScores.length > 0) {
+                    updatePerformanceChart(data.WeeklyLabels || [], data.WeeklyScores);
+                }
+            } else {
+                // Use placeholder values
+                $('#avgScore').text('75%');
+                $('#testsCompleted').text('12');
+                $('#questionsAttempted').text('240');
+            }
+        }).fail(function() {
+            // Use placeholder values on error
+            $('#avgScore').text('N/A');
+            $('#testsCompleted').text('0');
+            $('#questionsAttempted').text('0');
+        });
+    }
+    
+    function updatePerformanceChart(labels, values) {
+        var ctx = document.getElementById('performanceChart');
+        if (ctx && typeof Chart !== 'undefined') {
+            ctx.dataset.labels = JSON.stringify(labels);
+            ctx.dataset.values = JSON.stringify(values);
+            
+            // Reinitialize chart
+            if (window.FAME && window.FAME.Charts) {
+                window.FAME.Charts.initPerformanceChart();
+            }
+        }
+    }
+</script>

@@ -1,0 +1,275 @@
+@model First_Aid_Made_Easy.Models.StudentEnrollmentVM
+@{
+    ViewBag.Title = "Assign Exam Attempt to Student";
+    Layout = "~/Views/Shared/_LayoutTeacher.cshtml";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    <i class="fa fa-user-plus"></i> Assign Exam Attempt to Students
+                </h3>
+            </div>
+            <div class="panel-body">
+                @if (TempData["Success"] != null)
+                {
+                    <div class="alert alert-success">@TempData["Success"]</div>
+                }
+                @if (TempData["Error"] != null)
+                {
+                    <div class="alert alert-danger">@TempData["Error"]</div>
+                }
+
+                <!-- Step 1: Select Package -->
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label><strong>1. Select Package</strong></label>
+                            <select class="form-control" id="packageSelect">
+                                <option value="">-- Select Package --</option>
+                                @foreach (SelectListItem pkg in ViewBag.Packages)
+                                {
+                                    <option value="@pkg.Value" @(ViewBag.SelectedPackageId != null && ViewBag.SelectedPackageId.ToString() == pkg.Value ? "selected" : "")>@pkg.Text</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <a href="@Url.Action("Index")" class="btn btn-default pull-right" style="margin-top: 25px;">
+                            <i class="fa fa-arrow-left"></i> Back to Exam Attempts
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Step 2: Bulk Assign (shown when package selected) -->
+                <div id="bulkAssignSection" style="display: none;">
+                    <hr />
+                    <div class="panel panel-success">
+                        <div class="panel-heading">
+                            <h4 class="panel-title"><i class="fa fa-users"></i> 2. Bulk Assign to All Students</h4>
+                        </div>
+                        <div class="panel-body">
+                            @using (Html.BeginForm("BulkAssignToPackage", "ExamAttempt", FormMethod.Post, new { @class = "form-inline" }))
+                            {
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" id="bulkPackageId" name="packageId" value="" />
+                                <div class="form-group">
+                                    <label>Assign Exam Attempt: </label>
+                                    <select class="form-control" id="bulkAttemptSelect" name="examAttemptId" style="min-width: 250px;">
+                                        <option value="">-- Select Exam Attempt --</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-success" onclick="return confirm('Are you sure you want to assign this exam attempt to ALL students enrolled in this package?');">
+                                    <i class="fa fa-check-circle"></i> Assign to All (<span id="studentCount">0</span> students)
+                                </button>
+                                <button type="submit" class="btn btn-warning" name="examAttemptId" value="" onclick="return confirm('Are you sure you want to REMOVE exam attempt from ALL students enrolled in this package?');">
+                                    <i class="fa fa-times-circle"></i> Remove From All
+                                </button>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3: Individual Assignment -->
+                <div id="studentSection" style="display: none;">
+                    <hr />
+                    <h4><strong>3. Individual Student Assignments</strong></h4>
+                    
+                    <!-- Search Bar -->
+                    <div class="row" style="margin-bottom: 15px;">
+                        <div class="col-md-4">
+                            <div class="input-group">
+                                <span class="input-group-addon"><i class="fa fa-search"></i></span>
+                                <input type="text" class="form-control" id="searchInput" placeholder="Search by email...">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover table-bordered" id="studentsTable">
+                            <thead>
+                                <tr>
+                                    <th>Student Name</th>
+                                    <th>Email</th>
+                                    <th>Current Attempt</th>
+                                    <th width="150">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Populated via AJAX -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Individual Assignment Form -->
+                <div class="row" id="assignSection" style="display: none;">
+                    <div class="col-md-8">
+                        <hr />
+                        @using (Html.BeginForm("AssignToStudent", "ExamAttempt", FormMethod.Post, new { @class = "form-horizontal" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" id="enrollmentId" name="EnrollmentId" value="@Model.EnrollmentId" />
+
+                            <div class="panel panel-info">
+                                <div class="panel-heading">
+                                    <h4 class="panel-title">4. Assign Exam Attempt to Selected Student</h4>
+                                </div>
+                                <div class="panel-body">
+                                    <div class="form-group">
+                                        <label class="col-sm-3 control-label">Student:</label>
+                                        <div class="col-sm-9">
+                                            <p class="form-control-static" id="selectedStudentName">@Model.StudentName</p>
+                                            <p class="text-muted" id="selectedStudentEmail">@Model.StudentEmail</p>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-3 control-label">Current Attempt:</label>
+                                        <div class="col-sm-9">
+                                            <p class="form-control-static" id="currentAttempt">
+                                                @(Model.CurrentExamAttemptName ?? "Not Assigned")
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-3 control-label">New Attempt:</label>
+                                        <div class="col-sm-9">
+                                            <select class="form-control" id="attemptSelect" name="NewExamAttemptId">
+                                                <option value="">-- Select Exam Attempt --</option>
+                                                @if (ViewBag.Attempts != null)
+                                                {
+                                                    foreach (SelectListItem attempt in ViewBag.Attempts)
+                                                    {
+                                                        <option value="@attempt.Value" @(attempt.Selected ? "selected" : "")>@attempt.Text</option>
+                                                    }
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="col-sm-offset-3 col-sm-9">
+                                            <button type="submit" class="btn btn-primary">
+                                                <i class="fa fa-save"></i> Assign Attempt
+                                            </button>
+                                            <button type="button" class="btn btn-warning" id="btnRemoveAttempt">
+                                                <i class="fa fa-times"></i> Remove Assignment
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                @if (Model.EnrollmentId == 0)
+                {
+                    <div class="alert alert-info" id="noSelectionAlert">
+                        <i class="fa fa-info-circle"></i> Select a package to view enrolled students and bulk assign exam attempts.
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            var selectedPackageId = '@ViewBag.SelectedPackageId';
+            
+            if (selectedPackageId && selectedPackageId !== '') {
+                loadStudents(selectedPackageId);
+                loadBulkAttempts(selectedPackageId);
+            }
+
+            if (@Model.EnrollmentId > 0) {
+                $('#assignSection').show();
+                loadAttempts(selectedPackageId);
+            }
+
+            $('#packageSelect').change(function () {
+                var packageId = $(this).val();
+                if (packageId) {
+                    loadStudents(packageId);
+                    loadBulkAttempts(packageId);
+                    $('#noSelectionAlert').hide();
+                } else {
+                    $('#studentSection').hide();
+                    $('#bulkAssignSection').hide();
+                    $('#assignSection').hide();
+                    $('#noSelectionAlert').show();
+                }
+            });
+
+            $('#btnRemoveAttempt').click(function () {
+                $('#attemptSelect').val('');
+                $('form').eq(1).submit();
+            });
+
+            // Search functionality
+            $('#searchInput').on('keyup', function () {
+                var searchValue = $(this).val().toLowerCase();
+                $('#studentsTable tbody tr').filter(function () {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(searchValue) > -1);
+                });
+            });
+        });
+
+        function loadStudents(packageId) {
+            $.getJSON('@Url.Action("GetStudentsByPackage")', { packageId: packageId }, function (data) {
+                var tbody = $('#studentsTable tbody');
+                tbody.empty();
+
+                if (data.length === 0) {
+                    tbody.append('<tr><td colspan="4" class="text-center">No students enrolled in this package.</td></tr>');
+                    $('#studentCount').text('0');
+                } else {
+                    $('#studentCount').text(data.length);
+                    $.each(data, function (i, student) {
+                        var currentAttemptClass = student.CurrentAttempt === 'Not Assigned' ? 'text-muted' : 'text-success';
+                        var row = '<tr>' +
+                            '<td>' + student.StudentName + '</td>' +
+                            '<td>' + student.StudentEmail + '</td>' +
+                            '<td class="' + currentAttemptClass + '">' + (student.CurrentAttempt || 'Not Assigned') + '</td>' +
+                            '<td><a href="@Url.Action("AssignToStudent")?enrollmentId=' + student.EnrollmentId + '" class="btn btn-sm btn-primary"><i class="fa fa-edit"></i> Assign</a></td>' +
+                            '</tr>';
+                        tbody.append(row);
+                    });
+                }
+                $('#studentSection').show();
+                $('#bulkAssignSection').show();
+                $('#bulkPackageId').val(packageId);
+            });
+        }
+
+        function loadBulkAttempts(packageId) {
+            $.getJSON('@Url.Action("GetAttemptsByPackage")', { packageId: packageId }, function (data) {
+                var select = $('#bulkAttemptSelect');
+                select.find('option:not(:first)').remove();
+
+                $.each(data, function (i, attempt) {
+                    select.append('<option value="' + attempt.ExamAttemptID + '">' + attempt.AttemptName + '</option>');
+                });
+            });
+        }
+
+        function loadAttempts(packageId) {
+            $.getJSON('@Url.Action("GetAttemptsByPackage")', { packageId: packageId }, function (data) {
+                var select = $('#attemptSelect');
+                var currentVal = select.val();
+                select.find('option:not(:first)').remove();
+
+                $.each(data, function (i, attempt) {
+                    select.append('<option value="' + attempt.ExamAttemptID + '">' + attempt.AttemptName + '</option>');
+                });
+
+                if (currentVal) {
+                    select.val(currentVal);
+                }
+            });
+        }
+    </script>
+}

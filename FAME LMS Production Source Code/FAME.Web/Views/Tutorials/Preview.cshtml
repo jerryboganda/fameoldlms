@@ -1,0 +1,101 @@
+﻿@model First_Aid_Made_Easy.Models.QuestionVM
+@using First_Aid_Made_Easy.BLL
+@{
+    Layout = "~/Views/Shared/_LayoutTeacher.cshtml";
+
+    var Type = Model.TypeS;
+    ViewBag.Title = Type + " Preview";
+
+}
+<style>
+    .green {
+        background-color: #a8e88e
+    }
+</style>
+<div class="pt-32pt">
+    <div class="container-fluid page__container d-flex flex-column flex-md-row align-items-center text-center text-sm-left">
+        <div class="flex d-flex flex-column flex-sm-row align-items-center">
+            <div class="mb-24pt mb-sm-0 mr-sm-24pt">
+                <h2 class="mb-0">Preview @Type</h2>
+                <ol class="breadcrumb p-0 m-0">
+                    <li class="breadcrumb-item"><a href="/Admin/Index">Home</a></li>
+                    <li class="breadcrumb-item active">
+                        Preview @Type
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="page-section border-bottom-2">
+        <div class="container-fluid page__container">
+
+            <div class="row">
+                <div class="col-md-12">
+
+                    <div class="page-separator">
+                        <div class="page-separator__text">Basic information</div>
+                    </div>
+                    <h4>@Model.Question (@Model.Marks)</h4>
+                    <table class="table table-bordered">
+                        @foreach (var o in Model.Options)
+                        {
+                            <tr><td><input type="radio" name="select" /> @o</td></tr>
+                        }
+                    </table>
+                    <div id="Answer" class="card">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="page-separator">
+                                        <div class="page-separator__text">Right Answer Is</div>
+                                    </div>
+                                    <h5 style=" padding: 5px; background-color: #a8e88e;">@Model.Answer</h5>
+                                    <div class="page-separator">
+                                        <div class="page-separator__text">Explaination</div>
+                                    </div>
+                                    <p>@Model.AnsExplain</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header text-center">
+                            <button onclick="Save()" id="btnSave" class="btn btn-outline-accent-red pull-left"><i class="fa fa-backward"></i>&nbsp; Previous</button>
+                            <button onclick="Preview()" class="btn btn-outline-primary">Submit</button>
+                            <button id="btnShow" class="btn btn-outline-primary">Show Answer</button>
+                            <button id="btnHide" class="btn btn-outline-accent-red">Hide Answer</button>
+                            <button onclick="Save()" id="btnSave" class="btn btn-outline-success pull-right"><i class="fa fa-forward"></i>&nbsp; Next</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+
+    <script>
+        $(document).ready(function () {
+            $("#btnHide,#Answer").hide();
+        })
+
+        $(document).on("change", "input[name=select]", function () {
+            $("tr").removeClass("green");
+            $(this).closest("tr").addClass("green");
+        })
+        $(document).on("click", "#btnShow", function () {
+            $("#btnHide,#Answer").show();
+            $("#btnShow").hide();
+        })
+        $(document).on("click", "#btnHide", function () {
+            $("#btnHide,#Answer").hide();
+            $("#btnShow").show();
+        })
+    </script>
+
+}
+

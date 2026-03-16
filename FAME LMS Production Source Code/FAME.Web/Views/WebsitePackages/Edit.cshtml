@@ -1,0 +1,379 @@
+@model First_Aid_Made_Easy.Models.WebsitePackageVM
+@{
+    ViewBag.Title = Model.ID > 0 ? "Edit Package" : "Create Package";
+    Layout = "~/Views/Shared/_LayoutTeacher.cshtml";
+}
+
+<style>
+    .feature-row, .pricing-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+    .feature-row input, .pricing-row input { flex: 1; }
+    .feature-row .btn-remove, .pricing-row .btn-remove { flex-shrink: 0; }
+    .drag-handle { cursor: grab; color: #999; padding: 0 8px; }
+    .section-card { border: 1px solid #e8e8e8; border-radius: 8px; padding: 20px; margin-bottom: 20px; background: #fafafa; }
+    .section-card h5 { margin-bottom: 15px; color: #333; }
+    .preview-box { background: #fff; border: 2px dashed #ccc; border-radius: 8px; padding: 20px; margin-top: 20px; }
+    .live-badge { background: #28a745; color: white; padding: 2px 8px; border-radius: 4px; font-size: 11px; }
+</style>
+
+<div class="pt-32pt">
+    <div class="container-fluid page__container d-flex flex-column flex-md-row align-items-center text-center text-sm-left">
+        <div class="flex d-flex flex-column flex-sm-row align-items-center">
+            <div class="mb-24pt mb-sm-0 mr-sm-24pt">
+                <h2 class="mb-0">
+                    @if (Model.ID > 0)
+                    {
+                        <span>Edit Package: @Model.PlanName</span>
+                    }
+                    else
+                    {
+                        <span>Create New Package</span>
+                    }
+                </h2>
+                <ol class="breadcrumb p-0 m-0">
+                    <li class="breadcrumb-item"><a href="/Admin/Index">Home</a></li>
+                    <li class="breadcrumb-item"><a href="/WebsitePackages/List">Website Packages</a></li>
+                    <li class="breadcrumb-item active">@(Model.ID > 0 ? "Edit" : "Create")</li>
+                </ol>
+            </div>
+        </div>
+        <div class="ml-lg-16pt">
+            <a href="/WebsitePackages/List" class="btn btn-outline-accent-dodger-blue"><i class="fa fa-backward"></i> Back to List</a>
+        </div>
+    </div>
+
+    <div class="page-section border-bottom-2">
+        <div class="container-fluid page__container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <input type="hidden" id="PackageID" value="@Model.ID" />
+
+                    <!-- SECTION 1: Basic Info -->
+                    <div class="section-card">
+                        <h5><i class="fa fa-info-circle text-primary"></i> Basic Information</h5>
+                        <div class="row">
+                            <div class="col-md-2">
+                                <label class="form-label">Sort Order</label>
+                                <input type="number" id="SortOrder" class="form-control" value="@Model.SortOrder" placeholder="0" />
+                            </div>
+                            <div class="col-md-5">
+                                <label class="form-label">Plan Name <span class="text-danger">*</span></label>
+                                <input type="text" id="PlanName" class="form-control" value="@Model.PlanName" placeholder="e.g., AMC-1 Plan" required />
+                            </div>
+                            <div class="col-md-5">
+                                <label class="form-label">Subtitle / Exam Tags</label>
+                                <input type="text" id="Subtitle" class="form-control" value="@Model.Subtitle" placeholder="e.g., FCPS-1, USMLE-1, MD/MS-1" />
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-md-12">
+                                <label class="form-label">Description</label>
+                                <input type="text" id="Description" class="form-control" value="@Model.Description" placeholder="e.g., Following Lectures included in this plan" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SECTION 2: Layout Settings -->
+                    <div class="section-card">
+                        <h5><i class="fa fa-columns text-info"></i> Layout Settings</h5>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label class="form-label">Column Layout</label>
+                                <select id="ColumnLayout" class="form-control">
+                                    <option value="6-6" @(Model.LeftColumnWidth == 6 && Model.RightColumnWidth == 6 ? "selected" : "")>50% / 50% (Equal)</option>
+                                    <option value="8-4" @(Model.LeftColumnWidth == 8 && Model.RightColumnWidth == 4 ? "selected" : "")>67% / 33% (Wide features)</option>
+                                    <option value="7-5" @(Model.LeftColumnWidth == 7 && Model.RightColumnWidth == 5 ? "selected" : "")>58% / 42%</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Buy Button Text</label>
+                                <input type="text" id="BuyButtonText" class="form-control" value="@Model.BuyButtonText" placeholder="Buy" />
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Buy Button URL</label>
+                                <input type="text" id="BuyButtonUrl" class="form-control" value="@Model.BuyButtonUrl" placeholder="/Account/Register" />
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label d-block">&nbsp;</label>
+                                <label class="form-label">
+                                    <input type="checkbox" id="UseMultiColumnFeatures" @(Model.UseMultiColumnFeatures ? "checked" : "") />
+                                    Multi-column features (2 columns)
+                                </label>
+                                <br />
+                                <label class="form-label">
+                                    <input type="checkbox" id="IsActive" @(Model.IsActive ? "checked" : "") />
+                                    Active (visible on website)
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SECTION 3: Features / Included Lectures -->
+                    <div class="section-card">
+                        <h5>
+                            <i class="fa fa-list text-success"></i> Included Features / Lectures
+                            <button type="button" class="btn btn-sm btn-success float-right" id="btnAddFeature">
+                                <i class="fa fa-plus"></i> Add Feature
+                            </button>
+                        </h5>
+                        <div id="featuresContainer">
+                            @if (Model.Features != null)
+                            {
+                                foreach (var feature in Model.Features)
+                                {
+                                    <div class="feature-row">
+                                        <span class="drag-handle"><i class="fa fa-grip-vertical"></i> &#9776;</span>
+                                        <input type="text" class="form-control feature-text" value="@feature.FeatureText" placeholder="e.g., First aid Step 1 Videos" />
+                                        <button type="button" class="btn btn-sm btn-outline-danger btn-remove" title="Remove"><i class="fa fa-times"></i></button>
+                                    </div>
+                                }
+                            }
+                        </div>
+                        <small class="text-muted">These appear as checkmark items in the left column of the package card on the website.</small>
+                    </div>
+
+                    <!-- SECTION 4: Pricing Rows -->
+                    <div class="section-card">
+                        <h5>
+                            <i class="fa fa-money text-warning"></i> Pricing
+                            <button type="button" class="btn btn-sm btn-success float-right" id="btnAddPricing">
+                                <i class="fa fa-plus"></i> Add Price Row
+                            </button>
+                        </h5>
+                        <div class="mb-2">
+                            <div class="row" style="font-weight:bold; color:#666; font-size:12px;">
+                                <div class="col-md-5">Duration Text</div>
+                                <div class="col-md-3">Price (PKR)</div>
+                                <div class="col-md-3">Price (USD) - optional</div>
+                                <div class="col-md-1"></div>
+                            </div>
+                        </div>
+                        <div id="pricingContainer">
+                            @if (Model.Pricing != null)
+                            {
+                                foreach (var price in Model.Pricing)
+                                {
+                                    <div class="pricing-row">
+                                        <span class="drag-handle"><i class="fa fa-grip-vertical"></i> &#9776;</span>
+                                        <div class="row flex-grow-1">
+                                            <div class="col-md-5">
+                                                <input type="text" class="form-control pricing-duration" value="@price.DurationText" placeholder="e.g., 3 month fee of AMC-1 plan" />
+                                            </div>
+                                            <div class="col-md-3">
+                                                <input type="text" class="form-control pricing-pkr" value="@price.PricePKR" placeholder="e.g., Rs.35,000" />
+                                            </div>
+                                            <div class="col-md-3">
+                                                <input type="text" class="form-control pricing-usd" value="@price.PriceUSD" placeholder="e.g., ($40)" />
+                                            </div>
+                                            <div class="col-md-1">
+                                                <button type="button" class="btn btn-sm btn-outline-danger btn-remove" title="Remove"><i class="fa fa-times"></i></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        </div>
+                        <small class="text-muted">These appear as pricing items in the right column of the package card on the website.</small>
+                    </div>
+
+                    <!-- SAVE / ACTIONS -->
+                    <div class="card">
+                        <div class="card-header text-center">
+                            <button id="btnSave" class="btn btn-success btn-lg">
+                                <i class="fa fa-save"></i> @(Model.ID > 0 ? "Update Package" : "Create Package")
+                            </button>
+                            <a href="/WebsitePackages/List" class="btn btn-outline-secondary btn-lg ml-2">
+                                <i class="fa fa-times"></i> Cancel
+                            </a>
+                            @if (Model.ID > 0)
+                            {
+                                <button id="btnDeletePackage" class="btn btn-outline-danger btn-lg ml-2" data-id="@Model.ID" data-name="@Model.PlanName">
+                                    <i class="fa fa-trash"></i> Delete
+                                </button>
+                            }
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+<script>
+    // Add Feature Row
+    function addFeatureRow(text) {
+        var html = '<div class="feature-row">' +
+            '<span class="drag-handle"><i class="fa fa-grip-vertical"></i> &#9776;</span>' +
+            '<input type="text" class="form-control feature-text" value="' + (text || '') + '" placeholder="e.g., First aid Step 1 Videos" />' +
+            '<button type="button" class="btn btn-sm btn-outline-danger btn-remove" title="Remove"><i class="fa fa-times"></i></button>' +
+            '</div>';
+        $("#featuresContainer").append(html);
+        // Focus on the new input
+        $("#featuresContainer .feature-row:last .feature-text").focus();
+    }
+
+    // Add Pricing Row
+    function addPricingRow(duration, pkr, usd) {
+        var html = '<div class="pricing-row">' +
+            '<span class="drag-handle"><i class="fa fa-grip-vertical"></i> &#9776;</span>' +
+            '<div class="row flex-grow-1">' +
+            '<div class="col-md-5"><input type="text" class="form-control pricing-duration" value="' + (duration || '') + '" placeholder="e.g., 3 month fee of AMC-1 plan" /></div>' +
+            '<div class="col-md-3"><input type="text" class="form-control pricing-pkr" value="' + (pkr || '') + '" placeholder="e.g., Rs.35,000" /></div>' +
+            '<div class="col-md-3"><input type="text" class="form-control pricing-usd" value="' + (usd || '') + '" placeholder="e.g., ($40)" /></div>' +
+            '<div class="col-md-1"><button type="button" class="btn btn-sm btn-outline-danger btn-remove" title="Remove"><i class="fa fa-times"></i></button></div>' +
+            '</div></div>';
+        $("#pricingContainer").append(html);
+        $("#pricingContainer .pricing-row:last .pricing-duration").focus();
+    }
+
+    // Add feature button
+    $("#btnAddFeature").click(function () {
+        addFeatureRow('');
+    });
+
+    // Add pricing button
+    $("#btnAddPricing").click(function () {
+        addPricingRow('', '', '');
+    });
+
+    // Remove row (feature or pricing)
+    $(document).on("click", ".btn-remove", function () {
+        $(this).closest(".feature-row, .pricing-row").fadeOut(200, function () {
+            $(this).remove();
+        });
+    });
+
+    // Save Package
+    $("#btnSave").click(function () {
+        var planName = $("#PlanName").val().trim();
+        if (!planName) {
+            Swal.fire('Validation Error', 'Plan Name is required.', 'warning');
+            $("#PlanName").focus();
+            return;
+        }
+
+        // Collect features
+        var features = [];
+        $(".feature-row").each(function (i) {
+            var text = $(this).find(".feature-text").val().trim();
+            if (text) {
+                features.push({ FeatureText: text, SortOrder: i + 1 });
+            }
+        });
+
+        // Collect pricing
+        var pricing = [];
+        $(".pricing-row").each(function (i) {
+            var duration = $(this).find(".pricing-duration").val().trim();
+            var pkr = $(this).find(".pricing-pkr").val().trim();
+            var usd = $(this).find(".pricing-usd").val().trim();
+            if (duration && pkr) {
+                pricing.push({ DurationText: duration, PricePKR: pkr, PriceUSD: usd || null, SortOrder: i + 1 });
+            }
+        });
+
+        // Get column layout
+        var layout = $("#ColumnLayout").val().split("-");
+
+        var data = {
+            ID: parseInt($("#PackageID").val()) || 0,
+            PlanName: planName,
+            Subtitle: $("#Subtitle").val().trim(),
+            Description: $("#Description").val().trim(),
+            BuyButtonUrl: $("#BuyButtonUrl").val().trim() || "/Account/Register",
+            BuyButtonText: $("#BuyButtonText").val().trim() || "Buy",
+            SortOrder: parseInt($("#SortOrder").val()) || 0,
+            IsActive: $("#IsActive").is(":checked"),
+            LeftColumnWidth: parseInt(layout[0]),
+            RightColumnWidth: parseInt(layout[1]),
+            UseMultiColumnFeatures: $("#UseMultiColumnFeatures").is(":checked"),
+            Features: features,
+            Pricing: pricing
+        };
+
+        // Disable button to prevent double submit
+        $("#btnSave").prop("disabled", true).html('<i class="fa fa-spinner fa-spin"></i> Saving...');
+
+        $.ajax({
+            url: '/WebsitePackages/Save',
+            method: 'POST',
+            data: JSON.stringify(data),
+            contentType: 'application/json',
+            dataType: 'json',
+            success: function (response) {
+                if (response.success) {
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'success',
+                        title: 'Package saved successfully! Changes are now live on the website.',
+                        showConfirmButton: false,
+                        timer: 2000
+                    }).then(function () {
+                        window.location.href = "/WebsitePackages/List";
+                    });
+                } else {
+                    Swal.fire('Error', response.message || 'Could not save package', 'error');
+                    $("#btnSave").prop("disabled", false).html('<i class="fa fa-save"></i> @(Model.ID > 0 ? "Update Package" : "Create Package")');
+                }
+            },
+            error: function (err) {
+                Swal.fire('Error', 'Something went wrong while saving. Please try again.', 'error');
+                $("#btnSave").prop("disabled", false).html('<i class="fa fa-save"></i> @(Model.ID > 0 ? "Update Package" : "Create Package")');
+            }
+        });
+    });
+
+    // Delete Package
+    $(document).on("click", "#btnDeletePackage", function () {
+        var id = $(this).data('id');
+        var name = $(this).data('name');
+
+        Swal.fire({
+            title: 'Delete Package?',
+            html: 'Are you sure you want to permanently delete <strong>' + name + '</strong>?<br><small class="text-danger">This will remove it from the live website immediately.</small>',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, Delete It!'
+        }).then(function (result) {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: "/WebsitePackages/Delete",
+                    method: "POST",
+                    data: { id: id },
+                    success: function (result) {
+                        if (result.success) {
+                            Swal.fire('Deleted!', 'The package has been removed.', 'success').then(function () {
+                                window.location.href = "/WebsitePackages/List";
+                            });
+                        } else {
+                            Swal.fire('Error', result.message || 'Could not delete package', 'error');
+                        }
+                    },
+                    error: function () {
+                        Swal.fire('Error', 'Something went wrong', 'error');
+                    }
+                });
+            }
+        });
+    });
+
+    // Enter key in feature input adds a new row
+    $(document).on("keydown", ".feature-text", function (e) {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            addFeatureRow('');
+        }
+    });
+
+    // Enter key in pricing last field adds a new row
+    $(document).on("keydown", ".pricing-usd", function (e) {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            addPricingRow('', '', '');
+        }
+    });
+</script>
+}

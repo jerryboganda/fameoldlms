@@ -1,0 +1,29 @@
+﻿@using First_Aid_Made_Easy.BLL
+@model List<First_Aid_Made_Easy.Models.EmailReportVM>
+@{
+	int Sr = 0;
+}
+<table id="DTable" style="width:100% !important" class="table  table-bordered">
+	<thead>
+		<tr style="background-color: #364e9c">
+			<th>Date</th>
+			<th>Name/Email</th>
+			<th>Ph. No.</th>
+			<th>Inactive Days</th>
+			<th>Type</th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var i in Model)
+		{
+			Sr++;
+			<tr>
+				<td>@string.Format("{0:dd/MM/yyyy hh:mm tt}", i.SentAt)</td>
+				<td><a href="/Admin/StudentDetail/@i.StudentID">@(i.StudentName)</a> <br /> @i.Email </td>
+				<td>@i.Phone</td>
+				<td>@i.InactiveDays</td>
+				<td> @( Enum.GetName(typeof(EmailType), i.Type)) </td>
+			</tr>
+		}
+	</tbody>
+</table>

@@ -1,0 +1,115 @@
+@model First_Aid_Made_Easy.Models.EmailTemplateListVM
+@{
+    ViewBag.Title = "Email Templates";
+    Layout = "~/Views/Shared/_LayoutTeacher.cshtml";
+}
+
+<div class="pt-32pt">
+    <div class="container-fluid page__container">
+        <div class="d-flex align-items-center mb-24pt">
+            <div class="flex">
+                <h2 class="mb-0">Email Templates</h2>
+                <ol class="breadcrumb p-0 m-0">
+                    <li class="breadcrumb-item"><a href="/Communication/Index">Email Marketing</a></li>
+                    <li class="breadcrumb-item active">Templates</li>
+                </ol>
+            </div>
+            <a href="/Communication/TemplateEditor" class="btn btn-primary">
+                <i class="material-icons mr-1" style="vertical-align:middle;font-size:18px;">add</i> New Template
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="page-section">
+    <div class="container-fluid page__container">
+        <!-- Category Filters -->
+        <div class="mb-4">
+            <button class="btn btn-sm btn-outline-primary active mr-1 filter-cat" data-cat="">All</button>
+            @foreach (var cat in Model.Categories)
+            {
+                <button class="btn btn-sm btn-outline-primary mr-1 filter-cat" data-cat="@cat">@cat</button>
+            }
+        </div>
+
+        <!-- Templates Grid -->
+        <div class="row" id="templatesGrid">
+            @foreach (var t in Model.Templates)
+            {
+                <div class="col-md-4 col-lg-3 mb-4 template-card" data-category="@t.Category">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <div style="width:100%;height:180px;overflow:hidden;border:1px solid #eee;border-radius:4px;margin-bottom:12px;background:#f9f9f9;">
+                                <iframe srcdoc="@System.Net.WebUtility.HtmlEncode(t.HtmlBody ?? "<div style='text-align:center;padding:40px;color:#999;'>No preview</div>")"
+                                        style="width:200%;height:200%;transform:scale(0.5);transform-origin:0 0;pointer-events:none;border:none;"></iframe>
+                            </div>
+                            <h5 class="mb-1">@t.TemplateName</h5>
+                            <span class="badge badge-light">@t.Category</span>
+                        </div>
+                        <div class="card-footer text-center">
+                            <a href="/Communication/Create?templateId=@t.Id" class="btn btn-sm btn-primary mr-1" title="Use in Campaign">
+                                <i class="material-icons" style="vertical-align:middle;font-size:16px;">send</i> Use
+                            </a>
+                            <a href="/Communication/TemplateEditor?id=@t.Id" class="btn btn-sm btn-outline-info mr-1" title="Edit">
+                                <i class="material-icons" style="vertical-align:middle;font-size:16px;">edit</i>
+                            </a>
+                            @if (!t.IsSystem)
+                            {
+                                <button class="btn btn-sm btn-outline-danger btn-delete-tmpl" data-id="@t.Id" title="Delete">
+                                    <i class="material-icons" style="vertical-align:middle;font-size:16px;">delete</i>
+                                </button>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        @if (!Model.Templates.Any())
+        {
+            <div class="text-center py-5">
+                <i class="material-icons" style="font-size:64px;color:#ccc;">description</i>
+                <h4 class="text-muted mt-3">No Templates Yet</h4>
+                <p class="text-muted">Create your first email template to get started.</p>
+                <a href="/Communication/TemplateEditor" class="btn btn-primary">Create Template</a>
+            </div>
+        }
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        // Category filter
+        $(".filter-cat").on("click", function () {
+            $(".filter-cat").removeClass("active");
+            $(this).addClass("active");
+            var cat = $(this).data("cat");
+            if (!cat) {
+                $(".template-card").show();
+            } else {
+                $(".template-card").hide().filter("[data-category='" + cat + "']").show();
+            }
+        });
+
+        // Delete template
+        $(".btn-delete-tmpl").on("click", function () {
+            var id = $(this).data("id");
+            var card = $(this).closest(".template-card");
+            Swal.fire({
+                title: 'Delete Template?',
+                text: 'This cannot be undone.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                confirmButtonText: 'Delete'
+            }).then(function (result) {
+                if (result.isConfirmed) {
+                    $.post('/Communication/DeleteTemplate', { id: id }, function (res) {
+                        if (res.success) { card.fadeOut(300, function () { card.remove(); }); }
+                        else Swal.fire('Error', 'Failed to delete template.', 'error');
+                    });
+                }
+            });
+        });
+    </script>
+}

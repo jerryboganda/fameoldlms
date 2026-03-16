@@ -1,0 +1,35 @@
+﻿
+@model First_Aid_Made_Easy.Models.VideoVM
+
+<div class="w3-section">
+    <div class="form-row">
+        @Html.HiddenFor(x => x.MeetID)
+        @Html.HiddenFor(x => x.Video_Id)
+        <div class="col-12 col-md-12 mb-3">
+            <label class="form-label">Title</label>
+            @Html.TextBoxFor(model => model.Video_Name, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.Video_Name, "", new { @class = "text-accent-red" })
+        </div>
+        <div class="col-12 col-md-12 mb-3">
+            <label class="form-label">Discriptiopn</label>
+            @Html.TextBoxFor(model => model.Video_ShortDescription, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.Video_ShortDescription, "", new { @class = "text-accent-red" })
+        </div>
+        <div class="col-12 col-md-12 mb-3">
+            <label class="form-label">Tags</label>
+            @Html.TextBoxFor(model => model.Video_Tags, new { @class = "form-control form-control-lg tags", @placeholder = "Tags for Search", @required = "required" })
+            @Html.ValidationMessageFor(model => model.Video_Tags, "", new { @class = "text-accent-red" })
+            <small class="form-text text-muted">Separate keywords with a comma, space bar, or enter key</small>
+        </div>
+        <div class="col-12 col-md-12 mb-3">
+            <label class="form-label">Select Video</label>
+            @Html.TextBoxFor(model => model.File, new { @class = "form-control", @type = "file", @accept = "video/*" })
+            @Html.ValidationMessageFor(model => model.File, "", new { @class = "text-accent-red" })
+        </div>
+        @if (Model.Video_Path != null)
+        {
+            <a href="#">@Model.Video_Path</a>
+        }
+    </div>
+</div>
+

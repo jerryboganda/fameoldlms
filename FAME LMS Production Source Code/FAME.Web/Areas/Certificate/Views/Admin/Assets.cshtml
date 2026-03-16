@@ -1,0 +1,115 @@
+@using First_Aid_Made_Easy.Models.Certificate
+@{
+    ViewBag.Title = "Certificate Assets";
+    Layout = "~/Views/Shared/_LayoutTeacher.cshtml";
+    var assets = ViewBag.Assets as List<CertificateAssetVM> ?? new List<CertificateAssetVM>();
+}
+
+<div class="container-fluid px-4 py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-bold mb-1"><i class="bi bi-images me-2"></i>Certificate Assets</h3>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0 small">
+                    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Admin", new { area = "Certificate" })">Certificate Manager</a></li>
+                    <li class="breadcrumb-item active">Assets</li>
+                </ol>
+            </nav>
+        </div>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#uploadModal">
+            <i class="bi bi-cloud-upload me-1"></i> Upload Asset
+        </button>
+    </div>
+
+    <div class="alert alert-info d-flex align-items-start mb-4">
+        <i class="bi bi-info-circle-fill me-2 mt-1"></i>
+        <div>
+            Upload logos, signatures, seals, and watermarks to use in your certificate templates.
+            Supported formats: PNG, JPG, SVG. Recommended: transparent PNG for logos and signatures.
+        </div>
+    </div>
+
+    <!-- Asset Categories -->
+    @{
+        var categories = new[] { "Logo", "Signature", "Seal", "Watermark", "Background", "Other" };
+    }
+    @foreach (var cat in categories)
+    {
+        var catAssets = assets.Where(a => a.Category == cat).ToList();
+        if (catAssets.Any())
+        {
+            <h5 class="fw-semibold mt-4 mb-3">@cat<span class="text-muted small ms-2">(@catAssets.Count)</span></h5>
+            <div class="row g-3">
+                @foreach (var asset in catAssets)
+                {
+                    <div class="col-lg-2 col-md-3 col-sm-4 col-6">
+                        <div class="card border-0 shadow-sm h-100 text-center">
+                            <div class="card-body p-3">
+                                <div class="bg-light rounded mb-2 d-flex align-items-center justify-content-center" style="height: 100px;">
+                                    <img src="@asset.Url" alt="@asset.Name" class="img-fluid" style="max-height: 90px; max-width: 100%;" />
+                                </div>
+                                <div class="small fw-medium text-truncate" title="@asset.Name">@asset.Name</div>
+                                <div class="text-muted" style="font-size: 11px;">@asset.Category</div>
+                                <form method="post" action="@Url.Action("DeleteAsset", "Admin", new { area = "Certificate" })" class="mt-2"
+                                      onsubmit="return confirm('Delete this asset?');">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@asset.Id" />
+                                    <button type="submit" class="btn btn-sm btn-outline-danger w-100"><i class="bi bi-trash me-1"></i>Delete</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    }
+
+    @if (!assets.Any())
+    {
+        <div class="text-center text-muted py-5">
+            <i class="bi bi-images" style="font-size: 48px; opacity: 0.3;"></i>
+            <p class="mt-3">No assets uploaded yet. Upload your first logo, signature, or seal to get started.</p>
+        </div>
+    }
+</div>
+
+<!-- Upload Modal -->
+<div class="modal fade" id="uploadModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" action="@Url.Action("UploadAsset", "Admin", new { area = "Certificate" })" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+                <div class="modal-header">
+                    <h5 class="modal-title">Upload Asset</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Asset Name</label>
+                        <input type="text" class="form-control" name="Name" required placeholder="e.g. Company Logo" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Category</label>
+                        <select class="form-select" name="AssetType" required>
+                            <option value="Logo">Logo</option>
+                            <option value="Signature">Signature</option>
+                            <option value="Seal">Seal</option>
+                            <option value="Watermark">Watermark</option>
+                            <option value="Background">Background</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">File</label>
+                        <input type="file" class="form-control" name="File" accept="image/png,image/jpeg,image/svg+xml" required />
+                        <div class="form-text">PNG, JPG, or SVG. Max 5 MB.</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Upload</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

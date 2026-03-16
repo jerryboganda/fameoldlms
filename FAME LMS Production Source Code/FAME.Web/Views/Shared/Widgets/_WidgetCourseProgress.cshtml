@@ -1,0 +1,292 @@
+@using First_Aid_Made_Easy.BLL
+@{
+    var courses = ViewBag.Courses as IEnumerable<dynamic>;
+    var displayCourses = courses?.Take(8) ?? Enumerable.Empty<dynamic>();
+}
+
+<div class="fame-widget-card">
+    <div class="fame-widget-header">
+        <div class="fame-widget-title">
+            <i data-feather="book-open" class="fame-widget-icon"></i>
+            <span>Course Progress</span>
+        </div>
+        <a href="@Url.Action("MyCourses", "Student")" class="fame-widget-link">
+            View All
+            <i data-feather="arrow-right" style="width: 16px; height: 16px;"></i>
+        </a>
+    </div>
+    
+    <div class="fame-widget-body">
+        @if (displayCourses.Any())
+        {
+            <div class="fame-course-carousel">
+                @foreach (var course in displayCourses)
+                {
+                    var progress = course.Progress;
+                    var thumbnail = !string.IsNullOrEmpty((string)course.Course_Pic)
+                        ? "/File-Repository/Course/" + course.Course_Pic
+                        : "/Areas/Landing/assets/images/logo/fame-logo.png";
+                    var videoCount = course.Lessons;
+                    var sectionCount = 0; // SectionCount not available in VM
+                    var isCompleted = progress >= 100;
+                    
+                    <div class="fame-course-progress-card">
+                        <div class="fame-course-progress-thumb">
+                            <img src="@thumbnail" alt="@course.Course_Name" onerror="this.src='/Areas/Landing/assets/images/logo/fame-logo.png'">
+                            <div class="fame-course-progress-overlay">
+                                <a href="@Url.Action("TakeCourse", "Student", new { id = course.Course_Id })" class="fame-course-play-btn">
+                                    <i data-feather="@(isCompleted ? "check" : "play")" style="width: 20px; height: 20px;"></i>
+                                </a>
+                            </div>
+                            @if (isCompleted)
+                            {
+                                <span class="fame-course-completed-badge">
+                                    <i data-feather="award" style="width: 12px; height: 12px;"></i>
+                                </span>
+                            }
+                        </div>
+                        
+                        <div class="fame-course-progress-info">
+                            <h4 class="fame-course-progress-title">@course.Course_Name</h4>
+                            <div class="fame-course-progress-meta">
+                                <span>@sectionCount chapters</span>
+                                <span>•</span>
+                                <span>@videoCount videos</span>
+                            </div>
+                            
+                            <div class="fame-course-progress-bar-wrap">
+                                <div class="fame-course-progress-bar">
+                                    <div class="fame-course-progress-fill @(isCompleted ? "completed" : "")" style="width: @progress%;"></div>
+                                </div>
+                                <span class="fame-course-progress-percent">@progress%</span>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="fame-widget-empty">
+                <i data-feather="book" style="width: 48px; height: 48px;"></i>
+                <p>No courses enrolled yet</p>
+                <a href="@Url.Action("Index", "Package")" class="fame-btn fame-btn-primary">Browse Packages</a>
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+.fame-widget-card {
+    background: var(--fame-bg-secondary);
+    border: 1px solid var(--fame-border);
+    border-radius: var(--fame-radius-xl);
+    overflow: hidden;
+}
+
+.fame-widget-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--fame-border);
+}
+
+.fame-widget-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--fame-text-primary);
+}
+
+.fame-widget-icon {
+    width: 20px;
+    height: 20px;
+    color: var(--fame-primary);
+}
+
+.fame-widget-link {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--fame-primary);
+    text-decoration: none;
+    transition: gap 200ms;
+}
+
+.fame-widget-link:hover {
+    gap: 10px;
+}
+
+.fame-widget-body {
+    padding: 20px;
+}
+
+.fame-course-carousel {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+}
+
+.fame-course-progress-card {
+    display: flex;
+    gap: 16px;
+    padding: 16px;
+    background: var(--fame-bg-tertiary);
+    border-radius: var(--fame-radius-lg);
+    transition: all 300ms;
+}
+
+.fame-course-progress-card:hover {
+    background: var(--fame-bg-hover);
+    transform: translateX(4px);
+}
+
+.fame-course-progress-thumb {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    border-radius: var(--fame-radius-md);
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.fame-course-progress-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.fame-course-progress-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 200ms;
+}
+
+.fame-course-progress-card:hover .fame-course-progress-overlay {
+    opacity: 1;
+}
+
+.fame-course-play-btn {
+    width: 40px;
+    height: 40px;
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--fame-primary);
+    text-decoration: none;
+    transition: transform 200ms;
+}
+
+.fame-course-play-btn:hover {
+    transform: scale(1.1);
+}
+
+.fame-course-completed-badge {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 24px;
+    height: 24px;
+    background: linear-gradient(135deg, #10B981, #059669);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.fame-course-progress-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.fame-course-progress-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--fame-text-primary);
+    margin: 0 0 6px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.fame-course-progress-meta {
+    display: flex;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--fame-text-tertiary);
+    margin-bottom: 10px;
+}
+
+.fame-course-progress-bar-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.fame-course-progress-bar {
+    flex: 1;
+    height: 6px;
+    background: var(--fame-bg-primary);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.fame-course-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--fame-primary), var(--fame-secondary));
+    border-radius: 3px;
+    transition: width 1s ease-out;
+}
+
+.fame-course-progress-fill.completed {
+    background: linear-gradient(90deg, #10B981, #059669);
+}
+
+.fame-course-progress-percent {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--fame-text-primary);
+    min-width: 36px;
+}
+
+.fame-widget-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 24px;
+    text-align: center;
+    color: var(--fame-text-tertiary);
+}
+
+.fame-widget-empty i {
+    margin-bottom: 16px;
+    opacity: 0.5;
+}
+
+.fame-widget-empty p {
+    margin: 0 0 20px 0;
+}
+
+@@media (max-width: 640px) {
+    .fame-course-carousel {
+        grid-template-columns: 1fr;
+    }
+}
+</style>

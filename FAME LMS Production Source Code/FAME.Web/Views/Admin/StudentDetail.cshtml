@@ -1,0 +1,673 @@
+﻿@using First_Aid_Made_Easy.BLL
+@model First_Aid_Made_Easy.Models.StudentDetail
+
+@{
+	Layout = "~/Views/Shared/_LayoutTeacher.cshtml";
+	ViewBag.Title = "Admin Dashboard";
+
+}
+
+    <style>
+        .swal2-input{
+            margin:auto !important;
+        }
+    </style>
+@{ int Sr = 0; }
+<div class="pt-32pt">
+	<div class="container-fluid page__container d-flex flex-column flex-md-row align-items-center text-center text-sm-left">
+		<div class="flex d-flex flex-column flex-sm-row align-items-center mb-24pt mb-md-0">
+
+			<div class="mb-24pt mb-sm-0 mr-sm-24pt">
+				<h2 class="mb-0">Student Detail</h2>
+				<ol class="breadcrumb p-0 m-0">
+					<li class="breadcrumb-item"><a href="#">Home</a></li>
+					<li class="breadcrumb-item"><a href="#">Students</a></li>
+					<li class="breadcrumb-item active">
+						Student Detail
+					</li>
+				</ol>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<div style="display:none" id="div-Edit" class="container-fluid page__container">
+	<div class="page-separator">
+		<div class="page-separator__text">Student Information</div>
+	</div>
+	<div class="card p-4">
+
+		@Html.Hidden("User_Pic")
+		@Html.Hidden("CNICBack")
+		@Html.Hidden("CNICFront")
+		<div class="form-row mb-3">
+			<div class="col-12 col-md-4 ">
+				<label class="form-label">Email:</label>
+				<input name="Email" id="Email" class="form-control" value="@Model.User.Email">
+				<div id="EamilVal" class="text-danger"></div>
+			</div>
+			<div class="col-12 col-md-4 ">
+				<div class="form-group mb-32pt">
+					<label class="form-label">Mobile:</label>
+					<input name="Student_Mobile" id="Student_Mobile" class="form-control" value="@Model.User.Student_Mobile">
+				</div>
+			</div>
+			<div class="col-12 col-md-4 ">
+				<div class="form-group mb-32pt">
+					<label class="form-label">CNIC:</label>
+					<input name="CNIC" id="CNIC" class="form-control" value="@Model.User.CNIC">
+				</div>
+			</div>
+		</div>
+		<div class="form-row mb-3">
+			<div class="col-12 col-md-4 ">
+				<label class="form-label">Father Name:</label>
+				<input name="FatherName" id="FatherName" class="form-control" value="@Model.User.User_FatherName">
+			</div>
+			<div class="col-12 col-md-4 ">
+				<div class="form-group mb-32pt">
+					<label class="form-label">City:</label>
+					<input name="City" id="City" class="form-control" value="@Model.User.City">
+				</div>
+			</div>
+			<div class="col-12 col-md-4 ">
+				<div class="form-group mb-32pt">
+					<label class="form-label">Institute:</label>
+					<input name="Institute" id="Institute" class="form-control" value="@Model.User.Institute">
+				</div>
+			</div>
+		</div>
+		<div class="form-row">
+			<div class="col-12 col-md-4 ">
+				<label class="form-label">Allowed Mobile Devices:</label>
+				<input name="Allowed_Mob_Dev" id="Allowed_Mob_Dev" class="form-control" value="@Model.User.Allowed_Mob_Dev">
+			</div>
+			<div class="col-12 col-md-4 ">
+				<div class="form-group mb-32pt">
+					<label class="form-label">Allowed PC Devices:</label>
+					<input name="Allowed_PC_Dev" id="Allowed_PC_Dev" class="form-control" value="@Model.User.Allowed_PC_Dev">
+				</div>
+			</div>
+			<div class="col-12 col-md-4 ">
+				<label class="form-label">University</label>
+				@Html.DropDownList("UniversityID", new SelectList(First_Aid_Made_Easy.BLL.Common.Universities.Where(x=>x.IsActive), "Value", "Text", Model.User.Type), "Please Select", new { @class = "form-control select2", @required = "required", @data_toggle = "select" })
+			</div>
+		</div>
+		<div class="form-row">
+			<div class="col-12 col-md-4 ">
+				<label class="form-label">Parent Email:</label>
+				<input name="FatherEmail" id="FatherEmail" class="form-control" value="@Model.User.FatherEmail">
+			</div>
+		</div>
+		<div class="form-row jzuploader">
+			<label class="text-label">CNIC Front Side </label>
+			<div class="input-group mb-3">
+				@Html.TextBox("CNICFrontFile","", new { @class = "form-control form-control-lg", @data_path = "#CNICFront", @type = "file", @accept = "image/png, image/jpg, image/jpeg" })<div class="input-group-append">
+					<button class="btn-start-upload btn btn-primary" type="button">Upload</button>
+				</div>
+			</div>
+			<span class="progress">
+				<span class="progress-bar bg-primary" role="progressbar" style="width: 0;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"> </span>
+			</span>
+			<img class="imgPreview" style="width:200px;height:120px;display:none" alt="" src="" />
+		</div>
+		<div class="form-row jzuploader">
+			<label class="text-label">CNIC Back Side </label>
+			<div class="input-group mb-3">
+				@Html.TextBox("CNICBackFile","", new { @class = "form-control form-control-lg", @data_path = "#CNICBack", @type = "file", @accept = "image/png, image/jpg, image/jpeg" })<div class="input-group-append">
+					<button class="btn-start-upload btn btn-primary" type="button">Upload</button>
+				</div>
+			</div>
+			<span class="progress">
+				<span class="progress-bar bg-primary" role="progressbar" style="width: 0;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"> </span>
+			</span>
+			<img class="imgPreview" style="width:200px;height:120px;display:none" alt="" src="" />
+		</div>
+		<div class="form-group mb-32pt">
+			<button class="btn btn-secondary" id="btnCancel"> Cancel</button>
+			<button class="btn btn-success" id="btnSave"> Save</button>
+		</div>
+	</div>
+</div>
+
+<div id="div-Detail" class="container-fluid page__container">
+	<div class="page-separator">
+		<div class="page-separator__text">Student Information</div>
+	</div>
+	<div class="row">
+		<div class="col-sm-12 text-center">
+			<br /><h2><b>@Model.User.User_Name</b></h2>
+		</div>
+		<div class="col-sm-8">
+
+			<table class="table ">
+				<tr>
+					<th>Email:</th>
+					<td>@Model.User.Email</td>
+				</tr>
+				<tr>
+					<th>Phone No:</th>
+					<td><a href="https://wa.me/@Model.User.Student_Mobile" target="_blank">@Model.User.Student_Mobile</a>  </td>
+				</tr>
+				<tr>
+					<th>CNIC:</th>
+					<td>@Model.User.CNIC</td>
+				</tr>
+				<tr>
+					<th>Father Name:</th>
+					<td>@Model.User.User_FatherName</td>
+				</tr>
+				<tr>
+					<th>Sponsor Name:</th>
+					<td>@Model.User.FatherProfession</td>
+				</tr>
+				<tr>
+					<th>Sponsor Email:</th>
+					<td>@Model.User.FatherEmail</td>
+				</tr>
+				<tr>
+					<th>Sponsor /Father Profession</th>
+					<td>@Model.User.SponserProfession</td>
+				</tr>
+				<tr>
+					<th>College:</th>
+					<td>@Model.User.Institute</td>
+				</tr>
+				<tr>
+					<th>Year:</th>
+					<td>@Model.User.YearOfMBBS</td>
+				</tr>
+				<tr>
+					<th>City:</th>
+					<td>@Model.User.City</td>
+				</tr>
+				<tr>
+					<th>Occupation:</th>
+					<td>@Model.User.Occupation</td>
+				</tr>
+				<tr>
+					<th>Job Loc.:</th>
+					<td>@Model.User.JobLocation</td>
+				</tr>
+				@if (Model.User.Type == (int)UserType.NRETest)
+				{
+					<tr>
+						<th>Exam Type:</th>
+						<td>@Model.User.ExamType</td>
+					</tr>
+				}
+			</table>
+		</div>
+		<div class="col-sm-4">
+			<div class="form-group mb-32pt">
+				<img class="img-rounded img-responsive" style="height:auto;width:100%" alt="N/A" src="@Url.Content("~/Images/"+Model.User.User_Pic)" />
+			</div>
+			<div class="form-group mb-32pt">
+				<button class="btn btn-success" id="btnEdit"> Edit Details</button>
+				@if (!Model.User.IsAccepted && Model.User.RequestID > 0)
+				{
+					<button data-id="@Model.User.RequestID" class="btn btn-warning" id="btnAccept"> Approve</button>
+				}
+				<button data-id="@Model.User.User_AspUser" class="btn btn-danger" id="btnDelete"> Delete</button>
+			</div>
+		</div>
+		@if (!string.IsNullOrEmpty(Model.User.CNICFront))
+		{
+			<div class="col-sm-6">
+				CNIC Front
+				<img loading="lazy" style="width:inherit" src="@Url.Content("~/Images/"+Model.User.CNICFront)" />
+			</div>
+		}
+		@if (!string.IsNullOrEmpty(Model.User.CNICBack))
+		{
+			<div class="col-sm-6">
+				CNIC Back
+				<img loading="lazy" style="width:inherit" src="@Url.Content("~/Images/"+Model.User.CNICBack)" />
+			</div>
+		}
+		@if (!string.IsNullOrEmpty(Model.User.StuCardFront))
+		{
+			<div class="col-sm-6">
+				Student Card Front
+				<img loading="lazy" style="width:inherit" src="@Url.Content("~/Images/"+Model.User.StuCardFront)" />
+			</div>
+		}
+		@if (!string.IsNullOrEmpty(Model.User.StuCardBack))
+		{
+			<div class="col-sm-6">
+				Student Card Back
+				<img loading="lazy" style="width:inherit" src="@Url.Content("~/Images/"+Model.User.StuCardBack)" />
+			</div>
+		}
+	</div>
+</div>
+
+<div class="container-fluid page__container page-section">
+	<div class="row mb-8pt">
+		@if (Model.Subscrption.PackList.Count > 0)
+		{
+			<div class="col-lg-12">
+				<div class="page-separator">
+					<div class="page-separator__text">Package Enrollments</div>
+				</div>
+
+				<table id="DTable" class="table  table-bordered">
+					<thead>
+						<tr style="background-color: #364e9c">
+							<th>Sr.</th>
+							<th>Package Name</th>
+							<th>Enrollment Date</th>
+							<th>End Date</th>
+							<th>Remaining Days</th>
+							<th>Given BY</th>
+							<th>Status</th>
+						</tr>
+					</thead>
+					<tbody>
+						@{ Sr = 0; }
+						@foreach (var i in Model.Subscrption.PackList)
+						{
+							Sr++;
+							<tr>
+								<td>@Sr</td>
+								<td>@i.CourseName</td>
+								<td>@i.EnrollmentDate</td>
+								<td>@i.ExpiryDate</td>
+								<td>@i.RemainingDays</td>
+								<td>@i.GivenBy</td>
+								<td>@i.Status</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			</div>
+		}
+		@if (Model.Subscrption.CorList.Count > 0)
+		{
+			<div class="col-lg-12">
+				<div class="page-separator">
+					<div class="page-separator__text">Course Enrollments</div>
+				</div>
+				<table id="DTable" class="table  table-bordered">
+					<thead>
+						<tr style="background-color: #364e9c">
+							<th>Sr.</th>
+							<th>Course Name</th>
+							<th>Enrollment Date</th>
+							<th>End Date</th>
+							<th>Remaining Days</th>
+							<th>Given By</th>
+							<th>Status</th>
+						</tr>
+					</thead>
+					<tbody>
+						@{ Sr = 0; }
+						@foreach (var i in Model.Subscrption.CorList)
+						{
+							Sr++;
+							<tr>
+								<td>@Sr</td>
+								<td>@i.CourseName</td>
+								<td>@i.EnrollmentDate</td>
+								<td>@i.ExpiryDate</td>
+								<td>@i.RemainingDays</td>
+								<td>@i.GivenBy</td>
+								<td>@i.Status</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			</div>
+		}
+		@if (Model.Subscrption.SecList.Count > 0)
+		{
+			<div class="col-lg-12">
+				<div class="page-separator">
+					<div class="page-separator__text">Section Enrollments</div>
+				</div>
+				<table id="DTable" class="table  table-bordered">
+					<thead>
+						<tr style="background-color: #364e9c">
+							<th>Sr.</th>
+							<th>Section Name</th>
+							<th>Enrollment Date</th>
+							<th>End Date</th>
+							<th>Remaining Days</th>
+							<th>Given By</th>
+							<th>Status</th>
+						</tr>
+					</thead>
+					<tbody>
+						@{ Sr = 0; }
+						@foreach (var i in Model.Subscrption.SecList)
+						{
+							Sr++;
+							<tr>
+								<td>@Sr</td>
+								<td>@i.SectionName</td>
+								<td>@i.EnrollmentDate</td>
+								<td>@i.ExpiryDate</td>
+								<td>@i.RemainingDays</td>
+								<td>@i.GivenBy</td>
+								<td>@i.Status</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			</div>
+		}
+		@if (Model.Subscrption.InstList.Count > 0)
+		{
+			<div class="col-lg-12">
+				<div class="page-separator">
+					<div class="page-separator__text">Installments</div>
+				</div>
+				<table id="DTable" class="table  table-bordered">
+					<thead>
+						<tr style="background-color: #364e9c">
+							<th>Installment No</th>
+							<th>Installment Date</th>
+							<th>Amount</th>
+							<th>Status</th>
+						</tr>
+					</thead>
+					<tbody>
+						@{ Sr = 0; }
+						@foreach (var i in Model.Subscrption.InstList)
+						{
+							<tr>
+								<td>@i.InstallmentNo</td>
+								<td>@string.Format("{0:dd/MM/yyyy}", i.InstallmentDate)</td>
+								<td>@string.Format("{0:n0}", i.InstallmentPrice)</td>
+								<td>@(i.IsPaid == true ? "Paid" : "Pending" )</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			</div>
+		}
+		@if (Model.DeviceList.Count > 0)
+		{
+			<div class="col-lg-12 table-responsive">
+				<div class="page-separator">
+					<div class="page-separator__text">Devices</div>
+				</div>
+				<table id="DTable" class="table table-bordered">
+					<thead>
+						<tr style="background-color: #364e9c">
+							<th>Device</th>
+							<th>Ip Address</th>
+							<th>User Agent</th>
+							<th>Date Time</th>
+							<th>Delete</th>
+						</tr>
+					</thead>
+					<tbody>
+						@foreach (var a in Model.DeviceList)
+						{
+							var Device = a.UserAgent;
+							var s = a.UserAgent?.IndexOf("(") ?? -1;
+							var e = a.UserAgent?.IndexOf(")") ?? -1;
+							if (s != -1)
+							{
+								Device = a.UserAgent.Substring(s, e - s + 1);
+							}
+							<tr>
+								<td> @(a.IsMobile == true ? "Mobile" : "Desktop") </td>
+								<td> @a.IpAddress </td>
+								<td>@Device</td>
+								<td>@string.Format("{0:dd/MM/yyyy hh:mm tt}", a.CreatedDT)</td>
+								<td>
+									<a href="#" data-url="/Device/RemoveDevice/@a.DeviceID?UserID=@Model.User.User_AspUser" id="btnRowDelete" data-name=" Device " vlaue="" class="text-danger"><i class="fa fa-trash Font20"></i></a>
+								</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			</div>
+		}
+	</div>
+</div>
+
+@section scripts {
+	<script src="~/Scripts/js/UploadFile.js"></script>
+	@Scripts.Render("~/bundles/jqueryval")
+
+	<script>
+
+		$(document).on("click", "#btnSave", function () {
+			if (CheckEmailValidation()) {
+				$.ajax({
+					url: '/Admin/SaveNotes',
+					data: {
+						ID: "@Model.User.User_Id",
+						Notes: $("#Notes").val(),
+						Email: $("#Email").val(),
+						CNIC: $("#CNIC").val(),
+						Student_Mobile: $("#Student_Mobile").val(),
+						FatherName: $("#FatherName").val(),
+						FatherEmail: $("#FatherEmail").val(),
+						City: $("#City").val(),
+						CNICBack: $("#CNICBack").val(),
+						CNICFront: $("#CNICFront").val(),
+						Institute: $("#Institute").val(),
+						UniversityID: $("#UniversityID").val(),
+						Allowed_PC_Dev: $("#Allowed_PC_Dev").val(),
+						Allowed_Mob_Dev: $("#Allowed_Mob_Dev").val()
+					},
+					success: function (response) {
+						if (response == true) {
+							Swal.fire({
+								position: 'top-end',
+								icon: 'success',
+								title: 'Data Saved Successfully',
+								showConfirmButton: false,
+								timer: 1500
+							})
+						}
+						location.reload();
+					},
+					error: function (err) {
+
+					}
+
+				})
+			}
+        })
+
+        $(document).on("click", "#btnAccept", function () {
+			var id = $(this).data('id');
+			var btn = $(this);
+			Swal.fire({
+				title: 'Enter Price',
+				input: 'number',
+				inputLabel: 'Please enter the price for this enrollment:',
+				inputAttributes: {
+					min: 0,
+					step: 0.01
+				},
+				showCancelButton: true,
+				confirmButtonText: 'Submit',
+				cancelButtonText: 'Cancel',
+				inputValidator: (value) => {
+					if (!value || isNaN(value) || value <= 0) {
+						return 'Please enter a valid price';
+					}
+				}
+			}).then((inputResult) => {
+				if (inputResult.isConfirmed) {
+					var price = inputResult.value;
+					Swal.fire({
+						title: 'Are you sure?',
+						text: "Are You Sure You Want To Accept The Enrollment ?",
+						icon: 'warning',
+						showCancelButton: true,
+						confirmButtonColor: '#3085d6',
+						cancelButtonColor: '#d33',
+						confirmButtonText: 'Yes!'
+					}).then((result) => {
+						if (result.isConfirmed) {
+							$.ajax({
+								url: "/Enrollment/AcceptRequest/" + id + "?price=" + price,
+								method: "POST",
+								beforeSend: function () {
+									swal.fire({
+										html: '<h5>Loading...</h5>',
+										showConfirmButton: false,
+										onRender: function () {
+											// there will only ever be one sweet alert open.
+											$('.swal2-content').prepend(sweet_loader);
+										}
+									});
+								},
+								success: function (result) {
+									if (result === true || (result && result.success)) {
+										btn.hide();
+										Swal.fire(
+											'Accepted!',
+											'The Request Has Been Accepted.',
+											'success'
+										)
+									} else {
+										var msg = (result && result.message) ? result.message : "Unknown error occurred";
+										Swal.fire('Error', msg, 'error');
+									}
+								}, error: function (xhr, status, error) {
+									var errMsg = "Status: " + xhr.status + " - ";
+									if (xhr.responseJSON && xhr.responseJSON.message) {
+										errMsg += xhr.responseJSON.message;
+									} else if (xhr.responseText) {
+										errMsg += xhr.responseText.substring(0, 500);
+									} else {
+										errMsg += error || status;
+									}
+									Swal.fire('Error', errMsg, 'error');
+								}
+							})
+						}
+					})
+				}
+			})
+        })
+
+        $(document).on("click", "#btnDelete", function () {
+            var id = $(this).data('id');
+            var tr = $(this).closest('tr');
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "Are You Sure You Want To Delete The User ?",
+                icon: 'warning',
+                showCancelButton: false,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#858383',
+                confirmButtonText: 'Yes Delete It!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: "/Enrollment/DeleteRequest/" + id,
+                        method: "POST",
+                        beforeSend: function () {
+                            swal.fire({
+                                html: '<h5>Loading...</h5>',
+                                showConfirmButton: false,
+                                onRender: function () {
+                                    $('.swal2-content').prepend(sweet_loader);
+                                }
+                            });
+                        },
+                        success: function (result) {
+                            if (result) {
+                                window.location.href = "/Admin/StudentList";
+                                Swal.fire(
+                                    'Deleted!',
+                                    'The User Has Been Deleted.',
+                                    'success'
+                                )
+                            }
+                            else {
+                                Swal.fire(
+                                    'Sorry!',
+                                    'The User cannot be Deleted.',
+                                    'warning'
+                                )
+                            }
+                        }, error: function (xhr, status, err) {
+                            Swal.fire('Error!', 'Failed to delete user: ' + (xhr.responseText || err || status), 'error');
+                        }
+                    })
+
+                }
+            })
+        })
+	</script>
+
+	<script>
+		$("#btnEdit").click(function () {
+			ShowEditDiv(true);
+		})
+		$("#btnCancel").click(function () {
+			ShowEditDiv(false);
+		})
+		function ShowEditDiv(f) {
+			if (f) {
+				$("#div-Detail").hide();
+				$("#div-Edit").show();
+			} else {
+				$("#div-Detail").show();
+				$("#div-Edit").hide();
+			}
+		}
+
+		$(document).on("keyup", "#Email", function () {
+			$("#EamilVal").hide();
+		})
+		function CheckEmailValidation() {
+			var email = $("#Email").val().trim();
+			$("#EmailAddress").text(email);
+			var r = true;
+			if (email != '@Model.User.Email.Trim()' ) {
+				$.ajax({
+					url: "/Enrollment/GetStudentID?email=" + email,
+					method: "GET",
+					async: false,
+					success: function (result) {
+						if (result == "" || result == null) {
+							$("#EamilVal").hide();
+							r = true; // Email is valid and does not exist
+						} else {
+							$("#EamilVal").text("Email Already Exist").show();
+							r = false;
+						}
+					},
+					error: function (err) {
+						if (err.status == 200) r = true;
+						else console.log(err); // Error occurred during the AJAX request
+					}
+				});
+			}
+			return r;
+		}
+
+		$(document).on("click", ".btn-start-upload", function () {
+			var uploader = $(this).closest(".jzuploader");
+			var $inp = $(this).closest(".jzuploader").find('input[type="file"]');
+			var id = $inp.data('path'); // it contains relevant input:id where path is stored
+			$(".divLoader").show();
+			JzuploadFile($inp, "/General/JustUpload", function (data) {
+				if (data.Status == 1) {
+					$(id).val(data.Path);
+					uploader.find(".imgPreview").attr("src", "/Images/" + data.Path).show();
+				} else {
+					$(id).val("");
+					Swal.fire({
+						icon: 'error',
+						title: "Not Valid Image",
+						text: data.Message
+					})
+				}
+				$(".divLoader").hide();
+			});
+		})
+	</script>
+}

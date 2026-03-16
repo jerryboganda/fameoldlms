@@ -1,0 +1,37 @@
+@using System.Web.Optimization
+    <script>var hostUrl = "@Url.Content("~/Content/assetsn/")";</script>
+    <!--begin::Global Javascript Bundle(used by all pages)-->
+    <script src="@Url.Content("~/Content/assetsn/plugins/global/plugins.bundle.js")"></script>
+    <script src="@Url.Content("~/Content/assetsn/js/scripts.bundle.js")"></script>
+    <script src="@Url.Content("~/Content/assetsn/js/custom/widgets.js")"></script>
+    <script src="@Url.Content("~/Content/assetsn/js/custom/apps/chat/chat.js")"></script>
+    <!--end::Global Javascript Bundle-->
+
+    <!--begin::Vendors Javascript(used by this page)-->
+    <script src="@Url.Content("~/Content/assetsn/plugins/custom/datatables/datatables.bundle.js")"></script>
+    <script src="@Url.Content("~/Content/assetsn/plugins/custom/vis-timeline/vis-timeline.bundle.js")"></script>
+
+    <script src="https://cdn.amcharts.com/lib/5/index.js"></script>
+    <script src="https://cdn.amcharts.com/lib/5/xy.js"></script>
+    <script src="https://cdn.amcharts.com/lib/5/percent.js"></script>
+    <script src="https://cdn.amcharts.com/lib/5/radar.js"></script>
+    <script src="https://cdn.amcharts.com/lib/5/themes/Animated.js"></script>
+    <!--end::Vendors Javascript-->
+
+    <script src="@Url.Content("~/Scripts/jquery.signalR-2.4.3.min.js")"></script>
+    <script src="@Url.Content("~/signalr/hubs")"></script>
+
+    <!-- Sweetalert2 -->
+    <script src="@Url.Content("~/Scripts/Sweetalert2.js")"></script>
+    <!-- Select2 -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    
+    <!-- Feather Icons -->
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof feather !== 'undefined') {
+                feather.replace();
+            }
+        });
+    </script>

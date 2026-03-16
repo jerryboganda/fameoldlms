@@ -1,0 +1,104 @@
+ID,Name,Category,Priority,Phase,Epic,Status,Description
+F-001,Student Registration,Identity,P0,1,E-02,Planned,Email + password registration with verification
+F-002,Email/Password Login,Identity,P0,1,E-02,Planned,JWT-based authentication with refresh tokens
+F-003,Password Reset,Identity,P0,1,E-02,Planned,Email-based password reset flow
+F-004,Google Social Login,Identity,P0,1,E-02,Planned,OAuth 2.0 login with Google
+F-005,User Profile,Identity,P0,1,E-02,Planned,View and edit profile information
+F-006,Role-Based Access,Identity,P0,1,E-02,Planned,Route protection based on user roles
+F-007,Course Catalog,Catalog,P0,1,E-03,Planned,Browse exam tracks and courses
+F-008,Course Detail Page,Catalog,P0,1,E-03,Planned,Course description with module structure
+F-009,Instant Search,Catalog,P0,1,E-03,Planned,Meilisearch-powered search across content
+F-010,Course Filtering,Catalog,P0,1,E-03,Planned,Filter by track / difficulty / price
+F-011,Course Ratings,Catalog,P2,3,E-14,Planned,Student ratings and reviews
+F-012,Related Courses,Catalog,P1,2,E-03,Planned,Recommendations based on track
+F-013,Pricing Page,Payment,P0,1,E-04,Planned,Package comparison with PKR/USD pricing
+F-014,Package Comparison,Payment,P0,1,E-04,Planned,Feature matrix across packages
+F-015,Checkout Flow,Payment,P0,1,E-04,Planned,Multi-step checkout with gateway selection
+F-016,JazzCash Integration,Payment,P0,1,E-04,Planned,JazzCash payment processing
+F-017,Easypaisa Integration,Payment,P0,1,E-04,Planned,Easypaisa payment processing
+F-018,Stripe Integration,Payment,P0,1,E-04,Planned,International card payments via Stripe
+F-019,Subscription Management,Payment,P0,1,E-04,Planned,Auto-expire and renewal reminders
+F-020,Grace Period,Payment,P0,1,E-04,Planned,7-day grace period after expiry
+F-021,Coupon Codes,Payment,P0,1,E-04,Planned,Percentage / fixed / free-trial coupons
+F-022,Payment History,Payment,P0,1,E-04,Planned,Transaction list with receipt download
+F-023,Course Enrollment,Enrollment,P0,1,E-05,Planned,Auto-enroll on subscription activation
+F-024,My Courses Dashboard,Enrollment,P0,1,E-05,Planned,Enrolled courses with progress bars
+F-025,Chapter Reading View,Enrollment,P0,1,E-05,Planned,Rich content display for chapters
+F-026,Progress Tracking,Enrollment,P0,1,E-05,Planned,Per-chapter and per-course progress
+F-027,Study Streaks,Enrollment,P1,2,E-05,Planned,Daily activity streak tracking
+F-028,Bookmarks,Enrollment,P0,1,E-05,Planned,Bookmark chapters for quick access
+F-029,Learning Recommendations,Enrollment,P1,2,E-05,Planned,AI-suggested next content
+F-030,Video Player,Content,P0,1,E-06,Planned,YouTube embed with playback controls
+F-031,Video Progress,Content,P0,1,E-06,Planned,Track watch time and completion
+F-032,Exam Listing,Assessment,P1,2,E-09,Planned,Available exams by track
+F-033,Start Exam Session,Assessment,P1,2,E-09,Planned,Timed exam with question loading
+F-034,MCQ Display,Assessment,P1,2,E-09,Planned,Question with 4 options
+F-035,Exam Navigation,Assessment,P1,2,E-09,Planned,Navigate between questions and flag
+F-036,Exam Submission,Assessment,P1,2,E-09,Planned,Submit and calculate score
+F-037,Exam Review,Assessment,P1,2,E-09,Planned,Review with explanations
+F-038,Exam History,Assessment,P1,2,E-09,Planned,Past scores and trends
+F-039,Tutor Mode,Assessment,P1,2,E-09,Planned,Immediate feedback per question
+F-040,Notification Center,Communication,P1,2,E-10,Planned,In-app notification dropdown
+F-041,Real-Time Notifications,Communication,P1,2,E-10,Planned,SignalR push notifications
+F-042,Email Notifications,Communication,P1,2,E-10,Planned,Transactional email delivery
+F-043,Announcements,Communication,P1,2,E-10,Planned,Admin-to-student announcements
+F-044,Notification Preferences,Communication,P1,2,E-10,Planned,Toggle notification types
+F-045,Chat System,Communication,P1,2,E-10,Planned,Student-to-support messaging
+F-046,Daily Review Queue,Spaced Repetition,P1,2,E-11,Planned,SM-2 algorithm review cards
+F-047,Flashcard UI,Spaced Repetition,P1,2,E-11,Planned,Flip card with difficulty rating
+F-048,Review Statistics,Spaced Repetition,P1,2,E-11,Planned,Streak and mastery progress
+F-049,Auto Certificate,Certificate,P1,3,E-12,Planned,Generate on completion
+F-050,Certificate Download,Certificate,P1,3,E-12,Planned,PDF download
+F-051,Certificate Verification,Certificate,P1,3,E-12,Planned,Public verification page
+F-052,Certificate Gallery,Certificate,P1,3,E-12,Planned,View all earned certificates
+F-053,Ambassador Portal,Ambassador,P2,3,E-13,Planned,Dashboard for ambassadors
+F-054,Referral Tracking,Ambassador,P2,3,E-13,Planned,Unique link with click/enrollment tracking
+F-055,Commission System,Ambassador,P2,3,E-13,Planned,Calculate and display earnings
+F-056,User Management,Admin,P0,1,E-07,Planned,CRUD for all users
+F-057,User Detail View,Admin,P0,1,E-07,Planned,Full profile with history
+F-058,Subscription Management (Admin),Admin,P0,1,E-07,Planned,Grant/extend/cancel subscriptions
+F-059,Role Management,Admin,P0,1,E-07,Planned,Assign and remove roles
+F-060,Bulk Actions,Admin,P0,1,E-07,Planned,Export and bulk operations
+F-061,Course CRUD,Admin,P0,1,E-03,Planned,Create/edit/archive courses
+F-062,Module Management,Admin,P0,1,E-03,Planned,Create/reorder modules and chapters
+F-063,Content Editor,Admin,P0,1,E-03,Planned,Rich text editing for chapters
+F-064,Video Management,Admin,P0,1,E-06,Planned,Add/edit video IDs
+F-065,Question Bank,Admin,P1,2,E-09,Planned,Create/edit/import MCQs
+F-066,Exam Builder,Admin,P1,2,E-09,Planned,Create exams from question bank
+F-067,Student Progress Reports,Admin,P1,2,E-11,Planned,Individual student analytics
+F-068,Registration Analytics,Admin,P1,2,E-11,Planned,Signups over time
+F-069,Active User Metrics,Admin,P1,2,E-11,Planned,DAU/WAU/MAU tracking
+F-070,Revenue Dashboard,Admin,P0,1,E-04,Planned,MRR and gateway breakdown
+F-071,Audit Log,Admin,P0,1,E-07,Planned,Entity change history
+F-072,System Health,Admin,P1,2,E-11,Planned,Infrastructure monitoring
+F-073,Certificate Templates,Admin,P1,3,E-12,Planned,Upload/edit templates
+F-074,Ambassador Management,Admin,P2,3,E-13,Planned,Approve ambassadors and payouts
+F-075,Discussion Forums,Community,P2,4,E-14,Planned,Per-course discussion threads
+F-076,Blog/Content Marketing,Content,P2,4,E-14,Planned,SEO-optimized blog posts
+F-077,Mobile App,Platform,P2,4,E-14,Planned,React Native iOS/Android
+F-078,Gamification,Engagement,P2,4,E-14,Planned,Badges and leaderboards
+F-079,Multi-Language,Platform,P2,4,E-14,Planned,English + Urdu support
+F-080,Offline Mode,Platform,P3,4+,—,Future,PWA offline content access
+F-081,AI Tutor,Assessment,P3,4+,—,Future,AI-powered question explanations
+F-082,Live Classes,Content,P3,4+,—,Future,Zoom/Meet integration
+F-083,Study Groups,Community,P3,4+,—,Future,Student-created study groups
+F-084,Parent Dashboard,Platform,P3,4+,—,Future,Parent view of student progress
+F-085,Institution Accounts,Platform,P3,4+,—,Future,University/hospital bulk licensing
+F-086,API for Partners,Platform,P3,4+,—,Future,Public REST API
+F-087,White-Label,Platform,P3,4+,—,Future,Multi-tenant deployment
+F-088,Adaptive Learning,Assessment,P3,4+,—,Future,AI-adjusted difficulty
+F-089,Proctored Exams,Assessment,P3,4+,—,Future,Webcam monitoring
+F-090,Clinical Case Studies,Content,P3,4+,—,Future,Interactive case simulations
+F-091,Digital Notes,Content,P3,4+,—,Future,In-app note-taking
+F-092,Flashcard Sharing,Community,P3,4+,—,Future,Share custom flashcard decks
+F-093,Progress Sharing,Community,P3,4+,—,Future,Social media badges
+F-094,Email Marketing,Communication,P2,3,—,Planned,Drip campaigns and newsletters
+F-095,SMS Notifications,Communication,P3,4+,—,Future,SMS alerts for key events
+F-096,Guideline Videos,Content,P1,2,—,Planned,Admin-uploaded guideline videos
+F-097,Trial Accounts,Identity,P1,2,—,Planned,Time-limited free trial
+F-098,Bulk User Import,Admin,P2,3,—,Planned,CSV import for institutions
+F-099,Custom Reports,Admin,P2,3,—,Planned,Configurable analytics reports
+F-100,Webhook Integration,Platform,P3,4+,—,Future,Outbound webhooks for events
+F-101,Single Sign-On (SSO),Identity,P3,4+,—,Future,SAML/OIDC for institutions
+F-102,Data Export (GDPR),Identity,P2,3,—,Planned,User data export on request
+F-103,Account Deletion,Identity,P1,2,—,Planned,Self-service account deletion

@@ -1,0 +1,130 @@
+@using Microsoft.AspNet.Identity
+@{
+    ViewBag.Title = "Mock Tests";
+    Layout = "~/Views/Shared/_LayoutStudent2026.cshtml";
+}
+
+<!-- Page Header -->
+<div class="mb-8">
+    <h1 class="text-dark fw-bolder mb-1">Mock Tests</h1>
+    <p class="text-muted fw-bold fs-7">Test your knowledge with our comprehensive medical mock exams.</p>
+</div>
+
+<!-- Loading State -->
+<div id="loader" class="text-center py-10">
+    <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+    <p class="mt-4 text-gray-600 fw-bold">Gathering available exams...</p>
+</div>
+
+<!-- Error State -->
+<div id="errorState" class="alert alert-dismissible bg-light-danger border border-danger d-flex flex-column flex-sm-row p-5 mb-10 d-none">
+    <span class="svg-icon svg-icon-2hx svg-icon-danger me-4 mb-5 mb-sm-0">
+        <i class="bi bi-exclamation-triangle-fill fs-1"></i>
+    </span>
+    <div class="d-flex flex-column pe-0 pe-sm-10">
+        <h4 class="fw-bold">Unable to load exams</h4>
+        <span id="errorMessage">Failed to load exams. Please try again later.</span>
+    </div>
+</div>
+
+<!-- Exam Grid -->
+<div class="fame-course-grid" id="examGrid">
+    <!-- Content injected via JS -->
+</div>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            loadExams();
+        });
+
+        function loadExams() {
+            var userId = '@User.Identity.GetUserId()';
+            
+            $.ajax({
+                url: '/api/StudentBank/PaperList?id=' + userId + '&MockTest=true',
+                type: 'GET',
+                success: function (response) {
+                    $('#loader').addClass('d-none');
+                    if (response.success && response.data) {
+                        renderExams(response.data);
+                    } else {
+                        $('#errorMessage').text(response.message || 'No tests currently available.');
+                        $('#errorState').removeClass('d-none');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    $('#loader').addClass('d-none');
+                    $('#errorMessage').text('Error connecting to the exam server.');
+                    $('#errorState').removeClass('d-none');
+                    console.error(error);
+                }
+            });
+        }
+
+        function renderExams(exams) {
+            var container = $('#examGrid');
+            container.empty();
+
+            if (exams.length === 0) {
+                container.html(`
+                    <div style="grid-column: 1/-1">
+                        <div class="card shadow-sm border-0">
+                            <div class="card-body text-center py-20">
+                                <img src="/Content/assetsn/media/illustrations/sigma-1/5.png" class="h-150px mb-10" alt="" />
+                                <p class="text-gray-500 fs-4 fw-bold">No mock tests available at the moment.</p>
+                                <p class="text-gray-400 fs-6">Check back soon for new exam sets!</p>
+                            </div>
+                        </div>
+                    </div>
+                `);
+                return;
+            }
+
+            exams.forEach(function (exam) {
+                var isSolved = exam.IsSolved;
+                var card = `
+                    <a href="/Student/StartExam/${exam.PaperID}" class="fame-course-card">
+                        <div class="fame-course-thumb-wrapper">
+                            <div class="fame-exam-placeholder">
+                                <i class="bi bi-file-earmark-medical"></i>
+                                <span>MCQ-${exam.PaperID}</span>
+                            </div>
+                            <span class="fame-course-badge ${isSolved ? 'badge-success' : 'badge-primary'}">${isSolved ? 'SOLVED' : 'NEW'}</span>
+                        </div>
+                        <div class="fame-course-body">
+                            <h3 class="fame-course-title">${exam.PaperTitle || 'Medical Exam'}</h3>
+                            <div class="fame-exam-info">
+                                <div><i class="bi bi-collection me-1"></i>${exam.Questions || 0} MCQs</div>
+                                <div class="separator"></div>
+                                <div><i class="bi bi-clock me-1"></i>${exam.Time || 0} Mins</div>
+                            </div>
+                            <div class="fame-course-progress-container">
+                                <div class="fame-course-progress-info">
+                                    <span class="fame-course-progress-label">Progress</span>
+                                    <span class="fame-course-progress-percentage">${isSolved ? '100' : '0'}%</span>
+                                </div>
+                                <div class="fame-course-progress">
+                                    <div class="fame-course-progress-bar" style="width: ${isSolved ? '100%' : '0%'}"></div>
+                                </div>
+                            </div>
+                            <div class="fame-btn-compact mt-auto">
+                                ${isSolved ? 'Retake Test' : 'Start Exam'}
+                            </div>
+                        </div>
+                    </a>
+                `;
+                container.append(card);
+            });
+        }
+
+        function getDifficulty(level) {
+            if(!level) return "Standard";
+            if(level <= 1) return "Basic";
+            if(level == 2) return "Intermediate";
+            return "Advanced";
+        }
+    </script>
+}

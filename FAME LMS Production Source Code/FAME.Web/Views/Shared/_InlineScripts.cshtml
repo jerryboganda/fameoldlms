@@ -1,0 +1,298 @@
+@using First_Aid_Made_Easy.BLL
+@using Microsoft.AspNet.Identity
+@{
+    var user = Common.GetUserNameByASpUserID(User.Identity.GetUserId());
+}
+
+    <script>
+        $(".NotAvailable").on("click", function () {
+            toastr.error("Sorry This Feature Is Not Yet Available")
+        });
+        function toggleLoader() {
+            $(".divLoader").toggle();
+        }
+    </script>
+    @if (TempData["UID"] != null)
+    {
+        <script>
+            try {
+                localStorage.setItem("UID", '@TempData["UID"]');
+            } catch (e) {
+                if (e.code == 22) {
+                    alert("Browser Storage Full UID");
+                }
+            }
+        </script>
+    }
+    @if (TempData["AmiID"] != null)
+    {
+        <script>
+            try {
+                localStorage.setItem("AmiID", '@TempData["AmiID"]');
+            } catch (e) {
+                if (e.code == 22) {
+                    alert("Browser Storage Full AmiID");
+                }
+            }
+        </script>
+    }
+
+    @if (user.User_Pic == "userLogo.jpg" || user.User_Pic == null || user.CNIC == null)
+    {
+        <script>
+            if (window.location.href.indexOf("Profile") < 0) {
+                Swal.fire({
+                    icon: 'warning',
+					title: 'Your profile have not completed please add information.',
+                }).then((result) => {
+                    toggleLoader();
+                    window.location.href = '/Profile/MyProfile';
+                })
+            }
+        </script>
+    }
+    @if (user.Type == (int)UserType.NRETest && (user.StuCardFront == null || user.ExamType == null))
+    {
+        <script>
+            if (window.location.href.indexOf("Profile") < 0) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'You have not provided RollNo Slip or Exam.Please provide and wait for admin approval',
+                }).then((result) => {
+                    toggleLoader();
+                    window.location.href = '/Profile/MyProfile';
+                })
+            }
+        </script>
+    }
+    @*@if (user.Type == (int)UserType.JLLBD && (user.FatherEmail == null))
+    {
+        <script>
+            if (window.location.href.indexOf("Profile") < 0) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Please Provide Parent or Gaurdian Email Address',
+                }).then((result) => {
+                    toggleLoader();
+                    window.location.href = '/Profile/MyProfile';
+                })
+            }
+        </script>
+    }*@
+    @if (user.AspNetUsers.ShouldChangeInfo)
+    {
+        <script>
+            if (window.location.href.indexOf("Profile") < 0) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'You have not completed your profile. Please provide correct information.',
+                }).then((result) => {
+                    toggleLoader();
+                    window.location.href = '/Profile/MyProfile';
+                })
+            }
+        </script>
+    }
+    <script>
+        $(document).on("click", "#btnDeleteRow", function () {
+            var row = $(this).closest('tr');
+            var url = $(this).data("url");
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Delete(url, row)
+                }
+            })
+        })
+
+        function Delete(url, row) {
+            $.ajax({
+                url: url,
+                success: function (IsDeleted) {
+                    if (IsDeleted) {
+                        row.find("td").removeClass("sorting_1")
+                        row.addClass("bgred").fadeOut(1500);
+                    }
+                    else
+                        Swal.fire('Sorry!', 'This Item Cannot Be Deleted.', 'error');
+                },
+                error: function (err) {
+                    toastr.error("Something Went Wrong");
+                }
+            })
+        }
+        function IsValid(id) {
+
+        }
+
+        const x = setInterval(IsValid, 2000);
+        function IsValid() {
+            //$.ajax({
+            //    url: "/Device/IsValid/" + localStorage.getItem("UID"),
+            //    success: function (IsValid) {
+            //        if (!IsValid) {
+            //            clearInterval(x);
+            //            Swal.fire({
+            //                icon: 'warning',
+            //                title: 'Device Changed',
+            //                text: 'You have logged in on another device',
+            //            }).then((result) => {
+            //                Logout();
+            //            })
+            //        }
+            //    },
+            //    error: function (err) {
+            //        console.log(err.responseText);
+            //    }
+            //});
+        }
+        function Logout() {
+            document.getElementById('logoutForm').submit();
+        }
+        function toggle_loader() {
+            $('.divLoader').toggleClass('show');
+        }
+        function DataSaved() {
+            Swal.fire({
+                position: 'top-end',
+                icon: 'success',
+                title: 'Data Saved Successfully',
+                showConfirmButton: false,
+                timer: 1500
+            })
+        }
+    </script>
+    <!--=================================================-->
+    <!--========= Check Unseen Notifications ============-->
+    <!--=================================================-->
+    @if ((bool?)ViewBag.ShowNotification == true)
+    {
+        <script>
+            $(document).ready(function () {
+                $('.select2').select2();
+
+                $.ajax({
+                    url: '/Student/CheckForNotification',
+                    success: function (response) {
+                        if (response != null) {
+                            ShowPopup(response);
+                        }
+                    },
+                    error: function (err) {
+                    }
+                });
+                setInterval(function () { console.clear(); }, 300000);
+
+                $("div.limit-text").each(function () {
+                    $(this).attr("title", $(this).text());
+                });
+            })
+
+            function ShowPopup(response) {
+                $.each(response, function (i, val) {
+                    if (val.PicturePath != null && val.PicturePath != "") {
+                        Swal.fire({
+                            title: val.MessageTitle,
+                            html: val.MaessageBody,
+                            imageUrl: '/Images/' + val.PicturePath,
+                            imageWidth: 400,
+                            imageHeight: 200,
+                            showCloseButton: true,
+                        }).then(HaveSeen(val.ID));
+                    } else {
+                        Swal.fire({
+                            title: val.MessageTitle,
+                            text: val.MaessageBody,
+                            showClass: {
+                                popup: 'animate__animated animate__fadeInDown'
+                            },
+                            hideClass: {
+                                popup: 'animate__animated animate__fadeOutUp'
+                            }
+                        }).then(HaveSeen(val.ID));
+                    }
+                })
+            }
+            function HaveSeen(id) {
+                if (id > 0) {
+                    $.ajax({
+                        url: '/Student/HaveSeen/' + id,
+                        success: function (response) {
+                            if (response == true) {
+                            }
+                        },
+                        error: function (err) {
+                        }
+                    });
+                }
+            }
+
+            $(function () {
+                $('[data-toggle="popover"]').popover()
+            })
+        </script>
+    }
+
+    <script>
+        $(".commingSoon").click(function () {
+            Swal.fire(
+                'Ooops Not Now!',
+                'This Feature is Comming Soon!',
+                'info'
+            )
+        })
+    </script>
+    <script>
+        $(document).on("keyup", ".search-element-input", function () {
+            var Text = $(this).val().toLowerCase().trim();
+            if (Text.length > 2) {
+                $(".search-element-spinner").addClass("show-Imp")
+                $.ajax({
+                    url: "/General/Search?t=" + Text,
+                    success: function (html) {
+                        ShowContentDiv();
+                        $("#search-element-results").html(html);
+                        $(".search-element-spinner").removeClass("show-Imp")
+                    },
+                    error: function (err) {
+
+                    }
+                })
+            }
+            else {
+                if (!$("#search-element-toggle").is(":visible"))
+                    $("#search-element-content").removeClass("show");
+                $("#search-element-results").html('');
+            }
+        })
+
+        $(document).click(function () {
+            if (!$("#search-element-toggle").is(":visible"))
+                $("#search-element-content").removeClass("show");
+        });
+        $(document).on("click", "#search-element-toggle", function () {
+            if ($("#search-element-content").hasClass('show')) {
+                $("#search-element-content").removeClass("show");
+            } else {
+                ShowContentDiv();
+            }
+        });
+        function ShowContentDiv() {
+
+            $("#search-element-content").addClass("show");
+
+            if ($("#search-element-toggle").is(":visible"))
+                $("#search-element-content").css("transform", "translate(-18px, 58px)");
+            else
+                $("#search-element-content").css("transform", "translate(-249px, 110px)");
+            $(".search-element-input:visible").focus();
+
+        }
+    </script>

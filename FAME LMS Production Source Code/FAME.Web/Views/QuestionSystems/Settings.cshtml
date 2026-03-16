@@ -1,0 +1,98 @@
+﻿@model First_Aid_Made_Easy.BLL.JzTimer.QuestionSystemSettingsVM
+@{
+    ViewBag.Title = "Question System Settings";
+    Layout = "~/Views/Shared/_LayoutTeacher.cshtml";
+}
+
+<div class="pt-32pt">
+    <div class="container-fluid page__container d-flex flex-column flex-md-row align-items-center text-center text-sm-left">
+        <div class="flex d-flex flex-column flex-sm-row align-items-center">
+            <div class="mb-24pt mb-sm-0 mr-sm-24pt">
+                <h2 class="mb-0">Question System Settings</h2>
+            </div>
+        </div>
+    </div>
+    <div class="page-section border-bottom-2">
+        <div class="container-fluid page__container">
+            <form id="frmSettings">
+                <div class="row">
+                    <div class="col-md-12 card p-3">
+                        <div class="page-separator">
+                            <div class="page-separator__text">Basic Information</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 mb-4">
+                                <label class="form-label"> Free Trial Test </label>
+                                @Html.DropDownListFor(x => x.TrialTestId, new SelectList(ViewBag.Papers, "PaperID", "PaperTitle"), "Please Select", new { @class = "form-control select2", @data_toggle = "select" })
+                            </div>
+                            <div class="col-md-12 mb-4">
+                                <label class="form-label"> Mock Test Systems </label>
+                                @Html.DropDownListFor(x => x.MockTestSystems, new SelectList(ViewBag.Systems, "ID", "Name"), "Please Select", new { @class = "form-control select2", @multiple = true, @data_toggle = "select" })
+                            </div>
+
+                            <div class="col-md-12 mb-2">
+                                <div class="card">
+                                    <div class="card-header text-center">
+                                        <button type="button" id="btnSave" class="btn btn-outline-success">&nbsp; Save</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+
+
+    <script>
+		var model = @Html.Raw(Json.Encode(Model))
+		$(document).ready(function () {
+
+			$("#FreeSystems").val(model.FreeSystems.split('')).change();
+			$("#MockTestSystems").val(model.MockTestSystems.split('')).change();
+		})
+
+
+		$("#btnSave").click(function () {
+			var formData = {
+                MockTestSystems: $("#MockTestSystems").val().join(','),
+                TrialTestId: $("#TrialTestId").val()
+			}
+
+			$(".divLoader").show();
+
+			$.ajax({
+				url: "/QuestionSystems/SaveSettings",
+				method: "post",
+				data: formData,
+				success: function () {
+					$(".divLoader").hide();
+					Swal.fire({
+						position: 'top-end',
+						icon: 'success',
+						title: 'Data Saved Successfully',
+						showConfirmButton: false,
+						timer: 1500
+					})
+				},
+				error: function () {
+					$(".divLoader").hide();
+					Swal.fire({
+						position: 'top-end',
+						icon: 'error',
+						title: 'Something Went Wrong',
+						showConfirmButton: false,
+						timer: 1500
+					})
+				}
+			})
+		})
+
+    </script>
+
+}
+

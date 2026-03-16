@@ -1,0 +1,13 @@
+﻿@model  List<First_Aid_Made_Easy.DAL.sp_rptQuestionStats_Result>
+
+@using Microsoft.AspNet.Identity;
+@using First_Aid_Made_Easy.DAL;
+@using System.Linq;
+@using First_Aid_Made_Easy.BLL;
+@{
+    ViewBag.Title = "Question Stats Report";
+    Layout = "~/Views/Shared/_LayoutReport.cshtml";
+
+}
+
+@Html.Partial("_QuestionStats")

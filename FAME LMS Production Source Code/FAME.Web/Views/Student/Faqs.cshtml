@@ -1,0 +1,72 @@
+@model IEnumerable<First_Aid_Made_Easy.DAL.sp_lstQuestions_Result>
+@{
+    ViewBag.Title = "Frequently Asked Questions";
+    Layout = "~/Views/Shared/_LayoutStudent2026.cshtml";
+    
+    // Group by category if available, otherwise "General"
+    var grouped = Model.GroupBy(x => string.IsNullOrEmpty(x.Category) ? "General" : x.Category);
+}
+
+<div class="anim-enter delay-100">
+    <div class="text-center mb-5">
+        <h2 class="mb-2">How can we help?</h2>
+        <p class="text-muted">Find answers to common questions about your account and courses</p>
+        
+        <div class="d-inline-flex align-items-center bg-white rounded-pill px-3 py-2 shadow-sm mt-3 border">
+            <i data-feather="search" class="text-muted me-2"></i>
+            <input type="text" id="faqSearch" class="border-0 bg-transparent" placeholder="Search questions..." style="outline: none; width: 250px;" onkeyup="filterFaqs()">
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="accordion" id="faqAccordion">
+                @foreach (var group in grouped)
+                {
+                    <div class="mb-4 faq-group">
+                        <h5 class="mb-3 text-primary border-bottom pb-2">@group.Key</h5>
+                        @foreach (var faq in group)
+                        {
+                            <div class="fame-card mb-3 p-0 faq-item overflow-hidden">
+                                <h2 class="accordion-header" id="heading-@faq.Question_Id">
+                                    <button class="accordion-button collapsed p-4 fw-bold bg-white shadow-none text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-@faq.Question_Id" aria-expanded="false" aria-controls="collapse-@faq.Question_Id">
+                                        @faq.Question
+                                    </button>
+                                </h2>
+                                <div id="collapse-@faq.Question_Id" class="accordion-collapse collapse" aria-labelledby="heading-@faq.Question_Id" data-bs-parent="#faqAccordion">
+                                    <div class="accordion-body p-4 pt-0 text-muted" style="line-height: 1.6;">
+                                        @Html.Raw(faq.Answer)
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+
+            <!-- Support CTA -->
+            <div class="text-center mt-5">
+                <p class="text-muted">Still have questions?</p>
+                <a href="@Url.Action("Ticket", "Student")" class="btn btn-outline-primary btn-sm">Contact Support</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function filterFaqs() {
+        var input = document.getElementById("faqSearch");
+        var filter = input.value.toUpperCase();
+        var items = document.getElementsByClassName("faq-item");
+        
+        for (var i = 0; i < items.length; i++) {
+            var btn = items[i].getElementsByTagName("button")[0];
+            var txtValue = btn.textContent || btn.innerText;
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                items[i].style.display = "";
+            } else {
+                items[i].style.display = "none";
+            }
+        }
+    }
+</script>

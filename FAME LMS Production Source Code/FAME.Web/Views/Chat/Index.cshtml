@@ -1,0 +1,311 @@
+﻿@model First_Aid_Made_Easy.Models.ChatVM
+@using Microsoft.AspNet.Identity
+@using First_Aid_Made_Easy.BLL
+@{
+    Layout = null;
+    var Back = "";
+    if (User.IsInRole("Student"))
+    {
+        Back = "/Student/Index";
+    }
+    else if (User.IsInRole("SuppAgent"))
+    {
+        Back = "/SuppAgent/Index";
+    }
+    else
+    {
+        Back = "/Admin/Index";
+    }
+    var user = Common.GetUserNameByASpUserID(User.Identity.GetUserId());
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>FAME - Messages</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="~/Content/assets/vendor/jquery.min.js"></script>
+    <link type="text/css" href="~/Content/assets/css/app.css" rel="stylesheet" />
+
+    <!-- Font Awesome Icons -->
+    <link type="text/css" href="~/Content/assets/css/fontawesome.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/Scripts/jquery.signalR-2.4.3.min.js"></script>
+    <script src="~/signalr/hubs"></script>
+    <script src="~/Scripts/js/appendChat.js?v=20220925"></script>
+    <!-- Sweetalert2 -->
+    <script src="~/Scripts/Sweetalert2.js"></script>
+
+    <style type="text/css">
+        body {
+            margin-top: 20px;
+        }
+
+        .chat-online {
+            color: #34ce57
+        }
+
+        .chat-offline {
+            color: #e4606d
+        }
+
+        .chat-messages {
+            display: flex;
+            flex-direction: column;
+            max-height: 71vh;
+            min-height: 71vh;
+            overflow-y: scroll;
+            background-color: #c4ffe1
+        }
+
+        #chats {
+            background-color: #ffeebf
+        }
+
+        .chat-message-left,
+        .chat-message-right {
+            display: flex;
+            flex-shrink: 0
+        }
+
+        .chat-message-left {
+            margin-right: auto
+        }
+
+        .chat-message-right {
+            flex-direction: row-reverse;
+            margin-left: auto
+        }
+
+        .py-3 {
+            padding-top: 1rem !important;
+            padding-bottom: 1rem !important;
+        }
+
+        .px-4 {
+            padding-right: 1.5rem !important;
+            padding-left: 1.5rem !important;
+        }
+
+        .flex-grow-0 {
+            flex-grow: 0 !important;
+        }
+
+        .border-top {
+            border-top: 1px solid #dee2e6 !important;
+        }
+
+        .upload-btn-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+        }
+
+        .btn {
+            border: 2px solid gray;
+            color: gray;
+            background-color: white;
+            padding: 8px 10px;
+            border-radius: 8px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .upload-btn-wrapper input[type="file"] {
+            font-size: 80px;
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+        }
+    </style>
+    @Html.Partial("_TrackingPixels")
+</head>
+<body>
+    <main class="content">
+        <div class="mx-5 p-0">
+
+            <div class="d-flex">
+                <div> <h1 class="h2 ml-2 mb-8pt">Conversations</h1> </div>
+                <div class="ml-auto mr-2"> <a href="@Back" class="btn btn-dark">Back</a> </div>
+                <div class="mr-2"> <a href="javascrip:;" id="btnChats" class="d-md-none d-block btn btn-primary">Chats</a> </div>
+            </div>
+
+            <div class="card">
+                <div class="row g-0">
+                    <div id="chats" class="d-none d-md-block col-md-5 col-lg-5 col-xl-3 border-right">
+                        <div class="position-relative">
+                            <div id="Conversations" style="max-height:86vh;min-height:54vh;overflow:auto">
+                                @Html.Partial("_Conversations")
+                                <hr class="d-block d-lg-none mt-1 mb-0">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-7 col-lg-7 col-xl-9" id="SingleConv">
+                        <div class="px-4 border-bottom">
+                            <div class="d-flex align-items-center py-1">
+                                <div class="position-relative">
+                                    <img src="@Url.Content("~/Images/"+@Model.FriendPic)" class="rounded-circle mr-1" alt="Sharon Lessman" width="40" height="40">
+                                </div>
+                                <div class="flex-grow-1 pl-3">
+                                    <strong>@Model.ConvName</strong>
+                                    <div class="text-muted small"><em></em></div>
+                                </div>
+                                <div>
+                                    <button class="btn btn-light border btn-lg px-3"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-horizontal feather-lg"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg></button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="position-relative">
+                            <div class="chat-messages p-4" id="messages"> @Html.Partial("_Messages")</div>
+                        </div>
+                        <div class="flex-grow-0 py-3 px-4 border-top">
+                            <a style="display:none" href="" id="urlFile" target="_blank"><i class="material-icons font-size-24pt">attach_file</i><b id="nameFile"></b></a>
+                            <div class="input-group">
+                                <input type="hidden" id="convID" value="@Model.ConvID" />
+                                <input type="text" id="Message" class="form-control" placeholder="Type your message">
+                                <div class="upload-btn-wrapper">
+                                    <button id="btnUpload" class="btn btnUpload btn-light"><i class="material-icons font-size-24pt">attach_file</i></button>
+                                    <input type="file" id="File" name="File" />
+                                </div>
+                                <button id="sendmessage" class="btn btn-primary">Send</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script type="text/javascript">
+        $(document).on("click", "#btnChats", function () {
+            if ($("#chats").is(":visible")) {
+                $("#chats").addClass("d-none")
+            } else {
+                $("#chats").removeClass("d-none")
+            }
+        })
+    </script>
+    <script>
+        $(document).ready(function () {
+            $("#messages").animate({ scrollTop: 999999 }, 0);
+            history.pushState(null, '', '/Chat/Index');
+        });
+        $(function () {
+            const File = $('#File')[0];
+            $.connection.chatHub.qs = { "userid": '@ViewBag.UserID' };
+            var chat = $.connection.chatHub;
+            chat.client.addNewMessageToPage = function (data) {
+                var convID = $("#convID").val();
+                if (convID == data.convID)
+                    appendMessage(data);
+                 else
+                    addCount(data)
+
+            };
+            chat.client.AttachFile = function (ID, File) { appendFile(ID, File) }
+            chat.client.UploadFiles = function (ReplyID) {
+                var formdata = new FormData();
+                if (File.files.length > 0) {
+                    var sfilename = File.files[0].name;
+                    formdata.append(sfilename, File.files[0]);
+                    $.ajax({
+                        url: '/Chat/UploadFile/' + ReplyID,
+                        type: "POST",
+                        contentType: false,
+                        processData: false,
+                        data: formdata,
+                        success: function (result) {
+                            $("#File").val("").change;
+                            $("#urlFile").hide().attr("href", "");
+                        },
+                        error: function (err) {
+                            alert(err.statusText);
+                        }
+                    });
+                }
+            };
+            chat.client.UpdateStatus = function (data) { UpdateStatus(data); };
+
+            $.connection.hub.start().done(function () {
+                $(document).on("click", '#sendmessage', function () { if ($('#Message').val() != "" || File.files.length > 0) SendMesage(); });
+                $(document).on("keyup", '#Message', function (e) { if (e.which == 13) SendMesage(); });
+            });
+
+            function SendMesage() {
+                chat.server.send($("#convID").val(), $('#Message').val()).fail(function (error) {
+                    console.log("Error handler called: " + error);
+                });
+                appendMessage(
+                    {
+                        name: "You",
+                        message: $('#Message').val(),
+                        side: "right",
+                        time: "Now",
+                        Pic: '@Url.Content("~/Images/"+user.User_Pic ?? "userLogo.jpg")',
+                        FilePath: $("#urlFile").attr("href"),
+                        FileName: File.files.length > 0 ? File.files[0].name : "",
+                    });
+                $('#Message').val('').focus();
+            }
+
+
+        });
+    </script>
+    <script>
+        $(document).on("change", "#File", function (e) {
+            const File = document.getElementById('File');
+            if (File.files[0].size > 20971520) {
+                File.value = '';
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'warning',
+                    title: 'You Cannot Upload File More than 20MB',
+                    showConfirmButton: false,
+                    timer: 1500
+                })
+                $("#urlFile").hide().attr("href", "");
+                $("#File").val("").change;
+                return;
+            }
+            else {
+                var Url = window.URL.createObjectURL(File.files[0]);
+                $("#urlFile").show().attr("href", Url);
+                $("#nameFile").text(File.files[0].name);
+            }
+
+        })
+    </script>
+    <script>
+        $(document).on("click", "#btnConv", function () {
+            var id = $(this).data("id");
+            $(this).find("#msgCount").text("");
+            $.ajax({
+                url: "/Chat/GetConversation/" + id,
+                success: function (data) {
+                    $("#SingleConv").html(data);
+                    $("#messages").animate({ scrollTop: 999999 }, 0);
+                    $("#chats").addClass("d-none")
+                }
+            })
+        })
+    </script>
+    <script>
+        $(document).on("click", "#btnLoadMore", function () {
+            var LoadAbove = $(this).data("id");
+            var convID = $("#convID").val();
+            var div = $(this);
+            $.ajax({
+                url: "/Chat/LoadMore/" + LoadAbove + "?ConvID=" + convID,
+                success: function (data) {
+                    $("#messages").prepend(data);
+                    div.remove();
+                }
+            })
+        })
+    </script>
+</body>
+</html>

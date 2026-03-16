@@ -1,0 +1,129 @@
+@model First_Aid_Made_Easy.Models.GuidelineVideoVM
+@{
+    ViewBag.Title = "Guideline Videos";
+    Layout = "~/Views/Shared/_LayoutStudent2026.cshtml";
+}
+
+<div class="anim-enter delay-100">
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div>
+            <h4 class="mb-1">Guideline Videos</h4>
+            <p class="text-muted small mb-0">Watch instructional videos for your subscription packages</p>
+        </div>
+    </div>
+
+    @if (Model.List != null && Model.List.Count > 0)
+    {
+        var groupedByPackage = Model.List.GroupBy(v => v.PackageID);
+        
+        foreach (var packageGroup in groupedByPackage)
+        {
+            <div class="fame-card mb-4">
+                <div class="p-3 bg-light border-bottom">
+                    <h5 class="mb-0 fw-bold">@packageGroup.First().PackageName</h5>
+                </div>
+                <div class="p-4">
+                    <div class="fame-course-grid">
+                        @foreach (var video in packageGroup)
+                        {
+                            var thumbUrl = "";
+                            var vPath = video.VideoPath ?? "";
+                            if (vPath.Contains("youtube.com/watch")) {
+                                try { thumbUrl = "https://img.youtube.com/vi/" + new Uri(vPath).Query.Replace("?","&").Split('&').FirstOrDefault(q => q.StartsWith("v="))?.Substring(2) + "/hqdefault.jpg"; } catch {}
+                            } else if (vPath.Contains("youtu.be/")) {
+                                thumbUrl = "https://img.youtube.com/vi/" + vPath.Split(new[]{"youtu.be/"}, StringSplitOptions.None).Last().Split('?')[0] + "/hqdefault.jpg";
+                            } else if (vPath.Contains("youtube.com/live/")) {
+                                thumbUrl = "https://img.youtube.com/vi/" + vPath.Split(new[]{"youtube.com/live/"}, StringSplitOptions.None).Last().Split('?')[0] + "/hqdefault.jpg";
+                            }
+                            <div class="fame-course-card" onclick="playVideo('@video.VideoPath', '@video.VideoTitle')">
+                                <div class="fame-course-thumb-wrapper">
+                                    @if (!string.IsNullOrEmpty(thumbUrl))
+                                    {
+                                        <img src="@thumbUrl" alt="@video.VideoTitle" style="width:100%;height:100%;object-fit:cover;" />
+                                        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
+                                            <div style="width:48px;height:48px;background:rgba(15,118,110,0.85);border-radius:50%;display:flex;align-items:center;justify-content:center;">
+                                                <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                                            </div>
+                                        </div>
+                                        <div class="fame-video-badge">VIDEO</div>
+                                    }
+                                    else
+                                    {
+                                        <div class="fame-video-placeholder">
+                                            <i class="bi bi-play-fill"></i>
+                                            <div class="fame-video-badge">VIDEO</div>
+                                        </div>
+                                    }
+                                </div>
+                                <div class="fame-course-body">
+                                    <h3 class="fame-course-title">@video.VideoTitle</h3>
+                                    @if (!string.IsNullOrEmpty(video.VideoDescription))
+                                    {
+                                        <p class="text-muted small mb-2 line-clamp-1">@video.VideoDescription</p>
+                                    }
+                                    <div class="fame-btn-compact mt-auto">Watch Now</div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="fame-card p-5 text-center">
+            <i class="bi bi-camera-video-off text-muted mb-3" style="font-size: 3rem;"></i>
+            <h5 class="text-muted">No Guideline Videos Available</h5>
+            <p class="text-muted small">There are no guideline videos for your current subscription packages.</p>
+        </div>
+    }
+</div>
+
+<!-- Video Modal -->
+<div class="modal fade" id="videoModal" tabindex="-1">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="videoModalLabel">Video</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-0">
+                <div class="ratio ratio-16x9">
+                    <iframe id="videoFrame" src="" allowfullscreen allow="autoplay; fullscreen"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function playVideo(videoPath, title) {
+        var embedUrl = videoPath;
+        
+        // Convert YouTube/Drive links to embed format
+        if (videoPath.includes('youtube.com/watch')) {
+            var videoId = new URL(videoPath).searchParams.get('v');
+            embedUrl = 'https://www.youtube.com/embed/' + videoId;
+        } else if (videoPath.includes('youtube.com/live/')) {
+            var videoId = videoPath.split('youtube.com/live/')[1].split('?')[0];
+            embedUrl = 'https://www.youtube.com/embed/' + videoId;
+        } else if (videoPath.includes('youtu.be/')) {
+            var videoId = videoPath.split('youtu.be/')[1].split('?')[0];
+            embedUrl = 'https://www.youtube.com/embed/' + videoId;
+        } else if (videoPath.includes('drive.google.com/file')) {
+            var fileId = videoPath.match(/\/file\/d\/([^\/]+)/)[1];
+            embedUrl = 'https://drive.google.com/file/d/' + fileId + '/preview';
+        }
+        
+        $('#videoFrame').attr('src', embedUrl);
+        $('#videoModalLabel').text(title);
+        var modal = new bootstrap.Modal(document.getElementById('videoModal'));
+        modal.show();
+    }
+    
+    // Clear iframe when modal closes
+    $('#videoModal').on('hidden.bs.modal', function () {
+        $('#videoFrame').attr('src', '');
+    });
+</script>

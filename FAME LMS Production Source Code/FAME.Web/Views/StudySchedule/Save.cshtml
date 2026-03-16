@@ -1,0 +1,133 @@
+@model First_Aid_Made_Easy.Models.StudyScheduleVM
+@{
+    ViewBag.Title = Model.StudyScheduleID > 0 ? "Edit Schedule Entry" : "Add Schedule Entry";
+    Layout = "~/Views/Shared/_LayoutTeacher.cshtml";
+}
+
+<div class="row">
+    <div class="col-md-10 col-md-offset-1">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">@ViewBag.Title - @ViewBag.AttemptName</h3>
+            </div>
+            <div class="panel-body">
+                @using (Html.BeginForm("Save", "StudySchedule", FormMethod.Post, new { @class = "form-horizontal", enctype = "multipart/form-data" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.HiddenFor(m => m.StudyScheduleID)
+                    @Html.HiddenFor(m => m.ExamAttemptID)
+
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.ScheduleType, new { @class = "col-sm-3 control-label" })
+                        <div class="col-sm-9">
+                            <select id="ScheduleType" name="ScheduleType" class="form-control" onchange="toggleFields()">
+                                <option value="1" @(Model.ScheduleType == 1 ? "selected" : "")>Structured (Weekly)</option>
+                                <option value="2" @(Model.ScheduleType == 2 ? "selected" : "")>Text/HTML Content</option>
+                                <option value="3" @(Model.ScheduleType == 3 ? "selected" : "")>File Attachment</option>
+                                <option value="4" @(Model.ScheduleType == 4 ? "selected" : "")>Calendar Date</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group" id="weekGroup">
+                        @Html.LabelFor(m => m.WeekNumber, new { @class = "col-sm-3 control-label" })
+                        <div class="col-sm-9">
+                            @Html.TextBoxFor(m => m.WeekNumber, new { @class = "form-control", type = "number", min = "1", placeholder = "Week number (e.g., 1, 2, 3...)" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.TopicTitle, new { @class = "col-sm-3 control-label" })
+                        <div class="col-sm-9">
+                            @Html.TextBoxFor(m => m.TopicTitle, new { @class = "form-control", placeholder = "Enter topic title", required = "required", maxlength = "255" })
+                            @Html.ValidationMessageFor(m => m.TopicTitle, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group" id="descriptionGroup">
+                        @Html.LabelFor(m => m.TopicDescription, "Description (HTML)", new { @class = "col-sm-3 control-label" })
+                        <div class="col-sm-9">
+                            @Html.TextAreaFor(m => m.TopicDescription, new { @class = "form-control", rows = "6", placeholder = "Enter description or HTML content" })
+                            <small class="help-block">You can use HTML tags for formatting</small>
+                        </div>
+                    </div>
+
+                    <div class="form-group" id="fileGroup" style="display:none;">
+                        @Html.LabelFor(m => m.ScheduleFile, "Upload File", new { @class = "col-sm-3 control-label" })
+                        <div class="col-sm-9">
+                            <input type="file" name="ScheduleFile" id="ScheduleFile" class="form-control" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx" />
+                            <small class="help-block">Supported: PDF, Word, Excel, PowerPoint</small>
+                            @if (!string.IsNullOrEmpty(Model.FilePath))
+                            {
+                                <p class="text-info"><i class="fa fa-file"></i> Current file: <a href="@Url.Content(Model.FilePath)" target="_blank">Download</a></p>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="form-group" id="dateGroup" style="display:none;">
+                        @Html.LabelFor(m => m.ScheduleDate, new { @class = "col-sm-3 control-label" })
+                        <div class="col-sm-9">
+                            @Html.TextBoxFor(m => m.ScheduleDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.SortOrder, new { @class = "col-sm-3 control-label" })
+                        <div class="col-sm-9">
+                            @Html.TextBoxFor(m => m.SortOrder, new { @class = "form-control", type = "number" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.IsActive, new { @class = "col-sm-3 control-label" })
+                        <div class="col-sm-9">
+                            <div class="checkbox">
+                                <label>
+                                    @Html.CheckBoxFor(m => m.IsActive)
+                                    Active
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-sm-offset-3 col-sm-9">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fa fa-save"></i> Save
+                            </button>
+                            <a href="@Url.Action("Index", new { attemptId = Model.ExamAttemptID })" class="btn btn-default">
+                                <i class="fa fa-times"></i> Cancel
+                            </a>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function toggleFields() {
+        var type = parseInt($('#ScheduleType').val());
+        
+        // Week field - show for type 1 (structured)
+        $('#weekGroup').toggle(type === 1);
+        
+        // Description field - show for type 1 and 2
+        $('#descriptionGroup').toggle(type === 1 || type === 2);
+        
+        // File field - show for type 3
+        $('#fileGroup').toggle(type === 3);
+        
+        // Date field - show for type 4
+        $('#dateGroup').toggle(type === 4);
+    }
+    
+    $(document).ready(function() {
+        toggleFields();
+    });
+</script>
+
+@section scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

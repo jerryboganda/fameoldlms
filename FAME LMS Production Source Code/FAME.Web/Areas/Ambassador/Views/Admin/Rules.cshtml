@@ -1,0 +1,405 @@
+@model First_Aid_Made_Easy.Models.AdminCommissionRulesVM
+@{
+    ViewBag.Title = "Commission Rules";
+    Layout = "~/Views/Shared/_LayoutAmbassador.cshtml";
+}
+
+<div class="container-fluid py-4">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h4 class="mb-1">Commission Rules</h4>
+            <p class="text-muted mb-0">Configure commission rates and payout rules</p>
+        </div>
+        <div>
+            <a href="@Url.Action("Index")" class="btn btn-outline-secondary mr-2">
+                <i class="material-icons align-middle mr-1">arrow_back</i>
+                Back to Dashboard
+            </a>
+            <button class="btn btn-primary" data-toggle="modal" data-target="#addRuleModal">
+                <i class="material-icons align-middle mr-1">add</i>
+                Add Rule
+            </button>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            @TempData["Success"]
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show">
+            @TempData["Error"]
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+        </div>
+    }
+
+    <div class="row">
+        <!-- Active Rules -->
+        <div class="col-lg-8">
+            <div class="card mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="material-icons align-middle mr-1">rule</i>
+                        Active Commission Rules
+                    </h6>
+                </div>
+                <div class="card-body p-0">
+                    @if (Model.Rules != null && Model.Rules.Count > 0)
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="bg-light">
+                                    <tr>
+                                        <th>Rule Name</th>
+                                        <th>Type</th>
+                                        <th>Rate/Amount</th>
+                                        <th>Applies To</th>
+                                        <th>Tier</th>
+                                        <th>Status</th>
+                                        <th class="text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var rule in Model.Rules)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <strong>@rule.Name</strong>
+                                                @if (!string.IsNullOrEmpty(rule.Description))
+                                                {
+                                                    <br><small class="text-muted">@rule.Description</small>
+                                                }
+                                            </td>
+                                            <td>
+                                                <span class="badge @(rule.CommissionType == "Percentage" ? "badge-info" : "badge-secondary")">
+                                                    @rule.CommissionType
+                                                </span>
+                                            </td>
+                                            <td>
+                                                @if (rule.CommissionType == "Percentage")
+                                                {
+                                                    <strong class="text-success">@rule.Rate.ToString("0.#")%</strong>
+                                                }
+                                                else
+                                                {
+                                                    <strong class="text-success">@rule.Currency @rule.FlatAmount.ToString("N0")</strong>
+                                                }
+                                            </td>
+                                            <td>@rule.AppliesTo</td>
+                                            <td>
+                                                @if (string.IsNullOrEmpty(rule.Tier))
+                                                {
+                                                    <span class="text-muted">All Tiers</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge badge-pill @GetTierBadgeClass(rule.Tier)">@rule.Tier</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (rule.IsActive)
+                                                {
+                                                    <span class="badge badge-success">Active</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge badge-secondary">Inactive</span>
+                                                }
+                                            </td>
+                                            <td class="text-right">
+                                                <button class="btn btn-sm btn-outline-primary mr-1" onclick="editRule(@rule.Id)">
+                                                    <i class="material-icons align-middle" style="font-size: 1rem;">edit</i>
+                                                </button>
+                                                @if (rule.IsActive)
+                                                {
+                                                    <button class="btn btn-sm btn-outline-warning" onclick="toggleRule(@rule.Id, false)">
+                                                        <i class="material-icons align-middle" style="font-size: 1rem;">pause</i>
+                                                    </button>
+                                                }
+                                                else
+                                                {
+                                                    <button class="btn btn-sm btn-outline-success" onclick="toggleRule(@rule.Id, true)">
+                                                        <i class="material-icons align-middle" style="font-size: 1rem;">play_arrow</i>
+                                                    </button>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5">
+                            <i class="material-icons text-muted" style="font-size: 3rem;">rule</i>
+                            <h6 class="mt-3">No commission rules configured</h6>
+                            <p class="text-muted">Add rules to start calculating ambassador commissions.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Panel -->
+        <div class="col-lg-4">
+            <!-- Payout Settings -->
+            <div class="card mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="material-icons align-middle mr-1">settings</i>
+                        Payout Settings
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <form action="@Url.Action("UpdatePayoutSettings")" method="post" id="payoutSettingsForm">
+                        @Html.AntiForgeryToken()
+                        <div class="form-group">
+                            <label class="font-weight-medium">Minimum Payout Amount</label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">@Model.Currency</span>
+                                </div>
+                                <input type="number" name="MinPayoutAmount" class="form-control" 
+                                       value="@Model.MinPayoutAmount" min="0" step="100">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="font-weight-medium">Commission Hold Period (Days)</label>
+                            <input type="number" name="HoldPeriodDays" class="form-control" 
+                                   value="@Model.HoldPeriodDays" min="0" max="90">
+                            <small class="text-muted">Days before commission becomes available for withdrawal</small>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block">
+                            Save Settings
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Tier Bonuses -->
+            <div class="card">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="material-icons align-middle mr-1">emoji_events</i>
+                        Tier System
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3 pb-3 border-bottom">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="badge badge-secondary badge-pill px-3 py-2">Bronze</span>
+                            <span class="text-muted">Default tier</span>
+                        </div>
+                    </div>
+                    <div class="mb-3 pb-3 border-bottom">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="badge badge-info badge-pill px-3 py-2">Silver</span>
+                            <span class="text-muted">10+ referrals</span>
+                        </div>
+                    </div>
+                    <div class="mb-3 pb-3 border-bottom">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="badge badge-warning badge-pill px-3 py-2">Gold</span>
+                            <span class="text-muted">25+ referrals</span>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="badge badge-dark badge-pill px-3 py-2">Platinum</span>
+                            <span class="text-muted">50+ referrals</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add/Edit Rule Modal -->
+<div class="modal fade" id="addRuleModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ruleModalTitle">Add Commission Rule</h5>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <form method="post" id="ruleForm">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="Id" id="ruleId">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="font-weight-medium">Rule Name <span class="text-danger">*</span></label>
+                        <input type="text" name="Name" id="ruleName" class="form-control" required 
+                               placeholder="e.g., Standard Registration Bonus">
+                    </div>
+                    <div class="form-group">
+                        <label class="font-weight-medium">Description</label>
+                        <input type="text" name="Description" id="ruleDescription" class="form-control" 
+                               placeholder="Brief description...">
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="font-weight-medium">Commission Type</label>
+                                <select name="CommissionType" id="ruleType" class="form-control">
+                                    <option value="Percentage">Percentage</option>
+                                    <option value="Fixed">Fixed Amount</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group" id="rateGroup">
+                                <label class="font-weight-medium">Rate (%)</label>
+                                <input type="number" name="Rate" id="ruleRate" class="form-control" 
+                                       min="0" max="100" step="0.5" value="10">
+                            </div>
+                            <div class="form-group" id="amountGroup" style="display: none;">
+                                <label class="font-weight-medium">Amount (@Model.Currency)</label>
+                                <input type="number" name="FlatAmount" id="ruleFlatAmount" class="form-control" 
+                                       min="0" step="100" value="500">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="font-weight-medium">Applies To</label>
+                                <select name="AppliesTo" id="ruleAppliesTo" class="form-control">
+                                    <option value="Registration">Registration</option>
+                                    <option value="FirstPaymentOnly">First Payment Only</option>
+                                    <option value="AllPayments">All Payments</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="font-weight-medium">Specific Tier (Optional)</label>
+                                <select name="Tier" id="ruleTier" class="form-control">
+                                    <option value="">All Tiers</option>
+                                    <option value="Bronze">Bronze</option>
+                                    <option value="Silver">Silver</option>
+                                    <option value="Gold">Gold</option>
+                                    <option value="Platinum">Platinum</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" class="custom-control-input" id="ruleActive" name="IsActive" value="true" checked>
+                            <label class="custom-control-label" for="ruleActive">Rule is active</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Rule</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@functions {
+    string GetTierBadgeClass(string tier)
+    {
+        switch (tier?.ToLower())
+        {
+            case "bronze": return "badge-secondary";
+            case "silver": return "badge-info";
+            case "gold": return "badge-warning";
+            case "platinum": return "badge-dark";
+            default: return "badge-light";
+        }
+    }
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#ruleType').change(function () {
+                if ($(this).val() === 'Percentage') {
+                    $('#rateGroup').show();
+                    $('#amountGroup').hide();
+                } else {
+                    $('#rateGroup').hide();
+                    $('#amountGroup').show();
+                }
+            });
+        });
+
+        function editRule(id) {
+            $.get('@Url.Action("GetRule")', { id: id }, function (rule) {
+                $('#ruleId').val(rule.Id);
+                $('#ruleName').val(rule.Name);
+                $('#ruleDescription').val(rule.Description);
+                $('#ruleType').val(rule.CommissionType).change();
+                $('#ruleRate').val(rule.Rate);
+                $('#ruleFlatAmount').val(rule.FlatAmount);
+                $('#ruleAppliesTo').val(rule.AppliesTo);
+                $('#ruleTier').val(rule.Tier || '');
+                $('#ruleActive').prop('checked', rule.IsActive);
+                $('#ruleModalTitle').text('Edit Commission Rule');
+                $('#addRuleModal').modal('show');
+            }).fail(function() {
+                toastr.error('Failed to load rule details.');
+            });
+        }
+
+        function toggleRule(id, activate) {
+            $.post('@Url.Action("ToggleRule")', {
+                id: id,
+                activate: activate,
+                __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+            }, function (response) {
+                if (response.success) {
+                    toastr.success(activate ? 'Rule activated.' : 'Rule deactivated.');
+                    location.reload();
+                } else {
+                    toastr.error(response.message || 'Failed to update rule.');
+                }
+            });
+        }
+
+        $('#addRuleModal').on('hidden.bs.modal', function () {
+            $('#ruleForm')[0].reset();
+            $('#ruleId').val('');
+            $('#ruleModalTitle').text('Add Commission Rule');
+            $('#ruleType').change();
+        });
+
+        // Dynamic form submission for Create/Update Rule
+        $('#ruleForm').on('submit', function(e) {
+            e.preventDefault();
+            var ruleId = $('#ruleId').val();
+            var actionUrl = ruleId ? '@Url.Action("UpdateRule")' : '@Url.Action("CreateRule")';
+            var formData = $(this).serialize();
+            $.post(actionUrl, formData, function() {
+                location.reload();
+            }).fail(function() {
+                toastr.error('Failed to save rule.');
+            });
+        });
+
+        // AJAX submit for Payout Settings
+        $('#payoutSettingsForm').on('submit', function(e) {
+            e.preventDefault();
+            $.post('@Url.Action("UpdatePayoutSettings")', $(this).serialize(), function(response) {
+                if (response.success) {
+                    toastr.success('Payout settings updated.');
+                } else {
+                    toastr.error(response.message || 'Failed to update settings.');
+                }
+            }).fail(function() {
+                toastr.error('An error occurred.');
+            });
+        });
+    </script>
+}

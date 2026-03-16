@@ -1,0 +1,289 @@
+﻿@model List<First_Aid_Made_Easy.Models.sp_ListEnrollments_Result>
+@{
+    int Sr = 0;
+
+    DateTime date = First_Aid_Made_Easy.BLL.Common.GetCurrentDate();
+    var Active = "<label style=\"background-color:lightgreen\">Active</label>";
+    var Expired = "<label style=\"background-color:lightcoral\">Expired</label>";
+    var Override = "<label style=\"background-color:lightcoral\">Override</label>";
+    var m = ViewBag.Param;
+    var enrollments = Model.GroupBy(x => x.Enrollment_Id);
+
+}
+
+@if (m.IsSummary)
+{
+    // Get only one row per Enrollment_Id
+    var uniqueEnrollments = Model
+        .GroupBy(x => x.Enrollment_Id)
+        .Select(g => g.FirstOrDefault())
+        .ToList();
+
+    <h4 class="text-center text-success m-0">Summary</h4>
+
+
+    <!-- Summary by Package -->
+    <h5>By Package</h5>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Package/Course</th>
+                <th>Count</th>
+                <th>Total Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                int totalCountPackage = 0;
+                decimal totalPricePackage = 0;
+            }
+            @foreach (var g in uniqueEnrollments.GroupBy(x => x.PackageName ?? x.Course_Name))
+            {
+                var count = g.Count();
+                var price = g.Sum(x => x.Enrollment_Price).GetValueOrDefault();
+                totalCountPackage += count;
+                totalPricePackage += price;
+                <tr>
+                    <td>@g.Key</td>
+                    <td>@count</td>
+                    <td>@string.Format("{0:n0}", price)</td>
+                </tr>
+            }
+            <tr style="font-weight:bold;background:#f5f5f5">
+                <td>Total</td>
+                <td>@totalCountPackage</td>
+                <td>@string.Format("{0:n0}", totalPricePackage)</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Summary by Approved By -->
+    <h5>By Approved By</h5>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Approved By</th>
+                <th>Count</th>
+                <th>Total Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                int totalCountApproved = 0;
+                decimal totalPriceApproved = 0;
+            }
+            @foreach (var g in uniqueEnrollments.GroupBy(x => x.ApproveBy))
+            {
+                var count = g.Count();
+                var price = g.Sum(x => x.Enrollment_Price).GetValueOrDefault();
+                totalCountApproved += count;
+                totalPriceApproved += price;
+                <tr>
+                    <td>@(string.IsNullOrEmpty(g.Key) ? "-" : g.Key)</td>
+                    <td>@count</td>
+                    <td>@string.Format("{0:n0}", price)</td>
+                </tr>
+            }
+            <tr style="font-weight:bold;background:#f5f5f5">
+                <td>Total</td>
+                <td>@totalCountApproved</td>
+                <td>@string.Format("{0:n0}", totalPriceApproved)</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Summary by Method -->
+    <h5>By Method</h5>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Method</th>
+                <th>Count</th>
+                <th>Total Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                int totalCountMethod = 0;
+                decimal totalPriceMethod = 0;
+            }
+            @foreach (var g in uniqueEnrollments.GroupBy(x => x.ByRequest == true ? "Request" : x.ByManual == true ? "Manual" : "Auto"))
+            {
+                var count = g.Count();
+                var price = g.Sum(x => x.Enrollment_Price).GetValueOrDefault();
+                totalCountMethod += count;
+                totalPriceMethod += price;
+                <tr>
+                    <td>@g.Key</td>
+                    <td>@count</td>
+                    <td>@string.Format("{0:n0}", price)</td>
+                </tr>
+            }
+            <tr style="font-weight:bold;background:#f5f5f5">
+                <td>Total</td>
+                <td>@totalCountMethod</td>
+                <td>@string.Format("{0:n0}", totalPriceMethod)</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Summary by City -->
+    <h5>By City</h5>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>City</th>
+                <th>Count</th>
+                <th>Total Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                int totalCountCity = 0;
+                decimal totalPriceCity = 0;
+            }
+            @foreach (var g in uniqueEnrollments.GroupBy(x => x.City))
+            {
+                var count = g.Count();
+                var price = g.Sum(x => x.Enrollment_Price).GetValueOrDefault();
+                totalCountCity += count;
+                totalPriceCity += price;
+                <tr>
+                    <td>@g.Key</td>
+                    <td>@count</td>
+                    <td>@string.Format("{0:n0}", price)</td>
+                </tr>
+            }
+            <tr style="font-weight:bold;background:#f5f5f5">
+                <td>Total</td>
+                <td>@totalCountCity</td>
+                <td>@string.Format("{0:n0}", totalPriceCity)</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Summary by Institute -->
+    <h5>By Institute</h5>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Institute</th>
+                <th>Count</th>
+                <th>Total Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                int totalCountInstitute = 0;
+                decimal totalPriceInstitute = 0;
+            }
+            @foreach (var g in uniqueEnrollments.GroupBy(x => x.Institute))
+            {
+                var count = g.Count();
+                var price = g.Sum(x => x.Enrollment_Price).GetValueOrDefault();
+                totalCountInstitute += count;
+                totalPriceInstitute += price;
+                <tr>
+                    <td>@g.Key</td>
+                    <td>@count</td>
+                    <td>@string.Format("{0:n0}", price)</td>
+                </tr>
+            }
+            <tr style="font-weight:bold;background:#f5f5f5">
+                <td>Total</td>
+                <td>@totalCountInstitute</td>
+                <td>@string.Format("{0:n0}", totalPriceInstitute)</td>
+            </tr>
+        </tbody>
+    </table>
+}
+else
+{
+
+    if (m.IsPDF || m.IsExcel)
+    {
+        <table class="table table-bordered">
+            <tr>
+                <th>Enrollments</th>
+                <td> @enrollments.Count()</td>
+                <th>Total Price</th>
+                <td> @enrollments.Sum(x => x.FirstOrDefault().Enrollment_Price)</td>
+            </tr>
+        </table>
+        <table style="width:100% !important" id="DTable" class="table table-bordered">
+            <thead>
+                <tr>
+                    <th style="min-width:140px">Date</th>
+                    <th>Student</th>
+                    <th>City/Institute</th>
+                    <th>Package / Course</th>
+                    <th>Price</th>
+                    <th title="">Active</th>
+                    <th title="By Request">Method</th>
+                    <th title="Approved By">Approved</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var it in enrollments)
+                {
+                    var i = it.FirstOrDefault();
+                    Sr++;
+                    <tr>
+                        <td><b>Start:</b> @string.Format("{0:dd/MM/yyy}", i.Enrollment_Date) <br /> <b>End :</b> @string.Format("{0:dd/MM/yyy}", (i.Enrollment_EndDate))</td>
+                        <td><b>@i.StudentName</b> <br /> @i.Email <br />  @i.MobileNo </td>
+                        <td> <b>@i.City</b>  <br />  @i.Institute </td>
+                        <td>
+                            <b>@i.PackageName</b>
+                            @if (i.PackageName == null)
+                            {@i.Course_Name}
+                            <br /> @( new First_Aid_Made_Easy.BLL.PackageRepository().getText(i.Duration).Replace("--- Rs.", ""))
+                        </td>
+                        <td>@i.Enrollment_Price</td>
+                        <td>@( i.Enrollment_EndDate < date ? Html.Raw(Expired) : i.IsExpired == true ? Html.Raw(Override) : Html.Raw(Active))</td>
+                        <td>@(i.ByRequest == true ? "Request" : i.ByManual == true ? "Manual" : "Auto" )</td>
+                        <td>@i.ApproveBy</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <h4 class="text-center text-success m-0">Enrollments : @enrollments.Count() </h4>
+        <table style="width:100% !important" id="DTable" class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Student</th>
+                    <th>Package / Course</th>
+                    <th title="">Price</th>
+                    <th title="">Active</th>
+                    <th title="By Request">R-S</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var it in enrollments)
+                {
+                    var i = it.FirstOrDefault();
+                    Sr++;
+                    <tr>
+                        <td>@string.Format("{0:dd/MM/yyy}", i.Enrollment_Date) <br /> @string.Format("{0:dd/MM/yyy}", (i.Enrollment_EndDate))</td>
+                        <td><b>@i.StudentName</b> <br /> @i.Email <br /> @i.MobileNo </td>
+                        <td>
+                            <b>@i.PackageName</b>
+                            @if (i.PackageName == null)
+                            {<br /> @i.Course_Name}
+                            <br /> @( new First_Aid_Made_Easy.BLL.PackageRepository().getText(i.Duration).Replace("--- Rs.", ""))
+                        </td>
+                        <td>@i.Enrollment_Price</td>
+                        <td>@( i.Enrollment_EndDate < date ? Html.Raw(Expired) : i.IsExpired == true ? Html.Raw(Override) : Html.Raw(Active))</td>
+                        <td>
+                            @(i.ByRequest == true ? "Request" : i.ByManual == true ? "Manual" : "" )
+                            <br /> @i.ApproveBy
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+}

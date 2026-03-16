@@ -1,0 +1,191 @@
+﻿@model First_Aid_Made_Easy.Models.CouponVM
+@{
+    ViewBag.Title = "Course Save";
+    Layout = "~/Views/Shared/_LayoutTeacher.cshtml";
+}
+
+<!-- Select2 -->
+<link type="text/css" href="~/Content/assets/css/select2.css" rel="stylesheet">
+<link type="text/css" href="~/Content/assets/vendor/select2/select2.min.css" rel="stylesheet">
+
+<!-- DateRangePicker -->
+<link type="text/css" href="~/Content/assets/vendor/daterangepicker.css" rel="stylesheet">
+
+<div class="pt-32pt">
+    <div class="container-fluid page__container d-flex flex-column flex-md-row align-items-center text-center text-sm-left">
+        <div class="flex d-flex flex-column flex-sm-row align-items-center">
+            <div class="mb-24pt mb-sm-0 mr-sm-24pt">
+                <h2 class="mb-0">Describe Coupon</h2>
+                <ol class="breadcrumb p-0 m-0">
+                    <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                    <li class="breadcrumb-item active">
+                        Describe Coupon
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </div>
+    <div class="page-section border-bottom-2">
+        <div class="container-fluid page__container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="page-separator">
+                        <div class="page-separator__text">Basic information</div>
+                    </div>
+                    <form action="/Coupon/Index" method="post">
+                        @Html.HiddenFor(model => model.Id)
+                        @Html.HiddenFor(model => model.RUses)
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label class="form-label">Expiry Date</label>
+                                <div class="form-group mb-24pt">
+                                    @Html.TextBoxFor(model => model.ExpiryDate, new { @class = "form-control form-control-lg", @data_toggle = "daterangepicker", @data_daterangepicker_locale_format = "DD/MM/YYYY", @data_daterangepicker_start_date = Model.ExpiryDate, @data_daterangepicker_drops = "down", @data_daterangepicker_single_date_picker = "true" })
+                                    @Html.ValidationMessageFor(model => model.ExpiryDate, "", new { @class = "text-danger" })
+                                    <small class="form-text text-muted"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Discount %</label>
+                                <div class="form-group mb-24pt">
+                                    @Html.TextBoxFor(model => model.DiscountPer, new { @class = "form-control form-control-lg", @placeholder = "Discount Percentage" })
+                                    @Html.ValidationMessageFor(model => model.DiscountPer, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">No Of Uses</label>
+                                <div class="form-group mb-24pt">
+                                    @Html.TextBoxFor(item => item.NoOfUses, new { @class = "form-control form-control-lg", @required = "required" })
+                                    @Html.ValidationMessageFor(model => model.NoOfUses, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">For Course</label>
+                                <div class="form-group mb-24pt">
+                                    @Html.DropDownListFor(model => model.CourseFid, new SelectList(ViewBag.Courses, "Value", "Text"), "Select Course Option", new { @class = "form-control  select2", @required = "required"})
+                                    @Html.ValidationMessageFor(model => model.CourseFid, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">For Section</label>
+                                <div class="form-group mb-24pt">
+                                    @Html.DropDownListFor(model => model.SectionID, new SelectList(ViewBag.Section, "Value", "Text"), "Select Section Option", new { @class = "form-control  select2", @required = "required" })
+                                    @Html.ValidationMessageFor(model => model.SectionID,"" , new { @class="text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Coupon Secret</label>
+                                <div class="form-group mb-24pt">
+                                    @Html.TextBoxFor(model => model.CouponSecret, new { @class = "form-control form-control-lg", @required = "required" })
+                                    @Html.ValidationMessageFor(model => model.CouponSecret, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Coupon Name</label>
+                                <div class="form-group mb-24pt">
+                                    @Html.TextBoxFor(model => model.CouponName, new { @class = "form-control form-control-lg", @placeholder = "Name Your Coupon", @required = "required" })
+                                    @Html.ValidationMessageFor(model => model.CouponName, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+
+                            <div class="col-md-2">
+                                <label class="form-label">Active</label>
+                                <div class="form-group mb-24pt">
+                                    @Html.CheckBoxFor(item => item.IsActive, new { @class = "make-switch focus-border-color", @checked = "checked" })
+                                    @Html.ValidationMessageFor(model => model.IsActive)
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header text-center">
+                                <a href="/Coupon/Index" class="btn btn-outline-accent-electric-violet"><i class="fa fa-recycle"></i>&nbsp; New</a>
+                                @if (Model.Id > 0)
+                                {
+                                    <input type="submit" class="btn btn-outline-accent-red" value="Update" />
+                                    <a href="#" data-id="@Model.Id" id="btnDelete" class="btn btn-outline-accent-red"><i class="fa fa-trash"></i>&nbsp;  Delete</a>
+                                }
+                                else
+                                {
+                                    <input type="submit" class="btn btn-outline-success" value="Save" />
+                                }
+                                <a href="/Coupon/List" class="btn btn-outline-accent-dodger-blue"><i class="fa fa-backward"></i>&nbsp; Back To List</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <!-- Select2 -->
+    <script src="~/Content/assets/vendor/select2/select2.min.js"></script>
+    <script src="~/Content/assets/js/select2.js"></script>
+    <!-- DateRangePicker -->
+    <script src="~/Content/assets/vendor/moment.min.js"></script>
+    <script src="~/Content/assets/vendor/daterangepicker.js"></script>
+    <script src="~/Content/assets/js/daterangepicker.js"></script>
+    @if (TempData["Success"] != null)
+    {
+        <script>
+            Swal.fire({
+                position: 'top-end',
+                icon: 'success',
+                title: 'Data Saved Successfully',
+                showConfirmButton: false,
+                timer: 1500
+            })
+        </script>
+    }
+
+    <script>
+        $(document).ready(function () {
+            $(".make-switch").attr("data-on-color", "success").attr("data-off-color", "danger").attr("data-on-text", "Yes").attr("data-off-text", "No");
+            @*if ($("#Id").val() > 0) {
+                if (parseFloat(@Model.RUses) < parseFloat(@Model.NoOfUses)) {
+                    $("select").attr("disabled", true);
+                    $("input[type=text]").attr("readonly", true);
+                }
+            }*@
+        })
+        $(document).on("change", "#CourseFid", function () {
+
+            var courseid = $(this).val();
+
+            $.ajax({
+                url: "/Coupon/LoadSections/" + courseid,
+                type: "GET",
+                success: function (result) {
+                    $("#SectionID").html("");
+                    $.each(result, function (i, val) {
+                        var option = `<option value="${val.Value}">${val.Text}</option>`;
+                        $("#SectionID").append(option);
+                    })
+                },
+                error: function (err) {
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'error',
+                        title: err,
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                }
+            })
+        })
+        $(document).on("click", "#btnDelete", function () {
+            Swal.fire({
+                position: 'top-end',
+                icon: 'error',
+                title: 'Not Available',
+                showConfirmButton: false,
+                timer: 1500
+            })
+        })
+    </script>
+
+}
+

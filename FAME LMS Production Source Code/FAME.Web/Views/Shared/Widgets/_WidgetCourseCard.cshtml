@@ -1,0 +1,51 @@
+@using First_Aid_Made_Easy.Models
+@using First_Aid_Made_Easy.BLL
+@model CourseVM
+@{
+    Func<decimal?, string> HrsMins = Common.HrsMins;
+    bool isCompleted = Model.Progress >= 100;
+}
+
+<div class="col-md-6 col-lg-4 col-xxl-3 filter-item @(isCompleted ? "filter-completed" : "filter-active")">
+    <div class="card h-100 border-0 shadow-sm" style="background: var(--fame-card-bg); backdrop-filter: blur(10px); border: 1px solid var(--fame-glass-border);">
+        <div class="card-body p-4 d-flex flex-column">
+            <!-- Header: Icon & Status -->
+            <div class="d-flex justify-content-between align-items-start mb-4">
+                <div class="symbol symbol-50px p-2 bg-light-primary rounded">
+                    <img src="@Url.Content("~/Images/" + Model.Course_Pic)" alt="icon" style="object-fit: contain; width: 100%; height: 100%;" />
+                </div>
+                <div>
+                     @if (isCompleted)
+                     {
+                         <span class="badge badge-success"><i class="fa fa-check text-white me-1 fs-9"></i> Completed</span>
+                     }
+                     else
+                     {
+                         <span class="badge badge-primary">In Progress</span>
+                     }
+                </div>
+            </div>
+
+            <!-- Title & Duration -->
+            <h4 class="card-title fw-bold text-white mb-2 line-clamp-2" style="min-height: 3rem;">@Model.Course_Name</h4>
+            <div class="d-flex align-items-center text-white-50 fs-7 mb-4">
+                <i class="fa fa-clock me-2"></i> @HrsMins(Model.DurationInMin)
+            </div>
+
+            <!-- Progress -->
+            <div class="mt-auto">
+                <div class="d-flex justify-content-between text-white-50 fs-8 mb-1">
+                    <span>Progress</span>
+                    <span>@Model.Progress%</span>
+                </div>
+                <div class="progress h-6px w-100 bg-dark rounded mb-3">
+                    <div class="progress-bar bg-success" role="progressbar" style="width: @Model.Progress%" aria-valuenow="@Model.Progress" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+
+                <a href="/Student/TakeCourse/@Model.Course_Id" class="btn btn-sm btn-light-primary w-100 hover-elevate-up">
+                    @(isCompleted ? "Review Course" : "Continue Learning")
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

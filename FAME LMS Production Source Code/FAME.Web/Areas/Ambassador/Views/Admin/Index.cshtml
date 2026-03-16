@@ -1,0 +1,292 @@
+@model First_Aid_Made_Easy.Models.AdminAmbassadorDashboardVM
+@{
+    ViewBag.Title = "Ambassador Admin";
+    Layout = "~/Views/Shared/_LayoutAmbassador.cshtml";
+}
+
+<div class="container-fluid py-4">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h4 class="mb-1">Ambassador Program Admin</h4>
+            <p class="text-muted mb-0">Overview of the ambassador program performance</p>
+        </div>
+        <div>
+            <a href="@Url.Action("Applications")" class="btn btn-warning mr-2">
+                <i class="material-icons align-middle mr-1">pending_actions</i>
+                Pending Applications
+                @if (Model.PendingApplications > 0)
+                {
+                    <span class="badge badge-light ml-1">@Model.PendingApplications</span>
+                }
+            </a>
+            <a href="@Url.Action("Rules")" class="btn btn-outline-primary">
+                <i class="material-icons align-middle mr-1">settings</i>
+                Commission Rules
+            </a>
+        </div>
+    </div>
+
+    <!-- Stats Row -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Ambassadors</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalAmbassadors</div>
+                            <small class="text-success">@Model.ActiveAmbassadors active</small>
+                        </div>
+                        <div class="col-auto">
+                            <i class="material-icons text-gray-300" style="font-size: 2rem;">groups</i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Total Referrals</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalReferrals</div>
+                            <small class="text-muted">@Model.ConvertedReferrals converted</small>
+                        </div>
+                        <div class="col-auto">
+                            <i class="material-icons text-gray-300" style="font-size: 2rem;">person_add</i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Commissions Paid</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.Currency @Model.TotalCommissionsPaid.ToString("N0")</div>
+                            <small class="text-warning">@Model.Currency @Model.PendingCommissions.ToString("N0") pending</small>
+                        </div>
+                        <div class="col-auto">
+                            <i class="material-icons text-gray-300" style="font-size: 2rem;">payments</i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Pending Payouts</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.PendingPayoutRequests</div>
+                            <a href="@Url.Action("Payouts")" class="small">Review requests</a>
+                        </div>
+                        <div class="col-auto">
+                            <i class="material-icons text-gray-300" style="font-size: 2rem;">account_balance_wallet</i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Charts -->
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="material-icons align-middle mr-1">trending_up</i>
+                        Program Performance (Last 6 Months)
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="performanceChart" height="100"></canvas>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="material-icons align-middle mr-1">history</i>
+                        Recent Activity
+                    </h6>
+                    <a href="#" class="btn btn-sm btn-outline-primary disabled">View All</a>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        @if (Model.RecentActivity != null && Model.RecentActivity.Count > 0)
+                        {
+                            foreach (var activity in Model.RecentActivity)
+                            {
+                                <div class="list-group-item">
+                                    <div class="d-flex align-items-center">
+                                        <div class="icon-circle @activity.IconBgClass text-white mr-3">
+                                            <i class="material-icons" style="font-size: 1rem;">@activity.Icon</i>
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <span class="font-weight-medium">@activity.Description</span>
+                                            <br>
+                                            <small class="text-muted">@activity.Timestamp.ToString("MMM dd, hh:mm tt")</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="list-group-item text-center text-muted py-4">
+                                No recent activity
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Side Panels -->
+        <div class="col-lg-4">
+            <!-- Tier Distribution -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Ambassador Tiers</h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="tierChart" height="200"></canvas>
+                </div>
+            </div>
+
+            <!-- Top Performers -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="material-icons align-middle mr-1">emoji_events</i>
+                        Top Performers (This Month)
+                    </h6>
+                </div>
+                <div class="card-body p-0">
+                    @if (Model.TopPerformers != null && Model.TopPerformers.Count > 0)
+                    {
+                        <div class="list-group list-group-flush">
+                            @{int rank = 1;}
+                            @foreach (var performer in Model.TopPerformers)
+                            {
+                                <div class="list-group-item d-flex align-items-center">
+                                    <span class="badge @(rank <= 3 ? "badge-warning" : "badge-secondary") mr-3">@rank</span>
+                                    <div class="flex-grow-1">
+                                        <strong>@performer.Name</strong>
+                                        <br>
+                                        <small class="text-muted">@performer.Referrals referrals</small>
+                                    </div>
+                                    <span class="text-success font-weight-bold">@Model.Currency @performer.Earnings.ToString("N0")</span>
+                                </div>
+                                rank++;
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-4 text-muted">
+                            No data this month
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Quick Actions</h6>
+                </div>
+                <div class="card-body">
+                    <a href="@Url.Action("Ambassadors")" class="btn btn-outline-primary btn-block mb-2">
+                        <i class="material-icons align-middle mr-1">people</i>
+                        Manage Ambassadors
+                    </a>
+                    <a href="@Url.Action("Applications")" class="btn btn-outline-warning btn-block mb-2">
+                        <i class="material-icons align-middle mr-1">assignment</i>
+                        Review Applications
+                    </a>
+                    <a href="@Url.Action("Payouts")" class="btn btn-outline-success btn-block mb-2">
+                        <i class="material-icons align-middle mr-1">payments</i>
+                        Process Payouts
+                    </a>
+                    <a href="#" class="btn btn-outline-secondary btn-block disabled">
+                        <i class="material-icons align-middle mr-1">download</i>
+                        Export Report (Coming Soon)
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Performance Chart
+        var perfCtx = document.getElementById('performanceChart').getContext('2d');
+        new Chart(perfCtx, {
+            type: 'line',
+            data: {
+                labels: @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.ChartLabels)),
+                datasets: [{
+                    label: 'Referrals',
+                    data: @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.ReferralData)),
+                    borderColor: 'rgb(78, 115, 223)',
+                    tension: 0.3,
+                    fill: false
+                }, {
+                    label: 'Conversions',
+                    data: @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.ConversionData)),
+                    borderColor: 'rgb(28, 200, 138)',
+                    tension: 0.3,
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { position: 'bottom' } },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+
+        // Tier Chart
+        var tierCtx = document.getElementById('tierChart').getContext('2d');
+        new Chart(tierCtx, {
+            type: 'doughnut',
+            data: {
+                labels: @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.TierLabels)),
+                datasets: [{
+                    data: @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.TierData)),
+                    backgroundColor: ['#4e73df', '#1cc88a', '#f6c23e', '#e74a3b']
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { position: 'bottom' } }
+            }
+        });
+    </script>
+}
+
+<style>
+    .border-left-primary { border-left: 4px solid #4e73df !important; }
+    .border-left-success { border-left: 4px solid #1cc88a !important; }
+    .border-left-info { border-left: 4px solid #36b9cc !important; }
+    .border-left-warning { border-left: 4px solid #f6c23e !important; }
+    .icon-circle {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+</style>

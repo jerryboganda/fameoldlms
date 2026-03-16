@@ -1,0 +1,162 @@
+﻿
+@{
+    ViewBag.Title = "JazzCash";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+@{
+    var tDate = DateTime.Now.ToString("yyyyMMddHHmmss");
+    var Txn = "T" + tDate;
+    var amount = "5600";
+    var value = new object();
+}
+
+<html>
+<head>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+    <!--Merchant will include the JS file for relevant transaction type payment in that form-->
+    <script type="text/javascript" src="~/Scripts/PayChk3DS.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var pp_payload = {
+                pp_Version: "1.1",
+                pp_MerchantID: "Merc0003",
+                pp_TxnType: "MPAY",
+                pp_Password: "0123456789",
+                pp_TxnRefNo: '@Txn',
+                pp_DiscountedAmount: "9000",
+                pp_DiscountBank: "",
+                pp_Amount: '@amount',
+                pp_TxnCurrency: "PKR",
+                pp_TxnDateTime: '@tDate',
+                pp_TxnExpiryDateTime: "",
+                pp_BillReference: "bill Reference",
+                pp_Description: "some description",
+                pp_SecureHash: "94EB6BA8C9A32F10AF115A4FAB07FE60FF6848EEFF374F85632E3678B204EE66"
+            };
+
+            //Merchant will initialize payload required by jazz cash to process payment on the form that
+            //will submit the payment request and call populateJazzCashFields.
+            populateJazzCashFields(pp_payload);
+            $('.errorDiv').hide();
+        });
+
+        $(function () {
+            window.addEventListener("message", invokeCompletion, false);
+        });
+
+        function invokeCompletion(_paPayload) {
+            $("#BlurWin").fadeOut();
+            // MVC Sample:
+            $("#Response").val(_paPayload.data);
+            document.forms[0].submit();
+        }
+    </script>
+</head>
+
+<body>
+    <h2>Check Out Fields</h2>
+    <!--Merchant will define action to be redirected to after Jazz cash processes the payment in form tag of html. -->
+    <form id="onlineform" action="@Url.Action("Pay","Enrollment")" method="post">
+        <!--Merchant will place these two divs (below) to load contents of form injected by mastercard. -->
+        <div id="myForm" style="display:none;"></div>
+        <!--Merchant will place this div to load field injected by Jazz cash. -->
+        <div id="JazzCashFields">
+            <div id="JazzCashErrorDiv" style="display: none; color: red"></div>
+            <div id="JazzCashSuccessDiv" style="display: none; color: green"></div>
+        </div>
+        <!--Merchant may additionally place optional fields. -->
+        <div id="merchant">
+            <br />
+            <br />
+            <input type="text" placeholder="Delivery Address" name="pp_Addr" id="pp_Addr"><br />
+            <input type="text" placeholder="Opt Field 1" name="pp_op1" id="pp_op1"><br />
+            <input type="text" placeholder="Opt Field 2" name="pp_op2" id="pp_op2"><br />
+        </div>
+        @if (Convert.ToBoolean(Session["DoShow"]) == true)
+        {
+            <div class="responseDiv">
+                <p>
+                    <label>Response Message: </label>
+                    <span class="bar"></span>
+                    @{
+                        value = Session["pp_ResponseMesage"] == null ? "-" : Session["pp_ResponseMesage"];
+                        @value;
+                    }
+                </p>
+                <p>
+                    <label>Response Code: </label>
+                    <span class="bar"></span>
+                    @{
+                        value = Session["pp_ResponseCode"] == null ? "-" : Session["pp_ResponseCode"];
+                        @value;
+                    }
+
+                </p>
+                <p>
+                    <label>Instrument Token: </label>
+                    <span class="bar"></span>
+                    @{
+                        value = Session["pp_InstrToken"] == null ? "-" : Session["pp_InstrToken"];
+                        @value;
+                    }
+
+                </p>
+                <p>
+
+                    <label>RRN of request: </label>
+                    <span class="bar"></span>
+                    @{
+                        value = Session["pp_RetreivalReferenceNo"] == null ? "-" : Session["pp_RetreivalReferenceNo"];
+                        @value;
+                    }
+                </p>
+            </div>
+        }
+        <!--A submit button is placed in Merchant form -->
+        <button class="login" id="buttonsubmitPay" type="submit">Continue</button>
+    </form>
+    <!--Merchant will place these two divs (below) to load contents of form injected by mastercard. -->
+    <div id="stagingForm" style="display: none;">
+    </div>
+    <div id="pp_masterCardResponse" style="background: rgba(255, 193, 7, 0.25); padding: 1rem; margin: 1.5rem; display: none;"></div>
+</body>
+</html>
+
+
+
+<div class="responseDiv">
+    <p>
+        <label>Response Message: </label>
+        <span class="bar"></span>
+        @{
+            value = Session["pp_ResponseMesage"] == null ? "-" : Session["pp_ResponseMesage"];
+            @value;
+        }
+    </p>
+    <p>
+        <label>Response Code: </label>
+        <span class="bar"></span>
+        @{
+            value = Session["pp_ResponseCode"] == null ? "-" : Session["pp_ResponseCode"];
+            @value;
+        }
+    </p>
+    <p>
+        <label>Instrument Token: </label>
+        <span class="bar"></span>
+        @{
+            value = Session["pp_InstrToken"] == null ? "-" : Session["pp_InstrToken"];
+            @value;
+        }
+    </p>
+    <p>
+        <label>RRN of request: </label>
+        <span class="bar"></span>
+        @{
+            value = Session["pp_RetreivalReferenceNo"] == null ? "-" : Session["pp_RetreivalReferenceNo"];
+            @value;
+        }
+    </p>
+</div>

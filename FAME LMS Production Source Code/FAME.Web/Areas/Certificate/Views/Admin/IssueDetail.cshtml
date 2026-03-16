@@ -1,0 +1,272 @@
+@model First_Aid_Made_Easy.Models.Certificate.CertificateIssueVM
+@{
+    ViewBag.Title = "Certificate Detail";
+    Layout = "~/Views/Shared/_LayoutTeacher.cshtml";
+    var auditLogs = ViewBag.AuditLogs as List<First_Aid_Made_Easy.Models.Certificate.CertificateAuditLogVM> ?? new List<First_Aid_Made_Easy.Models.Certificate.CertificateAuditLogVM>();
+}
+
+<div class="container-fluid px-4 py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-bold mb-1"><i class="bi bi-patch-check me-2"></i>Certificate Detail</h3>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0 small">
+                    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Admin", new { area = "Certificate" })">Certificate Manager</a></li>
+                    <li class="breadcrumb-item"><a href="@Url.Action("Issues", "Admin", new { area = "Certificate" })">Issues</a></li>
+                    <li class="breadcrumb-item active">@Model.PublicId</li>
+                </ol>
+            </nav>
+        </div>
+        <div class="d-flex gap-2">
+            @if (Model.Status == "PendingApproval")
+            {
+                <form method="post" action="@Url.Action("ApproveIssue", "Admin", new { area = "Certificate" })" class="d-inline">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" value="@Model.Id" />
+                    <button type="submit" class="btn btn-success"><i class="bi bi-check-lg me-1"></i>Approve</button>
+                </form>
+                <form method="post" action="@Url.Action("RejectIssue", "Admin", new { area = "Certificate" })" class="d-inline">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" value="@Model.Id" />
+                    <button type="submit" class="btn btn-outline-danger" onclick="return confirm('Reject this certificate?');">
+                        <i class="bi bi-x-lg me-1"></i>Reject
+                    </button>
+                </form>
+            }
+            @if (Model.Status == "Issued")
+            {
+                <button class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#revokeModal">
+                    <i class="bi bi-slash-circle me-1"></i>Revoke
+                </button>
+            }
+            @if (Model.Status == "Revoked")
+            {
+                <form method="post" action="@Url.Action("ReIssue", "Admin", new { area = "Certificate" })" class="d-inline">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="issueId" value="@Model.Id" />
+                    <button type="submit" class="btn btn-primary" onclick="return confirm('Re-issue this certificate with a new ID?');">
+                        <i class="bi bi-arrow-repeat me-1"></i>Re-Issue
+                    </button>
+                </form>
+            }
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Certificate Info -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-sm-6">
+                            <label class="text-muted small">Certificate ID</label>
+                            <div class="fw-semibold font-monospace">@Model.PublicId</div>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="text-muted small">Status</label>
+                            <div>
+                                @switch (Model.Status)
+                                {
+                                    case "Issued":
+                                        <span class="badge bg-success fs-6">Issued</span>
+                                        break;
+                                    case "PendingApproval":
+                                        <span class="badge bg-warning text-dark fs-6">Pending Approval</span>
+                                        break;
+                                    case "Revoked":
+                                        <span class="badge bg-danger fs-6">Revoked</span>
+                                        break;
+                                    case "Expired":
+                                        <span class="badge bg-secondary fs-6">Expired</span>
+                                        break;
+                                    default:
+                                        <span class="badge bg-secondary fs-6">@Model.Status</span>
+                                        break;
+                                }
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="text-muted small">Learner</label>
+                            <div class="fw-medium">@Model.LearnerName</div>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="text-muted small">Course</label>
+                            <div class="fw-medium">@Model.CourseName</div>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="text-muted small">Template</label>
+                            <div>@Model.TemplateName</div>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="text-muted small">Issued Date</label>
+                            <div>@(Model.IssuedAt?.ToString("MMMM dd, yyyy HH:mm") ?? "Not yet issued")</div>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="text-muted small">Expiry Date</label>
+                            <div>@(Model.ExpiresAt?.ToString("MMMM dd, yyyy") ?? "No expiry")</div>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="text-muted small">CPD Credits</label>
+                            <div>@Model.Credits</div>
+                        </div>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(Model.RevokeReason))
+                    {
+                        <div class="alert alert-danger mt-3 mb-0">
+                            <strong>Revocation Reason:</strong> @Model.RevokeReason
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Certificate Preview -->
+            @if (!string.IsNullOrEmpty(Model.PdfUrl))
+            {
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-white fw-semibold">Certificate Preview</div>
+                    <div class="card-body text-center p-3">
+                        @if (!string.IsNullOrEmpty(Model.ThumbnailUrl))
+                        {
+                            <img src="@Model.ThumbnailUrl" class="img-fluid shadow-sm" alt="Certificate Preview" style="max-height: 400px;" />
+                        }
+                        <div class="mt-3">
+                            <a href="@Model.PdfUrl" target="_blank" class="btn btn-outline-primary">
+                                <i class="bi bi-file-pdf me-1"></i>View PDF
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <!-- Criteria Snapshot -->
+            @if (!string.IsNullOrEmpty(Model.CriteriaSnapshotJson))
+            {
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white fw-semibold">Criteria Snapshot at Issuance</div>
+                    <div class="card-body">
+                        @try
+                        {
+                            var snapshot = Newtonsoft.Json.JsonConvert.DeserializeObject<First_Aid_Made_Easy.Models.Certificate.CriteriaSnapshot>(Model.CriteriaSnapshotJson);
+                            if (snapshot != null)
+                            {
+                                <div class="row g-2">
+                                    <div class="col-sm-4">
+                                        <div class="text-muted small">Video Completion</div>
+                                        <div class="fw-semibold">@snapshot.VideoCompletionPct%</div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <div class="text-muted small">Exam Score</div>
+                                        <div class="fw-semibold">@snapshot.ExamScorePct%</div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <div class="text-muted small">Course Complete</div>
+                                        <div class="fw-semibold">@(snapshot.CourseCompleted == true ? "Yes" : "No")</div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="text-muted small">Evaluated At</div>
+                                        <div class="fw-semibold">@(snapshot.EvaluatedAt?.ToString("MMM dd, yyyy HH:mm") ?? "—")</div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="text-muted small">Rule Name</div>
+                                        <div class="fw-semibold">@(snapshot.RuleName ?? "—")</div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        catch
+                        {
+                            <pre class="small text-muted">@Model.CriteriaSnapshotJson</pre>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Sidebar: Audit Trail + Verification -->
+        <div class="col-lg-4">
+            <!-- Verification Link -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white fw-semibold">Public Verification</div>
+                <div class="card-body">
+                    <div class="input-group input-group-sm">
+                        <input type="text" class="form-control font-monospace" id="verifyUrl"
+                               value="@Url.Action("Index", "Verify", new { area = "Certificate", id = Model.PublicId }, Request.Url.Scheme)" readonly />
+                        <button class="btn btn-outline-secondary" onclick="copyVerifyUrl()"><i class="bi bi-clipboard"></i></button>
+                    </div>
+                    <div class="text-muted small mt-2">Share this link for third-party verification.</div>
+                </div>
+            </div>
+
+            <!-- Audit Trail -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white fw-semibold">Audit Trail</div>
+                <div class="card-body p-0">
+                    @if (auditLogs.Any())
+                    {
+                        <div class="list-group list-group-flush">
+                            @foreach (var log in auditLogs)
+                            {
+                                <div class="list-group-item px-3 py-2">
+                                    <div class="d-flex justify-content-between">
+                                        <span class="fw-medium small">@log.Action</span>
+                                        <span class="text-muted" style="font-size: 11px;">@log.Timestamp.ToString("MMM dd HH:mm")</span>
+                                    </div>
+                                    @if (!string.IsNullOrEmpty(log.Detail))
+                                    {
+                                        <div class="text-muted" style="font-size: 12px;">@log.Detail</div>
+                                    }
+                                    <div class="text-muted" style="font-size: 11px;">by @log.PerformedBy</div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center text-muted py-3 small">No audit entries yet.</div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Revoke Modal -->
+<div class="modal fade" id="revokeModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" action="@Url.Action("RevokeIssue", "Admin", new { area = "Certificate" })">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="issueId" value="@Model.Id" />
+                <div class="modal-header">
+                    <h5 class="modal-title">Revoke Certificate</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>This will permanently revoke certificate <strong>@Model.PublicId</strong>.</p>
+                    <div class="mb-3">
+                        <label class="form-label">Reason for Revocation</label>
+                        <textarea class="form-control" name="reason" rows="3" required placeholder="Explain why this certificate is being revoked..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger">Revoke Certificate</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+<script>
+    function copyVerifyUrl() {
+        var input = document.getElementById('verifyUrl');
+        input.select();
+        document.execCommand('copy');
+        var btn = input.nextElementSibling;
+        btn.innerHTML = '<i class="bi bi-check"></i>';
+        setTimeout(function () { btn.innerHTML = '<i class="bi bi-clipboard"></i>'; }, 2000);
+    }
+</script>
+}

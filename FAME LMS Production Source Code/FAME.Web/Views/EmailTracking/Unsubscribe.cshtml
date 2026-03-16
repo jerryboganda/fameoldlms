@@ -1,0 +1,92 @@
+@model First_Aid_Made_Easy.Models.UnsubscribeVM
+@{
+    ViewBag.Title = "Unsubscribe";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Unsubscribe - First Aid Made Easy</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background: #f5f7fa; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .container { max-width: 480px; width: 100%; }
+        .card { background: #fff; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); padding: 40px; text-align: center; }
+        .logo { margin-bottom: 24px; }
+        .logo img { height: 48px; }
+        h1 { font-size: 22px; color: #333; margin-bottom: 8px; }
+        p { color: #666; line-height: 1.6; margin-bottom: 16px; }
+        .email-display { background: #f0f2f5; padding: 10px 16px; border-radius: 8px; font-weight: 500; color: #333; margin: 16px 0; }
+        .btn { display: inline-block; padding: 12px 32px; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; border: none; text-decoration: none; transition: all 0.2s; }
+        .btn-danger { background: #dc3545; color: #fff; }
+        .btn-danger:hover { background: #c82333; }
+        .btn-outline { background: transparent; border: 2px solid #ddd; color: #666; }
+        .btn-outline:hover { border-color: #333; color: #333; }
+        .actions { display: flex; gap: 12px; justify-content: center; margin-top: 20px; }
+        .success-icon { font-size: 64px; color: #28a745; margin-bottom: 16px; }
+        .error-icon { font-size: 64px; color: #dc3545; margin-bottom: 16px; }
+        .footer { text-align: center; margin-top: 24px; color: #999; font-size: 12px; }
+    </style>
+    @Html.Partial("_TrackingPixels")
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="logo">
+                <img src="/Images/Theme/logo.png" alt="First Aid Made Easy" onerror="this.style.display='none'" />
+            </div>
+
+            @if (Model.IsProcessed)
+            {
+                <div class="success-icon">&#10003;</div>
+                <h1>You've Been Unsubscribed</h1>
+                <p>Your email <strong>@Model.Email</strong> has been removed from our mailing list. You will no longer receive marketing emails from us.</p>
+                <p class="text-sm" style="font-size:13px;color:#999;">Note: You may still receive essential account-related emails such as password resets and enrollment confirmations.</p>
+                <div class="actions">
+                    <a href="/" class="btn btn-outline">Go to Website</a>
+                </div>
+            }
+            else if (Model.IsInvalid)
+            {
+                <div class="error-icon">&#10007;</div>
+                <h1>Invalid Link</h1>
+                <p>This unsubscribe link is invalid or has expired. Please contact our support team if you need assistance.</p>
+                <div class="actions">
+                    <a href="/" class="btn btn-outline">Go to Website</a>
+                </div>
+            }
+            else
+            {
+                <h1>Unsubscribe from Emails</h1>
+                <p>Are you sure you want to unsubscribe from marketing emails?</p>
+                <div class="email-display">@Model.Email</div>
+                <form method="POST" action="/EmailTracking/Unsubscribe">
+                    <input type="hidden" name="token" value="@Model.Token" />
+                    <div class="actions">
+                        <a href="/" class="btn btn-outline">Keep Subscribed</a>
+                        <button type="submit" class="btn btn-danger">Unsubscribe</button>
+                    </div>
+                    <div style="margin-top: 16px;">
+                        <label style="font-size: 13px; color: #666;">
+                            <span>Reason (optional):</span>
+                        </label>
+                        <select name="reason" style="width: 100%; padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; margin-top: 6px; font-size: 14px;">
+                            <option value="">Select a reason...</option>
+                            <option value="TooMany">Too many emails</option>
+                            <option value="NotRelevant">Content not relevant</option>
+                            <option value="NeverSignedUp">I never signed up</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </form>
+            }
+        </div>
+        <div class="footer">
+            &copy; @DateTime.Now.Year First Aid Made Easy. All rights reserved.
+        </div>
+    </div>
+</body>
+</html>
