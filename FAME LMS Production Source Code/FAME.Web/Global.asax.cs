@@ -1,4 +1,6 @@
+using First_Aid_Made_Easy.BLL;
 using First_Aid_Made_Easy.BLL.JzTimer;
+using System.Web;
 using System.Web.Http;
 using System.Web.Mvc;
 using System.Web.Optimization;
@@ -27,6 +29,14 @@ namespace First_Aid_Made_Easy
             _notifSenderService.Start();
             _campaignSchedulerService = new EmailCampaignSchedulerService();
             _campaignSchedulerService.Start();
+        }
+
+        protected void Application_BeginRequest()
+        {
+            if (MaintenanceModeHelper.ShouldHandleRequest(HttpContext.Current))
+            {
+                MaintenanceModeHelper.WriteMaintenanceResponse(HttpContext.Current);
+            }
         }
 
         protected void Application_End()

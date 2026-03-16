@@ -1,4 +1,5 @@
 using First_Aid_Made_Easy.DAL;
+using First_Aid_Made_Easy.BLL;
 using Newtonsoft.Json;
 using System;
 using System.Data.Entity;
@@ -33,6 +34,11 @@ namespace First_Aid_Made_Easy.BLL.JzTimer
 
         private void ProcessQueue(object state)
         {
+            if (MaintenanceModeHelper.IsEnabled())
+            {
+                return;
+            }
+
             lock (_lock)
             {
                 if (_isProcessing) return;

@@ -1,4 +1,5 @@
-﻿using Aspose.Words;
+using Aspose.Words;
+using First_Aid_Made_Easy.BLL;
 using First_Aid_Made_Easy.DAL;
 using First_Aid_Made_Easy.Models;
 using Newtonsoft.Json;
@@ -19,6 +20,8 @@ namespace First_Aid_Made_Easy.BLL.JzTimer
     {
         private Timer _timer;
         private readonly HttpClient _httpClient;
+        private int _isProcessing;
+
         public NotificationSenderService()
         {
             _httpClient = new HttpClient();
@@ -29,49 +32,78 @@ namespace First_Aid_Made_Easy.BLL.JzTimer
 
         public void Start()
         {
-            _timer = new Timer(StartSendingNotification, null, TimeSpan.FromSeconds(60), TimeSpan.FromSeconds(60));
+            _timer = new Timer(ProcessNotifications, null, TimeSpan.FromSeconds(60), TimeSpan.FromSeconds(60));
         }
 
-        private async void StartSendingNotification(object state)
+        private void ProcessNotifications(object state)
         {
-            using (FAMEEntities db = new FAMEEntities())
+            if (MaintenanceModeHelper.IsEnabled())
             {
-                var dNow = Common.GetCurrentDate();
-                var a = db.tbl_StudentNotif.Where(x => x.Status == "Pending" && x.IsPush == true && x.IsActive == true && x.SendAt <= dNow).ToList();
+                return;
+            }
 
-                if (a.Count > 0)
+            if (Interlocked.Exchange(ref _isProcessing, 1) == 1)
+            {
+                return;
+            }
+
+            _ = StartSendingNotificationAsync();
+        }
+
+        private async Task StartSendingNotificationAsync()
+        {
+            try
+            {
+                using (FAMEEntities db = new FAMEEntities())
                 {
-                    foreach (var item in a)
+                    var dNow = Common.GetCurrentDate();
+                    var pendingNotifications = await db.tbl_StudentNotif
+                        .Where(x => x.Status == "Pending" && x.IsPush == true && x.IsActive == true && x.SendAt <= dNow)
+                        .ToListAsync();
+
+                    if (pendingNotifications.Count > 0)
                     {
-                        try
+                        foreach (var item in pendingNotifications)
                         {
-                            var devices = db.sp_GetDevicesNotification(item.UniversityIds ?? "", item.PackageIds ?? "").Select(x => x.DeviceID).ToList();
-                            if (devices.Count > 0)
+                            try
                             {
-                                if (devices.Count > 1000)
+                                var devices = db.sp_GetDevicesNotification(item.UniversityIds ?? "", item.PackageIds ?? "").Select(x => x.DeviceID).ToList();
+                                if (devices.Count > 0)
                                 {
-                                    var devicespartitions = Common.Partition(devices, GetPartitionCount(devices.Count));
-                                    foreach (var dvs in devicespartitions)
+                                    if (devices.Count > 1000)
                                     {
-                                        await SendNotification(dvs, item);
+                                        var devicespartitions = Common.Partition(devices, GetPartitionCount(devices.Count));
+                                        foreach (var dvs in devicespartitions)
+                                        {
+                                            await SendNotification(dvs, item);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        await SendNotification(devices, item);
                                     }
                                 }
-                                else
-                                {
-                                    await SendNotification(devices, item);
-                                }
+                                item.Status = "Sent";
+                                await db.SaveChangesAsync();
                             }
-                            item.Status = "Sent";
-                            await db.SaveChangesAsync();
-                        }
-                        catch (Exception ex)
-                        {
-                            JzLogger.WriteInformation("Error Notification : " + ex.Message + " => " + ex.InnerException.Message);
+                            catch (Exception ex)
+                            {
+                                SafeLogError(ex, "NotificationSenderService failed to send a queued notification.");
+                            }
                         }
                     }
                 }
             }
+            catch (Exception ex)
+            {
+                SafeLogError(ex, "NotificationSenderService failed to load pending notifications.");
+            }
+            finally
+            {
+                Interlocked.Exchange(ref _isProcessing, 0);
+            }
         }
+
         private int GetPartitionCount(int deviceCount)
         {
             if (deviceCount <= 2000) return 2;
@@ -113,6 +145,19 @@ namespace First_Aid_Made_Easy.BLL.JzTimer
         public void Stop()
         {
             _timer?.Change(Timeout.Infinite, 0);
+            _timer?.Dispose();
+            _httpClient?.Dispose();
+        }
+
+        private static void SafeLogError(Exception ex, string message)
+        {
+            try
+            {
+                JzLogger.WriteError(ex, message + Environment.NewLine + ex);
+            }
+            catch
+            {
+            }
         }
     }
 

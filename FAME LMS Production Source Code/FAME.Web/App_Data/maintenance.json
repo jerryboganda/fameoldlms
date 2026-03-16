@@ -1,0 +1,8 @@
+{
+  "Enabled": false,
+  "Title": "Scheduled Maintenance",
+  "Message": "Website is under maintenance. Please try again in 30 minutes.",
+  "RetryAfterMinutes": 30,
+  "AllowLocalRequests": true,
+  "UntilUtc": null
+}

@@ -530,6 +530,7 @@
     <Compile Include="App_Start\SwaggerConfig.cs" />
     <Compile Include="App_Start\AutofacConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="BLL\MaintenanceModeHelper.cs" />
     <Compile Include="Areas\DailyReport\BLL\DailyReportAuthRepository.cs" />
     <Compile Include="Areas\DailyReport\Controllers\AuthController.cs" />
     <Compile Include="Areas\DailyReport\Controllers\DailyReportController.cs" />
@@ -4567,6 +4568,7 @@
     <Content Include="Scripts\dist\client.java.min.js" />
     <Content Include="Scripts\dist\client.min.js" />
     <Content Include="Scripts\dist\fingerprint.js" />
+    <Content Include="App_Data\maintenance.json" />
     <Content Include="Global.asax" />
     <Content Include="Images\admin.jpg" />
     <Content Include="Images\AMIlogo.jfif" />
