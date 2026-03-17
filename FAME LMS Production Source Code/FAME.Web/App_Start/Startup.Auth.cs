@@ -1,4 +1,5 @@
 using System;
+using System.Web;
 using System.Web.Configuration;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
@@ -30,6 +31,7 @@ namespace First_Aid_Made_Easy
                 ExpireTimeSpan = TimeSpan.FromHours(30),
                 Provider = new CookieAuthenticationProvider
                 {
+                    OnApplyRedirect = ApplyCookieRedirect,
                     // Enables the application to validate the security stamp when the user logs in.
                     // This is a security feature which is used when you change a password or add an external login to your account.  
                     // Idle timeout
@@ -76,6 +78,22 @@ namespace First_Aid_Made_Easy
 
                 app.UseGoogleAuthentication(googleOptions);
             }
+        }
+
+        private static void ApplyCookieRedirect(CookieApplyRedirectContext context)
+        {
+            string requestPath = context?.Request?.Path.Value ?? string.Empty;
+
+            if (requestPath.StartsWith("/Ambassador", StringComparison.OrdinalIgnoreCase)
+                && !requestPath.StartsWith("/Ambassador/AmbassadorAccount", StringComparison.OrdinalIgnoreCase))
+            {
+                string returnUrl = context.Request.Uri?.PathAndQuery ?? "/Ambassador";
+                string redirectUrl = "/Ambassador/AmbassadorAccount/Login?returnUrl=" + HttpUtility.UrlEncode(returnUrl);
+                context.Response.Redirect(redirectUrl);
+                return;
+            }
+
+            context.Response.Redirect(context.RedirectUri);
         }
     }
 }

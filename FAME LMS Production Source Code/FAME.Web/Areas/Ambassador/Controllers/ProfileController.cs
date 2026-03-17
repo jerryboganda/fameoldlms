@@ -190,6 +190,12 @@ namespace First_Aid_Made_Easy.Areas.Ambassador.Controllers
                         return RedirectToAction("Status");
                     }
 
+                    if (!UserManager.IsEmailConfirmed(userId))
+                    {
+                        TempData["Info"] = "Please verify your email before submitting an ambassador application.";
+                        return RedirectToAction("VerifyEmail", "Account", new { area = "", id = userId });
+                    }
+
                     // Check if can apply
                     if (!_ambassadorRepo.CanApply(userId))
                     {
@@ -249,7 +255,7 @@ namespace First_Aid_Made_Easy.Areas.Ambassador.Controllers
                     {
                         UserName = model.Email.ToLower(),
                         Email = model.Email.ToLower(),
-                        EmailConfirmed = true, // Auto-confirm for ambassador flow
+                        EmailConfirmed = false,
                         RegisteredFrom = "Web",
                     };
 
@@ -263,9 +269,14 @@ namespace First_Aid_Made_Easy.Areas.Ambassador.Controllers
                         return View(model);
                     }
 
-                    // Sign in (no Student role - ambassadors are separate)
-                    await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
-                    userId = user.Id;
+                    TempData["Info"] = "Your account was created. Please verify your email first, then return to complete your ambassador application.";
+                    return RedirectToAction("VerifyEmail", "Account", new { area = "", id = user.Id });
+                }
+
+                if (!UserManager.IsEmailConfirmed(userId))
+                {
+                    TempData["Info"] = "Please verify your email before submitting an ambassador application.";
+                    return RedirectToAction("VerifyEmail", "Account", new { area = "", id = userId });
                 }
 
                 // Check if can apply
@@ -275,14 +286,6 @@ namespace First_Aid_Made_Easy.Areas.Ambassador.Controllers
                     return RedirectToAction("Status");
                 }
 
-                var applicantFullName = model.FullName;
-                if (string.IsNullOrWhiteSpace(applicantFullName))
-                {
-                    var profile = Common.GetUserNameByASpUserID(userId);
-                    var currentUser = await UserManager.FindByIdAsync(userId);
-                    applicantFullName = profile?.User_Name ?? currentUser?.UserName ?? currentUser?.Email;
-                }
-
                 var ambassadorId = _ambassadorRepo.Apply(userId, new AmbassadorApplicationVM
                 {
                     PhoneNumber = model.PhoneNumber,
@@ -290,7 +293,7 @@ namespace First_Aid_Made_Easy.Areas.Ambassador.Controllers
                     Country = model.Country,
                     ApplicationNotes = model.ApplicationNotes,
                     AcceptTerms = model.AcceptTerms
-                }, applicantFullName);
+                });
 
                 TempData["Success"] = "Account created and application submitted successfully! Our team will review your application soon.";
                 return RedirectToAction("Status");
@@ -330,7 +333,7 @@ namespace First_Aid_Made_Easy.Areas.Ambassador.Controllers
                     Id = ambassador.Id,
                     Status = ambassador.Status,
                     AppliedAt = ambassador.CreatedAt,
-                    RejectionReason = ambassador.Status == "Rejected" ? ambassador.RejectionReason : null,
+                    RejectionReason = null,
                     SuspensionReason = ambassador.SuspendedReason,
                     TotalReferrals = 0,
                     Currency = AmbassadorSettingsHelper.GetDefaultCurrency(),

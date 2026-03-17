@@ -18,7 +18,6 @@ namespace First_Aid_Made_Easy
         public void Configuration(IAppBuilder app)
         {
             ConfigureAuth(app);
-            app.UseCookieAuthentication(new CookieAuthenticationOptions { ExpireTimeSpan = TimeSpan.FromHours(24), });
             app.UseCors(Microsoft.Owin.Cors.CorsOptions.AllowAll);
             app.MapSignalR();
             // Configure Autofac DI
